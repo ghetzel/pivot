@@ -93,6 +93,10 @@ func (self *DummyBackend) Info() map[string]interface{} {
 	return map[string]interface{}{}
 }
 
+func (self *DummyBackend) GetPatternType() patterns.PatternType {
+	return patterns.RecordPattern
+}
+
 func (self *DummyBackend) GetStatus() map[string]interface{} {
 	return map[string]interface{}{
 		`type`:      `dummy`,

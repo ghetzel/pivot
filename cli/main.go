@@ -46,6 +46,11 @@ func main() {
 			Usage: `Start the HTTP data proxy service.`,
 			Flags: []cli.Flag{
 				cli.StringFlag{
+					Name:  `config, c`,
+					Usage: `Path to the configuration file to load.`,
+					Value: `/etc/pivot.yml`,
+				},
+				cli.StringFlag{
 					Name:  `address, a`,
 					Usage: `The local address the server should listen on.`,
 					Value: pivot.DEFAULT_SERVER_ADDRESS,
@@ -57,13 +62,23 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) {
-				server := pivot.NewServer()
+				if config, err := pivot.LoadConfigFile(c.String(`config`)); err == nil {
+					if err := config.Initialize(); err == nil {
+						server := pivot.NewServer()
 
-				server.Address = c.String(`address`)
-				server.Port = c.Int(`port`)
+						server.Address = c.String(`address`)
+						server.Port = c.Int(`port`)
 
-				if err := server.ListenAndServe(); err != nil {
-					log.Fatalf("Failed to start server: %v", err)
+						if err := server.ListenAndServe(); err != nil {
+							log.Fatalf("Failed to start server: %v", err)
+							os.Exit(3)
+						}
+					} else {
+						log.Fatalf("Failed to initialize: %v", err)
+						os.Exit(2)
+					}
+				} else {
+					log.Fatalf("Failed to load configuration: %v", err)
 					os.Exit(1)
 				}
 			},

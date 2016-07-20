@@ -243,6 +243,10 @@ func (self *ElasticsearchBackend) Info() map[string]interface{} {
 	return map[string]interface{}{}
 }
 
+func (self *ElasticsearchBackend) GetPatternType() patterns.PatternType {
+	return patterns.RecordPattern
+}
+
 func (self *ElasticsearchBackend) GetStatus() map[string]interface{} {
 	return map[string]interface{}{
 		`type`:      `elasticsearch`,

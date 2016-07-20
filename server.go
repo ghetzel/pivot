@@ -2,7 +2,6 @@ package pivot
 
 import (
 	"fmt"
-	// "github.com/ghetzel/pivot/patterns"
 	"github.com/op/go-logging"
 	"github.com/rs/cors"
 	"github.com/urfave/negroni"
@@ -44,6 +43,10 @@ func (self *Server) ListenAndServe() error {
 	// server.Use(negroni.NewStatic(http.Dir("./contrib/wstest/static")))
 	self.server.Use(self.corsHandler)
 	self.server.UseHandler(self.mux)
+
+	if err := self.setupBackendRoutes(); err != nil {
+		return err
+	}
 
 	self.server.Run(fmt.Sprintf("%s:%d", self.Address, self.Port))
 	return nil

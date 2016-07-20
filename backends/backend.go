@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/patterns"
 	"github.com/op/go-logging"
 	"io/ioutil"
 	"net/http"
@@ -37,6 +38,7 @@ type IBackend interface {
 	GetConnectTimeout() time.Duration
 	GetDataset() *dal.Dataset
 	GetName() string
+	GetPatternType() patterns.PatternType
 	Info() map[string]interface{}
 	Initialize() error
 	IsAvailable() bool
