@@ -1,0 +1,6 @@
+package: github.com/ghetzel/pivot
+import:
+- package: github.com/ghetzel/cli
+- package: github.com/op/go-logging
+- package: github.com/rs/cors
+- package: github.com/urfave/negroni
