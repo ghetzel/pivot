@@ -8,20 +8,20 @@ import (
 
 // SQL-92 Generator
 
-type Sql92Generator struct {
+type Sql92 struct {
 	filter.Generator
 	collection string
 	fields     []string
 	criteria   []string
 }
 
-func NewSql92Generator() *Sql92Generator {
-	return &Sql92Generator{
+func NewSql92Generator() *Sql92 {
+	return &Sql92{
 		Generator: filter.Generator{},
 	}
 }
 
-func (self *Sql92Generator) Initialize(collectionName string) error {
+func (self *Sql92) Initialize(collectionName string) error {
 	self.collection = collectionName
 	self.fields = make([]string, 0)
 	self.criteria = make([]string, 0)
@@ -29,7 +29,7 @@ func (self *Sql92Generator) Initialize(collectionName string) error {
 	return nil
 }
 
-func (self *Sql92Generator) Finalize(filter filter.Filter) error {
+func (self *Sql92) Finalize(filter filter.Filter) error {
 	self.Push([]byte(`SELECT `))
 
 	if len(self.fields) == 0 {
@@ -53,16 +53,16 @@ func (self *Sql92Generator) Finalize(filter filter.Filter) error {
 	return nil
 }
 
-func (self *Sql92Generator) WithField(field string) error {
+func (self *Sql92) WithField(field string) error {
 	self.fields = append(self.fields, field)
 	return nil
 }
 
-func (self *Sql92Generator) SetOption(key, value string) error {
+func (self *Sql92) SetOption(key, value string) error {
 	return nil
 }
 
-func (self *Sql92Generator) WithCriterion(criterion filter.Criterion) error {
+func (self *Sql92) WithCriterion(criterion filter.Criterion) error {
 	criterionStr := ``
 
 	if len(self.criteria) == 0 {
@@ -123,7 +123,7 @@ func (self *Sql92Generator) WithCriterion(criterion filter.Criterion) error {
 	return nil
 }
 
-func (self *Sql92Generator) filterTypeToSqlType(in string, length int) (string, error) {
+func (self *Sql92) filterTypeToSqlType(in string, length int) (string, error) {
 	out := ``
 
 	switch strings.ToLower(in) {

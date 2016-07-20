@@ -1,0 +1,90 @@
+package generators
+
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/ghetzel/pivot/filter"
+)
+
+// Elasticsearch Generator
+
+type Elasticsearch struct {
+	filter.Generator
+	collection string
+	fields     []string
+	criteria   []map[string]interface{}
+	options    map[string]string
+}
+
+func NewElasticsearchGenerator() *Elasticsearch {
+	return &Elasticsearch{
+		Generator: filter.Generator{},
+	}
+}
+
+func (self *Elasticsearch) Initialize(collectionName string) error {
+	self.collection = collectionName
+	self.fields = make([]string, 0)
+	self.criteria = make([]map[string]interface{}, 0)
+	self.options = make(map[string]string)
+
+	return nil
+}
+
+func (self *Elasticsearch) Finalize(filter filter.Filter) error {
+	var query map[string]interface{}
+
+	if filter.Spec == `all` {
+		query = map[string]interface{}{
+			`match_all`: map[string]interface{}{},
+		}
+	} else {
+		query = map[string]interface{}{
+			`and`: self.criteria,
+		}
+	}
+
+	if data, err := json.MarshalIndent(query, ``, `    `); err == nil {
+		self.Push(data)
+	} else {
+		return err
+	}
+
+	return nil
+}
+
+func (self *Elasticsearch) WithField(field string) error {
+	self.fields = append(self.fields, field)
+	return nil
+}
+
+func (self *Elasticsearch) SetOption(key, value string) error {
+	self.options[key] = value
+	return nil
+}
+
+func (self *Elasticsearch) WithCriterion(criterion filter.Criterion) error {
+	var c map[string]interface{}
+	var err error
+
+	switch criterion.Operator {
+	case `is`, ``:
+		c, err = esCriterionOperatorIs(self, criterion)
+	case `not`:
+		c, err = esCriterionOperatorNot(self, criterion)
+	case `contains`:
+		c, err = esCriterionOperatorContains(self, criterion)
+	case `gt`, `gte`, `lt`, `lte`:
+		c, err = esCriterionOperatorRange(self, criterion, criterion.Operator)
+	default:
+		return fmt.Errorf("Unimplemented operator '%s'", criterion.Operator)
+	}
+
+	if err != nil {
+		return err
+	} else {
+		self.criteria = append(self.criteria, c)
+	}
+
+	return nil
+}

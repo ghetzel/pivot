@@ -83,8 +83,8 @@ func main() {
 					switch generatorType {
 					case `sql92`:
 						generator = generators.NewSql92Generator()
-					// case `elasticsearch`:
-					//     generator = generators.NewElasticsearchGenerator()
+					case `elasticsearch`:
+						generator = generators.NewElasticsearchGenerator()
 					default:
 						log.Fatalf("Unknown generator type '%s'", generatorType)
 					}
