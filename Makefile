@@ -12,7 +12,7 @@ fmt:
 	gofmt -w .
 
 build: fmt
-	go build -o bin/`basename ${PWD}`
+	go build -o bin/`basename ${PWD}` cli/*.go
 
 clean:
 	rm -rf vendor bin
