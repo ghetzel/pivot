@@ -64,8 +64,10 @@ func main() {
 			Action: func(c *cli.Context) {
 				if config, err := pivot.LoadConfigFile(c.String(`config`)); err == nil {
 					if err := config.Initialize(); err == nil {
-						server := pivot.NewServer()
+						// start monitoring backends
+						go pivot.MonitorBackends()
 
+						server := pivot.NewServer()
 						server.Address = c.String(`address`)
 						server.Port = c.Int(`port`)
 

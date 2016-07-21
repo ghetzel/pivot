@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"github.com/ghetzel/pivot/util"
 	"github.com/julienschmidt/httprouter"
-	"github.com/op/go-logging"
 	"github.com/rs/cors"
 	"github.com/urfave/negroni"
 	"net/http"
 	"time"
 )
-
-var log = logging.MustGetLogger(`pivot`)
 
 const DEFAULT_SERVER_ADDRESS = `127.0.0.1`
 const DEFAULT_SERVER_PORT = 29029

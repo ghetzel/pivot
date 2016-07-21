@@ -15,6 +15,12 @@ func NewRecordSet() *RecordSet {
 	}
 }
 
+func (self *RecordSet) Push(record Record) *RecordSet {
+	self.Records = append(self.Records, record)
+	self.ResultCount = self.ResultCount + 1
+	return self
+}
+
 func (self *RecordSet) GetRecord(index int) (Record, bool) {
 	if index < len(self.Records) {
 		return self.Records[index], true

@@ -206,7 +206,7 @@ func (self *Backend) ProcessPayload(payloadType PayloadType, payload *dal.Record
 			}
 		}
 
-		if fields := req.URL.Query().Get(`processFields`); fields != `` {
+		if fields := req.URL.Query().Get(`postprocess`); fields != `` {
 			diffuseFields := strings.Split(fields, `,`)
 
 			//  iterate over the records

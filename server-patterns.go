@@ -3,6 +3,7 @@ package pivot
 import (
 	"fmt"
 	"github.com/ghetzel/pivot/backends"
+	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/patterns"
 	"github.com/ghetzel/pivot/util"
 	"github.com/julienschmidt/httprouter"
@@ -10,8 +11,13 @@ import (
 	"strings"
 )
 
+// Retrieves a set of endpoints for all backends and wraps them in a common handler
+// format that makes the response format consistent across all endpoints.
+//
 func (self *Server) setupBackendRoutes() error {
 	for name, backend := range Backends {
+		self.setupAdminRoutesForBackend(backend)
+
 		log.Debugf("Registering routes for backend: %q", name)
 
 		if e, err := self.registerBackendRoutes(backend); err == nil {
@@ -55,7 +61,7 @@ func (self *Server) setupBackendRoutes() error {
 							status, payload, handlerErr := handler(request, paramsMap)
 
 							// perform post-processing of response body
-							if processed, err := self.postProcessResponsePayload(payload, request, paramsMap); err == nil {
+							if processed, err := self.postProcessResponsePayload(payload, backend, request, paramsMap); err == nil {
 								self.Respond(w, status, processed, handlerErr)
 							} else {
 								self.Respond(w, http.StatusBadRequest, map[string]interface{}{
@@ -63,13 +69,13 @@ func (self *Server) setupBackendRoutes() error {
 								}, fmt.Errorf("Post-processing failed: %s", err))
 							}
 						} else {
-							//  respond Not Implemented
+							// Not Implemented
 							self.Respond(w, http.StatusNotImplemented, map[string]interface{}{
 								`route`: routeKey,
 							}, fmt.Errorf("Cannot find a handler for route %s", routeKey))
 						}
 					} else {
-						//  response Unavailable
+						// Unavailable
 						self.Respond(w, http.StatusServiceUnavailable, map[string]interface{}{
 							`route`: routeKey,
 						}, fmt.Errorf("The '%s' backend is unavailable at this time", backend.GetName()))
@@ -82,6 +88,75 @@ func (self *Server) setupBackendRoutes() error {
 	return nil
 }
 
+// Adds routes for adminstering and controlling the given backend.
+//
+func (self *Server) setupAdminRoutesForBackend(backend backends.IBackend) {
+	self.router.PUT(urlForBackend(backend.GetName(), `/suspend`), func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+		parts := strings.Split(req.URL.Path, `/`)
+
+		if len(parts) >= 4 {
+			backendName := parts[3]
+
+			if backend, ok := Backends[backendName]; ok {
+				backend.Suspend()
+				self.Respond(w, http.StatusAccepted, nil, nil)
+			} else {
+				self.Respond(w, http.StatusNotFound, nil, fmt.Errorf("Backend '%s' does not exist", backendName))
+			}
+		}
+	})
+
+	self.router.PUT(urlForBackend(backend.GetName(), `/resume`), func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+		parts := strings.Split(req.URL.Path, `/`)
+
+		if len(parts) >= 4 {
+			backendName := parts[3]
+
+			if backend, ok := Backends[backendName]; ok {
+				backend.Resume()
+				self.Respond(w, http.StatusAccepted, nil, nil)
+			} else {
+				self.Respond(w, http.StatusNotFound, nil, fmt.Errorf("Backend '%s' does not exist", backendName))
+			}
+		}
+	})
+
+	self.router.PUT(urlForBackend(backend.GetName(), `/disconnect`), func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+		parts := strings.Split(req.URL.Path, `/`)
+
+		if len(parts) >= 4 {
+			backendName := parts[3]
+
+			if backend, ok := Backends[backendName]; ok {
+				backend.Disconnect()
+				self.Respond(w, http.StatusAccepted, nil, nil)
+			} else {
+				self.Respond(w, http.StatusNotFound, nil, fmt.Errorf("Backend '%s' does not exist", backendName))
+			}
+		}
+	})
+
+	self.router.PUT(urlForBackend(backend.GetName(), `/connect`), func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+		parts := strings.Split(req.URL.Path, `/`)
+
+		if len(parts) >= 4 {
+			backendName := parts[3]
+
+			if backend, ok := Backends[backendName]; ok {
+				if err := backend.Connect(); err == nil {
+					self.Respond(w, http.StatusAccepted, nil, nil)
+				} else {
+					self.Respond(w, http.StatusInternalServerError, nil, err)
+				}
+			} else {
+				self.Respond(w, http.StatusNotFound, nil, fmt.Errorf("Backend '%s' does not exist", backendName))
+			}
+		}
+	})
+}
+
+// Returns all endpoints that apply to a given backend's access pattern
+//
 func (self *Server) registerBackendRoutes(b interface{}) ([]util.Endpoint, error) {
 	switch b.(type) {
 	case backends.IBackend:
@@ -98,7 +173,19 @@ func (self *Server) registerBackendRoutes(b interface{}) ([]util.Endpoint, error
 }
 
 // STUB: will provide the opportunity for post-processing of response before returning it
-func (self *Server) postProcessResponsePayload(in interface{}, request *http.Request, params map[string]string) (interface{}, error) {
+func (self *Server) postProcessResponsePayload(in interface{}, backend backends.IBackend, request *http.Request, params map[string]string) (interface{}, error) {
+	switch in.(type) {
+	case *dal.RecordSet:
+		out := in.(*dal.RecordSet)
+
+		if err := backend.ProcessPayload(backends.ResponsePayload, out, request); err == nil {
+			return out, nil
+		} else {
+			return in, err
+		}
+	}
+
+	// default action is to passthrough successfully
 	return in, nil
 }
 

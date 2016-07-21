@@ -43,7 +43,7 @@ func (self *DummyBackend) SetConnected(c bool) {
 	self.Connected = c
 
 	if c {
-		log.Infof("Backend %s is CONNECTED", self.GetName())
+		log.Noticef("Backend %s is CONNECTED", self.GetName())
 	} else {
 		log.Warningf("Backend %s is DISCONNECTED", self.GetName())
 	}
@@ -128,7 +128,21 @@ func (self *DummyBackend) DeleteCollectionSchema(collectionName string) error {
 }
 
 func (self *DummyBackend) GetRecords(collectionName string, f filter.Filter) (*dal.RecordSet, error) {
-	return nil, fmt.Errorf("Not implemented")
+	return dal.NewRecordSet().Push(dal.Record{
+		`id`:   1,
+		`name`: `Foo`,
+		`properties`: map[string]interface{}{
+			`waldo`: true,
+			`fred`:  false,
+			`plugh`: 42,
+		},
+	}).Push(dal.Record{
+		`id`:   2,
+		`name`: `Bar`,
+	}).Push(dal.Record{
+		`id`:   3,
+		`name`: `Baz`,
+	}), nil
 }
 
 func (self *DummyBackend) InsertRecords(collectionName string, f filter.Filter, payload *dal.RecordSet) error {
