@@ -2,9 +2,8 @@ package patterns
 
 import (
 	"fmt"
+	"github.com/ghetzel/pivot/util"
 	"github.com/op/go-logging"
-	"net/http"
-	"strings"
 )
 
 var log = logging.MustGetLogger(`pivot`)
@@ -15,33 +14,23 @@ const (
 	RecordPattern PatternType = iota
 )
 
-func RegisterHandlers(mux *http.ServeMux, backendName string, p interface{}) error {
+func RegisterHandlers(backendName string, p interface{}) ([]util.Endpoint, error) {
 	var err error
+
+	handlers := make([]util.Endpoint, 0)
 
 	switch p.(type) {
 	case IRecordAccessPattern:
 		pattern := p.(IRecordAccessPattern)
-		err = registerRecordAccessPatternHandlers(mux, backendName, pattern)
+		handlers, err = registerRecordAccessPatternHandlers(backendName, pattern)
 
 	default:
 		err = fmt.Errorf("Cannot register routes for unknown access pattern %T", p)
 	}
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
-}
-
-func urlForBackend(name string, path ...string) string {
-	var suffix string
-
-	if len(path) > 0 {
-		suffix = `/` + strings.Join(path, `/`)
-	}
-
-	url := fmt.Sprintf("/api/backends/%s%s", name, suffix)
-	log.Debugf("  %s", url)
-	return url
+	return handlers, nil
 }

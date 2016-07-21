@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
+	"github.com/ghetzel/pivot/util"
 	"net/http"
 )
 
@@ -19,83 +20,100 @@ type IRecordAccessPattern interface {
 	DeleteRecords(string, filter.Filter) error
 }
 
-func registerRecordAccessPatternHandlers(mux *http.ServeMux, backendName string, pattern IRecordAccessPattern) error {
-	log.Debugf("Setting up routes for backend %q (record access pattern)", backendName)
+func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAccessPattern) ([]util.Endpoint, error) {
+	return []util.Endpoint{
+		// Schema Control
+		// ---------------------------------------------------------------------------------------------
+		{
+			BackendName: backendName,
+			Method:      `GET`,
+			Path:        `/`,
+			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
+				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].GetStatus()", backendName)
+			},
+		},
+		{
+			BackendName: backendName,
+			Method:      `GET`,
+			Path:        `/schema`,
+			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
+				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].ReadDatasetSchema()", backendName)
+			},
+		},
+		{
+			BackendName: backendName,
+			Method:      `GET`,
+			Path:        `/schema/:collection`,
+			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
+				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].ReadCollectionSchema()", backendName)
+			},
+		},
+		{
+			BackendName: backendName,
+			Method:      `DELETE`,
+			Path:        `/schema/:collection`,
+			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
+				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].DeleteCollectionSchema()", backendName)
+			},
+		},
+		{
+			BackendName: backendName,
+			Method:      `PUT`,
+			Path:        `/schema/:collection/:action`,
+			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
+				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].UpdateCollectionSchema()", backendName)
+			},
+		},
 
-	// Schema Control
-	// ---------------------------------------------------------------------------------------------
-	mux.HandleFunc(urlForBackend(backendName), func(w http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case `GET`:
-			// GetStatus()
-			http.Error(w, fmt.Sprintf("NI: [%s].GetStatus()", backendName), http.StatusNotImplemented)
-		}
-	})
-
-	mux.HandleFunc(urlForBackend(backendName, `schema`), func(w http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case `GET`:
-			// ReadDatasetSchema()
-			http.Error(w, fmt.Sprintf("NI: [%s].ReadDatasetSchema()", backendName), http.StatusNotImplemented)
-		}
-	})
-
-	mux.HandleFunc(urlForBackend(backendName, `schema`, `:collection`), func(w http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case `GET`:
-			// ReadCollectionSchema()
-			http.Error(w, fmt.Sprintf("NI: [%s].ReadCollectionSchema()", backendName), http.StatusNotImplemented)
-
-		case `DELETE`:
-			// DeleteCollectionSchema()
-			http.Error(w, fmt.Sprintf("NI: [%s].DeleteCollectionSchema()", backendName), http.StatusNotImplemented)
-		}
-	})
-
-	mux.HandleFunc(urlForBackend(backendName, `schema`, `:collection`, `:action`), func(w http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case `PUT`:
-			// UpdateCollectionSchema()
-			http.Error(w, fmt.Sprintf("NI: [%s].UpdateCollectionSchema()", backendName), http.StatusNotImplemented)
-		}
-	})
-
-	// Data Query & Manipulation
-	// ---------------------------------------------------------------------------------------------
-	mux.HandleFunc(urlForBackend(backendName, `query`, `:collection`, `all`), func(w http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case `GET`:
-			// GetAllRecords()
-			http.Error(w, fmt.Sprintf("NI: [%s].GetAllRecords()", backendName), http.StatusNotImplemented)
-		}
-	})
-
-	mux.HandleFunc(urlForBackend(backendName, `query`, `:collection`, `where`, `*query`), func(w http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case `GET`:
-			// GetRecords()
-			http.Error(w, fmt.Sprintf("NI: [%s].GetRecords()", backendName), http.StatusNotImplemented)
-
-		case `POST`:
-			// InsertRecords()
-			http.Error(w, fmt.Sprintf("NI: [%s].InsertRecords()", backendName), http.StatusNotImplemented)
-
-		case `PUT`:
-			// UpdateRecords()
-			http.Error(w, fmt.Sprintf("NI: [%s].UpdateRecords()", backendName), http.StatusNotImplemented)
-
-		case `DELETE`:
-			// DeleteRecords()
-			http.Error(w, fmt.Sprintf("NI: [%s].DeleteRecords()", backendName), http.StatusNotImplemented)
-		}
-	})
-
-	mux.HandleFunc(urlForBackend(backendName, `query`, `:collection`), func(w http.ResponseWriter, request *http.Request) {
-		switch request.Method {
-		case `POST`:
-			http.Error(w, fmt.Sprintf("NI: [%s].InsertRecords()", backendName), http.StatusNotImplemented)
-		}
-	})
-
-	return nil
+		// Data Query & Manipulation
+		// ---------------------------------------------------------------------------------------------
+		{
+			BackendName: backendName,
+			Method:      `GET`,
+			Path:        `/query/:collection/all`,
+			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
+				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].GetAllRecords()", backendName)
+			},
+		},
+		{
+			BackendName: backendName,
+			Method:      `GET`,
+			Path:        `/query/:collection/where/*query`,
+			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
+				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].GetRecords()", backendName)
+			},
+		},
+		{
+			BackendName: backendName,
+			Method:      `POST`,
+			Path:        `/query/:collection/where/*query`,
+			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
+				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].InsertRecords()", backendName)
+			},
+		},
+		{
+			BackendName: backendName,
+			Method:      `PUT`,
+			Path:        `/query/:collection/where/*query`,
+			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
+				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].UpdateRecords()", backendName)
+			},
+		},
+		{
+			BackendName: backendName,
+			Method:      `DELETE`,
+			Path:        `/query/:collection/where/*query`,
+			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
+				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].DeleteRecords()", backendName)
+			},
+		},
+		{
+			BackendName: backendName,
+			Method:      `POST`,
+			Path:        `/query/:collection`,
+			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
+				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].InsertRecords()", backendName)
+			},
+		},
+	}, nil
 }
