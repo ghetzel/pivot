@@ -3,7 +3,6 @@ package elasticsearch
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/backends"
@@ -12,7 +11,6 @@ import (
 	"github.com/ghetzel/pivot/filter/generators"
 	"github.com/ghetzel/pivot/patterns"
 	"github.com/op/go-logging"
-	"gopkg.in/olivere/elastic.v2"
 	"strings"
 	"time"
 )
@@ -22,13 +20,14 @@ var log = logging.MustGetLogger(`backends`)
 type ElasticsearchBackend struct {
 	backends.Backend
 	patterns.IRecordAccessPattern
-	Connected bool
-	client    *elastic.Client
-	querygen  *generators.Elasticsearch
+	Connected  bool
+	client     *ElasticsearchClient
+	querygen   *generators.Elasticsearch
+	maxRetries int
+	esVersion  int
 }
 
 type ElasticsearchQuery struct {
-	elastic.Query
 	filter filter.Filter
 }
 
@@ -74,6 +73,7 @@ func New(name string, config dal.Dataset) *ElasticsearchBackend {
 			Dataset:       config,
 			SchemaRefresh: DEFAULT_ES_MAPPING_REFRESH,
 		},
+		client:   NewClient(),
 		querygen: generators.NewElasticsearchGenerator(),
 	}
 }
@@ -82,8 +82,10 @@ func (self *ElasticsearchBackend) SetConnected(c bool) {
 	self.Connected = c
 
 	if c {
+		self.client.Resume()
 		log.Infof("CONNECT: backend %s", self.GetName())
 	} else {
+		self.client.Suspend()
 		log.Warningf("DISCONNECT: backend %s", self.GetName())
 	}
 }
@@ -93,10 +95,6 @@ func (self *ElasticsearchBackend) IsConnected() bool {
 }
 
 func (self *ElasticsearchBackend) Disconnect() {
-	if self.client != nil {
-		defer self.client.Stop()
-	}
-
 	self.SetConnected(false)
 }
 
@@ -105,34 +103,17 @@ func (self *ElasticsearchBackend) Connect() error {
 		self.Dataset.Addresses = []string{DEFAULT_ES_HOST}
 	}
 
-	clientConfig := []elastic.ClientOptionFunc{
-		elastic.SetURL(self.Dataset.Addresses...),
-	}
-
 	if v, ok := self.Dataset.Options[`max_retries`]; ok {
 		if value, err := stringutil.ConvertToInteger(v); err == nil {
-			clientConfig = append(clientConfig, elastic.SetMaxRetries(int(value)))
+			self.maxRetries = int(value)
 		}
-	}
-
-	if v, ok := self.Dataset.Options[`healthcheck_interval`]; ok {
-		if value, err := stringutil.ConvertToInteger(v); err == nil {
-			if value == 0 {
-				clientConfig = append(clientConfig, elastic.SetHealthcheck(false))
-			} else {
-				clientConfig = append(clientConfig, elastic.SetHealthcheck(true))
-				clientConfig = append(clientConfig, elastic.SetHealthcheckInterval(time.Second*time.Duration(value)))
-			}
-		}
-	} else {
-		clientConfig = append(clientConfig, elastic.SetHealthcheck(true))
-		clientConfig = append(clientConfig, elastic.SetHealthcheckInterval(self.RefreshInterval()))
 	}
 
 	log.Debugf("Connecting to %s", strings.Join(self.Dataset.Addresses, `, `))
 
-	if client, err := elastic.NewClient(clientConfig...); err == nil {
-		self.client = client
+	self.client.SetAddresses(self.Dataset.Addresses...)
+
+	if err := self.client.CheckQuorum(); err == nil {
 		self.SetConnected(true)
 	} else {
 		return err
@@ -142,23 +123,19 @@ func (self *ElasticsearchBackend) Connect() error {
 }
 
 func (self *ElasticsearchBackend) Refresh() error {
-	// log.Debugf("Reloading schema cache for backend '%s' (type: %s)", self.GetName(), self.Dataset.Type)
-	if clusterHealth, err := self.client.ClusterHealth().Do(); err == nil {
-		self.Dataset.Name = clusterHealth.ClusterName
+	if version, err := self.client.ServerVersion(); err == nil {
+		self.esVersion = version
+		log.Debugf("Connected to Elasticsearch API version %d", self.esVersion)
+	} else {
+		return err
+	}
 
-		self.Dataset.Metadata = make(map[string]interface{})
-
-		self.Dataset.Metadata[`status`] = clusterHealth.Status
-		self.Dataset.Metadata[`number_of_nodes`] = clusterHealth.NumberOfNodes
-		self.Dataset.Metadata[`number_of_data_nodes`] = clusterHealth.NumberOfDataNodes
-		self.Dataset.Metadata[`active_primary_shards`] = clusterHealth.ActivePrimaryShards
-		self.Dataset.Metadata[`active_shards`] = clusterHealth.ActiveShards
-		self.Dataset.Metadata[`initializing_shards`] = clusterHealth.InitializingShards
-		self.Dataset.Metadata[`unassigned_shards`] = clusterHealth.UnassignedShards
-		self.Dataset.Metadata[`number_of_pending_tasks`] = clusterHealth.NumberOfPendingTasks
+	if clusterHealth, err := self.client.ClusterHealth(); err == nil {
+		self.Dataset.Name = clusterHealth.Name
+		self.Dataset.Metadata = clusterHealth.ToMap()
 
 		if clusterHealth.Status == `red` {
-			return fmt.Errorf("Cannot read Elasticsearch cluster metadata: cluster '%s' has a status of 'red'", clusterHealth.ClusterName)
+			return fmt.Errorf("Cannot read Elasticsearch cluster metadata: cluster '%s' has a status of 'red'", clusterHealth.Status)
 		}
 	} else {
 		return err
@@ -168,66 +145,53 @@ func (self *ElasticsearchBackend) Refresh() error {
 		collections := make([]dal.Collection, 0)
 
 		for _, index := range indexNames {
-			getMapping := self.client.GetMapping()
+			if indexMappings, err := self.client.GetMapping(index); err == nil {
+				fields := make([]dal.Field, 0)
 
-			getMapping.Index(index)
+				// for all mappings across all document types on this index...
+				for docType, mapping := range indexMappings.Mappings {
+					// for all top-level properties in a mapping...
+					for fieldName, fieldConfigI := range mapping.Properties {
+						switch fieldConfigI.(type) {
+						case map[string]interface{}:
+							fieldConfig := fieldConfigI.(map[string]interface{})
+							fieldConfig[`document_type`] = docType
 
-			fields := make([]dal.Field, 0)
+							var fieldType string
 
-			if mapping, err := getMapping.Do(); err == nil {
-				if typeTopLevelMapI := maputil.DeepGet(mapping, []string{index, `mappings`}, nil); typeTopLevelMapI != nil {
-					switch typeTopLevelMapI.(type) {
-					case map[string]interface{}:
-						for docType, propertiesI := range typeTopLevelMapI.(map[string]interface{}) {
-							switch propertiesI.(type) {
-							case map[string]interface{}:
-								if fieldTopLevelI := maputil.DeepGet(propertiesI.(map[string]interface{}), []string{`properties`}, nil); fieldTopLevelI != nil {
-									switch fieldTopLevelI.(type) {
-									case map[string]interface{}:
-										for fieldName, fieldConfigI := range fieldTopLevelI.(map[string]interface{}) {
-											switch fieldConfigI.(type) {
-											case map[string]interface{}:
-												var fieldType string
-
-												fieldConfig := fieldConfigI.(map[string]interface{})
-												fieldConfig[`document_type`] = docType
-
-												if fieldTypeI, ok := fieldConfig[`type`]; ok {
-													var err error
-													if fieldType, err = stringutil.ToString(fieldTypeI); err == nil {
-														delete(fieldConfig, `type`)
-													}
-												}
-
-												if fieldType == `` {
-													fieldType = `object`
-												}
-
-												delete(fieldConfig, `properties`)
-
-												field := dal.Field{
-													Name:       fieldName,
-													Type:       fieldType,
-													Properties: fieldConfig,
-												}
-
-												fields = append(fields, field)
-											}
-										}
-									}
+							if fieldTypeI, ok := fieldConfig[`type`]; ok {
+								var err error
+								if fieldType, err = stringutil.ToString(fieldTypeI); err == nil {
+									delete(fieldConfig, `type`)
 								}
 							}
+
+							if fieldType == `` {
+								fieldType = `object`
+							}
+
+							delete(fieldConfig, `properties`)
+
+							field := dal.Field{
+								Name:       fieldName,
+								Type:       fieldType,
+								Properties: fieldConfig,
+							}
+
+							fields = append(fields, field)
 						}
 					}
 				}
-			}
 
-			collections = append(collections, dal.Collection{
-				Dataset:    &self.Dataset,
-				Name:       index,
-				Fields:     fields,
-				Properties: map[string]interface{}{},
-			})
+				collections = append(collections, dal.Collection{
+					Dataset:    &self.Dataset,
+					Name:       index,
+					Fields:     fields,
+					Properties: map[string]interface{}{},
+				})
+			} else {
+				return err
+			}
 		}
 
 		self.Dataset.Collections = collections
@@ -271,19 +235,19 @@ func (self *ElasticsearchBackend) ReadCollectionSchema(collectionName string) (d
 
 func (self *ElasticsearchBackend) UpdateCollectionSchema(action dal.CollectionAction, collectionName string, definition dal.Collection) error {
 	switch action {
-	//  CREATE ----------------------------------------------------------------------------------------------------------
+	// CREATE ----------------------------------------------------------------------------------------------------------
 	case dal.SchemaCreate:
 
-		//  VERIFY ----------------------------------------------------------------------------------------------------------
+	// VERIFY ----------------------------------------------------------------------------------------------------------
 	case dal.SchemaVerify:
 
-		//  EXPAND ----------------------------------------------------------------------------------------------------------
+	// EXPAND ----------------------------------------------------------------------------------------------------------
 	case dal.SchemaExpand:
 
-		//  REMOVE ----------------------------------------------------------------------------------------------------------
+	// REMOVE ----------------------------------------------------------------------------------------------------------
 	case dal.SchemaRemove:
 
-		//  ENFORCE ---------------------------------------------------------------------------------------------------------
+	// ENFORCE ---------------------------------------------------------------------------------------------------------
 	case dal.SchemaEnforce:
 
 	}
@@ -292,8 +256,8 @@ func (self *ElasticsearchBackend) UpdateCollectionSchema(action dal.CollectionAc
 }
 
 func (self *ElasticsearchBackend) DeleteCollectionSchema(collectionName string) error {
-	if deleteIndex, err := self.client.DeleteIndex(collectionName).Do(); err == nil {
-		if deleteIndex.Acknowledged {
+	if acknowledged, err := self.client.DeleteIndex(collectionName); err == nil {
+		if acknowledged {
 			return nil
 		} else {
 			return fmt.Errorf("Deletion of index '%s' was not acknowledged. The delete may not have been successful on all nodes.", collectionName)
@@ -473,36 +437,36 @@ func (self *ElasticsearchBackend) upsertDocument(collectionName string, f filter
 			}
 
 		default:
-			bulker := elastic.NewBulkService(self.client)
+			// bulker := elastic.NewBulkService(self.client)
 
-			for i, record := range payload.Records {
-				if idData, ok := record[`_id`]; ok {
-					if id, err := stringutil.ToString(idData); err == nil {
-						bulkIndex := elastic.NewBulkIndexRequest()
+			// for i, record := range payload.Records {
+			// 	if idData, ok := record[`_id`]; ok {
+			// 		if id, err := stringutil.ToString(idData); err == nil {
+			// 			bulkIndex := elastic.NewBulkIndexRequest()
 
-						bulkIndex.Index(collectionName)
-						bulkIndex.Id(id)
+			// 			bulkIndex.Index(collectionName)
+			// 			bulkIndex.Id(id)
 
-						if typ, ok := f.Options[`document_type`]; ok {
-							bulkIndex.Type(typ)
-						} else {
-							bulkIndex.Type(DEFAULT_ES_DOCUMENT_TYPE)
-						}
+			// 			if typ, ok := f.Options[`document_type`]; ok {
+			// 				bulkIndex.Type(typ)
+			// 			} else {
+			// 				bulkIndex.Type(DEFAULT_ES_DOCUMENT_TYPE)
+			// 			}
 
-						bulkIndex.Doc(record)
+			// 			bulkIndex.Doc(record)
 
-						bulker.Add(bulkIndex)
-					} else {
-						return fmt.Errorf("Invalid record at index %d: _id value cannot be converted into a string", i)
-					}
-				} else {
-					return fmt.Errorf("Invalid record at index %d: record is missing an '_id' field", i)
-				}
-			}
+			// 			bulker.Add(bulkIndex)
+			// 		} else {
+			// 			return fmt.Errorf("Invalid record at index %d: _id value cannot be converted into a string", i)
+			// 		}
+			// 	} else {
+			// 		return fmt.Errorf("Invalid record at index %d: record is missing an '_id' field", i)
+			// 	}
+			// }
 
-			if _, err := bulker.Do(); err != nil {
-				return fmt.Errorf("Failed to execute batch statement: %v", err)
-			}
+			// if _, err := bulker.Do(); err != nil {
+			// 	return fmt.Errorf("Failed to execute batch statement: %v", err)
+			// }
 		}
 	} else {
 		return fmt.Errorf("No recordset specified")
