@@ -121,6 +121,8 @@ func (self *Backend) Finalize(caller IBackend) error {
 	}
 
 	//  perform the initial population of the schema cache
+	log.Debugf("Performing initial refresh of backend %q", caller.GetName())
+
 	if err := caller.Refresh(); err != nil {
 		return err
 	} else {

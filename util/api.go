@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
+	"strings"
 	"sync"
 	"time"
 )
@@ -76,9 +77,18 @@ func (self *MultiClient) IsHealthy(address string) bool {
 	// if the healthcheck path is not set, then simply attempt a TCP socket
 	// connection to the address and return whether that was successful or not
 	if self.HealthCheckPath == `` {
-		if conn, err := net.DialTimeout(`tcp`, address, self.HealthCheckTimeout); err == nil {
+		socketAddress := address
+		parts := strings.Split(socketAddress, `://`)
+
+		if len(parts) == 2 {
+			socketAddress = parts[1]
+		}
+
+		if conn, err := net.DialTimeout(`tcp`, socketAddress, self.HealthCheckTimeout); err == nil {
 			defer conn.Close()
 			return true
+		} else {
+			log.Debugf("Check address %q failed: %v", address, err)
 		}
 	}
 
@@ -101,7 +111,7 @@ func (self *MultiClient) GetHealthyAddresses() []string {
 func (self *MultiClient) GetRandomHealthyAddress() (string, error) {
 	randId := self.healthyAddresses[rand.Intn(len(self.healthyAddresses))]
 
-	if len(self.Addresses) < randId {
+	if randId < len(self.Addresses) {
 		return self.Addresses[randId], nil
 	} else {
 		return ``, fmt.Errorf("No healthy addresses found")
@@ -156,21 +166,30 @@ func (self *MultiClient) CheckAll() error {
 	return self.checkConnect(len(self.Addresses))
 }
 
-func (self *MultiClient) RequestJSON(method string, path string, payload interface{}) (map[string]interface{}, error) {
-	if request, err := NewClientRequest(method, path, payload, self.DefaultBodyType); err == nil {
-		output := make(map[string]interface{})
-		err := request.PerformJSON(&output)
-
-		return output, err
-	} else {
-		return nil, err
-	}
-}
-
 func (self *MultiClient) Request(method string, path string, payload interface{}, output interface{}) error {
+	var lastErr error
+
 	if request, err := NewClientRequest(method, path, payload, self.DefaultBodyType); err == nil {
-		_, err := request.Perform(&output, &output)
-		return err
+		for i := 0; i < self.RetryLimit; i++ {
+			// get a random healthy address or fail out
+			if address, err := self.GetRandomHealthyAddress(); err == nil {
+				request.SetBaseUrl(address)
+
+				if _, err := request.Perform(output, output); err == nil {
+					return nil
+				} else {
+					lastErr = err
+				}
+			} else {
+				return err
+			}
+		}
+
+		if lastErr != nil {
+			return lastErr
+		} else {
+			return fmt.Errorf("Exceeded retry limit for request")
+		}
 	} else {
 		return err
 	}

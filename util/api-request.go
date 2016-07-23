@@ -5,72 +5,70 @@ import (
 	"github.com/dghubble/sling"
 	"io"
 	"net/http"
+	"strings"
 )
 
 type MultiClientRequest struct {
-	BodyType RequestBodyType
-	request  *sling.Sling
+	BaseUrl     string
+	BodyType    RequestBodyType
+	Method      string
+	Path        string
+	RequestBody interface{}
 }
 
 func NewClientRequest(method string, path string, payload interface{}, payloadType RequestBodyType) (*MultiClientRequest, error) {
 	mcRequest := &MultiClientRequest{
-		BodyType: payloadType,
+		BodyType:    payloadType,
+		Method:      method,
+		Path:        path,
+		RequestBody: payload,
 	}
 
+	return mcRequest, nil
+}
+
+func (self *MultiClientRequest) SetBaseUrl(base string) {
+	self.BaseUrl = strings.TrimSuffix(base, `/`) + `/`
+}
+
+func (self *MultiClientRequest) Perform(success interface{}, failure interface{}) (*http.Response, error) {
 	request := sling.New()
 
-	switch method {
+	request.Base(self.BaseUrl)
+
+	switch self.Method {
 	case `GET`:
-		request = request.Get(path)
+		request.Get(self.Path)
 	case `POST`:
-		request = request.Post(path)
+		request.Post(self.Path)
 	case `PUT`:
-		request = request.Put(path)
+		request.Put(self.Path)
 	case `DELETE`:
-		request = request.Delete(path)
+		request.Delete(self.Path)
 	case `HEAD`:
-		request = request.Head(path)
+		request.Head(self.Path)
 	case `PATCH`:
-		request = request.Patch(path)
+		request.Patch(self.Path)
 	default:
-		return nil, fmt.Errorf("Unsupported HTTP method %q", method)
+		return nil, fmt.Errorf("Unsupported HTTP method %q", self.Method)
 	}
 
-	if payload != nil {
-		switch mcRequest.BodyType {
+	if self.RequestBody != nil {
+		switch self.BodyType {
 		case BodyJson:
-			request = request.BodyJSON(payload)
+			request.BodyJSON(self.RequestBody)
 		case BodyForm:
-			request = request.BodyForm(payload)
+			request.BodyForm(self.RequestBody)
 		case BodyRaw:
-			switch payload.(type) {
+			switch self.RequestBody.(type) {
 			case io.Reader:
-				reader := payload.(io.Reader)
-				request = request.Body(reader)
+				reader := self.RequestBody.(io.Reader)
+				request.Body(reader)
 			default:
 				return nil, fmt.Errorf("Must pass an io.Reader for raw request body")
 			}
 		}
 	}
 
-	mcRequest.request = request
-
-	return mcRequest, nil
-}
-
-func (self *MultiClientRequest) Perform(success interface{}, failure interface{}) (*http.Response, error) {
-	if self.request == nil {
-		return nil, fmt.Errorf("Cannot operated on unconfigured request")
-	}
-
-	return self.request.Receive(success, failure)
-}
-
-func (self *MultiClientRequest) PerformJSON(output interface{}) error {
-	if self.request == nil {
-		return fmt.Errorf("Cannot operated on unconfigured request")
-	}
-
-	_, err := self.Perform(output, output)
-	return err
+	return request.Receive(success, failure)
 }

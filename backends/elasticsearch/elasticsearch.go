@@ -1,14 +1,12 @@
 package elasticsearch
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"github.com/ghetzel/pivot/filter/generators"
 	"github.com/ghetzel/pivot/patterns"
 	"github.com/op/go-logging"
 	"strings"
@@ -22,39 +20,12 @@ type ElasticsearchBackend struct {
 	patterns.IRecordAccessPattern
 	Connected  bool
 	client     *ElasticsearchClient
-	querygen   *generators.Elasticsearch
 	maxRetries int
 	esVersion  int
 }
 
 type ElasticsearchQuery struct {
 	filter filter.Filter
-}
-
-func NewElasticsearchQuery(f filter.Filter) *ElasticsearchQuery {
-	return &ElasticsearchQuery{
-		filter: f,
-	}
-}
-
-func (self *ElasticsearchQuery) Source() interface{} {
-	generator := generators.NewElasticsearchGenerator()
-
-	if data, err := filter.Render(generator, ``, self.filter); err == nil {
-		var rv map[string]interface{}
-
-		if err := json.Unmarshal(data, &rv); err == nil {
-			//  Elasticsearch 1.x: "filtered" query
-			//    (deprecated in 2.0.0-beta1, see: https://www.elastic.co/guide/en/elasticsearch/reference/2.0/query-dsl-filtered-query.html)
-			return map[string]interface{}{
-				`filtered`: map[string]interface{}{
-					`filter`: rv,
-				},
-			}
-		}
-	}
-
-	return nil
 }
 
 const (
@@ -73,8 +44,7 @@ func New(name string, config dal.Dataset) *ElasticsearchBackend {
 			Dataset:       config,
 			SchemaRefresh: DEFAULT_ES_MAPPING_REFRESH,
 		},
-		client:   NewClient(),
-		querygen: generators.NewElasticsearchGenerator(),
+		client: NewClient(),
 	}
 }
 
@@ -143,6 +113,8 @@ func (self *ElasticsearchBackend) Refresh() error {
 
 	if indexNames, err := self.client.IndexNames(); err == nil {
 		collections := make([]dal.Collection, 0)
+
+		log.Debugf("Index names: %+v", indexNames)
 
 		for _, index := range indexNames {
 			if indexMappings, err := self.client.GetMapping(index); err == nil {
@@ -268,57 +240,15 @@ func (self *ElasticsearchBackend) DeleteCollectionSchema(collectionName string) 
 }
 
 func (self *ElasticsearchBackend) GetRecords(collectionName string, f filter.Filter) (*dal.RecordSet, error) {
-	query := NewElasticsearchQuery(f)
-
-	search := self.client.Search()
-	search.Index(collectionName)
-	search.FetchSource(false)
-
-	//  _source processing only happens if we want all fields, or are only looking
-	//  at metadata fields
-	if len(f.Fields) == 0 {
-		search.FetchSource(true)
-	} else {
-		for _, field := range f.Fields {
-			if !strings.HasPrefix(field, `_`) {
-				search.FetchSource(true)
-				break
-			}
-		}
-	}
-
-	//  we want the _version field, set the flag
-	if sliceutil.ContainsString(f.Fields, `_version`) {
-		search.Version(true)
-	}
-
-	//  limit result size
-	if v, ok := f.Options[`page_size`]; ok {
-		if i, err := stringutil.ConvertToInteger(v); err == nil {
-			search.Size(int(i))
-		} else {
-			return nil, fmt.Errorf("Invalid 'page_size' parameter: %v", err)
-		}
-	}
-
-	//  offset results
-	if v, ok := f.Options[`offset`]; ok {
-		if i, err := stringutil.ConvertToInteger(v); err == nil {
-			search.From(int(i))
-		} else {
-			return nil, fmt.Errorf("Invalid 'offset' parameter: %v", err)
-		}
-	}
-
-	if results, err := search.Query(query).Do(); err == nil {
+	if response, err := self.client.Search(collectionName, `document`, f); err == nil {
 		rs := dal.NewRecordSet()
 
-		if hits := results.Hits; hits != nil {
-			rs.ResultCount = uint64(hits.TotalHits)
+		if hits := response.Hits; hits.Total > 0 {
+			rs.ResultCount = uint64(hits.Total)
 
 			for _, hit := range hits.Hits {
 				record := make(dal.Record)
-				record[`_id`] = hit.Id
+				record[`_id`] = hit.ID
 
 				//  tack on requested metadata as _-fields in result record
 				for _, field := range f.Fields {
@@ -335,17 +265,11 @@ func (self *ElasticsearchBackend) GetRecords(collectionName string, f filter.Fil
 				}
 
 				//  only process _source if it is available
-				if source := hit.Source; source != nil {
-					if err := json.Unmarshal(*source, &record); err == nil {
-
-						if len(f.Fields) > 0 {
-							for k, _ := range record {
-								if !sliceutil.ContainsString(f.Fields, k) {
-									delete(record, k)
-								}
-							}
+				if source := hit.Source; len(source) > 0 {
+					for k, _ := range source {
+						if !sliceutil.ContainsString(f.Fields, k) {
+							delete(record, k)
 						}
-
 					}
 				}
 
@@ -370,15 +294,15 @@ func (self *ElasticsearchBackend) UpdateRecords(collectionName string, f filter.
 }
 
 func (self *ElasticsearchBackend) DeleteRecords(collectionName string, f filter.Filter) error {
-	query := NewElasticsearchQuery(f)
-	dbq := self.client.DeleteByQuery()
+	// query := NewElasticsearchQuery(f)
+	// dbq := self.client.DeleteByQuery()
 
-	dbq.Index(collectionName)
-	dbq.AllowNoIndices(true)
+	// dbq.Index(collectionName)
+	// dbq.AllowNoIndices(true)
 
-	if _, err := dbq.Query(query).Do(); err != nil {
-		return err
-	}
+	// if _, err := dbq.Query(query).Do(); err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
@@ -418,22 +342,22 @@ func (self *ElasticsearchBackend) upsertDocument(collectionName string, f filter
 				return fmt.Errorf("Cannot insert/update document without an '_id' field in the query")
 			} else {
 
-				updater := self.client.Update()
-				updater.Index(collectionName)
-				updater.Id(id)
-				updater.DocAsUpsert(true)
+				// updater := self.client.Update()
+				// updater.Index(collectionName)
+				// updater.Id(id)
+				// updater.DocAsUpsert(true)
 
-				if typ, ok := f.Options[`document_type`]; ok {
-					updater.Type(typ)
-				} else {
-					updater.Type(DEFAULT_ES_DOCUMENT_TYPE)
-				}
+				// if typ, ok := f.Options[`document_type`]; ok {
+				// 	updater.Type(typ)
+				// } else {
+				// 	updater.Type(DEFAULT_ES_DOCUMENT_TYPE)
+				// }
 
-				updater.Doc(record)
+				// updater.Doc(record)
 
-				if _, err := updater.Do(); err != nil {
-					return err
-				}
+				// if _, err := updater.Do(); err != nil {
+				// 	return err
+				// }
 			}
 
 		default:

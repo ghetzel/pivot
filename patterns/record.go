@@ -20,7 +20,7 @@ type IRecordAccessPattern interface {
 	DeleteRecords(string, filter.Filter) error
 }
 
-func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAccessPattern) ([]util.Endpoint, error) {
+func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAccessPattern, backendI interface{}) ([]util.Endpoint, error) {
 	return []util.Endpoint{
 		// Schema Control
 		// ---------------------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			Method:      `GET`,
 			Path:        `/`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
-				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].GetStatus()", backendName)
+				return http.StatusOK, pattern.GetStatus(), nil
 			},
 		},
 		{
@@ -37,7 +37,7 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			Method:      `GET`,
 			Path:        `/schema`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
-				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].ReadDatasetSchema()", backendName)
+				return http.StatusOK, pattern.ReadDatasetSchema(), nil
 			},
 		},
 		{
@@ -45,7 +45,15 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			Method:      `GET`,
 			Path:        `/schema/:collection`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
-				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].ReadCollectionSchema()", backendName)
+				if collectionName, ok := params[`collection`]; ok {
+					if collection, ok := pattern.ReadCollectionSchema(collectionName); ok {
+						return http.StatusOK, collection, nil
+					} else {
+						return http.StatusNotFound, nil, fmt.Errorf("Could not locate collection %q", collectionName)
+					}
+				} else {
+					return http.StatusBadRequest, nil, fmt.Errorf("Empty collection name specified")
+				}
 			},
 		},
 		{
@@ -53,7 +61,11 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			Method:      `DELETE`,
 			Path:        `/schema/:collection`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
-				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].DeleteCollectionSchema()", backendName)
+				if collectionName, ok := params[`collection`]; ok {
+					return http.StatusOK, nil, pattern.DeleteCollectionSchema(collectionName)
+				} else {
+					return http.StatusBadRequest, nil, fmt.Errorf("Empty collection name specified")
+				}
 			},
 		},
 		{

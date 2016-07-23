@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/util"
+	"math"
 	"strings"
 )
 
@@ -14,7 +16,6 @@ type ElasticsearchClient struct {
 
 func NewClient() *ElasticsearchClient {
 	client := util.NewMultiClient()
-	client.Suspend()
 
 	return &ElasticsearchClient{
 		MultiClient: client,
@@ -31,7 +32,7 @@ func (self *ElasticsearchClient) ServerVersion() (int, error) {
 
 			for i, numStr := range parts {
 				if number, err := stringutil.ConvertToInteger(numStr); err == nil {
-					version += int(number) * (10 ^ (len(parts) - i))
+					version += int(number) * int(math.Pow(100, float64(len(parts)-i)))
 				} else {
 					return 1, err
 				}
@@ -120,8 +121,26 @@ func (self *ElasticsearchClient) DeleteIndex(index string) (bool, error) {
 	}
 }
 
-func (self *ElasticsearchClient) Search() {
+func (self *ElasticsearchClient) Search(index string, docType string, f filter.Filter) (SearchResponse, error) {
+	response := SearchResponse{}
 
+	if searchRequest, err := NewSearchRequestFromFilter(index, docType, f); err == nil {
+		requestBody := map[string]interface{}{
+			`query`: searchRequest.Query,
+		}
+
+		for k, v := range searchRequest.Options {
+			requestBody[k] = v
+		}
+
+		if err := self.Request(`GET`, fmt.Sprintf("%s/_search", index), &requestBody, &response); err == nil {
+			return response, nil
+		} else {
+			return response, err
+		}
+	} else {
+		return response, err
+	}
 }
 
 func (self *ElasticsearchClient) DeleteByQuery() {

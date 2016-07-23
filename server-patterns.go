@@ -40,7 +40,7 @@ func (self *Server) setupBackendRoutes() error {
 		//
 		self.router.Handle(endpoint.Method, fullPath, func(w http.ResponseWriter, request *http.Request, params httprouter.Params) {
 			parts := strings.Split(request.URL.Path, `/`)
-			routeKey := routeMapKey(request.Method, request.URL.Path)
+			routeKey := routeMapKey(request.Method, fullPath)
 
 			if len(parts) >= 4 {
 				backendName := parts[3]
@@ -60,8 +60,15 @@ func (self *Server) setupBackendRoutes() error {
 							// actually call the handler for this route
 							status, payload, handlerErr := handler(request, paramsMap)
 
+							// never ever allow a "200 OK" error to get by; if there was an error,
+							// it should present as such in the response status
+							if handlerErr != nil && status < http.StatusBadRequest {
+								status = http.StatusInternalServerError
+							}
+
 							// perform post-processing of response body
 							if processed, err := self.postProcessResponsePayload(payload, backend, request, paramsMap); err == nil {
+
 								self.Respond(w, status, processed, handlerErr)
 							} else {
 								self.Respond(w, http.StatusBadRequest, map[string]interface{}{
