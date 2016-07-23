@@ -26,7 +26,7 @@ func (self *ElasticsearchClient) ServerVersion() (int, error) {
 	status := ServerStatus{}
 	var version int
 
-	if err := self.Request(`GET`, ``, nil, &status); err == nil {
+	if err := self.Request(`GET`, ``, nil, &status, nil); err == nil {
 		if status.Version.Number != `` {
 			parts := strings.Split(status.Version.Number, `.`)
 
@@ -50,7 +50,7 @@ func (self *ElasticsearchClient) ServerVersion() (int, error) {
 func (self *ElasticsearchClient) ClusterHealth() (ClusterHealth, error) {
 	health := ClusterHealth{}
 
-	if err := self.Request(`GET`, `_cluster/health`, nil, &health); err == nil {
+	if err := self.Request(`GET`, `_cluster/health`, nil, &health, nil); err == nil {
 		return health, nil
 	} else {
 		return health, err
@@ -60,7 +60,7 @@ func (self *ElasticsearchClient) ClusterHealth() (ClusterHealth, error) {
 func (self *ElasticsearchClient) IndexNames() ([]string, error) {
 	indexStats := IndexStats{}
 
-	if err := self.Request(`GET`, `_stats/indices`, nil, &indexStats); err == nil {
+	if err := self.Request(`GET`, `_stats/indices`, nil, &indexStats, nil); err == nil {
 		return maputil.StringKeys(indexStats.Indices), nil
 	} else {
 		return []string{}, err
@@ -74,7 +74,7 @@ func (self *ElasticsearchClient) GetMapping(index string) (IndexMapping, error) 
 		Mappings:  make(map[string]Mapping),
 	}
 
-	if err := self.Request(`GET`, fmt.Sprintf("%s/_mapping", index), nil, &mappingAllTypes); err == nil {
+	if err := self.Request(`GET`, fmt.Sprintf("%s/_mapping", index), nil, &mappingAllTypes, nil); err == nil {
 		perTypeMappingsI := maputil.DeepGet(mappingAllTypes, []string{index, `mappings`}, nil)
 
 		switch perTypeMappingsI.(type) {
@@ -114,7 +114,7 @@ func (self *ElasticsearchClient) GetMapping(index string) (IndexMapping, error) 
 func (self *ElasticsearchClient) DeleteIndex(index string) (bool, error) {
 	ackResponse := AckResponse{}
 
-	if err := self.Request(`DELETE`, index, nil, &ackResponse); err == nil {
+	if err := self.Request(`DELETE`, index, nil, &ackResponse, nil); err == nil {
 		return ackResponse.Acknowledged, nil
 	} else {
 		return false, err
@@ -123,6 +123,7 @@ func (self *ElasticsearchClient) DeleteIndex(index string) (bool, error) {
 
 func (self *ElasticsearchClient) Search(index string, docType string, f filter.Filter) (SearchResponse, error) {
 	response := SearchResponse{}
+	errResponse := ErrorResponse{}
 
 	if searchRequest, err := NewSearchRequestFromFilter(index, docType, f); err == nil {
 		requestBody := map[string]interface{}{
@@ -133,10 +134,14 @@ func (self *ElasticsearchClient) Search(index string, docType string, f filter.F
 			requestBody[k] = v
 		}
 
-		if err := self.Request(`GET`, fmt.Sprintf("%s/_search", index), &requestBody, &response); err == nil {
+		if err := self.Request(`GET`, fmt.Sprintf("%s/_search", index), &requestBody, &response, &errResponse); err == nil {
 			return response, nil
 		} else {
-			return response, err
+			if detailedError := errResponse.Error(); detailedError != nil {
+				return response, detailedError
+			} else {
+				return response, err
+			}
 		}
 	} else {
 		return response, err

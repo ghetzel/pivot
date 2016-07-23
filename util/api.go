@@ -166,7 +166,7 @@ func (self *MultiClient) CheckAll() error {
 	return self.checkConnect(len(self.Addresses))
 }
 
-func (self *MultiClient) Request(method string, path string, payload interface{}, output interface{}) error {
+func (self *MultiClient) Request(method string, path string, payload interface{}, output interface{}, failure interface{}) error {
 	var lastErr error
 
 	if request, err := NewClientRequest(method, path, payload, self.DefaultBodyType); err == nil {
@@ -175,7 +175,7 @@ func (self *MultiClient) Request(method string, path string, payload interface{}
 			if address, err := self.GetRandomHealthyAddress(); err == nil {
 				request.SetBaseUrl(address)
 
-				if _, err := request.Perform(output, output); err == nil {
+				if _, err := request.Perform(output, failure); err == nil {
 					return nil
 				} else {
 					lastErr = err

@@ -1,6 +1,7 @@
 package util
 
 import (
+	// "encoding/json"
 	"fmt"
 	"github.com/dghubble/sling"
 	"io"
@@ -57,6 +58,10 @@ func (self *MultiClientRequest) Perform(success interface{}, failure interface{}
 		switch self.BodyType {
 		case BodyJson:
 			request.BodyJSON(self.RequestBody)
+
+			// data, _ := json.MarshalIndent(self.RequestBody, ``, `  `)
+			// log.Debugf("[MC]: %s %s%s body:%s", self.Method, self.BaseUrl, self.Path, string(data[:]))
+
 		case BodyForm:
 			request.BodyForm(self.RequestBody)
 		case BodyRaw:

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/patterns"
 	"github.com/op/go-logging"
 	"io/ioutil"
@@ -263,6 +264,39 @@ func (self *Backend) ProcessPayload(payloadType PayloadType, payload *dal.Record
 	}
 
 	return nil
+}
+
+// Parses and returns a Filter from the given HTTP request and parameters
+//
+func (self *Backend) RequestToFilter(request *http.Request, params map[string]string) (filter.Filter, error) {
+	if query, ok := params[`query`]; ok {
+		if f, err := filter.Parse(query); err == nil {
+			//  get fields from query string
+			if fields := request.URL.Query().Get(`fields`); fields != `` {
+				f.Fields = strings.Split(fields, `,`)
+			}
+
+			//  limit size of resultset
+			if v := request.URL.Query().Get(`size`); v != `` {
+				if _, err := strconv.ParseUint(v, 10, 32); err == nil {
+					f.Options[`size`] = v
+				}
+			}
+
+			//  limit size of resultset
+			if v := request.URL.Query().Get(`offset`); v != `` {
+				if _, err := strconv.ParseUint(v, 10, 32); err == nil {
+					f.Options[`offset`] = v
+				}
+			}
+
+			return f, nil
+		} else {
+			return filter.Filter{}, err
+		}
+	} else {
+		return filter.Filter{}, fmt.Errorf("Request must specify a %q parameter")
+	}
 }
 
 func Monitor(caller IBackend, interval time.Duration) {

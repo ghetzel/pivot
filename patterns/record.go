@@ -9,15 +9,16 @@ import (
 )
 
 type IRecordAccessPattern interface {
+	RequestToFilter(*http.Request, map[string]string) (filter.Filter, error)
 	GetStatus() map[string]interface{}
 	ReadDatasetSchema() *dal.Dataset
-	ReadCollectionSchema(string) (dal.Collection, bool)
-	UpdateCollectionSchema(dal.CollectionAction, string, dal.Collection) error
-	DeleteCollectionSchema(string) error
-	GetRecords(string, filter.Filter) (*dal.RecordSet, error)
-	InsertRecords(string, filter.Filter, *dal.RecordSet) error
-	UpdateRecords(string, filter.Filter, *dal.RecordSet) error
-	DeleteRecords(string, filter.Filter) error
+	ReadCollectionSchema(collectionName string) (dal.Collection, bool)
+	UpdateCollectionSchema(action dal.CollectionAction, collectionName string, schema dal.Collection) error
+	DeleteCollectionSchema(collectionName string) error
+	GetRecords(collectionName string, query filter.Filter) (*dal.RecordSet, error)
+	InsertRecords(collectionName string, query filter.Filter, records *dal.RecordSet) error
+	UpdateRecords(collectionName string, query filter.Filter, records *dal.RecordSet) error
+	DeleteRecords(collectionName string, query filter.Filter) error
 }
 
 func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAccessPattern, backendI interface{}) ([]util.Endpoint, error) {
@@ -84,16 +85,15 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			Method:      `GET`,
 			Path:        `/query/:collection/all`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
-				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].GetAllRecords()", backendName)
+				params[`query`] = `all`
+				return handlerGetRecords(backendName, pattern)(request, params)
 			},
 		},
 		{
 			BackendName: backendName,
 			Method:      `GET`,
 			Path:        `/query/:collection/where/*query`,
-			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
-				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].GetRecords()", backendName)
-			},
+			Handler:     handlerGetRecords(backendName, pattern),
 		},
 		{
 			BackendName: backendName,
@@ -128,4 +128,22 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			},
 		},
 	}, nil
+}
+
+func handlerGetRecords(backendName string, pattern IRecordAccessPattern) util.EndpointResponseFunc {
+	return func(request *http.Request, params map[string]string) (int, interface{}, error) {
+		if collectionName, ok := params[`collection`]; ok {
+			if f, err := pattern.RequestToFilter(request, params); err == nil {
+				if recordSet, err := pattern.GetRecords(collectionName, f); err == nil {
+					return http.StatusOK, recordSet, nil
+				} else {
+					return http.StatusInternalServerError, recordSet, err
+				}
+			} else {
+				return http.StatusBadRequest, nil, err
+			}
+		} else {
+			return http.StatusBadRequest, nil, fmt.Errorf("Empty collection name specified")
+		}
+	}
 }

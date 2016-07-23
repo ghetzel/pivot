@@ -9,6 +9,7 @@ import (
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/patterns"
 	"github.com/op/go-logging"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -16,8 +17,8 @@ import (
 var log = logging.MustGetLogger(`backends`)
 
 type ElasticsearchBackend struct {
-	backends.Backend
 	patterns.IRecordAccessPattern
+	backends.Backend
 	Connected  bool
 	client     *ElasticsearchClient
 	maxRetries int
@@ -191,6 +192,10 @@ func (self *ElasticsearchBackend) GetStatus() map[string]interface{} {
 	}
 }
 
+func (self *ElasticsearchBackend) RequestToFilter(request *http.Request, params map[string]string) (filter.Filter, error) {
+	return self.Backend.RequestToFilter(request, params)
+}
+
 func (self *ElasticsearchBackend) ReadDatasetSchema() *dal.Dataset {
 	return self.GetDataset()
 }
@@ -265,18 +270,14 @@ func (self *ElasticsearchBackend) GetRecords(collectionName string, f filter.Fil
 				}
 
 				//  only process _source if it is available
-				if source := hit.Source; len(source) > 0 {
-					for k, _ := range source {
-						if !sliceutil.ContainsString(f.Fields, k) {
-							delete(record, k)
-						}
+				for k, v := range hit.Source {
+					if sliceutil.ContainsString(f.Fields, k) || len(f.Fields) == 0 {
+						record[k] = v
 					}
 				}
 
 				rs.Records = append(rs.Records, record)
 			}
-		} else {
-			return nil, fmt.Errorf("Failed to read results")
 		}
 
 		return rs, nil

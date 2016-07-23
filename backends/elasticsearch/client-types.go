@@ -11,6 +11,36 @@ import (
 	"strings"
 )
 
+type ErrorResponseRootCause struct {
+	Type   string `json:"type"`
+	Reason string `json:"reason"`
+	Line   int    `json:"line"`
+	Column int    `json:"col"`
+}
+
+type ErrorResponseDetail struct {
+	RootCause ErrorResponseRootCause `json:"root_cause"`
+	Type      string                 `json:"type"`
+	Reason    string                 `json:"reason"`
+	Phase     string                 `json:"phase"`
+	Grouped   bool                   `json:"grouped"`
+}
+
+type ErrorResponse struct {
+	ErrorDetail ErrorResponseDetail `json:"error"`
+	Status      int                 `json:"status"`
+}
+
+func (self *ErrorResponse) Error() error {
+	if self.ErrorDetail.RootCause.Type != `` {
+		return fmt.Errorf("%s: %s", self.ErrorDetail.RootCause.Type, self.ErrorDetail.RootCause.Reason)
+	} else if self.ErrorDetail.Type != `` {
+		return fmt.Errorf("%s: %s", self.ErrorDetail.Type, self.ErrorDetail.Reason)
+	} else {
+		return nil
+	}
+}
+
 type ServerVersion struct {
 	Number         string `json:"number"`
 	BuildHash      string `json:"build_hash"`
@@ -104,14 +134,14 @@ func NewSearchRequestFromFilter(index string, docType string, f filter.Filter) (
 			}
 
 			// if we want the _version field, set the flag
-			options[`_version`] = sliceutil.ContainsString(f.Fields, `_version`)
+			options[`version`] = sliceutil.ContainsString(f.Fields, `version`)
 
 			//  limit result size
-			if v, ok := f.Options[`page_size`]; ok {
+			if v, ok := f.Options[`size`]; ok {
 				if i, err := stringutil.ConvertToInteger(v); err == nil {
 					options[`size`] = i
 				} else {
-					return nil, fmt.Errorf("Invalid 'page_size' parameter: %v", err)
+					return nil, fmt.Errorf("Invalid 'size' parameter: %v", err)
 				}
 			}
 
@@ -128,10 +158,7 @@ func NewSearchRequestFromFilter(index string, docType string, f filter.Filter) (
 				Index: index,
 				Type:  docType,
 				Query: map[string]interface{}{
-					`bool`: map[string]interface{}{
-						`must`: map[string]interface{}{
-							`match_all`: map[string]interface{}{},
-						},
+					`filtered`: map[string]interface{}{
 						`filter`: queryBody,
 					},
 				},
@@ -149,14 +176,14 @@ type Document struct {
 	Index   string                 `json:"_index"`
 	Type    string                 `json:"_type"`
 	ID      string                 `json:"_id"`
-	Score   int                    `json:"_score"`
+	Score   float32                `json:"_score"`
 	Version int                    `json:"_version"`
 	Source  map[string]interface{} `json:"_source"`
 }
 
 type SearchResponseHits struct {
 	Total    int        `json:"total"`
-	MaxScore int        `json:"max_score"`
+	MaxScore float32    `json:"max_score"`
 	Hits     []Document `json:"hits"`
 }
 

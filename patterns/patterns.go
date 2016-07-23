@@ -22,7 +22,10 @@ func RegisterHandlers(backendName string, p interface{}) ([]util.Endpoint, error
 	switch p.(type) {
 	case IRecordAccessPattern:
 		pattern := p.(IRecordAccessPattern)
-		handlers, err = registerRecordAccessPatternHandlers(backendName, pattern, p)
+
+		if pattern != nil {
+			handlers, err = registerRecordAccessPatternHandlers(backendName, pattern, p)
+		}
 
 	default:
 		err = fmt.Errorf("Cannot register routes for unknown access pattern %T", p)
