@@ -3,6 +3,7 @@
   <head>
     <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/util.css" type="text/css">
     <link rel="stylesheet" href="/css/app.css" type="text/css">
 
     <script type="text/javascript" src="/js/jquery-2.2.4.min.js"></script>
@@ -39,8 +40,7 @@
               <ul class="dropdown-menu">
                 <li rv-each-backend="backends | values">
                   <a rv-href="backend.name | interpolate '#/backends/${value}'">
-                    <i rv-if="backend.available" class="fa fa-fw fa-check"></i>
-                    <i rv-if="!backend.available" class="fa fa-fw fa-remove"></i>
+                    <img class="navicon" rv-src="backend.configuration.type | interpolate '/resources/${value}/logo.svg'">
                     {{ backend.name }}
                   </a>
                 </li>

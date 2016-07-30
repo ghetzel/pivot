@@ -1,3 +1,111 @@
-<h3>BACKENDS {{ name }}</h3>
+<div class="container">
+  <div class="row">
+    <div class="col-md-offset-1 col-md-2">
+      <img class="backend-icon" rv-src="configuration.type | interpolate '/resources/${value}/logo.svg'">
+    </div>
 
-<pre>{{ $self | jsonify }}</pre>
+    <div class="col-md-8">
+      <h1>{{ name }}</h1>
+      <h3>{{ configuration.type | titleize }} Backend</h3>
+    </div>
+  </div>
+
+  <div class="row margin-top-2">
+    <div class="col-md-offset-1 col-md-5">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Backend Status</h3>
+        </div>
+        <div class="panel-body">
+          <table class="table table-condensed table-plain">
+            <tbody>
+              <tr>
+                <th>Available</th>
+                <td>
+                  <i rv-if="available" class="fa fa-fw fa-check text-success"></i>
+                  <i rv-unless="available" class="fa fa-fw fa-remove text-danger"></i>
+                </td>
+                <td>
+                  <span rv-if="available">This backend is available to serve requests.</span>
+                  <span rv-unless="available">This backend unavailable and will refuse requests.</span>
+                </td>
+              </tr>
+
+              <tr>
+                <th>Connected</th>
+                <td>
+                  <i rv-if="connected" class="fa fa-fw fa-check text-success"></i>
+                  <i rv-unless="connected" class="fa fa-fw fa-remove text-danger"></i>
+                </td>
+                <td>
+                  <span rv-if="connected">Pivot is connected to this backend.</span>
+                  <span rv-unless="connected">Pivot is not currently connected to this backend.</span>
+                </td>
+              </tr>
+
+              <tr>
+                <th>Refresh</th>
+                <td>
+                  <i rv-if="connected" class="fa fa-fw fa-clock-o"></i>
+                </td>
+                <td>
+                  Every {{ schema_refresh_interval | autotime }} / Timeout {{ schema_refresh_timeout | autotime }} / Max Failures: {{ schema_refresh_max_failures }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-5">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Dataset Details</h3>
+        </div>
+        <div class="panel-body">
+          <table class="table table-condensed table-plain">
+            <tbody>
+              <tr>
+                <th>Dataset Name</th>
+                <td>{{ configuration.dataset }}</td>
+              </td>
+              <tr>
+                <th>Addresses</th>
+                <td>
+                  <ul class="list-unstyled no-margin">
+                    <li rv-each-address="configuration.addresses">{{ address }}</li>
+                  </ul>
+                </td>
+              </td>
+              <tr>
+                <th>Collections</th>
+                <td>{{ configuration.collections | length }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div rv-if="configuration.metadata" class="row">
+    <div class="col-md-offset-1 col-md-10">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Backend Metadata</h3>
+        </div>
+        <div class="panel-body">
+          <table class="table table-condensed table-plain">
+            <tbody>
+              <tr rv-each-metadata="configuration.metadata | tuples">
+                <th class="pre">{{ metadata.key }}</th>
+                <td>{{ metadata.value }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

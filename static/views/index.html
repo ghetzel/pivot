@@ -1,1 +1,52 @@
-HOME
+<div class="container">
+  <div class="container-fluid">
+    <div rv-each-backend="backends | values" class="row">
+      <div class="col-md-3">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <img class="navicon pull-left" rv-src="backend.configuration.type | interpolate '/resources/${value}/logo.svg'">
+            <h3 class="panel-title">{{ backend.configuration.type | titleize }} Backend &ndash; {{ backend.name }}</h3>
+          </div>
+          <div class="panel-body">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-md-6 text-center">
+                  <span rv-if="backend.available">
+                    <i class="fa fa-3x fa-circle text-success"></i>
+                    <h4>Available</h4>
+                  </span>
+
+                  <span rv-unless="backend.available">
+                    <i class="fa fa-3x fa-circle text-danger"></i>
+                    <h4>Unavailable</h4>
+                  </span>
+                </div>
+
+                <div class="col-md-6 text-center">
+                  <span rv-if="backend.connected">
+                    <i class="fa fa-3x fa-plug text-success"></i>
+                    <h4>Connected</h4>
+                  </span>
+
+                  <span rv-unless="backend.connected">
+                    <i class="fa fa-3x fa-plug text-warning"></i>
+                    <h4>Disconnected</h4>
+                  </span>
+                </div>
+              </div>
+
+              <div class="row margin-top-1">
+                <div class="col-md-12 text-center">
+                  <a rv-if="backend.available" rv-onclick="backend.name | interpolate 'pivot.actionBackend('${value}', 'suspend')'" class="btn btn-danger">Disable</a>
+                  <a rv-unless="backend.available" rv-onclick="backend.name | interpolate 'pivot.actionBackend('${value}', 'resume')'" class="btn btn-success">Enable</a>
+
+                  <a class="btn btn-default" rv-href="backend.name | interpolate '#/backends/${value}'">Manage</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,6 +2,7 @@ package pivot
 
 import (
 	"fmt"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/patterns"
@@ -15,7 +16,11 @@ import (
 // format that makes the response format consistent across all endpoints.
 //
 func (self *Server) setupBackendRoutes() error {
+	typesVisited := make([]string, 0)
+
 	for name, backend := range Backends {
+		backendType := backend.GetDataset().Type
+
 		self.setupGlobalApiRoutes()
 		self.setupAdminRoutesForBackend(backend)
 
@@ -25,6 +30,11 @@ func (self *Server) setupBackendRoutes() error {
 			self.endpoints = append(self.endpoints, e...)
 		} else {
 			return err
+		}
+
+		if !sliceutil.ContainsString(typesVisited, backendType) {
+			self.router.ServeFiles(fmt.Sprintf("/resources/%s/*filepath", backendType), http.Dir(fmt.Sprintf("public/res/%s", backendType)))
+			typesVisited = append(typesVisited, backendType)
 		}
 	}
 
