@@ -37,7 +37,7 @@
                 <span rv-if="backends" class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                <li rv-each-backend="backends">
+                <li rv-each-backend="backends | values">
                   <a rv-href="backend.name | interpolate '#/backends/${value}'">
                     <i rv-if="backend.available" class="fa fa-fw fa-check"></i>
                     <i rv-if="!backend.available" class="fa fa-fw fa-remove"></i>
