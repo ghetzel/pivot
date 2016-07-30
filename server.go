@@ -45,7 +45,7 @@ func (self *Server) ListenAndServe() error {
 	})
 
 	self.server.Use(negroni.NewRecovery())
-	// server.Use(negroni.NewStatic(http.Dir("./contrib/wstest/static")))
+	self.server.Use(negroni.NewStatic(http.Dir(`static`)))
 	self.server.Use(self.corsHandler)
 	self.server.UseHandler(self.router)
 

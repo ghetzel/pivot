@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/app.css" type="text/css">
+
+    <script type="text/javascript" src="/js/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/rivets.bundled.min.js"></script>
+    <script type="text/javascript" src="/js/stapes.min.js"></script>
+    <script type="text/javascript" src="/js/director.min.js"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+
+    <title>Loading...</title>
+  </head>
+
+  <body style="display: none;">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">{{ site.brand }}</a>
+        </div>
+
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-fw fa-cubes"></i>
+                Backends
+                <span rv-if="backends" class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li rv-each-backend="backends">
+                  <a rv-href="backend.name | interpolate '#/backends/${value}'">
+                    <i rv-if="backend.available" class="fa fa-fw fa-check"></i>
+                    <i rv-if="!backend.available" class="fa fa-fw fa-remove"></i>
+                    {{ backend.name }}
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div id="content" class="container-fluid"></div>
+  </body>
+</html>

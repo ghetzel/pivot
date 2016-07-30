@@ -4,8 +4,8 @@ type Dataset struct {
 	Type        string                 `json:"type"`
 	Name        string                 `json:"dataset"`
 	Addresses   []string               `json:"addresses"`
-	Options     map[string]string      `json:"options"`
-	Metadata    map[string]interface{} `json:"metadata"`
+	Options     map[string]string      `json:"options,omitempty"`
+	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 	Collections []Collection           `json:"collections"`
 }
 

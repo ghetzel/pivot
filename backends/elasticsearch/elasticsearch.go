@@ -17,9 +17,9 @@ import (
 var log = logging.MustGetLogger(`backends`)
 
 type ElasticsearchBackend struct {
-	patterns.IRecordAccessPattern
+	patterns.IRecordAccessPattern `json:"-"`
 	backends.Backend
-	Connected  bool
+	Connected  bool `json:"connected"`
 	client     *ElasticsearchClient
 	maxRetries int
 	esVersion  int

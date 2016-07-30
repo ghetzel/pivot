@@ -55,16 +55,16 @@ type IBackend interface {
 }
 
 type Backend struct {
-	IBackend
-	Available            bool
-	Connected            bool
-	ConnectMaxAttempts   int
-	ConnectTimeout       time.Duration
-	Dataset              dal.Dataset
-	Name                 string
-	SchemaRefresh        time.Duration
-	SchemaRefreshMaxFail int
-	SchemaRefreshTimeout time.Duration
+	IBackend             `json:"-"`
+	Available            bool          `json:"available"`
+	Connected            bool          `json:"connected"`
+	ConnectMaxAttempts   int           `json:"max_connection_attempts"`
+	ConnectTimeout       time.Duration `json:"connect_timeout"`
+	Dataset              dal.Dataset   `json:"configuration"`
+	Name                 string        `json:"name"`
+	SchemaRefresh        time.Duration `json:"schema_refresh_interval"`
+	SchemaRefreshMaxFail int           `json:"schema_refresh_max_failures"`
+	SchemaRefreshTimeout time.Duration `json:"schema_refresh_timeout"`
 }
 
 func (self *Backend) Initialize() error {

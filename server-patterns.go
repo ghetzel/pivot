@@ -16,6 +16,7 @@ import (
 //
 func (self *Server) setupBackendRoutes() error {
 	for name, backend := range Backends {
+		self.setupGlobalApiRoutes()
 		self.setupAdminRoutesForBackend(backend)
 
 		log.Debugf("Registering routes for backend: %q", name)
@@ -93,6 +94,14 @@ func (self *Server) setupBackendRoutes() error {
 	}
 
 	return nil
+}
+
+// Adds routes that define the top-level API for Pivot
+//
+func (self *Server) setupGlobalApiRoutes() {
+	self.router.GET(`/api/backends`, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+		self.Respond(w, http.StatusOK, Backends, nil)
+	})
 }
 
 // Adds routes for adminstering and controlling the given backend.
