@@ -203,7 +203,7 @@ var Pivot = Stapes.subclass({
             }.bind(this),
 
             '/': function(){
-                this.chpage('index');
+                this.chpage('index', this);
             }.bind(this),
         });
 

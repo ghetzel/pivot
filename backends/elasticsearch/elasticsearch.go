@@ -115,8 +115,6 @@ func (self *ElasticsearchBackend) Refresh() error {
 	if indexNames, err := self.client.IndexNames(); err == nil {
 		collections := make([]dal.Collection, 0)
 
-		log.Debugf("Index names: %+v", indexNames)
-
 		for _, index := range indexNames {
 			if indexMappings, err := self.client.GetMapping(index); err == nil {
 				fields := make([]dal.Field, 0)
@@ -330,7 +328,7 @@ func (self *ElasticsearchBackend) upsertDocument(collectionName string, f filter
 			//  ensured record 0 will exist with the length check in this switch :)
 			record, _ := payload.GetRecord(0)
 
-			//  _id wasn't in the Urlquery criteria, check the payload itself
+			//  _id wasn't in the Filter criteria, check the payload itself
 			if id == `` {
 				if v, ok := record[`_id`]; ok {
 					if s, err := stringutil.ToString(v); err == nil {

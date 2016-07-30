@@ -11,7 +11,11 @@
 }
 
 #content .backend-icon {
-    width:  160px;
-    height: 160px;
-    text-align: center;
+    width:  96px;
+    height: 96px;
+}
+
+#content .panel-title {
+    font-weight: bold;
+    font-size:   10pt;
 }

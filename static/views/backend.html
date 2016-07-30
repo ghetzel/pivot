@@ -1,12 +1,12 @@
 <div class="container">
   <div class="row">
-    <div class="col-md-offset-1 col-md-2">
+    <div class="col-md-offset-1 col-md-2 text-center">
       <img class="backend-icon" rv-src="configuration.type | interpolate '/resources/${value}/logo.svg'">
     </div>
 
     <div class="col-md-8">
-      <h1>{{ name }}</h1>
-      <h3>{{ configuration.type | titleize }} Backend</h3>
+      <h1 class="margin-top-0">{{ name }}</h1>
+      <h3 class="margin-top-0">{{ configuration.type | titleize }} Backend</h3>
     </div>
   </div>
 
@@ -14,7 +14,7 @@
     <div class="col-md-offset-1 col-md-5">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title">Backend Status</h3>
+          <h3 class="panel-title">Status</h3>
         </div>
         <div class="panel-body">
           <table class="table table-condensed table-plain">
@@ -27,7 +27,7 @@
                 </td>
                 <td>
                   <span rv-if="available">This backend is available to serve requests.</span>
-                  <span rv-unless="available">This backend unavailable and will refuse requests.</span>
+                  <span rv-unless="available">This backend is unavailable.</span>
                 </td>
               </tr>
 
@@ -39,7 +39,7 @@
                 </td>
                 <td>
                   <span rv-if="connected">Pivot is connected to this backend.</span>
-                  <span rv-unless="connected">Pivot is not currently connected to this backend.</span>
+                  <span rv-unless="connected">Pivot is not connected to this backend.</span>
                 </td>
               </tr>
 
@@ -93,7 +93,7 @@
     <div class="col-md-offset-1 col-md-10">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title">Backend Metadata</h3>
+          <h3 class="panel-title">Metadata</h3>
         </div>
         <div class="panel-body">
           <table class="table table-condensed table-plain">

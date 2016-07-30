@@ -155,3 +155,7 @@ func (self *ElasticsearchClient) DeleteByQuery() {
 func (self *ElasticsearchClient) Update() {
 
 }
+
+func (self *ElasticsearchClient) CreateIndex(index string) {
+
+}
