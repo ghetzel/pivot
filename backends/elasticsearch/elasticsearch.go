@@ -212,9 +212,25 @@ func (self *ElasticsearchBackend) UpdateCollectionSchema(action dal.CollectionAc
 	switch action {
 	// CREATE ----------------------------------------------------------------------------------------------------------
 	case dal.SchemaCreate:
+		if _, ok := self.Dataset.GetCollection(collectionName); !ok {
+			return self.client.CreateIndex(collectionName, definition)
+		} else {
+			return fmt.Errorf("Collection '%s' already exists", collectionName)
+		}
 
 	// VERIFY ----------------------------------------------------------------------------------------------------------
 	case dal.SchemaVerify:
+		if err := self.Refresh(); err == nil {
+			if existingDefinition, ok := self.Dataset.GetCollection(collectionName); ok {
+				if err := existingDefinition.VerifyEqual(definition); err != nil {
+					return err
+				}
+			} else {
+				return fmt.Errorf("Collection '%s' does not exist", collectionName)
+			}
+		} else {
+			return err
+		}
 
 	// EXPAND ----------------------------------------------------------------------------------------------------------
 	case dal.SchemaExpand:

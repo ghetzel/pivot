@@ -51,7 +51,7 @@ func (self *MultiClientRequest) Perform(success interface{}, failure interface{}
 	case `PATCH`:
 		request.Patch(self.Path)
 	default:
-		return nil, fmt.Errorf("Unsupported HTTP method %q", self.Method)
+		return nil, fmt.Errorf("Unsupported HTTP method '%s'", self.Method)
 	}
 
 	if self.RequestBody != nil {

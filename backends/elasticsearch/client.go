@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/util"
 	"math"
@@ -156,6 +157,6 @@ func (self *ElasticsearchClient) Update() {
 
 }
 
-func (self *ElasticsearchClient) CreateIndex(index string) {
-
+func (self *ElasticsearchClient) CreateIndex(index string, definition dal.Collection) error {
+	return fmt.Errorf("NOT IMPLEMENTED")
 }

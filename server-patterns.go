@@ -24,7 +24,7 @@ func (self *Server) setupBackendRoutes() error {
 		self.setupGlobalApiRoutes()
 		self.setupAdminRoutesForBackend(backend)
 
-		log.Debugf("Registering routes for backend: %q", name)
+		log.Debugf("Registering routes for backend: '%s'", name)
 
 		if e, err := self.registerBackendRoutes(backend); err == nil {
 			self.endpoints = append(self.endpoints, e...)

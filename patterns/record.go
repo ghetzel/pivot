@@ -1,10 +1,12 @@
 package patterns
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/util"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -50,7 +52,7 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 					if collection, ok := pattern.ReadCollectionSchema(collectionName); ok {
 						return http.StatusOK, collection, nil
 					} else {
-						return http.StatusNotFound, nil, fmt.Errorf("Could not locate collection %q", collectionName)
+						return http.StatusNotFound, nil, fmt.Errorf("Could not locate collection '%s'", collectionName)
 					}
 				} else {
 					return http.StatusBadRequest, nil, fmt.Errorf("Empty collection name specified")
@@ -74,7 +76,40 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			Method:      `PUT`,
 			Path:        `/schema/:collection/:action`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
-				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].UpdateCollectionSchema()", backendName)
+				if collectionName, ok := params[`collection`]; ok {
+					if action, ok := params[`action`]; ok {
+						var schemaAction dal.CollectionAction
+
+						switch action {
+						case `verify`:
+							schemaAction = dal.SchemaVerify
+						case `create`:
+							schemaAction = dal.SchemaCreate
+						case `expand`:
+							schemaAction = dal.SchemaExpand
+						case `enforce`:
+							schemaAction = dal.SchemaEnforce
+						default:
+							return http.StatusBadRequest, nil, fmt.Errorf("Unsupported action '%s'", action)
+						}
+
+						if data, err := ioutil.ReadAll(request.Body); err == nil {
+							definition := dal.Collection{}
+
+							if err := json.Unmarshal(data, &definition); err == nil {
+								return http.StatusNoContent, nil, pattern.UpdateCollectionSchema(schemaAction, collectionName, definition)
+							} else {
+								return http.StatusBadRequest, nil, err
+							}
+						} else {
+							return http.StatusBadRequest, nil, err
+						}
+					} else {
+						return http.StatusBadRequest, nil, fmt.Errorf("Schema action not specified")
+					}
+				} else {
+					return http.StatusBadRequest, nil, fmt.Errorf("Collection name not specified")
+				}
 			},
 		},
 

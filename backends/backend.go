@@ -122,7 +122,7 @@ func (self *Backend) Finalize(caller IBackend) error {
 	}
 
 	//  perform the initial population of the schema cache
-	log.Debugf("Performing initial refresh of backend %q", caller.GetName())
+	log.Debugf("Performing initial refresh of backend '%s'", caller.GetName())
 
 	if err := caller.Refresh(); err != nil {
 		return err
@@ -295,7 +295,7 @@ func (self *Backend) RequestToFilter(request *http.Request, params map[string]st
 			return filter.Filter{}, err
 		}
 	} else {
-		return filter.Filter{}, fmt.Errorf("Request must specify a %q parameter")
+		return filter.Filter{}, fmt.Errorf("Request must specify a '%s' parameter")
 	}
 }
 

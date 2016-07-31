@@ -71,7 +71,7 @@ func (self *Configuration) initializeBackend(name string, dataset dal.Dataset) (
 	if b, ok := Backends[name]; !ok {
 		Backends[name] = backend
 	} else {
-		return backend, fmt.Errorf("A backend named %q is already registered (%T)", name, b)
+		return backend, fmt.Errorf("A backend named '%s' is already registered (%T)", name, b)
 	}
 
 	return backend, nil

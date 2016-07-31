@@ -88,7 +88,7 @@ func (self *MultiClient) IsHealthy(address string) bool {
 			defer conn.Close()
 			return true
 		} else {
-			log.Debugf("Check address %q failed: %v", address, err)
+			log.Debugf("Check address '%s' failed: %v", address, err)
 		}
 	}
 
