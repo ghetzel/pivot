@@ -209,6 +209,8 @@ func (self *ElasticsearchBackend) ReadCollectionSchema(collectionName string) (d
 }
 
 func (self *ElasticsearchBackend) UpdateCollectionSchema(action dal.CollectionAction, collectionName string, definition dal.Collection) error {
+	defer self.Refresh()
+
 	switch action {
 	// CREATE ----------------------------------------------------------------------------------------------------------
 	case dal.SchemaCreate:
@@ -247,6 +249,8 @@ func (self *ElasticsearchBackend) UpdateCollectionSchema(action dal.CollectionAc
 }
 
 func (self *ElasticsearchBackend) DeleteCollectionSchema(collectionName string) error {
+	defer self.Refresh()
+
 	if acknowledged, err := self.client.DeleteIndex(collectionName); err == nil {
 		if acknowledged {
 			return nil

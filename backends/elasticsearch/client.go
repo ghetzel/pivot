@@ -158,5 +158,78 @@ func (self *ElasticsearchClient) Update() {
 }
 
 func (self *ElasticsearchClient) CreateIndex(index string, definition dal.Collection) error {
-	return fmt.Errorf("NOT IMPLEMENTED")
+	createIndex := CreateIndexRequest{}
+	ackResponse := AckResponse{}
+	errResponse := ErrorResponse{}
+
+	if v, ok := definition.Properties[`settings`]; ok {
+		switch v.(type) {
+		case map[string]interface{}:
+			vMap := v.(map[string]interface{})
+			createIndex.Settings = vMap
+		}
+	}
+
+	if mappings, err := self.getMappingsFromCollection(&definition); err == nil {
+		createIndex.Mappings = mappings
+	} else {
+		return err
+	}
+
+	if err := self.Request(`PUT`, fmt.Sprintf("%s", index), &createIndex, &ackResponse, &errResponse); err == nil {
+		return nil
+	} else {
+		if detailedError := errResponse.Error(); detailedError != nil {
+			return detailedError
+		} else {
+			return err
+		}
+	}
+}
+
+func (self *ElasticsearchClient) getMappingsFromCollection(definition *dal.Collection) (map[string]interface{}, error) {
+	mappings := make(map[string]interface{})
+	docType := DEFAULT_ES_DOCUMENT_TYPE
+
+	if v, ok := definition.Properties[`type`]; ok {
+		switch v.(type) {
+		case string:
+			docType = v.(string)
+		}
+	}
+
+	for _, field := range definition.Fields {
+		var esType string
+
+		switch field.Type {
+		case `str`:
+			esType = `string`
+		case `int`:
+			esType = `integer`
+		case `float`:
+			esType = `float`
+		case `bool`:
+			esType = `boolean`
+		default:
+			return nil, fmt.Errorf("Unsupported field data type '%s' for %T", field.Type, self)
+		}
+
+		var mappingDef map[string]interface{}
+
+		if field.Properties != nil {
+			mappingDef = field.Properties
+		} else {
+			mappingDef = make(map[string]interface{})
+		}
+
+		mappingDef[`type`] = esType
+
+		mappings[field.Name] = mappingDef
+	}
+
+	return map[string]interface{}{
+		docType: map[string]interface{}{
+			`properties`: mappings,
+		},
+	}, nil
 }

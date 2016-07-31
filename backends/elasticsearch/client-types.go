@@ -109,6 +109,11 @@ type SearchRequest struct {
 	Options map[string]interface{} `json:"options"`
 }
 
+type CreateIndexRequest struct {
+	Settings map[string]interface{} `json:"settings"`
+	Mappings map[string]interface{} `json:"mappings"`
+}
+
 func NewSearchRequestFromFilter(index string, docType string, f filter.Filter) (*SearchRequest, error) {
 	generator := generators.NewElasticsearchGenerator()
 
