@@ -2,16 +2,22 @@ package dal
 
 type Record map[string]interface{}
 
+func (self *Record) ToMap() map[string]interface{} {
+	return (map[string]interface{})(*self)
+}
+
 type RecordSet struct {
-	ResultCount uint64   `json:"result_count"`
-	Page        int      `json:"page"`
-	TotalPages  int      `json:"total_pages"`
-	Records     []Record `json:"records"`
+	ResultCount uint64                 `json:"result_count"`
+	Page        int                    `json:"page"`
+	TotalPages  int                    `json:"total_pages"`
+	Records     []Record               `json:"records"`
+	Options     map[string]interface{} `json:"options`
 }
 
 func NewRecordSet() *RecordSet {
 	return &RecordSet{
 		Records: make([]Record, 0),
+		Options: make(map[string]interface{}),
 	}
 }
 

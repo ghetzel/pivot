@@ -8,15 +8,16 @@ import (
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/patterns"
 	"github.com/op/go-logging"
+	"net/http"
 	"time"
 )
 
 var log = logging.MustGetLogger(`backends`)
 
 type DummyBackend struct {
+	patterns.IRecordAccessPattern `json:"-"`
 	backends.Backend
-	patterns.IRecordAccessPattern
-	Connected       bool
+	Connected       bool `json:"connected"`
 	connectAt       time.Time
 	disconnectDelay time.Duration
 	connectDelay    time.Duration
@@ -103,6 +104,10 @@ func (self *DummyBackend) GetStatus() map[string]interface{} {
 		`connected`: self.IsConnected(),
 		`available`: self.IsAvailable(),
 	}
+}
+
+func (self *DummyBackend) RequestToFilter(request *http.Request, params map[string]string) (filter.Filter, error) {
+	return self.Backend.RequestToFilter(request, params)
 }
 
 func (self *DummyBackend) ReadDatasetSchema() *dal.Dataset {

@@ -1,3 +1,5 @@
+.PHONY: test
+
 all: vendor fmt build bundle
 
 update:
@@ -16,6 +18,9 @@ clean:
 
 fmt:
 	gofmt -w .
+
+test:
+	go test -v .
 
 bundle: clean-bundle
 	@echo "Bundling static resources under ./public/"

@@ -313,21 +313,26 @@ func (self *ElasticsearchBackend) UpdateRecords(collectionName string, f filter.
 }
 
 func (self *ElasticsearchBackend) DeleteRecords(collectionName string, f filter.Filter) error {
-	// query := NewElasticsearchQuery(f)
-	// dbq := self.client.DeleteByQuery()
+	docType := DEFAULT_ES_DOCUMENT_TYPE
 
-	// dbq.Index(collectionName)
-	// dbq.AllowNoIndices(true)
+	if v, ok := f.Options[`document_type`]; ok {
+		docType = v
+	}
 
-	// if _, err := dbq.Query(query).Do(); err != nil {
-	// 	return err
-	// }
-
-	return nil
+	return self.client.DeleteByQuery(collectionName, docType, f)
 }
 
 func (self *ElasticsearchBackend) upsertDocument(collectionName string, f filter.Filter, payload *dal.RecordSet) error {
 	if payload != nil {
+		docType := DEFAULT_ES_DOCUMENT_TYPE
+
+		if v, ok := payload.Options[`document_type`]; ok {
+			switch v.(type) {
+			case string:
+				docType = v.(string)
+			}
+		}
+
 		switch len(payload.Records) {
 		case 0:
 			return fmt.Errorf("No records supplied in request")
@@ -360,56 +365,13 @@ func (self *ElasticsearchBackend) upsertDocument(collectionName string, f filter
 			if id == `` {
 				return fmt.Errorf("Cannot insert/update document without an '_id' field in the query")
 			} else {
-
-				// updater := self.client.Update()
-				// updater.Index(collectionName)
-				// updater.Id(id)
-				// updater.DocAsUpsert(true)
-
-				// if typ, ok := f.Options[`document_type`]; ok {
-				// 	updater.Type(typ)
-				// } else {
-				// 	updater.Type(DEFAULT_ES_DOCUMENT_TYPE)
-				// }
-
-				// updater.Doc(record)
-
-				// if _, err := updater.Do(); err != nil {
-				// 	return err
-				// }
+				_, err := self.client.IndexDocument(collectionName, docType, id, record.ToMap())
+				return err
 			}
 
 		default:
-			// bulker := elastic.NewBulkService(self.client)
-
-			// for i, record := range payload.Records {
-			// 	if idData, ok := record[`_id`]; ok {
-			// 		if id, err := stringutil.ToString(idData); err == nil {
-			// 			bulkIndex := elastic.NewBulkIndexRequest()
-
-			// 			bulkIndex.Index(collectionName)
-			// 			bulkIndex.Id(id)
-
-			// 			if typ, ok := f.Options[`document_type`]; ok {
-			// 				bulkIndex.Type(typ)
-			// 			} else {
-			// 				bulkIndex.Type(DEFAULT_ES_DOCUMENT_TYPE)
-			// 			}
-
-			// 			bulkIndex.Doc(record)
-
-			// 			bulker.Add(bulkIndex)
-			// 		} else {
-			// 			return fmt.Errorf("Invalid record at index %d: _id value cannot be converted into a string", i)
-			// 		}
-			// 	} else {
-			// 		return fmt.Errorf("Invalid record at index %d: record is missing an '_id' field", i)
-			// 	}
-			// }
-
-			// if _, err := bulker.Do(); err != nil {
-			// 	return fmt.Errorf("Failed to execute batch statement: %v", err)
-			// }
+			// TODO: implement Bulk API
+			return fmt.Errorf("Bulk insert not supported for this backend")
 		}
 	} else {
 		return fmt.Errorf("No recordset specified")

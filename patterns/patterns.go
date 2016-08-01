@@ -14,14 +14,15 @@ const (
 	RecordPattern PatternType = iota
 )
 
-func RegisterHandlers(backendName string, p interface{}) ([]util.Endpoint, error) {
+func RegisterHandlers(backendName string, pType PatternType, p interface{}) ([]util.Endpoint, error) {
 	var err error
 
 	handlers := make([]util.Endpoint, 0)
 
-	switch p.(type) {
-	case IRecordAccessPattern:
-		pattern := p.(IRecordAccessPattern)
+	switch pType {
+	case RecordPattern:
+		var pattern IRecordAccessPattern
+		pattern = p.(IRecordAccessPattern)
 
 		if pattern != nil {
 			handlers, err = registerRecordAccessPatternHandlers(backendName, pattern, p)

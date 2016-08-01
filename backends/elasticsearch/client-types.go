@@ -184,6 +184,9 @@ type Document struct {
 	Score   float32                `json:"_score"`
 	Version int                    `json:"_version"`
 	Source  map[string]interface{} `json:"_source"`
+	Found   bool                   `json:"found,omitempty"`
+	Created bool                   `json:"created,omitempty"`
+	Shards  ShardStats             `json:"_shards,omitempty"`
 }
 
 type SearchResponseHits struct {

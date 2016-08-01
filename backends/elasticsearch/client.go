@@ -149,8 +149,40 @@ func (self *ElasticsearchClient) Search(index string, docType string, f filter.F
 	}
 }
 
-func (self *ElasticsearchClient) DeleteByQuery() {
+func (self *ElasticsearchClient) DeleteByQuery(index string, docType string, f filter.Filter) error {
+	ackResponse := AckResponse{}
+	errResponse := ErrorResponse{}
+	url := ``
+	var payload interface{}
 
+	// single-criterion filters that only specify _id are a special case and can use a more direct API
+	if len(f.Criteria) == 1 && f.Criteria[0].Field == `_id` && len(f.Criteria[0].Values) == 1 {
+		url = fmt.Sprintf("%s/%s/%s", index, docType, f.Criteria[0].Values[0])
+		payload = nil
+	} else {
+		if searchRequest, err := NewSearchRequestFromFilter(index, docType, f); err == nil {
+			url = fmt.Sprintf("%s/%s/_query", index, docType)
+			payload = map[string]interface{}{
+				`query`: searchRequest.Query,
+			}
+		} else {
+			return err
+		}
+	}
+
+	if err := self.Request(`DELETE`, url, payload, &ackResponse, &errResponse); err == nil {
+		if ackResponse.Acknowledged {
+			return nil
+		} else {
+			return fmt.Errorf("Delete operation was not acknowledged")
+		}
+	} else {
+		if detailedError := errResponse.Error(); detailedError != nil {
+			return detailedError
+		} else {
+			return err
+		}
+	}
 }
 
 func (self *ElasticsearchClient) Update() {
@@ -232,4 +264,23 @@ func (self *ElasticsearchClient) getMappingsFromCollection(definition *dal.Colle
 			`properties`: mappings,
 		},
 	}, nil
+}
+
+func (self *ElasticsearchClient) IndexDocument(index string, docType string, id string, data map[string]interface{}) (Document, error) {
+	indexResponse := Document{}
+	errResponse := ErrorResponse{}
+
+	if err := self.Request(`PUT`, fmt.Sprintf("%s/%s/%s", index, docType, id), &data, &indexResponse, &errResponse); err == nil {
+		if indexResponse.Shards.Failed > 0 {
+			return indexResponse, fmt.Errorf("Indexing document encountered %d failures", indexResponse.Shards.Failed)
+		} else {
+			return indexResponse, nil
+		}
+	} else {
+		if detailedError := errResponse.Error(); detailedError != nil {
+			return indexResponse, detailedError
+		} else {
+			return indexResponse, err
+		}
+	}
 }

@@ -109,6 +109,10 @@ func (self *MultiClient) GetHealthyAddresses() []string {
 }
 
 func (self *MultiClient) GetRandomHealthyAddress() (string, error) {
+	if len(self.healthyAddresses) == 0 {
+		return ``, fmt.Errorf("No healthy addresses found")
+	}
+
 	randId := self.healthyAddresses[rand.Intn(len(self.healthyAddresses))]
 
 	if randId < len(self.Addresses) {

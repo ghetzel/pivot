@@ -6,6 +6,7 @@ import (
 	"github.com/ghetzel/pivot"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
+	"github.com/ghetzel/pivot/util"
 	"github.com/op/go-logging"
 	"os"
 )
@@ -14,9 +15,9 @@ var log = logging.MustGetLogger(`main`)
 
 func main() {
 	app := cli.NewApp()
-	app.Name = `pivot`
-	app.Usage = `an extensible database abstraction service`
-	app.Version = `0.0.1`
+	app.Name = util.ApplicationName
+	app.Usage = util.ApplicationSummary
+	app.Version = util.ApplicationVersion
 	app.EnableBashCompletion = false
 
 	app.Flags = []cli.Flag{

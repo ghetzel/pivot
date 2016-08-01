@@ -109,6 +109,14 @@ func (self *Server) setupBackendRoutes() error {
 // Adds routes that define the top-level API for Pivot
 //
 func (self *Server) setupGlobalApiRoutes() {
+	self.router.GET(`/api/status`, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+		self.Respond(w, http.StatusOK, util.Status{
+			OK:          true,
+			Application: util.ApplicationName,
+			Version:     util.ApplicationVersion,
+		}, nil)
+	})
+
 	self.router.GET(`/api/backends`, func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 		self.Respond(w, http.StatusOK, Backends, nil)
 	})
@@ -188,7 +196,7 @@ func (self *Server) registerBackendRoutes(b interface{}) ([]util.Endpoint, error
 	case backends.IBackend:
 		backend := b.(backends.IBackend)
 
-		if endpoints, err := patterns.RegisterHandlers(backend.GetName(), b); err == nil {
+		if endpoints, err := patterns.RegisterHandlers(backend.GetName(), backend.GetPatternType(), b); err == nil {
 			return endpoints, nil
 		} else {
 			return nil, err
