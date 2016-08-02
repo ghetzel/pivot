@@ -2,3 +2,10 @@
 backends:
     dummy1:
         type: dummy
+        addresses:
+        - 'http://127.0.0.1:0'
+
+        options:
+            first: 1
+            second: true
+            third: 'three'

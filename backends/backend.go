@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/patterns"
@@ -69,7 +70,7 @@ type Backend struct {
 
 func (self *Backend) Initialize() error {
 	if v, ok := self.Dataset.Options[`connect_attempts`]; ok && v != `` {
-		if vInt, err := strconv.ParseInt(v, 10, 32); err == nil && vInt > 0 {
+		if vInt, err := stringutil.ConvertToInteger(v); err == nil && vInt > 0 {
 			self.ConnectMaxAttempts = int(vInt)
 		} else {
 			self.ConnectMaxAttempts = DEFAULT_CONNECT_ATTEMPTS
@@ -79,7 +80,7 @@ func (self *Backend) Initialize() error {
 	}
 
 	if v, ok := self.Dataset.Options[`connect_timeout`]; ok && v != `` {
-		if vInt, err := strconv.ParseInt(v, 10, 32); err == nil {
+		if vInt, err := stringutil.ConvertToInteger(v); err == nil {
 			self.ConnectTimeout = time.Duration(vInt) * time.Millisecond
 		} else {
 			self.ConnectTimeout = time.Duration(DEFAULT_CONNECT_TIMEOUT_MS) * time.Millisecond
@@ -89,7 +90,7 @@ func (self *Backend) Initialize() error {
 	}
 
 	if v, ok := self.Dataset.Options[`refresh_failures`]; ok && v != `` {
-		if vInt, err := strconv.ParseInt(v, 10, 32); err == nil && vInt > 0 {
+		if vInt, err := stringutil.ConvertToInteger(v); err == nil && vInt > 0 {
 			self.SchemaRefreshMaxFail = int(vInt)
 		} else {
 			self.SchemaRefreshMaxFail = DEFAULT_SCHEMA_REFRESH_MAX_FAIL
@@ -105,14 +106,14 @@ func (self *Backend) Initialize() error {
 func (self *Backend) Finalize(caller IBackend) error {
 	//  how often to automatically refresh backend details
 	if v, ok := caller.GetDataset().Options[`refresh_interval`]; ok && v != `` {
-		if vInt, err := strconv.ParseInt(v, 10, 32); err == nil {
+		if vInt, err := stringutil.ConvertToInteger(v); err == nil {
 			self.SchemaRefresh = time.Duration(vInt) * time.Millisecond
 		}
 	}
 
 	//  how long to wait before a Refresh is considered failsauce
 	if v, ok := caller.GetDataset().Options[`refresh_timeout`]; ok && v != `` {
-		if vInt, err := strconv.ParseInt(v, 10, 32); err == nil {
+		if vInt, err := stringutil.ConvertToInteger(v); err == nil {
 			self.SchemaRefreshTimeout = time.Duration(vInt) * time.Millisecond
 		} else {
 			self.SchemaRefreshTimeout = time.Duration(DEFAULT_SCHEMA_REFRESH_TIMEOUT_MS) * time.Millisecond
