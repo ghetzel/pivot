@@ -3,7 +3,6 @@ package pivot
 import (
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/pivot/util"
-	"github.com/ghetzel/pivot/dal"
 	"time"
 	"fmt"
 )
@@ -18,18 +17,6 @@ type Client struct {
 	*util.MultiClient
 }
 
-type Backend struct {
-	Available            bool          `json:"available"`
-	Connected            bool          `json:"connected"`
-	ConnectMaxAttempts   int           `json:"max_connection_attempts"`
-	ConnectTimeout       time.Duration `json:"connect_timeout"`
-	Dataset              dal.Dataset   `json:"configuration"`
-	Name                 string        `json:"name"`
-	SchemaRefresh        time.Duration `json:"schema_refresh_interval"`
-	SchemaRefreshMaxFail int           `json:"schema_refresh_max_failures"`
-	SchemaRefreshTimeout time.Duration `json:"schema_refresh_timeout"`
-}
-
 func NewClient(address string) *Client {
 	client := util.NewMultiClient(address)
 	maputil.DefaultStructTag = `json`
@@ -40,10 +27,9 @@ func NewClient(address string) *Client {
 }
 
 func (self *Client) Status() (util.Status, error) {
-	response := PivotResponse{}
 	status := util.Status{}
 
-	if err := self.Request(`GET`, `/api/status`, nil, &response, nil); err == nil {
+	if response, err := self.Call(`GET`, `/api/status`, nil); err == nil {
 		if err := maputil.StructFromMap(response.Payload, &status); err == nil {
 			return status, nil
 		} else {
@@ -54,20 +40,19 @@ func (self *Client) Status() (util.Status, error) {
 	}
 }
 
-func (self *Client) Backends() ([]Backend, error) {
-	response := PivotResponse{}
-	backendDefs := make([]Backend, 0)
+func (self *Client) Backends() ([]*Backend, error) {
+	backendDefs := make([]*Backend, 0)
 
-	if err := self.Request(`GET`, `/api/backends`, nil, &response, nil); err == nil {
+	if response, err := self.Call(`GET`, `/api/backends`, nil); err == nil {
 		for _, v := range response.Payload {
 			switch v.(type) {
 			case map[string]interface{}:
 				vMap := v.(map[string]interface{})
-				backend := Backend{}
+				backend := &Backend{
+					Client: self,
+				}
 
-				fmt.Printf("%+v\n", vMap)
-
-				if err := maputil.StructFromMap(vMap, &backend); err == nil {
+				if err := maputil.StructFromMap(vMap, &backend.Backend); err == nil {
 					backendDefs = append(backendDefs, backend)
 				} else {
 					return nil, err
@@ -79,4 +64,29 @@ func (self *Client) Backends() ([]Backend, error) {
 	} else {
 		return nil, err
 	}
+}
+
+func (self *Client) Call(method string, path string, payload interface{}) (PivotResponse, error) {
+	response := PivotResponse{}
+
+	if err := self.Request(method, path, payload, &response, nil); err == nil {
+		return response, nil
+	}else{
+		return response, err
+	}
+}
+
+
+func (self *Client) GetBackend(name string) (*Backend, error) {
+	if backendDefs, err := self.Backends(); err == nil {
+		for _, backend := range backendDefs {
+			if backend.Name == name {
+				return backend, nil
+			}
+		}
+	}else{
+		return nil, err
+	}
+
+	return nil, fmt.Errorf("Cannot locate backend %q", name)
 }
