@@ -2,6 +2,7 @@ package dal
 
 import (
 	"fmt"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 )
 
 type Field struct {
@@ -11,7 +12,7 @@ type Field struct {
 	Properties map[string]interface{} `json:"properties,omitempty"`
 }
 
-func (self *Field) VerifyEqual(other Field) error {
+func (self *Field) VerifyEqual(dataset *Dataset, other Field) error {
 	if other.Name != self.Name {
 		return fmt.Errorf("Field names do not match; expected: '%s', got: '%s'", self.Name, other.Name)
 	}
@@ -20,27 +21,33 @@ func (self *Field) VerifyEqual(other Field) error {
 		return fmt.Errorf("Field types do not match; expected: '%s', got: '%s'", self.Type, other.Type)
 	}
 
-	if other.Length != self.Length {
-		return fmt.Errorf("Field lengths do not match; expected: %d, got: %d", self.Length, other.Length)
+	if !dataset.SkipFieldLength {
+		if other.Length != self.Length {
+			return fmt.Errorf("Field lengths do not match; expected: %d, got: %d", self.Length, other.Length)
+		}
 	}
 
 	for myKey, myValue := range self.Properties {
 		if otherValue, ok := other.Properties[myKey]; ok {
 			if otherValue != myValue {
-				return fmt.Errorf("Field '%s' property '%s' values differ", self.Name, myKey)
+				return fmt.Errorf("Field '%s': property '%s' values differ", self.Name, myKey)
 			}
 		} else {
-			return fmt.Errorf("Field '%s' property '%s' is missing", self.Name, myKey)
+			if sliceutil.ContainsString(dataset.MandatoryFieldProperties, myKey) {
+				return fmt.Errorf("Field '%s': property '%s' is missing", self.Name, myKey)
+			}
 		}
 	}
 
 	for otherKey, otherValue := range other.Properties {
 		if myValue, ok := self.Properties[otherKey]; ok {
 			if myValue != otherValue {
-				return fmt.Errorf("Field '%s' property '%s' values differ", self.Name, otherKey)
+				return fmt.Errorf("Field '%s': property '%s' values differ", self.Name, otherKey)
 			}
 		} else {
-			return fmt.Errorf("Field '%s' property '%s' is missing", self.Name, otherKey)
+			if sliceutil.ContainsString(dataset.MandatoryFieldProperties, otherKey) {
+				return fmt.Errorf("Field '%s': property '%s' is missing", self.Name, otherKey)
+			}
 		}
 	}
 

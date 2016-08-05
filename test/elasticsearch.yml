@@ -1,0 +1,6 @@
+---
+backends:
+    testing:
+        type: elasticsearch
+        addresses:
+        - 'http://172.17.0.2:9200'

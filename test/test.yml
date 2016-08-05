@@ -1,6 +1,6 @@
 ---
 backends:
-    dummy1:
+    testing:
         type: dummy
         dataset: test-one
         addresses:

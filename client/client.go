@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/pivot/util"
+	"github.com/op/go-logging"
 	"time"
 )
 
+var log = logging.MustGetLogger(`pivot`)
+
 type PivotResponse struct {
 	Success     bool                   `json:"success"`
+	Error       string                 `json:"error"`
 	RespondedAt time.Time              `json:"responded_at"`
 	Payload     map[string]interface{} `json:"payload"`
 }
@@ -69,8 +73,18 @@ func (self *Client) Backends() ([]*Backend, error) {
 func (self *Client) Call(method string, path string, payload interface{}) (PivotResponse, error) {
 	response := PivotResponse{}
 
-	if err := self.Request(method, path, payload, &response, nil); err == nil {
-		return response, nil
+	log.Debugf("API: %s %s", method, path)
+
+	if err := self.Request(method, path, payload, &response, &response); err == nil {
+		if response.Success {
+			return response, nil
+		} else {
+			if response.Error != `` {
+				return response, fmt.Errorf("%s", response.Error)
+			} else {
+				return response, fmt.Errorf("Request returned an unknown error")
+			}
+		}
 	} else {
 		return response, err
 	}

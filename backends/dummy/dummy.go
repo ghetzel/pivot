@@ -7,7 +7,6 @@ import (
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/op/go-logging"
-	"net/http"
 	"time"
 )
 
@@ -88,18 +87,6 @@ func (self *DummyBackend) Refresh() error {
 	return nil
 }
 
-func (self *DummyBackend) GetStatus() map[string]interface{} {
-	return map[string]interface{}{
-		`type`:      `dummy`,
-		`connected`: self.IsConnected(),
-		`available`: self.IsAvailable(),
-	}
-}
-
-func (self *DummyBackend) RequestToFilter(request *http.Request, params map[string]string) (filter.Filter, error) {
-	return self.Backend.RequestToFilter(request, params)
-}
-
 func (self *DummyBackend) ReadDatasetSchema() *dal.Dataset {
 	return self.GetDataset()
 }
@@ -114,7 +101,7 @@ func (self *DummyBackend) ReadCollectionSchema(collectionName string) (dal.Colle
 	return dal.Collection{}, false
 }
 
-func (self *DummyBackend) UpdateCollectionSchema(action dal.CollectionAction, collectionName string, definition dal.Collection) error {
+func (self *DummyBackend) UpdateCollectionSchema(action dal.CollectionAction, definition dal.Collection) error {
 	return fmt.Errorf("Not implemented")
 }
 

@@ -2,13 +2,13 @@ package elasticsearch
 
 import (
 	"fmt"
+	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/op/go-logging"
-	"net/http"
 	"strings"
 	"time"
 )
@@ -36,6 +36,12 @@ const (
 func New(name string, config dal.Dataset) *ElasticsearchBackend {
 	config.Collections = make([]dal.Collection, 0)
 
+	// specify that field order does not matter to Elasticsearch
+	config.FieldsUnordered = true
+
+	// specify that Elasticsearch field lengths should not be compared
+	config.SkipFieldLength = true
+
 	return &ElasticsearchBackend{
 		Backend: backends.Backend{
 			Name:          name,
@@ -49,7 +55,7 @@ func New(name string, config dal.Dataset) *ElasticsearchBackend {
 func (self *ElasticsearchBackend) SetConnected(c bool) {
 	self.Connected = c
 
-	if c {
+	if self.Connected {
 		self.client.Resume()
 		log.Infof("CONNECT: backend %s", self.GetName())
 	} else {
@@ -93,7 +99,6 @@ func (self *ElasticsearchBackend) Connect() error {
 func (self *ElasticsearchBackend) Refresh() error {
 	if version, err := self.client.ServerVersion(); err == nil {
 		self.esVersion = version
-		log.Debugf("Connected to Elasticsearch API version %d", self.esVersion)
 	} else {
 		return err
 	}
@@ -102,9 +107,9 @@ func (self *ElasticsearchBackend) Refresh() error {
 		self.Dataset.Name = clusterHealth.Name
 		self.Dataset.Metadata = clusterHealth.ToMap()
 
-		if clusterHealth.Status == `red` {
-			return fmt.Errorf("Cannot read Elasticsearch cluster metadata: cluster '%s' has a status of 'red'", clusterHealth.Status)
-		}
+		// if clusterHealth.Status == `red` {
+		// 	return fmt.Errorf("Cannot read Elasticsearch cluster metadata: cluster '%s' has a status of 'red'", clusterHealth.Name)
+		// }
 	} else {
 		return err
 	}
@@ -115,6 +120,7 @@ func (self *ElasticsearchBackend) Refresh() error {
 		for _, index := range indexNames {
 			if indexMappings, err := self.client.GetMapping(index); err == nil {
 				fields := make([]dal.Field, 0)
+				fieldMap := make(map[string]dal.Field)
 
 				// for all mappings across all document types on this index...
 				for docType, mapping := range indexMappings.Mappings {
@@ -128,9 +134,12 @@ func (self *ElasticsearchBackend) Refresh() error {
 							var fieldType string
 
 							if fieldTypeI, ok := fieldConfig[`type`]; ok {
-								var err error
-								if fieldType, err = stringutil.ToString(fieldTypeI); err == nil {
+								if f, err := stringutil.ToString(fieldTypeI); err == nil {
 									delete(fieldConfig, `type`)
+
+									if pivotType, err := self.client.ToPivotType(f); err == nil {
+										fieldType = pivotType
+									}
 								}
 							}
 
@@ -146,8 +155,14 @@ func (self *ElasticsearchBackend) Refresh() error {
 								Properties: fieldConfig,
 							}
 
-							fields = append(fields, field)
+							fieldMap[fieldName] = field
 						}
+					}
+				}
+
+				for _, fieldName := range maputil.StringKeys(fieldMap) {
+					if field, ok := fieldMap[fieldName]; ok {
+						fields = append(fields, field)
 					}
 				}
 
@@ -171,18 +186,6 @@ func (self *ElasticsearchBackend) Refresh() error {
 	return nil
 }
 
-func (self *ElasticsearchBackend) GetStatus() map[string]interface{} {
-	return map[string]interface{}{
-		`type`:      `elasticsearch`,
-		`connected`: self.IsConnected(),
-		`available`: self.IsAvailable(),
-	}
-}
-
-func (self *ElasticsearchBackend) RequestToFilter(request *http.Request, params map[string]string) (filter.Filter, error) {
-	return self.Backend.RequestToFilter(request, params)
-}
-
 func (self *ElasticsearchBackend) ReadDatasetSchema() *dal.Dataset {
 	return self.GetDataset()
 }
@@ -197,27 +200,27 @@ func (self *ElasticsearchBackend) ReadCollectionSchema(collectionName string) (d
 	return dal.Collection{}, false
 }
 
-func (self *ElasticsearchBackend) UpdateCollectionSchema(action dal.CollectionAction, collectionName string, definition dal.Collection) error {
+func (self *ElasticsearchBackend) UpdateCollectionSchema(action dal.CollectionAction, definition dal.Collection) error {
 	defer self.Refresh()
 
 	switch action {
 	// CREATE ----------------------------------------------------------------------------------------------------------
 	case dal.SchemaCreate:
-		if _, ok := self.Dataset.GetCollection(collectionName); !ok {
-			return self.client.CreateIndex(collectionName, definition)
+		if existingDefinition, ok := self.Dataset.GetCollection(definition.Name); !ok {
+			return self.client.CreateIndex(definition.Name, definition)
 		} else {
-			return fmt.Errorf("Collection '%s' already exists", collectionName)
+			return existingDefinition.VerifyEqual(definition)
 		}
 
 	// VERIFY ----------------------------------------------------------------------------------------------------------
 	case dal.SchemaVerify:
 		if err := self.Refresh(); err == nil {
-			if existingDefinition, ok := self.Dataset.GetCollection(collectionName); ok {
+			if existingDefinition, ok := self.Dataset.GetCollection(definition.Name); ok {
 				if err := existingDefinition.VerifyEqual(definition); err != nil {
 					return err
 				}
 			} else {
-				return fmt.Errorf("Collection '%s' does not exist", collectionName)
+				return fmt.Errorf("Collection '%s' does not exist", definition.Name)
 			}
 		} else {
 			return err

@@ -82,10 +82,10 @@ func RegisterHandlers(backend IBackend) ([]util.Endpoint, error) {
 						}
 
 						if data, err := ioutil.ReadAll(request.Body); err == nil {
-							definition := dal.Collection{}
+							definition := backend.GetDataset().MakeCollection(collectionName)
 
 							if err := json.Unmarshal(data, &definition); err == nil {
-								return http.StatusNoContent, nil, backend.UpdateCollectionSchema(schemaAction, collectionName, definition)
+								return http.StatusOK, nil, backend.UpdateCollectionSchema(schemaAction, definition)
 							} else {
 								return http.StatusBadRequest, nil, err
 							}

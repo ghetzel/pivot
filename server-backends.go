@@ -186,6 +186,24 @@ func (self *Server) setupAdminRoutesForBackend(backend backends.IBackend) {
 			}
 		}
 	})
+
+	self.router.PUT(urlForBackend(backend.GetName(), `/refresh`), func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+		parts := strings.Split(req.URL.Path, `/`)
+
+		if len(parts) >= 4 {
+			backendName := parts[3]
+
+			if backend, ok := Backends[backendName]; ok {
+				if err := backend.Refresh(); err == nil {
+					self.Respond(w, http.StatusAccepted, nil, nil)
+				} else {
+					self.Respond(w, http.StatusInternalServerError, nil, err)
+				}
+			} else {
+				self.Respond(w, http.StatusNotFound, nil, fmt.Errorf("Backend '%s' does not exist", backendName))
+			}
+		}
+	})
 }
 
 // Returns all endpoints that apply to a given backend

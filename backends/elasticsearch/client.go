@@ -219,6 +219,36 @@ func (self *ElasticsearchClient) CreateIndex(index string, definition dal.Collec
 	}
 }
 
+func (self *ElasticsearchClient) ToPivotType(esType string) (string, error) {
+	switch esType {
+	case `string`:
+		return `str`, nil
+	case `integer`, `long`, `short`, `byte`:
+		return `int`, nil
+	case `float`, `double`:
+		return `float`, nil
+	case `boolean`:
+		return `bool`, nil
+	default:
+		return esType, nil
+	}
+}
+
+func (self *ElasticsearchClient) FromPivotType(pivotType string) (string, error) {
+	switch pivotType {
+	case `str`:
+		return `string`, nil
+	case `int`:
+		return `integer`, nil
+	case `float`:
+		return `float`, nil
+	case `bool`:
+		return `boolean`, nil
+	default:
+		return ``, fmt.Errorf("Unsupported field data type '%s' for %T", pivotType, self)
+	}
+}
+
 func (self *ElasticsearchClient) getMappingsFromCollection(definition *dal.Collection) (map[string]interface{}, error) {
 	mappings := make(map[string]interface{})
 	docType := DEFAULT_ES_DOCUMENT_TYPE
@@ -233,17 +263,10 @@ func (self *ElasticsearchClient) getMappingsFromCollection(definition *dal.Colle
 	for _, field := range definition.Fields {
 		var esType string
 
-		switch field.Type {
-		case `str`:
-			esType = `string`
-		case `int`:
-			esType = `integer`
-		case `float`:
-			esType = `float`
-		case `bool`:
-			esType = `boolean`
-		default:
-			return nil, fmt.Errorf("Unsupported field data type '%s' for %T", field.Type, self)
+		if t, err := self.FromPivotType(field.Type); err == nil {
+			esType = t
+		} else {
+			return nil, err
 		}
 
 		var mappingDef map[string]interface{}

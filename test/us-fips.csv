@@ -1,0 +1,3143 @@
+"State","County Name","FIPS State","FIPS County"
+"Alabama","Autauga",1,1
+"Alabama","Baldwin",1,3
+"Alabama","Barbour",1,5
+"Alabama","Bibb",1,7
+"Alabama","Blount",1,9
+"Alabama","Bullock",1,11
+"Alabama","Butler",1,13
+"Alabama","Calhoun",1,15
+"Alabama","Chambers",1,17
+"Alabama","Cherokee",1,19
+"Alabama","Chilton",1,21
+"Alabama","Choctaw",1,23
+"Alabama","Clarke",1,25
+"Alabama","Clay",1,27
+"Alabama","Cleburne",1,29
+"Alabama","Coffee",1,31
+"Alabama","Colbert",1,33
+"Alabama","Conecuh",1,35
+"Alabama","Coosa",1,37
+"Alabama","Covington",1,39
+"Alabama","Crenshaw",1,41
+"Alabama","Cullman",1,43
+"Alabama","Dale",1,45
+"Alabama","Dallas",1,47
+"Alabama","De Kalb",1,49
+"Alabama","Elmore",1,51
+"Alabama","Escambia",1,53
+"Alabama","Etowah",1,55
+"Alabama","Fayette",1,57
+"Alabama","Franklin",1,59
+"Alabama","Geneva",1,61
+"Alabama","Greene",1,63
+"Alabama","Hale",1,65
+"Alabama","Henry",1,67
+"Alabama","Houston",1,69
+"Alabama","Jackson",1,71
+"Alabama","Jefferson",1,73
+"Alabama","Lamar",1,75
+"Alabama","Lauderdale",1,77
+"Alabama","Lawrence",1,79
+"Alabama","Lee",1,81
+"Alabama","Limestone",1,83
+"Alabama","Lowndes",1,85
+"Alabama","Macon",1,87
+"Alabama","Madison",1,89
+"Alabama","Marengo",1,91
+"Alabama","Marion",1,93
+"Alabama","Marshall",1,95
+"Alabama","Mobile",1,97
+"Alabama","Monroe",1,99
+"Alabama","Montgomery",1,101
+"Alabama","Morgan",1,103
+"Alabama","Perry",1,105
+"Alabama","Pickens",1,107
+"Alabama","Pike",1,109
+"Alabama","Randolph",1,111
+"Alabama","Russell",1,113
+"Alabama","St Clair",1,115
+"Alabama","Shelby",1,117
+"Alabama","Sumter",1,119
+"Alabama","Talladega",1,121
+"Alabama","Tallapoosa",1,123
+"Alabama","Tuscaloosa",1,125
+"Alabama","Walker",1,127
+"Alabama","Washington",1,129
+"Alabama","Wilcox",1,131
+"Alabama","Winston",1,133
+"Alaska","Aleutians East",2,13
+"Alaska","Aleutians West",2,16
+"Alaska","Anchorage",2,20
+"Alaska","Bethel",2,50
+"Alaska","Bristol Bay",2,60
+"Alaska","Denali",2,68
+"Alaska","Dillingham",2,70
+"Alaska","Fairbanks North Star",2,90
+"Alaska","Haines",2,100
+"Alaska","Juneau",2,110
+"Alaska","Kenai Peninsula",2,122
+"Alaska","Ketchikan Gateway",2,130
+"Alaska","Kodiak Island",2,150
+"Alaska","Lake and Peninsula",2,164
+"Alaska","Matanuska Susitna",2,170
+"Alaska","Nome",2,180
+"Alaska","North Slope",2,185
+"Alaska","Northwest Arctic",2,188
+"Alaska","Prince Wales Ketchikan",2,201
+"Alaska","Sitka",2,220
+"Alaska","Skagway Hoonah Angoon",2,232
+"Alaska","Southeast Fairbanks",2,240
+"Alaska","Valdez Cordova",2,261
+"Alaska","Wade Hampton",2,270
+"Alaska","Wrangell Petersburg",2,280
+"Alaska","Yakutat",2,282
+"Alaska","Yukon Koyukuk",2,290
+"Arizona","Apache",4,1
+"Arizona","Cochise",4,3
+"Arizona","Coconino",4,5
+"Arizona","Gila",4,7
+"Arizona","Graham",4,9
+"Arizona","Greenlee",4,11
+"Arizona","La Paz",4,12
+"Arizona","Maricopa",4,13
+"Arizona","Mohave",4,15
+"Arizona","Navajo",4,17
+"Arizona","Pima",4,19
+"Arizona","Pinal",4,21
+"Arizona","Santa Cruz",4,23
+"Arizona","Yavapai",4,25
+"Arizona","Yuma",4,27
+"Arkansas","Arkansas",5,1
+"Arkansas","Ashley",5,3
+"Arkansas","Baxter",5,5
+"Arkansas","Benton",5,7
+"Arkansas","Boone",5,9
+"Arkansas","Bradley",5,11
+"Arkansas","Calhoun",5,13
+"Arkansas","Carroll",5,15
+"Arkansas","Chicot",5,17
+"Arkansas","Clark",5,19
+"Arkansas","Clay",5,21
+"Arkansas","Cleburne",5,23
+"Arkansas","Cleveland",5,25
+"Arkansas","Columbia",5,27
+"Arkansas","Conway",5,29
+"Arkansas","Craighead",5,31
+"Arkansas","Crawford",5,33
+"Arkansas","Crittenden",5,35
+"Arkansas","Cross",5,37
+"Arkansas","Dallas",5,39
+"Arkansas","Desha",5,41
+"Arkansas","Drew",5,43
+"Arkansas","Faulkner",5,45
+"Arkansas","Franklin",5,47
+"Arkansas","Fulton",5,49
+"Arkansas","Garland",5,51
+"Arkansas","Grant",5,53
+"Arkansas","Greene",5,55
+"Arkansas","Hempstead",5,57
+"Arkansas","Hot Spring",5,59
+"Arkansas","Howard",5,61
+"Arkansas","Independence",5,63
+"Arkansas","Izard",5,65
+"Arkansas","Jackson",5,67
+"Arkansas","Jefferson",5,69
+"Arkansas","Johnson",5,71
+"Arkansas","Lafayette",5,73
+"Arkansas","Lawrence",5,75
+"Arkansas","Lee",5,77
+"Arkansas","Lincoln",5,79
+"Arkansas","Little River",5,81
+"Arkansas","Logan",5,83
+"Arkansas","Lonoke",5,85
+"Arkansas","Madison",5,87
+"Arkansas","Marion",5,89
+"Arkansas","Miller",5,91
+"Arkansas","Mississippi",5,93
+"Arkansas","Monroe",5,95
+"Arkansas","Nevada",5,99
+"Arkansas","Newton",5,101
+"Arkansas","Ouachita",5,103
+"Arkansas","Perry",5,105
+"Arkansas","Phillips",5,107
+"Arkansas","Pike",5,109
+"Arkansas","Poinsett",5,111
+"Arkansas","Polk",5,113
+"Arkansas","Pope",5,115
+"Arkansas","Prairie",5,117
+"Arkansas","Pulaski",5,119
+"Arkansas","Randolph",5,121
+"Arkansas","St Francis",5,123
+"Arkansas","Saline",5,125
+"Arkansas","Scott",5,127
+"Arkansas","Searcy",5,129
+"Arkansas","Sebastian",5,131
+"Arkansas","Sevier",5,133
+"Arkansas","Sharp",5,135
+"Arkansas","Stone",5,137
+"Arkansas","Union",5,139
+"Arkansas","Van Buren",5,141
+"Arkansas","Washington",5,143
+"Arkansas","White",5,145
+"Arkansas","Woodruff",5,147
+"Arkansas","Yell",5,149
+"California","Alameda",6,1
+"California","Alpine",6,3
+"California","Amador",6,5
+"California","Butte",6,7
+"California","Calaveras",6,9
+"California","Colusa",6,11
+"California","Contra Costa",6,13
+"California","Del Norte",6,15
+"California","El Dorado",6,17
+"California","Fresno",6,19
+"California","Glenn",6,21
+"California","Humboldt",6,23
+"California","Imperial",6,25
+"California","Inyo",6,27
+"California","Kern",6,29
+"California","Kings",6,31
+"California","Lake",6,33
+"California","Lassen",6,35
+"California","Los Angeles",6,37
+"California","Madera",6,39
+"California","Marin",6,41
+"California","Mariposa",6,43
+"California","Mendocino",6,45
+"California","Merced",6,47
+"California","Modoc",6,49
+"California","Mono",6,51
+"California","Monterey",6,53
+"California","Napa",6,55
+"California","Nevada",6,57
+"California","Orange",6,59
+"California","Placer",6,61
+"California","Plumas",6,63
+"California","Riverside",6,65
+"California","Sacramento",6,67
+"California","San Benito",6,69
+"California","San Bernardino",6,71
+"California","San Diego",6,73
+"California","San Francisco",6,75
+"California","San Joaquin",6,77
+"California","San Luis Obispo",6,79
+"California","San Mateo",6,81
+"California","Santa Barbara",6,83
+"California","Santa Clara",6,85
+"California","Santa Cruz",6,87
+"California","Shasta",6,89
+"California","Sierra",6,91
+"California","Siskiyou",6,93
+"California","Solano",6,95
+"California","Sonoma",6,97
+"California","Stanislaus",6,99
+"California","Sutter",6,101
+"California","Tehama",6,103
+"California","Trinity",6,105
+"California","Tulare",6,107
+"California","Tuolumne",6,109
+"California","Ventura",6,111
+"California","Yolo",6,113
+"California","Yuba",6,115
+"Colorado","Adams",8,1
+"Colorado","Alamosa",8,3
+"Colorado","Arapahoe",8,5
+"Colorado","Archuleta",8,7
+"Colorado","Baca",8,9
+"Colorado","Bent",8,11
+"Colorado","Boulder",8,13
+"Colorado","Broomfield",8,14
+"Colorado","Chaffee",8,15
+"Colorado","Cheyenne",8,17
+"Colorado","Clear Creek",8,19
+"Colorado","Conejos",8,21
+"Colorado","Costilla",8,23
+"Colorado","Crowley",8,25
+"Colorado","Custer",8,27
+"Colorado","Delta",8,29
+"Colorado","Denver",8,31
+"Colorado","Dolores",8,33
+"Colorado","Douglas",8,35
+"Colorado","Eagle",8,37
+"Colorado","Elbert",8,39
+"Colorado","El Paso",8,41
+"Colorado","Fremont",8,43
+"Colorado","Garfield",8,45
+"Colorado","Gilpin",8,47
+"Colorado","Grand",8,49
+"Colorado","Gunnison",8,51
+"Colorado","Hinsdale",8,53
+"Colorado","Huerfano",8,55
+"Colorado","Jackson",8,57
+"Colorado","Jefferson",8,59
+"Colorado","Kiowa",8,61
+"Colorado","Kit Carson",8,63
+"Colorado","Lake",8,65
+"Colorado","La Plata",8,67
+"Colorado","Larimer",8,69
+"Colorado","Las Animas",8,71
+"Colorado","Lincoln",8,73
+"Colorado","Logan",8,75
+"Colorado","Mesa",8,77
+"Colorado","Mineral",8,79
+"Colorado","Moffat",8,81
+"Colorado","Montezuma",8,83
+"Colorado","Montrose",8,85
+"Colorado","Morgan",8,87
+"Colorado","Otero",8,89
+"Colorado","Ouray",8,91
+"Colorado","Park",8,93
+"Colorado","Phillips",8,95
+"Colorado","Pitkin",8,97
+"Colorado","Prowers",8,99
+"Colorado","Pueblo",8,101
+"Colorado","Rio Blanco",8,103
+"Colorado","Rio Grande",8,105
+"Colorado","Routt",8,107
+"Colorado","Saguache",8,109
+"Colorado","San Juan",8,111
+"Colorado","San Miguel",8,113
+"Colorado","Sedgwick",8,115
+"Colorado","Summit",8,117
+"Colorado","Teller",8,119
+"Colorado","Washington",8,121
+"Colorado","Weld",8,123
+"Colorado","Yuma",8,125
+"Connecticut","Fairfield",9,1
+"Connecticut","Hartford",9,3
+"Connecticut","Litchfield",9,5
+"Connecticut","Middlesex",9,7
+"Connecticut","New Haven",9,9
+"Connecticut","New London",9,11
+"Connecticut","Tolland",9,13
+"Connecticut","Windham",9,15
+"Delaware","Kent",10,1
+"Delaware","New Castle",10,3
+"Delaware","Sussex",10,5
+"District of Columbia","District of Columbia",11,1
+"District of Columbia","Montgomery",11,31
+"Florida","Alachua",12,1
+"Florida","Baker",12,3
+"Florida","Bay",12,5
+"Florida","Bradford",12,7
+"Florida","Brevard",12,9
+"Florida","Broward",12,11
+"Florida","Calhoun",12,13
+"Florida","Charlotte",12,15
+"Florida","Citrus",12,17
+"Florida","Clay",12,19
+"Florida","Collier",12,21
+"Florida","Columbia",12,23
+"Florida","De Soto",12,27
+"Florida","Dixie",12,29
+"Florida","Duval",12,31
+"Florida","Escambia",12,33
+"Florida","Flagler",12,35
+"Florida","Franklin",12,37
+"Florida","Gadsden",12,39
+"Florida","Gilchrist",12,41
+"Florida","Glades",12,43
+"Florida","Gulf",12,45
+"Florida","Hamilton",12,47
+"Florida","Hardee",12,49
+"Florida","Hendry",12,51
+"Florida","Hernando",12,53
+"Florida","Highlands",12,55
+"Florida","Hillsborough",12,57
+"Florida","Holmes",12,59
+"Florida","Indian River",12,61
+"Florida","Jackson",12,63
+"Florida","Jefferson",12,65
+"Florida","Lafayette",12,67
+"Florida","Lake",12,69
+"Florida","Lee",12,71
+"Florida","Leon",12,73
+"Florida","Levy",12,75
+"Florida","Liberty",12,77
+"Florida","Madison",12,79
+"Florida","Manatee",12,81
+"Florida","Marion",12,83
+"Florida","Martin",12,85
+"Florida","Miami-Dade",12,86
+"Florida","Monroe",12,87
+"Florida","Nassau",12,89
+"Florida","Okaloosa",12,91
+"Florida","Okeechobee",12,93
+"Florida","Orange",12,95
+"Florida","Osceola",12,97
+"Florida","Palm Beach",12,99
+"Florida","Pasco",12,101
+"Florida","Pinellas",12,103
+"Florida","Polk",12,105
+"Florida","Putnam",12,107
+"Florida","St Johns",12,109
+"Florida","St Lucie",12,111
+"Florida","Santa Rosa",12,113
+"Florida","Sarasota",12,115
+"Florida","Seminole",12,117
+"Florida","Sumter",12,119
+"Florida","Suwannee",12,121
+"Florida","Taylor",12,123
+"Florida","Union",12,125
+"Florida","Volusia",12,127
+"Florida","Wakulla",12,129
+"Florida","Walton",12,131
+"Florida","Washington",12,133
+"Georgia","Appling",13,1
+"Georgia","Atkinson",13,3
+"Georgia","Bacon",13,5
+"Georgia","Baker",13,7
+"Georgia","Baldwin",13,9
+"Georgia","Banks",13,11
+"Georgia","Barrow",13,13
+"Georgia","Bartow",13,15
+"Georgia","Ben Hill",13,17
+"Georgia","Berrien",13,19
+"Georgia","Bibb",13,21
+"Georgia","Bleckley",13,23
+"Georgia","Brantley",13,25
+"Georgia","Brooks",13,27
+"Georgia","Bryan",13,29
+"Georgia","Bulloch",13,31
+"Georgia","Burke",13,33
+"Georgia","Butts",13,35
+"Georgia","Calhoun",13,37
+"Georgia","Camden",13,39
+"Georgia","Candler",13,43
+"Georgia","Carroll",13,45
+"Georgia","Catoosa",13,47
+"Georgia","Charlton",13,49
+"Georgia","Chatham",13,51
+"Georgia","Chattahoochee",13,53
+"Georgia","Chattooga",13,55
+"Georgia","Cherokee",13,57
+"Georgia","Clarke",13,59
+"Georgia","Clay",13,61
+"Georgia","Clayton",13,63
+"Georgia","Clinch",13,65
+"Georgia","Cobb",13,67
+"Georgia","Coffee",13,69
+"Georgia","Colquitt",13,71
+"Georgia","Columbia",13,73
+"Georgia","Cook",13,75
+"Georgia","Coweta",13,77
+"Georgia","Crawford",13,79
+"Georgia","Crisp",13,81
+"Georgia","Dade",13,83
+"Georgia","Dawson",13,85
+"Georgia","Decatur",13,87
+"Georgia","De Kalb",13,89
+"Georgia","Dodge",13,91
+"Georgia","Dooly",13,93
+"Georgia","Dougherty",13,95
+"Georgia","Douglas",13,97
+"Georgia","Early",13,99
+"Georgia","Echols",13,101
+"Georgia","Effingham",13,103
+"Georgia","Elbert",13,105
+"Georgia","Emanuel",13,107
+"Georgia","Evans",13,109
+"Georgia","Fannin",13,111
+"Georgia","Fayette",13,113
+"Georgia","Floyd",13,115
+"Georgia","Forsyth",13,117
+"Georgia","Franklin",13,119
+"Georgia","Fulton",13,121
+"Georgia","Gilmer",13,123
+"Georgia","Glascock",13,125
+"Georgia","Glynn",13,127
+"Georgia","Gordon",13,129
+"Georgia","Grady",13,131
+"Georgia","Greene",13,133
+"Georgia","Gwinnett",13,135
+"Georgia","Habersham",13,137
+"Georgia","Hall",13,139
+"Georgia","Hancock",13,141
+"Georgia","Haralson",13,143
+"Georgia","Harris",13,145
+"Georgia","Hart",13,147
+"Georgia","Heard",13,149
+"Georgia","Henry",13,151
+"Georgia","Houston",13,153
+"Georgia","Irwin",13,155
+"Georgia","Jackson",13,157
+"Georgia","Jasper",13,159
+"Georgia","Jeff Davis",13,161
+"Georgia","Jefferson",13,163
+"Georgia","Jenkins",13,165
+"Georgia","Johnson",13,167
+"Georgia","Jones",13,169
+"Georgia","Lamar",13,171
+"Georgia","Lanier",13,173
+"Georgia","Laurens",13,175
+"Georgia","Lee",13,177
+"Georgia","Liberty",13,179
+"Georgia","Lincoln",13,181
+"Georgia","Long",13,183
+"Georgia","Lowndes",13,185
+"Georgia","Lumpkin",13,187
+"Georgia","McDuffie",13,189
+"Georgia","McIntosh",13,191
+"Georgia","Macon",13,193
+"Georgia","Madison",13,195
+"Georgia","Marion",13,197
+"Georgia","Meriwether",13,199
+"Georgia","Miller",13,201
+"Georgia","Mitchell",13,205
+"Georgia","Monroe",13,207
+"Georgia","Montgomery",13,209
+"Georgia","Morgan",13,211
+"Georgia","Murray",13,213
+"Georgia","Muscogee",13,215
+"Georgia","Newton",13,217
+"Georgia","Oconee",13,219
+"Georgia","Oglethorpe",13,221
+"Georgia","Paulding",13,223
+"Georgia","Peach",13,225
+"Georgia","Pickens",13,227
+"Georgia","Pierce",13,229
+"Georgia","Pike",13,231
+"Georgia","Polk",13,233
+"Georgia","Pulaski",13,235
+"Georgia","Putnam",13,237
+"Georgia","Quitman",13,239
+"Georgia","Rabun",13,241
+"Georgia","Randolph",13,243
+"Georgia","Richmond",13,245
+"Georgia","Rockdale",13,247
+"Georgia","Schley",13,249
+"Georgia","Screven",13,251
+"Georgia","Seminole",13,253
+"Georgia","Spalding",13,255
+"Georgia","Stephens",13,257
+"Georgia","Stewart",13,259
+"Georgia","Sumter",13,261
+"Georgia","Talbot",13,263
+"Georgia","Taliaferro",13,265
+"Georgia","Tattnall",13,267
+"Georgia","Taylor",13,269
+"Georgia","Telfair",13,271
+"Georgia","Terrell",13,273
+"Georgia","Thomas",13,275
+"Georgia","Tift",13,277
+"Georgia","Toombs",13,279
+"Georgia","Towns",13,281
+"Georgia","Treutlen",13,283
+"Georgia","Troup",13,285
+"Georgia","Turner",13,287
+"Georgia","Twiggs",13,289
+"Georgia","Union",13,291
+"Georgia","Upson",13,293
+"Georgia","Walker",13,295
+"Georgia","Walton",13,297
+"Georgia","Ware",13,299
+"Georgia","Warren",13,301
+"Georgia","Washington",13,303
+"Georgia","Wayne",13,305
+"Georgia","Webster",13,307
+"Georgia","Wheeler",13,309
+"Georgia","White",13,311
+"Georgia","Whitfield",13,313
+"Georgia","Wilcox",13,315
+"Georgia","Wilkes",13,317
+"Georgia","Wilkinson",13,319
+"Georgia","Worth",13,321
+"Hawaii","Hawaii",15,1
+"Hawaii","Honolulu",15,3
+"Hawaii","Kauai",15,7
+"Hawaii","Maui",15,9
+"Idaho","Ada",16,1
+"Idaho","Adams",16,3
+"Idaho","Bannock",16,5
+"Idaho","Bear Lake",16,7
+"Idaho","Benewah",16,9
+"Idaho","Bingham",16,11
+"Idaho","Blaine",16,13
+"Idaho","Boise",16,15
+"Idaho","Bonner",16,17
+"Idaho","Bonneville",16,19
+"Idaho","Boundary",16,21
+"Idaho","Butte",16,23
+"Idaho","Camas",16,25
+"Idaho","Canyon",16,27
+"Idaho","Caribou",16,29
+"Idaho","Cassia",16,31
+"Idaho","Clark",16,33
+"Idaho","Clearwater",16,35
+"Idaho","Custer",16,37
+"Idaho","Elmore",16,39
+"Idaho","Franklin",16,41
+"Idaho","Fremont",16,43
+"Idaho","Gem",16,45
+"Idaho","Gooding",16,47
+"Idaho","Idaho",16,49
+"Idaho","Jefferson",16,51
+"Idaho","Jerome",16,53
+"Idaho","Kootenai",16,55
+"Idaho","Latah",16,57
+"Idaho","Lemhi",16,59
+"Idaho","Lewis",16,61
+"Idaho","Lincoln",16,63
+"Idaho","Madison",16,65
+"Idaho","Minidoka",16,67
+"Idaho","Nez Perce",16,69
+"Idaho","Oneida",16,71
+"Idaho","Owyhee",16,73
+"Idaho","Payette",16,75
+"Idaho","Power",16,77
+"Idaho","Shoshone",16,79
+"Idaho","Teton",16,81
+"Idaho","Twin Falls",16,83
+"Idaho","Valley",16,85
+"Idaho","Washington",16,87
+"Illinois","Adams",17,1
+"Illinois","Alexander",17,3
+"Illinois","Bond",17,5
+"Illinois","Boone",17,7
+"Illinois","Brown",17,9
+"Illinois","Bureau",17,11
+"Illinois","Calhoun",17,13
+"Illinois","Carroll",17,15
+"Illinois","Cass",17,17
+"Illinois","Champaign",17,19
+"Illinois","Christian",17,21
+"Illinois","Clark",17,23
+"Illinois","Clay",17,25
+"Illinois","Clinton",17,27
+"Illinois","Coles",17,29
+"Illinois","Cook",17,31
+"Illinois","Crawford",17,33
+"Illinois","Cumberland",17,35
+"Illinois","De Kalb",17,37
+"Illinois","Dewitt",17,39
+"Illinois","Douglas",17,41
+"Illinois","Du Page",17,43
+"Illinois","Edgar",17,45
+"Illinois","Edwards",17,47
+"Illinois","Effingham",17,49
+"Illinois","Fayette",17,51
+"Illinois","Ford",17,53
+"Illinois","Franklin",17,55
+"Illinois","Fulton",17,57
+"Illinois","Gallatin",17,59
+"Illinois","Greene",17,61
+"Illinois","Grundy",17,63
+"Illinois","Hamilton",17,65
+"Illinois","Hancock",17,67
+"Illinois","Hardin",17,69
+"Illinois","Henderson",17,71
+"Illinois","Henry",17,73
+"Illinois","Iroquois",17,75
+"Illinois","Jackson",17,77
+"Illinois","Jasper",17,79
+"Illinois","Jefferson",17,81
+"Illinois","Jersey",17,83
+"Illinois","Jo Daviess",17,85
+"Illinois","Johnson",17,87
+"Illinois","Kane",17,89
+"Illinois","Kankakee",17,91
+"Illinois","Kendall",17,93
+"Illinois","Knox",17,95
+"Illinois","Lake",17,97
+"Illinois","La Salle",17,99
+"Illinois","Lawrence",17,101
+"Illinois","Lee",17,103
+"Illinois","Livingston",17,105
+"Illinois","Logan",17,107
+"Illinois","McDonough",17,109
+"Illinois","McHenry",17,111
+"Illinois","Mclean",17,113
+"Illinois","Macon",17,115
+"Illinois","Macoupin",17,117
+"Illinois","Madison",17,119
+"Illinois","Marion",17,121
+"Illinois","Marshall",17,123
+"Illinois","Mason",17,125
+"Illinois","Massac",17,127
+"Illinois","Menard",17,129
+"Illinois","Mercer",17,131
+"Illinois","Monroe",17,133
+"Illinois","Montgomery",17,135
+"Illinois","Morgan",17,137
+"Illinois","Moultrie",17,139
+"Illinois","Ogle",17,141
+"Illinois","Peoria",17,143
+"Illinois","Perry",17,145
+"Illinois","Piatt",17,147
+"Illinois","Pike",17,149
+"Illinois","Pope",17,151
+"Illinois","Pulaski",17,153
+"Illinois","Putnam",17,155
+"Illinois","Randolph",17,157
+"Illinois","Richland",17,159
+"Illinois","Rock Island",17,161
+"Illinois","St Clair",17,163
+"Illinois","Saline",17,165
+"Illinois","Sangamon",17,167
+"Illinois","Schuyler",17,169
+"Illinois","Scott",17,171
+"Illinois","Shelby",17,173
+"Illinois","Stark",17,175
+"Illinois","Stephenson",17,177
+"Illinois","Tazewell",17,179
+"Illinois","Union",17,181
+"Illinois","Vermilion",17,183
+"Illinois","Wabash",17,185
+"Illinois","Warren",17,187
+"Illinois","Washington",17,189
+"Illinois","Wayne",17,191
+"Illinois","White",17,193
+"Illinois","Whiteside",17,195
+"Illinois","Will",17,197
+"Illinois","Williamson",17,199
+"Illinois","Winnebago",17,201
+"Illinois","Woodford",17,203
+"Indiana","Adams",18,1
+"Indiana","Allen",18,3
+"Indiana","Bartholomew",18,5
+"Indiana","Benton",18,7
+"Indiana","Blackford",18,9
+"Indiana","Boone",18,11
+"Indiana","Brown",18,13
+"Indiana","Carroll",18,15
+"Indiana","Cass",18,17
+"Indiana","Clark",18,19
+"Indiana","Clay",18,21
+"Indiana","Clinton",18,23
+"Indiana","Crawford",18,25
+"Indiana","Daviess",18,27
+"Indiana","Dearborn",18,29
+"Indiana","Decatur",18,31
+"Indiana","De Kalb",18,33
+"Indiana","Delaware",18,35
+"Indiana","Dubois",18,37
+"Indiana","Elkhart",18,39
+"Indiana","Fayette",18,41
+"Indiana","Floyd",18,43
+"Indiana","Fountain",18,45
+"Indiana","Franklin",18,47
+"Indiana","Fulton",18,49
+"Indiana","Gibson",18,51
+"Indiana","Grant",18,53
+"Indiana","Greene",18,55
+"Indiana","Hamilton",18,57
+"Indiana","Hancock",18,59
+"Indiana","Harrison",18,61
+"Indiana","Hendricks",18,63
+"Indiana","Henry",18,65
+"Indiana","Howard",18,67
+"Indiana","Huntington",18,69
+"Indiana","Jackson",18,71
+"Indiana","Jasper",18,73
+"Indiana","Jay",18,75
+"Indiana","Jefferson",18,77
+"Indiana","Jennings",18,79
+"Indiana","Johnson",18,81
+"Indiana","Knox",18,83
+"Indiana","Kosciusko",18,85
+"Indiana","Lagrange",18,87
+"Indiana","Lake",18,89
+"Indiana","La Porte",18,91
+"Indiana","Lawrence",18,93
+"Indiana","Madison",18,95
+"Indiana","Marion",18,97
+"Indiana","Marshall",18,99
+"Indiana","Martin",18,101
+"Indiana","Miami",18,103
+"Indiana","Monroe",18,105
+"Indiana","Montgomery",18,107
+"Indiana","Morgan",18,109
+"Indiana","Newton",18,111
+"Indiana","Noble",18,113
+"Indiana","Ohio",18,115
+"Indiana","Orange",18,117
+"Indiana","Owen",18,119
+"Indiana","Parke",18,121
+"Indiana","Perry",18,123
+"Indiana","Pike",18,125
+"Indiana","Porter",18,127
+"Indiana","Posey",18,129
+"Indiana","Pulaski",18,131
+"Indiana","Putnam",18,133
+"Indiana","Randolph",18,135
+"Indiana","Ripley",18,137
+"Indiana","Rush",18,139
+"Indiana","St Joseph",18,141
+"Indiana","Scott",18,143
+"Indiana","Shelby",18,145
+"Indiana","Spencer",18,147
+"Indiana","Starke",18,149
+"Indiana","Steuben",18,151
+"Indiana","Sullivan",18,153
+"Indiana","Switzerland",18,155
+"Indiana","Tippecanoe",18,157
+"Indiana","Tipton",18,159
+"Indiana","Union",18,161
+"Indiana","Vanderburgh",18,163
+"Indiana","Vermillion",18,165
+"Indiana","Vigo",18,167
+"Indiana","Wabash",18,169
+"Indiana","Warren",18,171
+"Indiana","Warrick",18,173
+"Indiana","Washington",18,175
+"Indiana","Wayne",18,177
+"Indiana","Wells",18,179
+"Indiana","White",18,181
+"Indiana","Whitley",18,183
+"Iowa","Adair",19,1
+"Iowa","Adams",19,3
+"Iowa","Allamakee",19,5
+"Iowa","Appanoose",19,7
+"Iowa","Audubon",19,9
+"Iowa","Benton",19,11
+"Iowa","Black Hawk",19,13
+"Iowa","Boone",19,15
+"Iowa","Bremer",19,17
+"Iowa","Buchanan",19,19
+"Iowa","Buena Vista",19,21
+"Iowa","Butler",19,23
+"Iowa","Calhoun",19,25
+"Iowa","Carroll",19,27
+"Iowa","Cass",19,29
+"Iowa","Cedar",19,31
+"Iowa","Cerro Gordo",19,33
+"Iowa","Cherokee",19,35
+"Iowa","Chickasaw",19,37
+"Iowa","Clarke",19,39
+"Iowa","Clay",19,41
+"Iowa","Clayton",19,43
+"Iowa","Clinton",19,45
+"Iowa","Crawford",19,47
+"Iowa","Dallas",19,49
+"Iowa","Davis",19,51
+"Iowa","Decatur",19,53
+"Iowa","Delaware",19,55
+"Iowa","Des Moines",19,57
+"Iowa","Dickinson",19,59
+"Iowa","Dubuque",19,61
+"Iowa","Emmet",19,63
+"Iowa","Fayette",19,65
+"Iowa","Floyd",19,67
+"Iowa","Franklin",19,69
+"Iowa","Fremont",19,71
+"Iowa","Greene",19,73
+"Iowa","Grundy",19,75
+"Iowa","Guthrie",19,77
+"Iowa","Hamilton",19,79
+"Iowa","Hancock",19,81
+"Iowa","Hardin",19,83
+"Iowa","Harrison",19,85
+"Iowa","Henry",19,87
+"Iowa","Howard",19,89
+"Iowa","Humboldt",19,91
+"Iowa","Ida",19,93
+"Iowa","Iowa",19,95
+"Iowa","Jackson",19,97
+"Iowa","Jasper",19,99
+"Iowa","Jefferson",19,101
+"Iowa","Johnson",19,103
+"Iowa","Jones",19,105
+"Iowa","Keokuk",19,107
+"Iowa","Kossuth",19,109
+"Iowa","Lee",19,111
+"Iowa","Linn",19,113
+"Iowa","Louisa",19,115
+"Iowa","Lucas",19,117
+"Iowa","Lyon",19,119
+"Iowa","Madison",19,121
+"Iowa","Mahaska",19,123
+"Iowa","Marion",19,125
+"Iowa","Marshall",19,127
+"Iowa","Mills",19,129
+"Iowa","Mitchell",19,131
+"Iowa","Monona",19,133
+"Iowa","Monroe",19,135
+"Iowa","Montgomery",19,137
+"Iowa","Muscatine",19,139
+"Iowa","Obrien",19,141
+"Iowa","Osceola",19,143
+"Iowa","Page",19,145
+"Iowa","Palo Alto",19,147
+"Iowa","Plymouth",19,149
+"Iowa","Pocahontas",19,151
+"Iowa","Polk",19,153
+"Iowa","Pottawattamie",19,155
+"Iowa","Poweshiek",19,157
+"Iowa","Ringgold",19,159
+"Iowa","Sac",19,161
+"Iowa","Scott",19,163
+"Iowa","Shelby",19,165
+"Iowa","Sioux",19,167
+"Iowa","Story",19,169
+"Iowa","Tama",19,171
+"Iowa","Taylor",19,173
+"Iowa","Union",19,175
+"Iowa","Van Buren",19,177
+"Iowa","Wapello",19,179
+"Iowa","Warren",19,181
+"Iowa","Washington",19,183
+"Iowa","Wayne",19,185
+"Iowa","Webster",19,187
+"Iowa","Winnebago",19,189
+"Iowa","Winneshiek",19,191
+"Iowa","Woodbury",19,193
+"Iowa","Worth",19,195
+"Iowa","Wright",19,197
+"Kansas","Allen",20,1
+"Kansas","Anderson",20,3
+"Kansas","Atchison",20,5
+"Kansas","Barber",20,7
+"Kansas","Barton",20,9
+"Kansas","Bourbon",20,11
+"Kansas","Brown",20,13
+"Kansas","Butler",20,15
+"Kansas","Chase",20,17
+"Kansas","Chautauqua",20,19
+"Kansas","Cherokee",20,21
+"Kansas","Cheyenne",20,23
+"Kansas","Clark",20,25
+"Kansas","Clay",20,27
+"Kansas","Cloud",20,29
+"Kansas","Coffey",20,31
+"Kansas","Comanche",20,33
+"Kansas","Cowley",20,35
+"Kansas","Crawford",20,37
+"Kansas","Decatur",20,39
+"Kansas","Dickinson",20,41
+"Kansas","Doniphan",20,43
+"Kansas","Douglas",20,45
+"Kansas","Edwards",20,47
+"Kansas","Elk",20,49
+"Kansas","Ellis",20,51
+"Kansas","Ellsworth",20,53
+"Kansas","Finney",20,55
+"Kansas","Ford",20,57
+"Kansas","Franklin",20,59
+"Kansas","Geary",20,61
+"Kansas","Gove",20,63
+"Kansas","Graham",20,65
+"Kansas","Grant",20,67
+"Kansas","Gray",20,69
+"Kansas","Greeley",20,71
+"Kansas","Greenwood",20,73
+"Kansas","Hamilton",20,75
+"Kansas","Harper",20,77
+"Kansas","Harvey",20,79
+"Kansas","Haskell",20,81
+"Kansas","Hodgeman",20,83
+"Kansas","Jackson",20,85
+"Kansas","Jefferson",20,87
+"Kansas","Jewell",20,89
+"Kansas","Johnson",20,91
+"Kansas","Kearny",20,93
+"Kansas","Kingman",20,95
+"Kansas","Kiowa",20,97
+"Kansas","Labette",20,99
+"Kansas","Lane",20,101
+"Kansas","Leavenworth",20,103
+"Kansas","Lincoln",20,105
+"Kansas","Linn",20,107
+"Kansas","Logan",20,109
+"Kansas","Lyon",20,111
+"Kansas","McPherson",20,113
+"Kansas","Marion",20,115
+"Kansas","Marshall",20,117
+"Kansas","Meade",20,119
+"Kansas","Miami",20,121
+"Kansas","Mitchell",20,123
+"Kansas","Montgomery",20,125
+"Kansas","Morris",20,127
+"Kansas","Morton",20,129
+"Kansas","Nemaha",20,131
+"Kansas","Neosho",20,133
+"Kansas","Ness",20,135
+"Kansas","Norton",20,137
+"Kansas","Osage",20,139
+"Kansas","Osborne",20,141
+"Kansas","Ottawa",20,143
+"Kansas","Pawnee",20,145
+"Kansas","Phillips",20,147
+"Kansas","Pottawatomie",20,149
+"Kansas","Pratt",20,151
+"Kansas","Rawlins",20,153
+"Kansas","Reno",20,155
+"Kansas","Republic",20,157
+"Kansas","Rice",20,159
+"Kansas","Riley",20,161
+"Kansas","Rooks",20,163
+"Kansas","Rush",20,165
+"Kansas","Russell",20,167
+"Kansas","Saline",20,169
+"Kansas","Scott",20,171
+"Kansas","Sedgwick",20,173
+"Kansas","Seward",20,175
+"Kansas","Shawnee",20,177
+"Kansas","Sheridan",20,179
+"Kansas","Sherman",20,181
+"Kansas","Smith",20,183
+"Kansas","Stafford",20,185
+"Kansas","Stanton",20,187
+"Kansas","Stevens",20,189
+"Kansas","Sumner",20,191
+"Kansas","Thomas",20,193
+"Kansas","Trego",20,195
+"Kansas","Wabaunsee",20,197
+"Kansas","Wallace",20,199
+"Kansas","Washington",20,201
+"Kansas","Wichita",20,203
+"Kansas","Wilson",20,205
+"Kansas","Woodson",20,207
+"Kansas","Wyandotte",20,209
+"Kentucky","Adair",21,1
+"Kentucky","Allen",21,3
+"Kentucky","Anderson",21,5
+"Kentucky","Ballard",21,7
+"Kentucky","Barren",21,9
+"Kentucky","Bath",21,11
+"Kentucky","Bell",21,13
+"Kentucky","Boone",21,15
+"Kentucky","Bourbon",21,17
+"Kentucky","Boyd",21,19
+"Kentucky","Boyle",21,21
+"Kentucky","Bracken",21,23
+"Kentucky","Breathitt",21,25
+"Kentucky","Breckinridge",21,27
+"Kentucky","Bullitt",21,29
+"Kentucky","Butler",21,31
+"Kentucky","Caldwell",21,33
+"Kentucky","Calloway",21,35
+"Kentucky","Campbell",21,37
+"Kentucky","Carlisle",21,39
+"Kentucky","Carroll",21,41
+"Kentucky","Carter",21,43
+"Kentucky","Casey",21,45
+"Kentucky","Christian",21,47
+"Kentucky","Clark",21,49
+"Kentucky","Clay",21,51
+"Kentucky","Clinton",21,53
+"Kentucky","Crittenden",21,55
+"Kentucky","Cumberland",21,57
+"Kentucky","Daviess",21,59
+"Kentucky","Edmonson",21,61
+"Kentucky","Elliott",21,63
+"Kentucky","Estill",21,65
+"Kentucky","Fayette",21,67
+"Kentucky","Fleming",21,69
+"Kentucky","Floyd",21,71
+"Kentucky","Franklin",21,73
+"Kentucky","Fulton",21,75
+"Kentucky","Gallatin",21,77
+"Kentucky","Garrard",21,79
+"Kentucky","Grant",21,81
+"Kentucky","Graves",21,83
+"Kentucky","Grayson",21,85
+"Kentucky","Green",21,87
+"Kentucky","Greenup",21,89
+"Kentucky","Hancock",21,91
+"Kentucky","Hardin",21,93
+"Kentucky","Harlan",21,95
+"Kentucky","Harrison",21,97
+"Kentucky","Hart",21,99
+"Kentucky","Henderson",21,101
+"Kentucky","Henry",21,103
+"Kentucky","Hickman",21,105
+"Kentucky","Hopkins",21,107
+"Kentucky","Jackson",21,109
+"Kentucky","Jefferson",21,111
+"Kentucky","Jessamine",21,113
+"Kentucky","Johnson",21,115
+"Kentucky","Kenton",21,117
+"Kentucky","Knott",21,119
+"Kentucky","Knox",21,121
+"Kentucky","Larue",21,123
+"Kentucky","Laurel",21,125
+"Kentucky","Lawrence",21,127
+"Kentucky","Lee",21,129
+"Kentucky","Leslie",21,131
+"Kentucky","Letcher",21,133
+"Kentucky","Lewis",21,135
+"Kentucky","Lincoln",21,137
+"Kentucky","Livingston",21,139
+"Kentucky","Logan",21,141
+"Kentucky","Lyon",21,143
+"Kentucky","McCracken",21,145
+"Kentucky","McCreary",21,147
+"Kentucky","Mclean",21,149
+"Kentucky","Madison",21,151
+"Kentucky","Magoffin",21,153
+"Kentucky","Marion",21,155
+"Kentucky","Marshall",21,157
+"Kentucky","Martin",21,159
+"Kentucky","Mason",21,161
+"Kentucky","Meade",21,163
+"Kentucky","Menifee",21,165
+"Kentucky","Mercer",21,167
+"Kentucky","Metcalfe",21,169
+"Kentucky","Monroe",21,171
+"Kentucky","Montgomery",21,173
+"Kentucky","Morgan",21,175
+"Kentucky","Muhlenberg",21,177
+"Kentucky","Nelson",21,179
+"Kentucky","Nicholas",21,181
+"Kentucky","Ohio",21,183
+"Kentucky","Oldham",21,185
+"Kentucky","Owen",21,187
+"Kentucky","Owsley",21,189
+"Kentucky","Pendleton",21,191
+"Kentucky","Perry",21,193
+"Kentucky","Pike",21,195
+"Kentucky","Powell",21,197
+"Kentucky","Pulaski",21,199
+"Kentucky","Robertson",21,201
+"Kentucky","Rockcastle",21,203
+"Kentucky","Rowan",21,205
+"Kentucky","Russell",21,207
+"Kentucky","Scott",21,209
+"Kentucky","Shelby",21,211
+"Kentucky","Simpson",21,213
+"Kentucky","Spencer",21,215
+"Kentucky","Taylor",21,217
+"Kentucky","Todd",21,219
+"Kentucky","Trigg",21,221
+"Kentucky","Trimble",21,223
+"Kentucky","Union",21,225
+"Kentucky","Warren",21,227
+"Kentucky","Washington",21,229
+"Kentucky","Wayne",21,231
+"Kentucky","Webster",21,233
+"Kentucky","Whitley",21,235
+"Kentucky","Wolfe",21,237
+"Kentucky","Woodford",21,239
+"Louisiana","Acadia",22,1
+"Louisiana","Allen",22,3
+"Louisiana","Ascension",22,5
+"Louisiana","Assumption",22,7
+"Louisiana","Avoyelles",22,9
+"Louisiana","Beauregard",22,11
+"Louisiana","Bienville",22,13
+"Louisiana","Bossier",22,15
+"Louisiana","Caddo",22,17
+"Louisiana","Calcasieu",22,19
+"Louisiana","Caldwell",22,21
+"Louisiana","Cameron",22,23
+"Louisiana","Catahoula",22,25
+"Louisiana","Claiborne",22,27
+"Louisiana","Concordia",22,29
+"Louisiana","De Soto",22,31
+"Louisiana","East Baton Rouge",22,33
+"Louisiana","East Carroll",22,35
+"Louisiana","East Feliciana",22,37
+"Louisiana","Evangeline",22,39
+"Louisiana","Franklin",22,41
+"Louisiana","Grant",22,43
+"Louisiana","Iberia",22,45
+"Louisiana","Iberville",22,47
+"Louisiana","Jackson",22,49
+"Louisiana","Jefferson",22,51
+"Louisiana","Jefferson Davis",22,53
+"Louisiana","Lafayette",22,55
+"Louisiana","Lafourche",22,57
+"Louisiana","La Salle",22,59
+"Louisiana","Lincoln",22,61
+"Louisiana","Livingston",22,63
+"Louisiana","Madison",22,65
+"Louisiana","Morehouse",22,67
+"Louisiana","Natchitoches",22,69
+"Louisiana","Orleans",22,71
+"Louisiana","Ouachita",22,73
+"Louisiana","Plaquemines",22,75
+"Louisiana","Pointe Coupee",22,77
+"Louisiana","Rapides",22,79
+"Louisiana","Red River",22,81
+"Louisiana","Richland",22,83
+"Louisiana","Sabine",22,85
+"Louisiana","St Bernard",22,87
+"Louisiana","St Charles",22,89
+"Louisiana","St Helena",22,91
+"Louisiana","St James",22,93
+"Louisiana","St John The Baptist",22,95
+"Louisiana","St Landry",22,97
+"Louisiana","St Martin",22,99
+"Louisiana","St Mary",22,101
+"Louisiana","St Tammany",22,103
+"Louisiana","Tangipahoa",22,105
+"Louisiana","Tensas",22,107
+"Louisiana","Terrebonne",22,109
+"Louisiana","Union",22,111
+"Louisiana","Vermilion",22,113
+"Louisiana","Vernon",22,115
+"Louisiana","Washington",22,117
+"Louisiana","Webster",22,119
+"Louisiana","West Baton Rouge",22,121
+"Louisiana","West Carroll",22,123
+"Louisiana","West Feliciana",22,125
+"Louisiana","Winn",22,127
+"Maine","Androscoggin",23,1
+"Maine","Aroostook",23,3
+"Maine","Cumberland",23,5
+"Maine","Franklin",23,7
+"Maine","Hancock",23,9
+"Maine","Kennebec",23,11
+"Maine","Knox",23,13
+"Maine","Lincoln",23,15
+"Maine","Oxford",23,17
+"Maine","Penobscot",23,19
+"Maine","Piscataquis",23,21
+"Maine","Sagadahoc",23,23
+"Maine","Somerset",23,25
+"Maine","Waldo",23,27
+"Maine","Washington",23,29
+"Maine","York",23,31
+"Maryland","Allegany",24,1
+"Maryland","Anne Arundel",24,3
+"Maryland","Baltimore",24,5
+"Maryland","Calvert",24,9
+"Maryland","Caroline",24,11
+"Maryland","Carroll",24,13
+"Maryland","Cecil",24,15
+"Maryland","Charles",24,17
+"Maryland","Dorchester",24,19
+"Maryland","Frederick",24,21
+"Maryland","Garrett",24,23
+"Maryland","Harford",24,25
+"Maryland","Howard",24,27
+"Maryland","Kent",24,29
+"Maryland","Montgomery",24,31
+"Maryland","Prince Georges",24,33
+"Maryland","Queen Annes",24,35
+"Maryland","St Marys",24,37
+"Maryland","Somerset",24,39
+"Maryland","Talbot",24,41
+"Maryland","Washington",24,43
+"Maryland","Wicomico",24,45
+"Maryland","Worcester",24,47
+"Maryland","Baltimore City",24,510
+"Massachusetts","Barnstable",25,1
+"Massachusetts","Berkshire",25,3
+"Massachusetts","Bristol",25,5
+"Massachusetts","Dukes",25,7
+"Massachusetts","Essex",25,9
+"Massachusetts","Franklin",25,11
+"Massachusetts","Hampden",25,13
+"Massachusetts","Hampshire",25,15
+"Massachusetts","Middlesex",25,17
+"Massachusetts","Nantucket",25,19
+"Massachusetts","Norfolk",25,21
+"Massachusetts","Plymouth",25,23
+"Massachusetts","Suffolk",25,25
+"Massachusetts","Worcester",25,27
+"Michigan","Alcona",26,1
+"Michigan","Alger",26,3
+"Michigan","Allegan",26,5
+"Michigan","Alpena",26,7
+"Michigan","Antrim",26,9
+"Michigan","Arenac",26,11
+"Michigan","Baraga",26,13
+"Michigan","Barry",26,15
+"Michigan","Bay",26,17
+"Michigan","Benzie",26,19
+"Michigan","Berrien",26,21
+"Michigan","Branch",26,23
+"Michigan","Calhoun",26,25
+"Michigan","Cass",26,27
+"Michigan","Charlevoix",26,29
+"Michigan","Cheboygan",26,31
+"Michigan","Chippewa",26,33
+"Michigan","Clare",26,35
+"Michigan","Clinton",26,37
+"Michigan","Crawford",26,39
+"Michigan","Delta",26,41
+"Michigan","Dickinson",26,43
+"Michigan","Eaton",26,45
+"Michigan","Emmet",26,47
+"Michigan","Genesee",26,49
+"Michigan","Gladwin",26,51
+"Michigan","Gogebic",26,53
+"Michigan","Grand Traverse",26,55
+"Michigan","Gratiot",26,57
+"Michigan","Hillsdale",26,59
+"Michigan","Houghton",26,61
+"Michigan","Huron",26,63
+"Michigan","Ingham",26,65
+"Michigan","Ionia",26,67
+"Michigan","Iosco",26,69
+"Michigan","Iron",26,71
+"Michigan","Isabella",26,73
+"Michigan","Jackson",26,75
+"Michigan","Kalamazoo",26,77
+"Michigan","Kalkaska",26,79
+"Michigan","Kent",26,81
+"Michigan","Keweenaw",26,83
+"Michigan","Lake",26,85
+"Michigan","Lapeer",26,87
+"Michigan","Leelanau",26,89
+"Michigan","Lenawee",26,91
+"Michigan","Livingston",26,93
+"Michigan","Luce",26,95
+"Michigan","Mackinac",26,97
+"Michigan","Macomb",26,99
+"Michigan","Manistee",26,101
+"Michigan","Marquette",26,103
+"Michigan","Mason",26,105
+"Michigan","Mecosta",26,107
+"Michigan","Menominee",26,109
+"Michigan","Midland",26,111
+"Michigan","Missaukee",26,113
+"Michigan","Monroe",26,115
+"Michigan","Montcalm",26,117
+"Michigan","Montmorency",26,119
+"Michigan","Muskegon",26,121
+"Michigan","Newaygo",26,123
+"Michigan","Oakland",26,125
+"Michigan","Oceana",26,127
+"Michigan","Ogemaw",26,129
+"Michigan","Ontonagon",26,131
+"Michigan","Osceola",26,133
+"Michigan","Oscoda",26,135
+"Michigan","Otsego",26,137
+"Michigan","Ottawa",26,139
+"Michigan","Presque Isle",26,141
+"Michigan","Roscommon",26,143
+"Michigan","Saginaw",26,145
+"Michigan","St Clair",26,147
+"Michigan","St Joseph",26,149
+"Michigan","Sanilac",26,151
+"Michigan","Schoolcraft",26,153
+"Michigan","Shiawassee",26,155
+"Michigan","Tuscola",26,157
+"Michigan","Van Buren",26,159
+"Michigan","Washtenaw",26,161
+"Michigan","Wayne",26,163
+"Michigan","Wexford",26,165
+"Minnesota","Aitkin",27,1
+"Minnesota","Anoka",27,3
+"Minnesota","Becker",27,5
+"Minnesota","Beltrami",27,7
+"Minnesota","Benton",27,9
+"Minnesota","Big Stone",27,11
+"Minnesota","Blue Earth",27,13
+"Minnesota","Brown",27,15
+"Minnesota","Carlton",27,17
+"Minnesota","Carver",27,19
+"Minnesota","Cass",27,21
+"Minnesota","Chippewa",27,23
+"Minnesota","Chisago",27,25
+"Minnesota","Clay",27,27
+"Minnesota","Clearwater",27,29
+"Minnesota","Cook",27,31
+"Minnesota","Cottonwood",27,33
+"Minnesota","Crow Wing",27,35
+"Minnesota","Dakota",27,37
+"Minnesota","Dodge",27,39
+"Minnesota","Douglas",27,41
+"Minnesota","Faribault",27,43
+"Minnesota","Fillmore",27,45
+"Minnesota","Freeborn",27,47
+"Minnesota","Goodhue",27,49
+"Minnesota","Grant",27,51
+"Minnesota","Hennepin",27,53
+"Minnesota","Houston",27,55
+"Minnesota","Hubbard",27,57
+"Minnesota","Isanti",27,59
+"Minnesota","Itasca",27,61
+"Minnesota","Jackson",27,63
+"Minnesota","Kanabec",27,65
+"Minnesota","Kandiyohi",27,67
+"Minnesota","Kittson",27,69
+"Minnesota","Koochiching",27,71
+"Minnesota","Lac Qui Parle",27,73
+"Minnesota","Lake",27,75
+"Minnesota","Lake of The Woods",27,77
+"Minnesota","Le Sueur",27,79
+"Minnesota","Lincoln",27,81
+"Minnesota","Lyon",27,83
+"Minnesota","McLeod",27,85
+"Minnesota","Mahnomen",27,87
+"Minnesota","Marshall",27,89
+"Minnesota","Martin",27,91
+"Minnesota","Meeker",27,93
+"Minnesota","Mille Lacs",27,95
+"Minnesota","Morrison",27,97
+"Minnesota","Mower",27,99
+"Minnesota","Murray",27,101
+"Minnesota","Nicollet",27,103
+"Minnesota","Nobles",27,105
+"Minnesota","Norman",27,107
+"Minnesota","Olmsted",27,109
+"Minnesota","Otter Tail",27,111
+"Minnesota","Pennington",27,113
+"Minnesota","Pine",27,115
+"Minnesota","Pipestone",27,117
+"Minnesota","Polk",27,119
+"Minnesota","Pope",27,121
+"Minnesota","Ramsey",27,123
+"Minnesota","Red Lake",27,125
+"Minnesota","Redwood",27,127
+"Minnesota","Renville",27,129
+"Minnesota","Rice",27,131
+"Minnesota","Rock",27,133
+"Minnesota","Roseau",27,135
+"Minnesota","St Louis",27,137
+"Minnesota","Scott",27,139
+"Minnesota","Sherburne",27,141
+"Minnesota","Sibley",27,143
+"Minnesota","Stearns",27,145
+"Minnesota","Steele",27,147
+"Minnesota","Stevens",27,149
+"Minnesota","Swift",27,151
+"Minnesota","Todd",27,153
+"Minnesota","Traverse",27,155
+"Minnesota","Wabasha",27,157
+"Minnesota","Wadena",27,159
+"Minnesota","Waseca",27,161
+"Minnesota","Washington",27,163
+"Minnesota","Watonwan",27,165
+"Minnesota","Wilkin",27,167
+"Minnesota","Winona",27,169
+"Minnesota","Wright",27,171
+"Minnesota","Yellow Medicine",27,173
+"Mississippi","Adams",28,1
+"Mississippi","Alcorn",28,3
+"Mississippi","Amite",28,5
+"Mississippi","Attala",28,7
+"Mississippi","Benton",28,9
+"Mississippi","Bolivar",28,11
+"Mississippi","Calhoun",28,13
+"Mississippi","Carroll",28,15
+"Mississippi","Chickasaw",28,17
+"Mississippi","Choctaw",28,19
+"Mississippi","Claiborne",28,21
+"Mississippi","Clarke",28,23
+"Mississippi","Clay",28,25
+"Mississippi","Coahoma",28,27
+"Mississippi","Copiah",28,29
+"Mississippi","Covington",28,31
+"Mississippi","De Soto",28,33
+"Mississippi","Forrest",28,35
+"Mississippi","Franklin",28,37
+"Mississippi","George",28,39
+"Mississippi","Greene",28,41
+"Mississippi","Grenada",28,43
+"Mississippi","Hancock",28,45
+"Mississippi","Harrison",28,47
+"Mississippi","Hinds",28,49
+"Mississippi","Holmes",28,51
+"Mississippi","Humphreys",28,53
+"Mississippi","Issaquena",28,55
+"Mississippi","Itawamba",28,57
+"Mississippi","Jackson",28,59
+"Mississippi","Jasper",28,61
+"Mississippi","Jefferson",28,63
+"Mississippi","Jefferson Davis",28,65
+"Mississippi","Jones",28,67
+"Mississippi","Kemper",28,69
+"Mississippi","Lafayette",28,71
+"Mississippi","Lamar",28,73
+"Mississippi","Lauderdale",28,75
+"Mississippi","Lawrence",28,77
+"Mississippi","Leake",28,79
+"Mississippi","Lee",28,81
+"Mississippi","Leflore",28,83
+"Mississippi","Lincoln",28,85
+"Mississippi","Lowndes",28,87
+"Mississippi","Madison",28,89
+"Mississippi","Marion",28,91
+"Mississippi","Marshall",28,93
+"Mississippi","Monroe",28,95
+"Mississippi","Montgomery",28,97
+"Mississippi","Neshoba",28,99
+"Mississippi","Newton",28,101
+"Mississippi","Noxubee",28,103
+"Mississippi","Oktibbeha",28,105
+"Mississippi","Panola",28,107
+"Mississippi","Pearl River",28,109
+"Mississippi","Perry",28,111
+"Mississippi","Pike",28,113
+"Mississippi","Pontotoc",28,115
+"Mississippi","Prentiss",28,117
+"Mississippi","Quitman",28,119
+"Mississippi","Rankin",28,121
+"Mississippi","Scott",28,123
+"Mississippi","Sharkey",28,125
+"Mississippi","Simpson",28,127
+"Mississippi","Smith",28,129
+"Mississippi","Stone",28,131
+"Mississippi","Sunflower",28,133
+"Mississippi","Tallahatchie",28,135
+"Mississippi","Tate",28,137
+"Mississippi","Tippah",28,139
+"Mississippi","Tishomingo",28,141
+"Mississippi","Tunica",28,143
+"Mississippi","Union",28,145
+"Mississippi","Walthall",28,147
+"Mississippi","Warren",28,149
+"Mississippi","Washington",28,151
+"Mississippi","Wayne",28,153
+"Mississippi","Webster",28,155
+"Mississippi","Wilkinson",28,157
+"Mississippi","Winston",28,159
+"Mississippi","Yalobusha",28,161
+"Mississippi","Yazoo",28,163
+"Missouri","Adair",29,1
+"Missouri","Andrew",29,3
+"Missouri","Atchison",29,5
+"Missouri","Audrain",29,7
+"Missouri","Barry",29,9
+"Missouri","Barton",29,11
+"Missouri","Bates",29,13
+"Missouri","Benton",29,15
+"Missouri","Bollinger",29,17
+"Missouri","Boone",29,19
+"Missouri","Buchanan",29,21
+"Missouri","Butler",29,23
+"Missouri","Caldwell",29,25
+"Missouri","Callaway",29,27
+"Missouri","Camden",29,29
+"Missouri","Cape Girardeau",29,31
+"Missouri","Carroll",29,33
+"Missouri","Carter",29,35
+"Missouri","Cass",29,37
+"Missouri","Cedar",29,39
+"Missouri","Chariton",29,41
+"Missouri","Christian",29,43
+"Missouri","Clark",29,45
+"Missouri","Clay",29,47
+"Missouri","Clinton",29,49
+"Missouri","Cole",29,51
+"Missouri","Cooper",29,53
+"Missouri","Crawford",29,55
+"Missouri","Dade",29,57
+"Missouri","Dallas",29,59
+"Missouri","Daviess",29,61
+"Missouri","Dekalb",29,63
+"Missouri","Dent",29,65
+"Missouri","Douglas",29,67
+"Missouri","Dunklin",29,69
+"Missouri","Franklin",29,71
+"Missouri","Gasconade",29,73
+"Missouri","Gentry",29,75
+"Missouri","Greene",29,77
+"Missouri","Grundy",29,79
+"Missouri","Harrison",29,81
+"Missouri","Henry",29,83
+"Missouri","Hickory",29,85
+"Missouri","Holt",29,87
+"Missouri","Howard",29,89
+"Missouri","Howell",29,91
+"Missouri","Iron",29,93
+"Missouri","Jackson",29,95
+"Missouri","Jasper",29,97
+"Missouri","Jefferson",29,99
+"Missouri","Johnson",29,101
+"Missouri","Knox",29,103
+"Missouri","Laclede",29,105
+"Missouri","Lafayette",29,107
+"Missouri","Lawrence",29,109
+"Missouri","Lewis",29,111
+"Missouri","Lincoln",29,113
+"Missouri","Linn",29,115
+"Missouri","Livingston",29,117
+"Missouri","Mcdonald",29,119
+"Missouri","Macon",29,121
+"Missouri","Madison",29,123
+"Missouri","Maries",29,125
+"Missouri","Marion",29,127
+"Missouri","Mercer",29,129
+"Missouri","Miller",29,131
+"Missouri","Mississippi",29,133
+"Missouri","Moniteau",29,135
+"Missouri","Monroe",29,137
+"Missouri","Montgomery",29,139
+"Missouri","Morgan",29,141
+"Missouri","New Madrid",29,143
+"Missouri","Newton",29,145
+"Missouri","Nodaway",29,147
+"Missouri","Oregon",29,149
+"Missouri","Osage",29,151
+"Missouri","Ozark",29,153
+"Missouri","Pemiscot",29,155
+"Missouri","Perry",29,157
+"Missouri","Pettis",29,159
+"Missouri","Phelps",29,161
+"Missouri","Pike",29,163
+"Missouri","Platte",29,165
+"Missouri","Polk",29,167
+"Missouri","Pulaski",29,169
+"Missouri","Putnam",29,171
+"Missouri","Ralls",29,173
+"Missouri","Randolph",29,175
+"Missouri","Ray",29,177
+"Missouri","Reynolds",29,179
+"Missouri","Ripley",29,181
+"Missouri","St Charles",29,183
+"Missouri","St Clair",29,185
+"Missouri","Ste Genevieve",29,186
+"Missouri","St Francois",29,187
+"Missouri","St Louis",29,189
+"Missouri","Saline",29,195
+"Missouri","Schuyler",29,197
+"Missouri","Scotland",29,199
+"Missouri","Scott",29,201
+"Missouri","Shannon",29,203
+"Missouri","Shelby",29,205
+"Missouri","Stoddard",29,207
+"Missouri","Stone",29,209
+"Missouri","Sullivan",29,211
+"Missouri","Taney",29,213
+"Missouri","Texas",29,215
+"Missouri","Vernon",29,217
+"Missouri","Warren",29,219
+"Missouri","Washington",29,221
+"Missouri","Wayne",29,223
+"Missouri","Webster",29,225
+"Missouri","Worth",29,227
+"Missouri","Wright",29,229
+"Missouri","St Louis City",29,510
+"Montana","Beaverhead",30,1
+"Montana","Big Horn",30,3
+"Montana","Blaine",30,5
+"Montana","Broadwater",30,7
+"Montana","Carbon",30,9
+"Montana","Carter",30,11
+"Montana","Cascade",30,13
+"Montana","Chouteau",30,15
+"Montana","Custer",30,17
+"Montana","Daniels",30,19
+"Montana","Dawson",30,21
+"Montana","Deer Lodge",30,23
+"Montana","Fallon",30,25
+"Montana","Fergus",30,27
+"Montana","Flathead",30,29
+"Montana","Gallatin",30,31
+"Montana","Garfield",30,33
+"Montana","Glacier",30,35
+"Montana","Golden Valley",30,37
+"Montana","Granite",30,39
+"Montana","Hill",30,41
+"Montana","Jefferson",30,43
+"Montana","Judith Basin",30,45
+"Montana","Lake",30,47
+"Montana","Lewis and Clark",30,49
+"Montana","Liberty",30,51
+"Montana","Lincoln",30,53
+"Montana","McCone",30,55
+"Montana","Madison",30,57
+"Montana","Meagher",30,59
+"Montana","Mineral",30,61
+"Montana","Missoula",30,63
+"Montana","Musselshell",30,65
+"Montana","Park",30,67
+"Montana","Petroleum",30,69
+"Montana","Phillips",30,71
+"Montana","Pondera",30,73
+"Montana","Powder River",30,75
+"Montana","Powell",30,77
+"Montana","Prairie",30,79
+"Montana","Ravalli",30,81
+"Montana","Richland",30,83
+"Montana","Roosevelt",30,85
+"Montana","Rosebud",30,87
+"Montana","Sanders",30,89
+"Montana","Sheridan",30,91
+"Montana","Silver Bow",30,93
+"Montana","Stillwater",30,95
+"Montana","Sweet Grass",30,97
+"Montana","Teton",30,99
+"Montana","Toole",30,101
+"Montana","Treasure",30,103
+"Montana","Valley",30,105
+"Montana","Wheatland",30,107
+"Montana","Wibaux",30,109
+"Montana","Yellowstone",30,111
+"Nebraska","Adams",31,1
+"Nebraska","Antelope",31,3
+"Nebraska","Arthur",31,5
+"Nebraska","Banner",31,7
+"Nebraska","Blaine",31,9
+"Nebraska","Boone",31,11
+"Nebraska","Box Butte",31,13
+"Nebraska","Boyd",31,15
+"Nebraska","Brown",31,17
+"Nebraska","Buffalo",31,19
+"Nebraska","Burt",31,21
+"Nebraska","Butler",31,23
+"Nebraska","Cass",31,25
+"Nebraska","Cedar",31,27
+"Nebraska","Chase",31,29
+"Nebraska","Cherry",31,31
+"Nebraska","Cheyenne",31,33
+"Nebraska","Clay",31,35
+"Nebraska","Colfax",31,37
+"Nebraska","Cuming",31,39
+"Nebraska","Custer",31,41
+"Nebraska","Dakota",31,43
+"Nebraska","Dawes",31,45
+"Nebraska","Dawson",31,47
+"Nebraska","Deuel",31,49
+"Nebraska","Dixon",31,51
+"Nebraska","Dodge",31,53
+"Nebraska","Douglas",31,55
+"Nebraska","Dundy",31,57
+"Nebraska","Fillmore",31,59
+"Nebraska","Franklin",31,61
+"Nebraska","Frontier",31,63
+"Nebraska","Furnas",31,65
+"Nebraska","Gage",31,67
+"Nebraska","Garden",31,69
+"Nebraska","Garfield",31,71
+"Nebraska","Gosper",31,73
+"Nebraska","Grant",31,75
+"Nebraska","Greeley",31,77
+"Nebraska","Hall",31,79
+"Nebraska","Hamilton",31,81
+"Nebraska","Harlan",31,83
+"Nebraska","Hayes",31,85
+"Nebraska","Hitchcock",31,87
+"Nebraska","Holt",31,89
+"Nebraska","Hooker",31,91
+"Nebraska","Howard",31,93
+"Nebraska","Jefferson",31,95
+"Nebraska","Johnson",31,97
+"Nebraska","Kearney",31,99
+"Nebraska","Keith",31,101
+"Nebraska","Keya Paha",31,103
+"Nebraska","Kimball",31,105
+"Nebraska","Knox",31,107
+"Nebraska","Lancaster",31,109
+"Nebraska","Lincoln",31,111
+"Nebraska","Logan",31,113
+"Nebraska","Loup",31,115
+"Nebraska","McPherson",31,117
+"Nebraska","Madison",31,119
+"Nebraska","Merrick",31,121
+"Nebraska","Morrill",31,123
+"Nebraska","Nance",31,125
+"Nebraska","Nemaha",31,127
+"Nebraska","Nuckolls",31,129
+"Nebraska","Otoe",31,131
+"Nebraska","Pawnee",31,133
+"Nebraska","Perkins",31,135
+"Nebraska","Phelps",31,137
+"Nebraska","Pierce",31,139
+"Nebraska","Platte",31,141
+"Nebraska","Polk",31,143
+"Nebraska","Red Willow",31,145
+"Nebraska","Richardson",31,147
+"Nebraska","Rock",31,149
+"Nebraska","Saline",31,151
+"Nebraska","Sarpy",31,153
+"Nebraska","Saunders",31,155
+"Nebraska","Scotts Bluff",31,157
+"Nebraska","Seward",31,159
+"Nebraska","Sheridan",31,161
+"Nebraska","Sherman",31,163
+"Nebraska","Sioux",31,165
+"Nebraska","Stanton",31,167
+"Nebraska","Thayer",31,169
+"Nebraska","Thomas",31,171
+"Nebraska","Thurston",31,173
+"Nebraska","Valley",31,175
+"Nebraska","Washington",31,177
+"Nebraska","Wayne",31,179
+"Nebraska","Webster",31,181
+"Nebraska","Wheeler",31,183
+"Nebraska","York",31,185
+"Nevada","Churchill",32,1
+"Nevada","Clark",32,3
+"Nevada","Douglas",32,5
+"Nevada","Elko",32,7
+"Nevada","Esmeralda",32,9
+"Nevada","Eureka",32,11
+"Nevada","Humboldt",32,13
+"Nevada","Lander",32,15
+"Nevada","Lincoln",32,17
+"Nevada","Lyon",32,19
+"Nevada","Mineral",32,21
+"Nevada","Nye",32,23
+"Nevada","Pershing",32,27
+"Nevada","Storey",32,29
+"Nevada","Washoe",32,31
+"Nevada","White Pine",32,33
+"Nevada","Carson City",32,510
+"New Hampshire","Belknap",33,1
+"New Hampshire","Carroll",33,3
+"New Hampshire","Cheshire",33,5
+"New Hampshire","Coos",33,7
+"New Hampshire","Grafton",33,9
+"New Hampshire","Hillsborough",33,11
+"New Hampshire","Merrimack",33,13
+"New Hampshire","Rockingham",33,15
+"New Hampshire","Strafford",33,17
+"New Hampshire","Sullivan",33,19
+"New Jersey","Atlantic",34,1
+"New Jersey","Bergen",34,3
+"New Jersey","Burlington",34,5
+"New Jersey","Camden",34,7
+"New Jersey","Cape May",34,9
+"New Jersey","Cumberland",34,11
+"New Jersey","Essex",34,13
+"New Jersey","Gloucester",34,15
+"New Jersey","Hudson",34,17
+"New Jersey","Hunterdon",34,19
+"New Jersey","Mercer",34,21
+"New Jersey","Middlesex",34,23
+"New Jersey","Monmouth",34,25
+"New Jersey","Morris",34,27
+"New Jersey","Ocean",34,29
+"New Jersey","Passaic",34,31
+"New Jersey","Salem",34,33
+"New Jersey","Somerset",34,35
+"New Jersey","Sussex",34,37
+"New Jersey","Union",34,39
+"New Jersey","Warren",34,41
+"New Mexico","Bernalillo",35,1
+"New Mexico","Catron",35,3
+"New Mexico","Chaves",35,5
+"New Mexico","Cibola",35,6
+"New Mexico","Colfax",35,7
+"New Mexico","Curry",35,9
+"New Mexico","De Baca",35,11
+"New Mexico","Dona Ana",35,13
+"New Mexico","Eddy",35,15
+"New Mexico","Grant",35,17
+"New Mexico","Guadalupe",35,19
+"New Mexico","Harding",35,21
+"New Mexico","Hidalgo",35,23
+"New Mexico","Lea",35,25
+"New Mexico","Lincoln",35,27
+"New Mexico","Los Alamos",35,28
+"New Mexico","Luna",35,29
+"New Mexico","Mckinley",35,31
+"New Mexico","Mora",35,33
+"New Mexico","Otero",35,35
+"New Mexico","Quay",35,37
+"New Mexico","Rio Arriba",35,39
+"New Mexico","Roosevelt",35,41
+"New Mexico","Sandoval",35,43
+"New Mexico","San Juan",35,45
+"New Mexico","San Miguel",35,47
+"New Mexico","Santa Fe",35,49
+"New Mexico","Sierra",35,51
+"New Mexico","Socorro",35,53
+"New Mexico","Taos",35,55
+"New Mexico","Torrance",35,57
+"New Mexico","Union",35,59
+"New Mexico","Valencia",35,61
+"New York","Albany",36,1
+"New York","Allegany",36,3
+"New York","Bronx",36,5
+"New York","Broome",36,7
+"New York","Cattaraugus",36,9
+"New York","Cayuga",36,11
+"New York","Chautauqua",36,13
+"New York","Chemung",36,15
+"New York","Chenango",36,17
+"New York","Clinton",36,19
+"New York","Columbia",36,21
+"New York","Cortland",36,23
+"New York","Delaware",36,25
+"New York","Dutchess",36,27
+"New York","Erie",36,29
+"New York","Essex",36,31
+"New York","Franklin",36,33
+"New York","Fulton",36,35
+"New York","Genesee",36,37
+"New York","Greene",36,39
+"New York","Hamilton",36,41
+"New York","Herkimer",36,43
+"New York","Jefferson",36,45
+"New York","Kings",36,47
+"New York","Lewis",36,49
+"New York","Livingston",36,51
+"New York","Madison",36,53
+"New York","Monroe",36,55
+"New York","Montgomery",36,57
+"New York","Nassau",36,59
+"New York","New York",36,61
+"New York","Niagara",36,63
+"New York","Oneida",36,65
+"New York","Onondaga",36,67
+"New York","Ontario",36,69
+"New York","Orange",36,71
+"New York","Orleans",36,73
+"New York","Oswego",36,75
+"New York","Otsego",36,77
+"New York","Putnam",36,79
+"New York","Queens",36,81
+"New York","Rensselaer",36,83
+"New York","Richmond",36,85
+"New York","Rockland",36,87
+"New York","St Lawrence",36,89
+"New York","Saratoga",36,91
+"New York","Schenectady",36,93
+"New York","Schoharie",36,95
+"New York","Schuyler",36,97
+"New York","Seneca",36,99
+"New York","Steuben",36,101
+"New York","Suffolk",36,103
+"New York","Sullivan",36,105
+"New York","Tioga",36,107
+"New York","Tompkins",36,109
+"New York","Ulster",36,111
+"New York","Warren",36,113
+"New York","Washington",36,115
+"New York","Wayne",36,117
+"New York","Westchester",36,119
+"New York","Wyoming",36,121
+"New York","Yates",36,123
+"North Carolina","Alamance",37,1
+"North Carolina","Alexander",37,3
+"North Carolina","Alleghany",37,5
+"North Carolina","Anson",37,7
+"North Carolina","Ashe",37,9
+"North Carolina","Avery",37,11
+"North Carolina","Beaufort",37,13
+"North Carolina","Bertie",37,15
+"North Carolina","Bladen",37,17
+"North Carolina","Brunswick",37,19
+"North Carolina","Buncombe",37,21
+"North Carolina","Burke",37,23
+"North Carolina","Cabarrus",37,25
+"North Carolina","Caldwell",37,27
+"North Carolina","Camden",37,29
+"North Carolina","Carteret",37,31
+"North Carolina","Caswell",37,33
+"North Carolina","Catawba",37,35
+"North Carolina","Chatham",37,37
+"North Carolina","Cherokee",37,39
+"North Carolina","Chowan",37,41
+"North Carolina","Clay",37,43
+"North Carolina","Cleveland",37,45
+"North Carolina","Columbus",37,47
+"North Carolina","Craven",37,49
+"North Carolina","Cumberland",37,51
+"North Carolina","Currituck",37,53
+"North Carolina","Dare",37,55
+"North Carolina","Davidson",37,57
+"North Carolina","Davie",37,59
+"North Carolina","Duplin",37,61
+"North Carolina","Durham",37,63
+"North Carolina","Edgecombe",37,65
+"North Carolina","Forsyth",37,67
+"North Carolina","Franklin",37,69
+"North Carolina","Gaston",37,71
+"North Carolina","Gates",37,73
+"North Carolina","Graham",37,75
+"North Carolina","Granville",37,77
+"North Carolina","Greene",37,79
+"North Carolina","Guilford",37,81
+"North Carolina","Halifax",37,83
+"North Carolina","Harnett",37,85
+"North Carolina","Haywood",37,87
+"North Carolina","Henderson",37,89
+"North Carolina","Hertford",37,91
+"North Carolina","Hoke",37,93
+"North Carolina","Hyde",37,95
+"North Carolina","Iredell",37,97
+"North Carolina","Jackson",37,99
+"North Carolina","Johnston",37,101
+"North Carolina","Jones",37,103
+"North Carolina","Lee",37,105
+"North Carolina","Lenoir",37,107
+"North Carolina","Lincoln",37,109
+"North Carolina","McDowell",37,111
+"North Carolina","Macon",37,113
+"North Carolina","Madison",37,115
+"North Carolina","Martin",37,117
+"North Carolina","Mecklenburg",37,119
+"North Carolina","Mitchell",37,121
+"North Carolina","Montgomery",37,123
+"North Carolina","Moore",37,125
+"North Carolina","Nash",37,127
+"North Carolina","New Hanover",37,129
+"North Carolina","Northampton",37,131
+"North Carolina","Onslow",37,133
+"North Carolina","Orange",37,135
+"North Carolina","Pamlico",37,137
+"North Carolina","Pasquotank",37,139
+"North Carolina","Pender",37,141
+"North Carolina","Perquimans",37,143
+"North Carolina","Person",37,145
+"North Carolina","Pitt",37,147
+"North Carolina","Polk",37,149
+"North Carolina","Randolph",37,151
+"North Carolina","Richmond",37,153
+"North Carolina","Robeson",37,155
+"North Carolina","Rockingham",37,157
+"North Carolina","Rowan",37,159
+"North Carolina","Rutherford",37,161
+"North Carolina","Sampson",37,163
+"North Carolina","Scotland",37,165
+"North Carolina","Stanly",37,167
+"North Carolina","Stokes",37,169
+"North Carolina","Surry",37,171
+"North Carolina","Swain",37,173
+"North Carolina","Transylvania",37,175
+"North Carolina","Tyrrell",37,177
+"North Carolina","Union",37,179
+"North Carolina","Vance",37,181
+"North Carolina","Wake",37,183
+"North Carolina","Warren",37,185
+"North Carolina","Washington",37,187
+"North Carolina","Watauga",37,189
+"North Carolina","Wayne",37,191
+"North Carolina","Wilkes",37,193
+"North Carolina","Wilson",37,195
+"North Carolina","Yadkin",37,197
+"North Carolina","Yancey",37,199
+"North Dakota","Adams",38,1
+"North Dakota","Barnes",38,3
+"North Dakota","Benson",38,5
+"North Dakota","Billings",38,7
+"North Dakota","Bottineau",38,9
+"North Dakota","Bowman",38,11
+"North Dakota","Burke",38,13
+"North Dakota","Burleigh",38,15
+"North Dakota","Cass",38,17
+"North Dakota","Cavalier",38,19
+"North Dakota","Dickey",38,21
+"North Dakota","Divide",38,23
+"North Dakota","Dunn",38,25
+"North Dakota","Eddy",38,27
+"North Dakota","Emmons",38,29
+"North Dakota","Foster",38,31
+"North Dakota","Golden Valley",38,33
+"North Dakota","Grand Forks",38,35
+"North Dakota","Grant",38,37
+"North Dakota","Griggs",38,39
+"North Dakota","Hettinger",38,41
+"North Dakota","Kidder",38,43
+"North Dakota","Lamoure",38,45
+"North Dakota","Logan",38,47
+"North Dakota","McHenry",38,49
+"North Dakota","McIntosh",38,51
+"North Dakota","Mckenzie",38,53
+"North Dakota","Mclean",38,55
+"North Dakota","Mercer",38,57
+"North Dakota","Morton",38,59
+"North Dakota","Mountrail",38,61
+"North Dakota","Nelson",38,63
+"North Dakota","Oliver",38,65
+"North Dakota","Pembina",38,67
+"North Dakota","Pierce",38,69
+"North Dakota","Ramsey",38,71
+"North Dakota","Ransom",38,73
+"North Dakota","Renville",38,75
+"North Dakota","Richland",38,77
+"North Dakota","Rolette",38,79
+"North Dakota","Sargent",38,81
+"North Dakota","Sheridan",38,83
+"North Dakota","Sioux",38,85
+"North Dakota","Slope",38,87
+"North Dakota","Stark",38,89
+"North Dakota","Steele",38,91
+"North Dakota","Stutsman",38,93
+"North Dakota","Towner",38,95
+"North Dakota","Traill",38,97
+"North Dakota","Walsh",38,99
+"North Dakota","Ward",38,101
+"North Dakota","Wells",38,103
+"North Dakota","Williams",38,105
+"Ohio","Adams",39,1
+"Ohio","Allen",39,3
+"Ohio","Ashland",39,5
+"Ohio","Ashtabula",39,7
+"Ohio","Athens",39,9
+"Ohio","Auglaize",39,11
+"Ohio","Belmont",39,13
+"Ohio","Brown",39,15
+"Ohio","Butler",39,17
+"Ohio","Carroll",39,19
+"Ohio","Champaign",39,21
+"Ohio","Clark",39,23
+"Ohio","Clermont",39,25
+"Ohio","Clinton",39,27
+"Ohio","Columbiana",39,29
+"Ohio","Coshocton",39,31
+"Ohio","Crawford",39,33
+"Ohio","Cuyahoga",39,35
+"Ohio","Darke",39,37
+"Ohio","Defiance",39,39
+"Ohio","Delaware",39,41
+"Ohio","Erie",39,43
+"Ohio","Fairfield",39,45
+"Ohio","Fayette",39,47
+"Ohio","Franklin",39,49
+"Ohio","Fulton",39,51
+"Ohio","Gallia",39,53
+"Ohio","Geauga",39,55
+"Ohio","Greene",39,57
+"Ohio","Guernsey",39,59
+"Ohio","Hamilton",39,61
+"Ohio","Hancock",39,63
+"Ohio","Hardin",39,65
+"Ohio","Harrison",39,67
+"Ohio","Henry",39,69
+"Ohio","Highland",39,71
+"Ohio","Hocking",39,73
+"Ohio","Holmes",39,75
+"Ohio","Huron",39,77
+"Ohio","Jackson",39,79
+"Ohio","Jefferson",39,81
+"Ohio","Knox",39,83
+"Ohio","Lake",39,85
+"Ohio","Lawrence",39,87
+"Ohio","Licking",39,89
+"Ohio","Logan",39,91
+"Ohio","Lorain",39,93
+"Ohio","Lucas",39,95
+"Ohio","Madison",39,97
+"Ohio","Mahoning",39,99
+"Ohio","Marion",39,101
+"Ohio","Medina",39,103
+"Ohio","Meigs",39,105
+"Ohio","Mercer",39,107
+"Ohio","Miami",39,109
+"Ohio","Monroe",39,111
+"Ohio","Montgomery",39,113
+"Ohio","Morgan",39,115
+"Ohio","Morrow",39,117
+"Ohio","Muskingum",39,119
+"Ohio","Noble",39,121
+"Ohio","Ottawa",39,123
+"Ohio","Paulding",39,125
+"Ohio","Perry",39,127
+"Ohio","Pickaway",39,129
+"Ohio","Pike",39,131
+"Ohio","Portage",39,133
+"Ohio","Preble",39,135
+"Ohio","Putnam",39,137
+"Ohio","Richland",39,139
+"Ohio","Ross",39,141
+"Ohio","Sandusky",39,143
+"Ohio","Scioto",39,145
+"Ohio","Seneca",39,147
+"Ohio","Shelby",39,149
+"Ohio","Stark",39,151
+"Ohio","Summit",39,153
+"Ohio","Trumbull",39,155
+"Ohio","Tuscarawas",39,157
+"Ohio","Union",39,159
+"Ohio","Van Wert",39,161
+"Ohio","Vinton",39,163
+"Ohio","Warren",39,165
+"Ohio","Washington",39,167
+"Ohio","Wayne",39,169
+"Ohio","Williams",39,171
+"Ohio","Wood",39,173
+"Ohio","Wyandot",39,175
+"Oklahoma","Adair",40,1
+"Oklahoma","Alfalfa",40,3
+"Oklahoma","Atoka",40,5
+"Oklahoma","Beaver",40,7
+"Oklahoma","Beckham",40,9
+"Oklahoma","Blaine",40,11
+"Oklahoma","Bryan",40,13
+"Oklahoma","Caddo",40,15
+"Oklahoma","Canadian",40,17
+"Oklahoma","Carter",40,19
+"Oklahoma","Cherokee",40,21
+"Oklahoma","Choctaw",40,23
+"Oklahoma","Cimarron",40,25
+"Oklahoma","Cleveland",40,27
+"Oklahoma","Coal",40,29
+"Oklahoma","Comanche",40,31
+"Oklahoma","Cotton",40,33
+"Oklahoma","Craig",40,35
+"Oklahoma","Creek",40,37
+"Oklahoma","Custer",40,39
+"Oklahoma","Delaware",40,41
+"Oklahoma","Dewey",40,43
+"Oklahoma","Ellis",40,45
+"Oklahoma","Garfield",40,47
+"Oklahoma","Garvin",40,49
+"Oklahoma","Grady",40,51
+"Oklahoma","Grant",40,53
+"Oklahoma","Greer",40,55
+"Oklahoma","Harmon",40,57
+"Oklahoma","Harper",40,59
+"Oklahoma","Haskell",40,61
+"Oklahoma","Hughes",40,63
+"Oklahoma","Jackson",40,65
+"Oklahoma","Jefferson",40,67
+"Oklahoma","Johnston",40,69
+"Oklahoma","Kay",40,71
+"Oklahoma","Kingfisher",40,73
+"Oklahoma","Kiowa",40,75
+"Oklahoma","Latimer",40,77
+"Oklahoma","Le Flore",40,79
+"Oklahoma","Lincoln",40,81
+"Oklahoma","Logan",40,83
+"Oklahoma","Love",40,85
+"Oklahoma","Mcclain",40,87
+"Oklahoma","McCurtain",40,89
+"Oklahoma","McIntosh",40,91
+"Oklahoma","Major",40,93
+"Oklahoma","Marshall",40,95
+"Oklahoma","Mayes",40,97
+"Oklahoma","Murray",40,99
+"Oklahoma","Muskogee",40,101
+"Oklahoma","Noble",40,103
+"Oklahoma","Nowata",40,105
+"Oklahoma","Okfuskee",40,107
+"Oklahoma","Oklahoma",40,109
+"Oklahoma","Okmulgee",40,111
+"Oklahoma","Osage",40,113
+"Oklahoma","Ottawa",40,115
+"Oklahoma","Pawnee",40,117
+"Oklahoma","Payne",40,119
+"Oklahoma","Pittsburg",40,121
+"Oklahoma","Pontotoc",40,123
+"Oklahoma","Pottawatomie",40,125
+"Oklahoma","Pushmataha",40,127
+"Oklahoma","Roger Mills",40,129
+"Oklahoma","Rogers",40,131
+"Oklahoma","Seminole",40,133
+"Oklahoma","Sequoyah",40,135
+"Oklahoma","Stephens",40,137
+"Oklahoma","Texas",40,139
+"Oklahoma","Tillman",40,141
+"Oklahoma","Tulsa",40,143
+"Oklahoma","Wagoner",40,145
+"Oklahoma","Washington",40,147
+"Oklahoma","Washita",40,149
+"Oklahoma","Woods",40,151
+"Oklahoma","Woodward",40,153
+"Oregon","Baker",41,1
+"Oregon","Benton",41,3
+"Oregon","Clackamas",41,5
+"Oregon","Clatsop",41,7
+"Oregon","Columbia",41,9
+"Oregon","Coos",41,11
+"Oregon","Crook",41,13
+"Oregon","Curry",41,15
+"Oregon","Deschutes",41,17
+"Oregon","Douglas",41,19
+"Oregon","Gilliam",41,21
+"Oregon","Grant",41,23
+"Oregon","Harney",41,25
+"Oregon","Hood River",41,27
+"Oregon","Jackson",41,29
+"Oregon","Jefferson",41,31
+"Oregon","Josephine",41,33
+"Oregon","Klamath",41,35
+"Oregon","Lake",41,37
+"Oregon","Lane",41,39
+"Oregon","Lincoln",41,41
+"Oregon","Linn",41,43
+"Oregon","Malheur",41,45
+"Oregon","Marion",41,47
+"Oregon","Morrow",41,49
+"Oregon","Multnomah",41,51
+"Oregon","Polk",41,53
+"Oregon","Sherman",41,55
+"Oregon","Tillamook",41,57
+"Oregon","Umatilla",41,59
+"Oregon","Union",41,61
+"Oregon","Wallowa",41,63
+"Oregon","Wasco",41,65
+"Oregon","Washington",41,67
+"Oregon","Wheeler",41,69
+"Oregon","Yamhill",41,71
+"Pennsylvania","Adams",42,1
+"Pennsylvania","Allegheny",42,3
+"Pennsylvania","Armstrong",42,5
+"Pennsylvania","Beaver",42,7
+"Pennsylvania","Bedford",42,9
+"Pennsylvania","Berks",42,11
+"Pennsylvania","Blair",42,13
+"Pennsylvania","Bradford",42,15
+"Pennsylvania","Bucks",42,17
+"Pennsylvania","Butler",42,19
+"Pennsylvania","Cambria",42,21
+"Pennsylvania","Cameron",42,23
+"Pennsylvania","Carbon",42,25
+"Pennsylvania","Centre",42,27
+"Pennsylvania","Chester",42,29
+"Pennsylvania","Clarion",42,31
+"Pennsylvania","Clearfield",42,33
+"Pennsylvania","Clinton",42,35
+"Pennsylvania","Columbia",42,37
+"Pennsylvania","Crawford",42,39
+"Pennsylvania","Cumberland",42,41
+"Pennsylvania","Dauphin",42,43
+"Pennsylvania","Delaware",42,45
+"Pennsylvania","Elk",42,47
+"Pennsylvania","Erie",42,49
+"Pennsylvania","Fayette",42,51
+"Pennsylvania","Forest",42,53
+"Pennsylvania","Franklin",42,55
+"Pennsylvania","Fulton",42,57
+"Pennsylvania","Greene",42,59
+"Pennsylvania","Huntingdon",42,61
+"Pennsylvania","Indiana",42,63
+"Pennsylvania","Jefferson",42,65
+"Pennsylvania","Juniata",42,67
+"Pennsylvania","Lackawanna",42,69
+"Pennsylvania","Lancaster",42,71
+"Pennsylvania","Lawrence",42,73
+"Pennsylvania","Lebanon",42,75
+"Pennsylvania","Lehigh",42,77
+"Pennsylvania","Luzerne",42,79
+"Pennsylvania","Lycoming",42,81
+"Pennsylvania","McKean",42,83
+"Pennsylvania","Mercer",42,85
+"Pennsylvania","Mifflin",42,87
+"Pennsylvania","Monroe",42,89
+"Pennsylvania","Montgomery",42,91
+"Pennsylvania","Montour",42,93
+"Pennsylvania","Northampton",42,95
+"Pennsylvania","Northumberland",42,97
+"Pennsylvania","Perry",42,99
+"Pennsylvania","Philadelphia",42,101
+"Pennsylvania","Pike",42,103
+"Pennsylvania","Potter",42,105
+"Pennsylvania","Schuylkill",42,107
+"Pennsylvania","Snyder",42,109
+"Pennsylvania","Somerset",42,111
+"Pennsylvania","Sullivan",42,113
+"Pennsylvania","Susquehanna",42,115
+"Pennsylvania","Tioga",42,117
+"Pennsylvania","Union",42,119
+"Pennsylvania","Venango",42,121
+"Pennsylvania","Warren",42,123
+"Pennsylvania","Washington",42,125
+"Pennsylvania","Wayne",42,127
+"Pennsylvania","Westmoreland",42,129
+"Pennsylvania","Wyoming",42,131
+"Pennsylvania","York",42,133
+"Rhode Island","Bristol",44,1
+"Rhode Island","Kent",44,3
+"Rhode Island","Newport",44,5
+"Rhode Island","Providence",44,7
+"Rhode Island","Washington",44,9
+"South Carolina","Abbeville",45,1
+"South Carolina","Aiken",45,3
+"South Carolina","Allendale",45,5
+"South Carolina","Anderson",45,7
+"South Carolina","Bamberg",45,9
+"South Carolina","Barnwell",45,11
+"South Carolina","Beaufort",45,13
+"South Carolina","Berkeley",45,15
+"South Carolina","Calhoun",45,17
+"South Carolina","Charleston",45,19
+"South Carolina","Cherokee",45,21
+"South Carolina","Chester",45,23
+"South Carolina","Chesterfield",45,25
+"South Carolina","Clarendon",45,27
+"South Carolina","Colleton",45,29
+"South Carolina","Darlington",45,31
+"South Carolina","Dillon",45,33
+"South Carolina","Dorchester",45,35
+"South Carolina","Edgefield",45,37
+"South Carolina","Fairfield",45,39
+"South Carolina","Florence",45,41
+"South Carolina","Georgetown",45,43
+"South Carolina","Greenville",45,45
+"South Carolina","Greenwood",45,47
+"South Carolina","Hampton",45,49
+"South Carolina","Horry",45,51
+"South Carolina","Jasper",45,53
+"South Carolina","Kershaw",45,55
+"South Carolina","Lancaster",45,57
+"South Carolina","Laurens",45,59
+"South Carolina","Lee",45,61
+"South Carolina","Lexington",45,63
+"South Carolina","McCormick",45,65
+"South Carolina","Marion",45,67
+"South Carolina","Marlboro",45,69
+"South Carolina","Newberry",45,71
+"South Carolina","Oconee",45,73
+"South Carolina","Orangeburg",45,75
+"South Carolina","Pickens",45,77
+"South Carolina","Richland",45,79
+"South Carolina","Saluda",45,81
+"South Carolina","Spartanburg",45,83
+"South Carolina","Sumter",45,85
+"South Carolina","Union",45,87
+"South Carolina","Williamsburg",45,89
+"South Carolina","York",45,91
+"South Dakota","Aurora",46,3
+"South Dakota","Beadle",46,5
+"South Dakota","Bennett",46,7
+"South Dakota","Bon Homme",46,9
+"South Dakota","Brookings",46,11
+"South Dakota","Brown",46,13
+"South Dakota","Brule",46,15
+"South Dakota","Buffalo",46,17
+"South Dakota","Butte",46,19
+"South Dakota","Campbell",46,21
+"South Dakota","Charles Mix",46,23
+"South Dakota","Clark",46,25
+"South Dakota","Clay",46,27
+"South Dakota","Codington",46,29
+"South Dakota","Corson",46,31
+"South Dakota","Custer",46,33
+"South Dakota","Davison",46,35
+"South Dakota","Day",46,37
+"South Dakota","Deuel",46,39
+"South Dakota","Dewey",46,41
+"South Dakota","Douglas",46,43
+"South Dakota","Edmunds",46,45
+"South Dakota","Fall River",46,47
+"South Dakota","Faulk",46,49
+"South Dakota","Grant",46,51
+"South Dakota","Gregory",46,53
+"South Dakota","Haakon",46,55
+"South Dakota","Hamlin",46,57
+"South Dakota","Hand",46,59
+"South Dakota","Hanson",46,61
+"South Dakota","Harding",46,63
+"South Dakota","Hughes",46,65
+"South Dakota","Hutchinson",46,67
+"South Dakota","Hyde",46,69
+"South Dakota","Jackson",46,71
+"South Dakota","Jerauld",46,73
+"South Dakota","Jones",46,75
+"South Dakota","Kingsbury",46,77
+"South Dakota","Lake",46,79
+"South Dakota","Lawrence",46,81
+"South Dakota","Lincoln",46,83
+"South Dakota","Lyman",46,85
+"South Dakota","McCook",46,87
+"South Dakota","McPherson",46,89
+"South Dakota","Marshall",46,91
+"South Dakota","Meade",46,93
+"South Dakota","Mellette",46,95
+"South Dakota","Miner",46,97
+"South Dakota","Minnehaha",46,99
+"South Dakota","Moody",46,101
+"South Dakota","Pennington",46,103
+"South Dakota","Perkins",46,105
+"South Dakota","Potter",46,107
+"South Dakota","Roberts",46,109
+"South Dakota","Sanborn",46,111
+"South Dakota","Shannon",46,113
+"South Dakota","Spink",46,115
+"South Dakota","Stanley",46,117
+"South Dakota","Sully",46,119
+"South Dakota","Todd",46,121
+"South Dakota","Tripp",46,123
+"South Dakota","Turner",46,125
+"South Dakota","Union",46,127
+"South Dakota","Walworth",46,129
+"South Dakota","Yankton",46,135
+"South Dakota","Ziebach",46,137
+"Tennessee","Anderson",47,1
+"Tennessee","Bedford",47,3
+"Tennessee","Benton",47,5
+"Tennessee","Bledsoe",47,7
+"Tennessee","Blount",47,9
+"Tennessee","Bradley",47,11
+"Tennessee","Campbell",47,13
+"Tennessee","Cannon",47,15
+"Tennessee","Carroll",47,17
+"Tennessee","Carter",47,19
+"Tennessee","Cheatham",47,21
+"Tennessee","Chester",47,23
+"Tennessee","Claiborne",47,25
+"Tennessee","Clay",47,27
+"Tennessee","Cocke",47,29
+"Tennessee","Coffee",47,31
+"Tennessee","Crockett",47,33
+"Tennessee","Cumberland",47,35
+"Tennessee","Davidson",47,37
+"Tennessee","Decatur",47,39
+"Tennessee","Dekalb",47,41
+"Tennessee","Dickson",47,43
+"Tennessee","Dyer",47,45
+"Tennessee","Fayette",47,47
+"Tennessee","Fentress",47,49
+"Tennessee","Franklin",47,51
+"Tennessee","Gibson",47,53
+"Tennessee","Giles",47,55
+"Tennessee","Grainger",47,57
+"Tennessee","Greene",47,59
+"Tennessee","Grundy",47,61
+"Tennessee","Hamblen",47,63
+"Tennessee","Hamilton",47,65
+"Tennessee","Hancock",47,67
+"Tennessee","Hardeman",47,69
+"Tennessee","Hardin",47,71
+"Tennessee","Hawkins",47,73
+"Tennessee","Haywood",47,75
+"Tennessee","Henderson",47,77
+"Tennessee","Henry",47,79
+"Tennessee","Hickman",47,81
+"Tennessee","Houston",47,83
+"Tennessee","Humphreys",47,85
+"Tennessee","Jackson",47,87
+"Tennessee","Jefferson",47,89
+"Tennessee","Johnson",47,91
+"Tennessee","Knox",47,93
+"Tennessee","Lake",47,95
+"Tennessee","Lauderdale",47,97
+"Tennessee","Lawrence",47,99
+"Tennessee","Lewis",47,101
+"Tennessee","Lincoln",47,103
+"Tennessee","Loudon",47,105
+"Tennessee","McMinn",47,107
+"Tennessee","McNairy",47,109
+"Tennessee","Macon",47,111
+"Tennessee","Madison",47,113
+"Tennessee","Marion",47,115
+"Tennessee","Marshall",47,117
+"Tennessee","Maury",47,119
+"Tennessee","Meigs",47,121
+"Tennessee","Monroe",47,123
+"Tennessee","Montgomery",47,125
+"Tennessee","Moore",47,127
+"Tennessee","Morgan",47,129
+"Tennessee","Obion",47,131
+"Tennessee","Overton",47,133
+"Tennessee","Perry",47,135
+"Tennessee","Pickett",47,137
+"Tennessee","Polk",47,139
+"Tennessee","Putnam",47,141
+"Tennessee","Rhea",47,143
+"Tennessee","Roane",47,145
+"Tennessee","Robertson",47,147
+"Tennessee","Rutherford",47,149
+"Tennessee","Scott",47,151
+"Tennessee","Sequatchie",47,153
+"Tennessee","Sevier",47,155
+"Tennessee","Shelby",47,157
+"Tennessee","Smith",47,159
+"Tennessee","Stewart",47,161
+"Tennessee","Sullivan",47,163
+"Tennessee","Sumner",47,165
+"Tennessee","Tipton",47,167
+"Tennessee","Trousdale",47,169
+"Tennessee","Unicoi",47,171
+"Tennessee","Union",47,173
+"Tennessee","Van Buren",47,175
+"Tennessee","Warren",47,177
+"Tennessee","Washington",47,179
+"Tennessee","Wayne",47,181
+"Tennessee","Weakley",47,183
+"Tennessee","White",47,185
+"Tennessee","Williamson",47,187
+"Tennessee","Wilson",47,189
+"Texas","Anderson",48,1
+"Texas","Andrews",48,3
+"Texas","Angelina",48,5
+"Texas","Aransas",48,7
+"Texas","Archer",48,9
+"Texas","Armstrong",48,11
+"Texas","Atascosa",48,13
+"Texas","Austin",48,15
+"Texas","Bailey",48,17
+"Texas","Bandera",48,19
+"Texas","Bastrop",48,21
+"Texas","Baylor",48,23
+"Texas","Bee",48,25
+"Texas","Bell",48,27
+"Texas","Bexar",48,29
+"Texas","Blanco",48,31
+"Texas","Borden",48,33
+"Texas","Bosque",48,35
+"Texas","Bowie",48,37
+"Texas","Brazoria",48,39
+"Texas","Brazos",48,41
+"Texas","Brewster",48,43
+"Texas","Briscoe",48,45
+"Texas","Brooks",48,47
+"Texas","Brown",48,49
+"Texas","Burleson",48,51
+"Texas","Burnet",48,53
+"Texas","Caldwell",48,55
+"Texas","Calhoun",48,57
+"Texas","Callahan",48,59
+"Texas","Cameron",48,61
+"Texas","Camp",48,63
+"Texas","Carson",48,65
+"Texas","Cass",48,67
+"Texas","Castro",48,69
+"Texas","Chambers",48,71
+"Texas","Cherokee",48,73
+"Texas","Childress",48,75
+"Texas","Clay",48,77
+"Texas","Cochran",48,79
+"Texas","Coke",48,81
+"Texas","Coleman",48,83
+"Texas","Collin",48,85
+"Texas","Collingsworth",48,87
+"Texas","Colorado",48,89
+"Texas","Comal",48,91
+"Texas","Comanche",48,93
+"Texas","Concho",48,95
+"Texas","Cooke",48,97
+"Texas","Coryell",48,99
+"Texas","Cottle",48,101
+"Texas","Crane",48,103
+"Texas","Crockett",48,105
+"Texas","Crosby",48,107
+"Texas","Culberson",48,109
+"Texas","Dallam",48,111
+"Texas","Dallas",48,113
+"Texas","Dawson",48,115
+"Texas","Deaf Smith",48,117
+"Texas","Delta",48,119
+"Texas","Denton",48,121
+"Texas","De Witt",48,123
+"Texas","Dickens",48,125
+"Texas","Dimmit",48,127
+"Texas","Donley",48,129
+"Texas","Duval",48,131
+"Texas","Eastland",48,133
+"Texas","Ector",48,135
+"Texas","Edwards",48,137
+"Texas","Ellis",48,139
+"Texas","El Paso",48,141
+"Texas","Erath",48,143
+"Texas","Falls",48,145
+"Texas","Fannin",48,147
+"Texas","Fayette",48,149
+"Texas","Fisher",48,151
+"Texas","Floyd",48,153
+"Texas","Foard",48,155
+"Texas","Fort Bend",48,157
+"Texas","Franklin",48,159
+"Texas","Freestone",48,161
+"Texas","Frio",48,163
+"Texas","Gaines",48,165
+"Texas","Galveston",48,167
+"Texas","Garza",48,169
+"Texas","Gillespie",48,171
+"Texas","Glasscock",48,173
+"Texas","Goliad",48,175
+"Texas","Gonzales",48,177
+"Texas","Gray",48,179
+"Texas","Grayson",48,181
+"Texas","Gregg",48,183
+"Texas","Grimes",48,185
+"Texas","Guadalupe",48,187
+"Texas","Hale",48,189
+"Texas","Hall",48,191
+"Texas","Hamilton",48,193
+"Texas","Hansford",48,195
+"Texas","Hardeman",48,197
+"Texas","Hardin",48,199
+"Texas","Harris",48,201
+"Texas","Harrison",48,203
+"Texas","Hartley",48,205
+"Texas","Haskell",48,207
+"Texas","Hays",48,209
+"Texas","Hemphill",48,211
+"Texas","Henderson",48,213
+"Texas","Hidalgo",48,215
+"Texas","Hill",48,217
+"Texas","Hockley",48,219
+"Texas","Hood",48,221
+"Texas","Hopkins",48,223
+"Texas","Houston",48,225
+"Texas","Howard",48,227
+"Texas","Hudspeth",48,229
+"Texas","Hunt",48,231
+"Texas","Hutchinson",48,233
+"Texas","Irion",48,235
+"Texas","Jack",48,237
+"Texas","Jackson",48,239
+"Texas","Jasper",48,241
+"Texas","Jeff Davis",48,243
+"Texas","Jefferson",48,245
+"Texas","Jim Hogg",48,247
+"Texas","Jim Wells",48,249
+"Texas","Johnson",48,251
+"Texas","Jones",48,253
+"Texas","Karnes",48,255
+"Texas","Kaufman",48,257
+"Texas","Kendall",48,259
+"Texas","Kenedy",48,261
+"Texas","Kent",48,263
+"Texas","Kerr",48,265
+"Texas","Kimble",48,267
+"Texas","King",48,269
+"Texas","Kinney",48,271
+"Texas","Kleberg",48,273
+"Texas","Knox",48,275
+"Texas","Lamar",48,277
+"Texas","Lamb",48,279
+"Texas","Lampasas",48,281
+"Texas","La Salle",48,283
+"Texas","Lavaca",48,285
+"Texas","Lee",48,287
+"Texas","Leon",48,289
+"Texas","Liberty",48,291
+"Texas","Limestone",48,293
+"Texas","Lipscomb",48,295
+"Texas","Live Oak",48,297
+"Texas","Llano",48,299
+"Texas","Loving",48,301
+"Texas","Lubbock",48,303
+"Texas","Lynn",48,305
+"Texas","McCulloch",48,307
+"Texas","McLennan",48,309
+"Texas","McMullen",48,311
+"Texas","Madison",48,313
+"Texas","Marion",48,315
+"Texas","Martin",48,317
+"Texas","Mason",48,319
+"Texas","Matagorda",48,321
+"Texas","Maverick",48,323
+"Texas","Medina",48,325
+"Texas","Menard",48,327
+"Texas","Midland",48,329
+"Texas","Milam",48,331
+"Texas","Mills",48,333
+"Texas","Mitchell",48,335
+"Texas","Montague",48,337
+"Texas","Montgomery",48,339
+"Texas","Moore",48,341
+"Texas","Morris",48,343
+"Texas","Motley",48,345
+"Texas","Nacogdoches",48,347
+"Texas","Navarro",48,349
+"Texas","Newton",48,351
+"Texas","Nolan",48,353
+"Texas","Nueces",48,355
+"Texas","Ochiltree",48,357
+"Texas","Oldham",48,359
+"Texas","Orange",48,361
+"Texas","Palo Pinto",48,363
+"Texas","Panola",48,365
+"Texas","Parker",48,367
+"Texas","Parmer",48,369
+"Texas","Pecos",48,371
+"Texas","Polk",48,373
+"Texas","Potter",48,375
+"Texas","Presidio",48,377
+"Texas","Rains",48,379
+"Texas","Randall",48,381
+"Texas","Reagan",48,383
+"Texas","Real",48,385
+"Texas","Red River",48,387
+"Texas","Reeves",48,389
+"Texas","Refugio",48,391
+"Texas","Roberts",48,393
+"Texas","Robertson",48,395
+"Texas","Rockwall",48,397
+"Texas","Runnels",48,399
+"Texas","Rusk",48,401
+"Texas","Sabine",48,403
+"Texas","San Augustine",48,405
+"Texas","San Jacinto",48,407
+"Texas","San Patricio",48,409
+"Texas","San Saba",48,411
+"Texas","Schleicher",48,413
+"Texas","Scurry",48,415
+"Texas","Shackelford",48,417
+"Texas","Shelby",48,419
+"Texas","Sherman",48,421
+"Texas","Smith",48,423
+"Texas","Somervell",48,425
+"Texas","Starr",48,427
+"Texas","Stephens",48,429
+"Texas","Sterling",48,431
+"Texas","Stonewall",48,433
+"Texas","Sutton",48,435
+"Texas","Swisher",48,437
+"Texas","Tarrant",48,439
+"Texas","Taylor",48,441
+"Texas","Terrell",48,443
+"Texas","Terry",48,445
+"Texas","Throckmorton",48,447
+"Texas","Titus",48,449
+"Texas","Tom Green",48,451
+"Texas","Travis",48,453
+"Texas","Trinity",48,455
+"Texas","Tyler",48,457
+"Texas","Upshur",48,459
+"Texas","Upton",48,461
+"Texas","Uvalde",48,463
+"Texas","Val Verde",48,465
+"Texas","Van Zandt",48,467
+"Texas","Victoria",48,469
+"Texas","Walker",48,471
+"Texas","Waller",48,473
+"Texas","Ward",48,475
+"Texas","Washington",48,477
+"Texas","Webb",48,479
+"Texas","Wharton",48,481
+"Texas","Wheeler",48,483
+"Texas","Wichita",48,485
+"Texas","Wilbarger",48,487
+"Texas","Willacy",48,489
+"Texas","Williamson",48,491
+"Texas","Wilson",48,493
+"Texas","Winkler",48,495
+"Texas","Wise",48,497
+"Texas","Wood",48,499
+"Texas","Yoakum",48,501
+"Texas","Young",48,503
+"Texas","Zapata",48,505
+"Texas","Zavala",48,507
+"Utah","Beaver",49,1
+"Utah","Box Elder",49,3
+"Utah","Cache",49,5
+"Utah","Carbon",49,7
+"Utah","Daggett",49,9
+"Utah","Davis",49,11
+"Utah","Duchesne",49,13
+"Utah","Emery",49,15
+"Utah","Garfield",49,17
+"Utah","Grand",49,19
+"Utah","Iron",49,21
+"Utah","Juab",49,23
+"Utah","Kane",49,25
+"Utah","Millard",49,27
+"Utah","Morgan",49,29
+"Utah","Piute",49,31
+"Utah","Rich",49,33
+"Utah","Salt Lake",49,35
+"Utah","San Juan",49,37
+"Utah","Sanpete",49,39
+"Utah","Sevier",49,41
+"Utah","Summit",49,43
+"Utah","Tooele",49,45
+"Utah","Uintah",49,47
+"Utah","Utah",49,49
+"Utah","Wasatch",49,51
+"Utah","Washington",49,53
+"Utah","Wayne",49,55
+"Utah","Weber",49,57
+"Vermont","Addison",50,1
+"Vermont","Bennington",50,3
+"Vermont","Caledonia",50,5
+"Vermont","Chittenden",50,7
+"Vermont","Essex",50,9
+"Vermont","Franklin",50,11
+"Vermont","Grand Isle",50,13
+"Vermont","Lamoille",50,15
+"Vermont","Orange",50,17
+"Vermont","Orleans",50,19
+"Vermont","Rutland",50,21
+"Vermont","Washington",50,23
+"Vermont","Windham",50,25
+"Vermont","Windsor",50,27
+"Virginia","Accomack",51,1
+"Virginia","Albemarle",51,3
+"Virginia","Alleghany",51,5
+"Virginia","Amelia",51,7
+"Virginia","Amherst",51,9
+"Virginia","Appomattox",51,11
+"Virginia","Arlington",51,13
+"Virginia","Augusta",51,15
+"Virginia","Bath",51,17
+"Virginia","Bedford",51,19
+"Virginia","Bland",51,21
+"Virginia","Botetourt",51,23
+"Virginia","Brunswick",51,25
+"Virginia","Buchanan",51,27
+"Virginia","Buckingham",51,29
+"Virginia","Campbell",51,31
+"Virginia","Caroline",51,33
+"Virginia","Carroll",51,35
+"Virginia","Charles City",51,36
+"Virginia","Charlotte",51,37
+"Virginia","Chesterfield",51,41
+"Virginia","Clarke",51,43
+"Virginia","Craig",51,45
+"Virginia","Culpeper",51,47
+"Virginia","Cumberland",51,49
+"Virginia","Dickenson",51,51
+"Virginia","Dinwiddie",51,53
+"Virginia","Essex",51,57
+"Virginia","Fairfax",51,59
+"Virginia","Fauquier",51,61
+"Virginia","Floyd",51,63
+"Virginia","Fluvanna",51,65
+"Virginia","Franklin",51,67
+"Virginia","Frederick",51,69
+"Virginia","Giles",51,71
+"Virginia","Gloucester",51,73
+"Virginia","Goochland",51,75
+"Virginia","Grayson",51,77
+"Virginia","Greene",51,79
+"Virginia","Greensville",51,81
+"Virginia","Halifax",51,83
+"Virginia","Hanover",51,85
+"Virginia","Henrico",51,87
+"Virginia","Henry",51,89
+"Virginia","Highland",51,91
+"Virginia","Isle of Wight",51,93
+"Virginia","James City",51,95
+"Virginia","King and Queen",51,97
+"Virginia","King George",51,99
+"Virginia","King William",51,101
+"Virginia","Lancaster",51,103
+"Virginia","Lee",51,105
+"Virginia","Loudoun",51,107
+"Virginia","Louisa",51,109
+"Virginia","Lunenburg",51,111
+"Virginia","Madison",51,113
+"Virginia","Mathews",51,115
+"Virginia","Mecklenburg",51,117
+"Virginia","Middlesex",51,119
+"Virginia","Montgomery",51,121
+"Virginia","Nelson",51,125
+"Virginia","New Kent",51,127
+"Virginia","Northampton",51,131
+"Virginia","Northumberland",51,133
+"Virginia","Nottoway",51,135
+"Virginia","Orange",51,137
+"Virginia","Page",51,139
+"Virginia","Patrick",51,141
+"Virginia","Pittsylvania",51,143
+"Virginia","Powhatan",51,145
+"Virginia","Prince Edward",51,147
+"Virginia","Prince George",51,149
+"Virginia","Prince William",51,153
+"Virginia","Pulaski",51,155
+"Virginia","Rappahannock",51,157
+"Virginia","Richmond",51,159
+"Virginia","Roanoke",51,161
+"Virginia","Rockbridge",51,163
+"Virginia","Rockingham",51,165
+"Virginia","Russell",51,167
+"Virginia","Scott",51,169
+"Virginia","Shenandoah",51,171
+"Virginia","Smyth",51,173
+"Virginia","Southampton",51,175
+"Virginia","Spotsylvania",51,177
+"Virginia","Stafford",51,179
+"Virginia","Surry",51,181
+"Virginia","Sussex",51,183
+"Virginia","Tazewell",51,185
+"Virginia","Warren",51,187
+"Virginia","Washington",51,191
+"Virginia","Westmoreland",51,193
+"Virginia","Wise",51,195
+"Virginia","Wythe",51,197
+"Virginia","York",51,199
+"Virginia","Alexandria City",51,510
+"Virginia","Bedford City",51,515
+"Virginia","Bristol City",51,520
+"Virginia","Buena Vista City",51,530
+"Virginia","Charlottesville City",51,540
+"Virginia","Chesapeake City",51,550
+"Virginia","Clifton Forge City",51,560
+"Virginia","Colonial Heights City",51,570
+"Virginia","Covington City",51,580
+"Virginia","Danville City",51,590
+"Virginia","Emporia City",51,595
+"Virginia","Fairfax City",51,600
+"Virginia","Falls Church City",51,610
+"Virginia","Franklin City",51,620
+"Virginia","Fredericksburg City",51,630
+"Virginia","Galax City",51,640
+"Virginia","Hampton City",51,650
+"Virginia","Harrisonburg City",51,660
+"Virginia","Hopewell City",51,670
+"Virginia","Lexington City",51,678
+"Virginia","Lynchburg City",51,680
+"Virginia","Manassas City",51,683
+"Virginia","Manassas Park City",51,685
+"Virginia","Martinsville City",51,690
+"Virginia","Newport News City",51,700
+"Virginia","Norfolk City",51,710
+"Virginia","Norton City",51,720
+"Virginia","Petersburg City",51,730
+"Virginia","Poquoson City",51,735
+"Virginia","Portsmouth City",51,740
+"Virginia","Radford",51,750
+"Virginia","Richmond City",51,760
+"Virginia","Roanoke City",51,770
+"Virginia","Salem City",51,775
+"Virginia","South Boston City",51,780
+"Virginia","Staunton City",51,790
+"Virginia","Suffolk City",51,800
+"Virginia","Virginia Beach City",51,810
+"Virginia","Waynesboro City",51,820
+"Virginia","Williamsburg City",51,830
+"Virginia","Winchester City",51,840
+"Washington","Adams",53,1
+"Washington","Asotin",53,3
+"Washington","Benton",53,5
+"Washington","Chelan",53,7
+"Washington","Clallam",53,9
+"Washington","Clark",53,11
+"Washington","Columbia",53,13
+"Washington","Cowlitz",53,15
+"Washington","Douglas",53,17
+"Washington","Ferry",53,19
+"Washington","Franklin",53,21
+"Washington","Garfield",53,23
+"Washington","Grant",53,25
+"Washington","Grays Harbor",53,27
+"Washington","Island",53,29
+"Washington","Jefferson",53,31
+"Washington","King",53,33
+"Washington","Kitsap",53,35
+"Washington","Kittitas",53,37
+"Washington","Klickitat",53,39
+"Washington","Lewis",53,41
+"Washington","Lincoln",53,43
+"Washington","Mason",53,45
+"Washington","Okanogan",53,47
+"Washington","Pacific",53,49
+"Washington","Pend Oreille",53,51
+"Washington","Pierce",53,53
+"Washington","San Juan",53,55
+"Washington","Skagit",53,57
+"Washington","Skamania",53,59
+"Washington","Snohomish",53,61
+"Washington","Spokane",53,63
+"Washington","Stevens",53,65
+"Washington","Thurston",53,67
+"Washington","Wahkiakum",53,69
+"Washington","Walla Walla",53,71
+"Washington","Whatcom",53,73
+"Washington","Whitman",53,75
+"Washington","Yakima",53,77
+"West Virginia","Barbour",54,1
+"West Virginia","Berkeley",54,3
+"West Virginia","Boone",54,5
+"West Virginia","Braxton",54,7
+"West Virginia","Brooke",54,9
+"West Virginia","Cabell",54,11
+"West Virginia","Calhoun",54,13
+"West Virginia","Clay",54,15
+"West Virginia","Doddridge",54,17
+"West Virginia","Fayette",54,19
+"West Virginia","Gilmer",54,21
+"West Virginia","Grant",54,23
+"West Virginia","Greenbrier",54,25
+"West Virginia","Hampshire",54,27
+"West Virginia","Hancock",54,29
+"West Virginia","Hardy",54,31
+"West Virginia","Harrison",54,33
+"West Virginia","Jackson",54,35
+"West Virginia","Jefferson",54,37
+"West Virginia","Kanawha",54,39
+"West Virginia","Lewis",54,41
+"West Virginia","Lincoln",54,43
+"West Virginia","Logan",54,45
+"West Virginia","McDowell",54,47
+"West Virginia","Marion",54,49
+"West Virginia","Marshall",54,51
+"West Virginia","Mason",54,53
+"West Virginia","Mercer",54,55
+"West Virginia","Mineral",54,57
+"West Virginia","Mingo",54,59
+"West Virginia","Monongalia",54,61
+"West Virginia","Monroe",54,63
+"West Virginia","Morgan",54,65
+"West Virginia","Nicholas",54,67
+"West Virginia","Ohio",54,69
+"West Virginia","Pendleton",54,71
+"West Virginia","Pleasants",54,73
+"West Virginia","Pocahontas",54,75
+"West Virginia","Preston",54,77
+"West Virginia","Putnam",54,79
+"West Virginia","Raleigh",54,81
+"West Virginia","Randolph",54,83
+"West Virginia","Ritchie",54,85
+"West Virginia","Roane",54,87
+"West Virginia","Summers",54,89
+"West Virginia","Taylor",54,91
+"West Virginia","Tucker",54,93
+"West Virginia","Tyler",54,95
+"West Virginia","Upshur",54,97
+"West Virginia","Wayne",54,99
+"West Virginia","Webster",54,101
+"West Virginia","Wetzel",54,103
+"West Virginia","Wirt",54,105
+"West Virginia","Wood",54,107
+"West Virginia","Wyoming",54,109
+"Wisconsin","Adams",55,1
+"Wisconsin","Ashland",55,3
+"Wisconsin","Barron",55,5
+"Wisconsin","Bayfield",55,7
+"Wisconsin","Brown",55,9
+"Wisconsin","Buffalo",55,11
+"Wisconsin","Burnett",55,13
+"Wisconsin","Calumet",55,15
+"Wisconsin","Chippewa",55,17
+"Wisconsin","Clark",55,19
+"Wisconsin","Columbia",55,21
+"Wisconsin","Crawford",55,23
+"Wisconsin","Dane",55,25
+"Wisconsin","Dodge",55,27
+"Wisconsin","Door",55,29
+"Wisconsin","Douglas",55,31
+"Wisconsin","Dunn",55,33
+"Wisconsin","Eau Claire",55,35
+"Wisconsin","Florence",55,37
+"Wisconsin","Fond Du Lac",55,39
+"Wisconsin","Forest",55,41
+"Wisconsin","Grant",55,43
+"Wisconsin","Green",55,45
+"Wisconsin","Green Lake",55,47
+"Wisconsin","Iowa",55,49
+"Wisconsin","Iron",55,51
+"Wisconsin","Jackson",55,53
+"Wisconsin","Jefferson",55,55
+"Wisconsin","Juneau",55,57
+"Wisconsin","Kenosha",55,59
+"Wisconsin","Kewaunee",55,61
+"Wisconsin","La Crosse",55,63
+"Wisconsin","Lafayette",55,65
+"Wisconsin","Langlade",55,67
+"Wisconsin","Lincoln",55,69
+"Wisconsin","Manitowoc",55,71
+"Wisconsin","Marathon",55,73
+"Wisconsin","Marinette",55,75
+"Wisconsin","Marquette",55,77
+"Wisconsin","Menominee",55,78
+"Wisconsin","Milwaukee",55,79
+"Wisconsin","Monroe",55,81
+"Wisconsin","Oconto",55,83
+"Wisconsin","Oneida",55,85
+"Wisconsin","Outagamie",55,87
+"Wisconsin","Ozaukee",55,89
+"Wisconsin","Pepin",55,91
+"Wisconsin","Pierce",55,93
+"Wisconsin","Polk",55,95
+"Wisconsin","Portage",55,97
+"Wisconsin","Price",55,99
+"Wisconsin","Racine",55,101
+"Wisconsin","Richland",55,103
+"Wisconsin","Rock",55,105
+"Wisconsin","Rusk",55,107
+"Wisconsin","St Croix",55,109
+"Wisconsin","Sauk",55,111
+"Wisconsin","Sawyer",55,113
+"Wisconsin","Shawano",55,115
+"Wisconsin","Sheboygan",55,117
+"Wisconsin","Taylor",55,119
+"Wisconsin","Trempealeau",55,121
+"Wisconsin","Vernon",55,123
+"Wisconsin","Vilas",55,125
+"Wisconsin","Walworth",55,127
+"Wisconsin","Washburn",55,129
+"Wisconsin","Washington",55,131
+"Wisconsin","Waukesha",55,133
+"Wisconsin","Waupaca",55,135
+"Wisconsin","Waushara",55,137
+"Wisconsin","Winnebago",55,139
+"Wisconsin","Wood",55,141
+"Wyoming","Albany",56,1
+"Wyoming","Big Horn",56,3
+"Wyoming","Campbell",56,5
+"Wyoming","Carbon",56,7
+"Wyoming","Converse",56,9
+"Wyoming","Crook",56,11
+"Wyoming","Fremont",56,13
+"Wyoming","Goshen",56,15
+"Wyoming","Hot Springs",56,17
+"Wyoming","Johnson",56,19
+"Wyoming","Laramie",56,21
+"Wyoming","Lincoln",56,23
+"Wyoming","Natrona",56,25
+"Wyoming","Niobrara",56,27
+"Wyoming","Park",56,29
+"Wyoming","Platte",56,31
+"Wyoming","Sheridan",56,33
+"Wyoming","Sublette",56,35
+"Wyoming","Sweetwater",56,37
+"Wyoming","Teton",56,39
+"Wyoming","Uinta",56,41
+"Wyoming","Washakie",56,43
+"Wyoming","Weston",56,45

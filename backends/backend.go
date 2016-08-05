@@ -59,7 +59,7 @@ type IBackend interface {
 	ReadDatasetSchema() *dal.Dataset
 	Refresh() error
 	RefreshTimeout() time.Duration
-	UpdateCollectionSchema(action dal.CollectionAction, collectionName string, schema dal.Collection) error
+	UpdateCollectionSchema(action dal.CollectionAction, schema dal.Collection) error
 	UpdateRecords(collectionName string, query filter.Filter, records *dal.RecordSet) error
 	SetConnected(bool)
 }
@@ -198,6 +198,14 @@ func (self *Backend) Disconnect() {
 	log.Warningf("Disconnecting backend '%s'", self.GetName())
 	self.Suspend()
 	self.Connected = false
+}
+
+func (self *Backend) GetStatus() map[string]interface{} {
+	return map[string]interface{}{
+		`type`:      self.Dataset.Type,
+		`connected`: self.Connected,
+		`available`: self.Available,
+	}
 }
 
 func (self *Backend) ProcessPayload(payloadType PayloadType, payload *dal.RecordSet, req *http.Request) error {

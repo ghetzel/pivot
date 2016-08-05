@@ -61,9 +61,19 @@ func (self *Collection) VerifyEqual(other Collection) error {
 	}
 
 	for i, myField := range self.Fields {
-		otherField := other.Fields[i]
+		var otherField Field
 
-		if err := otherField.VerifyEqual(myField); err != nil {
+		if self.Dataset.FieldsUnordered {
+			if f, ok := other.GetField(myField.Name); ok {
+				otherField = f
+			} else {
+				return fmt.Errorf("Collection field '%s' is missing", myField.Name)
+			}
+		} else {
+			otherField = other.Fields[i]
+		}
+
+		if err := otherField.VerifyEqual(self.Dataset, myField); err != nil {
 			return err
 		}
 	}
