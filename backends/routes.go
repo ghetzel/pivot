@@ -1,29 +1,17 @@
-package patterns
+package backends
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/ghetzel/pivot/dal"
-	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/util"
 	"io/ioutil"
 	"net/http"
 )
 
-type IRecordAccessPattern interface {
-	RequestToFilter(*http.Request, map[string]string) (filter.Filter, error)
-	GetStatus() map[string]interface{}
-	ReadDatasetSchema() *dal.Dataset
-	ReadCollectionSchema(collectionName string) (dal.Collection, bool)
-	UpdateCollectionSchema(action dal.CollectionAction, collectionName string, schema dal.Collection) error
-	DeleteCollectionSchema(collectionName string) error
-	GetRecords(collectionName string, query filter.Filter) (*dal.RecordSet, error)
-	InsertRecords(collectionName string, query filter.Filter, records *dal.RecordSet) error
-	UpdateRecords(collectionName string, query filter.Filter, records *dal.RecordSet) error
-	DeleteRecords(collectionName string, query filter.Filter) error
-}
+func RegisterHandlers(backend IBackend) ([]util.Endpoint, error) {
+	backendName := backend.GetName()
 
-func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAccessPattern, backendI interface{}) ([]util.Endpoint, error) {
 	return []util.Endpoint{
 		// Schema Control
 		// ---------------------------------------------------------------------------------------------
@@ -32,7 +20,7 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			Method:      `GET`,
 			Path:        `/`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
-				return http.StatusOK, pattern.GetStatus(), nil
+				return http.StatusOK, backend.GetStatus(), nil
 			},
 		},
 		{
@@ -40,7 +28,7 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			Method:      `GET`,
 			Path:        `/schema`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
-				return http.StatusOK, pattern.ReadDatasetSchema(), nil
+				return http.StatusOK, backend.ReadDatasetSchema(), nil
 			},
 		},
 		{
@@ -49,7 +37,7 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			Path:        `/schema/:collection`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
 				if collectionName, ok := params[`collection`]; ok {
-					if collection, ok := pattern.ReadCollectionSchema(collectionName); ok {
+					if collection, ok := backend.ReadCollectionSchema(collectionName); ok {
 						return http.StatusOK, collection, nil
 					} else {
 						return http.StatusNotFound, nil, fmt.Errorf("Could not locate collection '%s'", collectionName)
@@ -65,7 +53,7 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			Path:        `/schema/:collection`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
 				if collectionName, ok := params[`collection`]; ok {
-					return http.StatusOK, nil, pattern.DeleteCollectionSchema(collectionName)
+					return http.StatusOK, nil, backend.DeleteCollectionSchema(collectionName)
 				} else {
 					return http.StatusBadRequest, nil, fmt.Errorf("Empty collection name specified")
 				}
@@ -97,7 +85,7 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 							definition := dal.Collection{}
 
 							if err := json.Unmarshal(data, &definition); err == nil {
-								return http.StatusNoContent, nil, pattern.UpdateCollectionSchema(schemaAction, collectionName, definition)
+								return http.StatusNoContent, nil, backend.UpdateCollectionSchema(schemaAction, collectionName, definition)
 							} else {
 								return http.StatusBadRequest, nil, err
 							}
@@ -121,14 +109,14 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 			Path:        `/query/:collection/all`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
 				params[`query`] = `all`
-				return handlerGetRecords(backendName, pattern)(request, params)
+				return handlerGetRecords(backend)(request, params)
 			},
 		},
 		{
 			BackendName: backendName,
 			Method:      `GET`,
 			Path:        `/query/:collection/where/*query`,
-			Handler:     handlerGetRecords(backendName, pattern),
+			Handler:     handlerGetRecords(backend),
 		},
 		{
 			BackendName: backendName,
@@ -165,11 +153,11 @@ func registerRecordAccessPatternHandlers(backendName string, pattern IRecordAcce
 	}, nil
 }
 
-func handlerGetRecords(backendName string, pattern IRecordAccessPattern) util.EndpointResponseFunc {
+func handlerGetRecords(backend IBackend) util.EndpointResponseFunc {
 	return func(request *http.Request, params map[string]string) (int, interface{}, error) {
 		if collectionName, ok := params[`collection`]; ok {
-			if f, err := pattern.RequestToFilter(request, params); err == nil {
-				if recordSet, err := pattern.GetRecords(collectionName, f); err == nil {
+			if f, err := backend.RequestToFilter(request, params); err == nil {
+				if recordSet, err := backend.GetRecords(collectionName, f); err == nil {
 					return http.StatusOK, recordSet, nil
 				} else {
 					return http.StatusInternalServerError, recordSet, err

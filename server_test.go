@@ -73,15 +73,15 @@ func TestClientStatus(t *testing.T) {
 	}
 }
 
-	// Available            bool          `json:"available"`
-	// Connected            bool          `json:"connected"`
-	// ConnectMaxAttempts   int           `json:"max_connection_attempts"`
-	// ConnectTimeout       time.Duration `json:"connect_timeout"`
-	// Dataset              dal.Dataset   `json:"configuration"`
-	// Name                 string        `json:"name"`
-	// SchemaRefresh        time.Duration `json:"schema_refresh_interval"`
-	// SchemaRefreshMaxFail int           `json:"schema_refresh_max_failures"`
-	// SchemaRefreshTimeout time.Duration `json:"schema_refresh_timeout"`
+// Available            bool          `json:"available"`
+// Connected            bool          `json:"connected"`
+// ConnectMaxAttempts   int           `json:"max_connection_attempts"`
+// ConnectTimeout       time.Duration `json:"connect_timeout"`
+// Dataset              dal.Dataset   `json:"configuration"`
+// Name                 string        `json:"name"`
+// SchemaRefresh        time.Duration `json:"schema_refresh_interval"`
+// SchemaRefreshMaxFail int           `json:"schema_refresh_max_failures"`
+// SchemaRefreshTimeout time.Duration `json:"schema_refresh_timeout"`
 
 func TestDummyAllBackends(t *testing.T) {
 	if backends, err := client.Backends(); err == nil {
@@ -105,7 +105,7 @@ func TestDummyAllBackends(t *testing.T) {
 					t.Errorf("backend.Dataset.Addresses[1]; expected: %q, got: %q", `http://127.0.0.1:1`, v)
 				}
 
-			} else{
+			} else {
 				t.Errorf("backend.Dataset.Addresses wrong size; expected: 2, got: %d", len(backend.Dataset.Addresses))
 			}
 
@@ -121,17 +121,16 @@ func TestDummyAllBackends(t *testing.T) {
 				if v, ok := opts[`third`]; !ok || v != `three` {
 					t.Errorf("backend.Dataset.Options['third']; expected: %v, got: %v(%T)", `three`, v, v)
 				}
-			}else{
+			} else {
 				t.Errorf("backend.Dataset.Options wrong size; expected: 3, got: %d", len(opts))
 			}
-		}else{
+		} else {
 			t.Errorf("wrong size; expected: 1, got: %d", len(backends))
 		}
 	} else {
 		t.Error(err)
 	}
 }
-
 
 func TestDummyOneBackend(t *testing.T) {
 	if backend, err := client.GetBackend(`dummy1`); err == nil {
@@ -147,7 +146,7 @@ func TestDummyOneBackend(t *testing.T) {
 			if !backend.Connected {
 				t.Errorf("Backend %q should be connected, but isn't.", backend.Name)
 			}
-		}else{
+		} else {
 			t.Errorf("Backend %q connect failed: %v", backend.Name, err)
 		}
 
@@ -155,7 +154,7 @@ func TestDummyOneBackend(t *testing.T) {
 			if !backend.Available {
 				t.Errorf("Backend %q should be available, but isn't.", backend.Name)
 			}
-		}else{
+		} else {
 			t.Errorf("Backend %q resume failed: %v", backend.Name, err)
 		}
 
@@ -163,7 +162,7 @@ func TestDummyOneBackend(t *testing.T) {
 			if backend.Available {
 				t.Errorf("Backend %q should be unavailable, but isn't.", backend.Name)
 			}
-		}else{
+		} else {
 			t.Errorf("Backend %q suspend failed: %v", backend.Name, err)
 		}
 
@@ -171,7 +170,7 @@ func TestDummyOneBackend(t *testing.T) {
 			if backend.Connected {
 				t.Errorf("Backend %q should be disconnected, but isn't.", backend.Name)
 			}
-		}else{
+		} else {
 			t.Errorf("Backend %q disconnect failed: %v", backend.Name, err)
 		}
 	} else {

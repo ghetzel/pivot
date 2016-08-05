@@ -7,7 +7,6 @@ import (
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"github.com/ghetzel/pivot/patterns"
 	"github.com/op/go-logging"
 	"net/http"
 	"strings"
@@ -17,7 +16,6 @@ import (
 var log = logging.MustGetLogger(`backends`)
 
 type ElasticsearchBackend struct {
-	patterns.IRecordAccessPattern `json:"-"`
 	backends.Backend
 	Connected  bool `json:"connected"`
 	client     *ElasticsearchClient
@@ -36,7 +34,6 @@ const (
 )
 
 func New(name string, config dal.Dataset) *ElasticsearchBackend {
-	// config.Pattern      = pattern
 	config.Collections = make([]dal.Collection, 0)
 
 	return &ElasticsearchBackend{
@@ -172,14 +169,6 @@ func (self *ElasticsearchBackend) Refresh() error {
 	}
 
 	return nil
-}
-
-func (self *ElasticsearchBackend) Info() map[string]interface{} {
-	return map[string]interface{}{}
-}
-
-func (self *ElasticsearchBackend) GetPatternType() patterns.PatternType {
-	return patterns.RecordPattern
 }
 
 func (self *ElasticsearchBackend) GetStatus() map[string]interface{} {

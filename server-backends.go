@@ -5,7 +5,6 @@ import (
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
-	"github.com/ghetzel/pivot/patterns"
 	"github.com/ghetzel/pivot/util"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
@@ -189,14 +188,14 @@ func (self *Server) setupAdminRoutesForBackend(backend backends.IBackend) {
 	})
 }
 
-// Returns all endpoints that apply to a given backend's access pattern
+// Returns all endpoints that apply to a given backend
 //
 func (self *Server) registerBackendRoutes(b interface{}) ([]util.Endpoint, error) {
 	switch b.(type) {
 	case backends.IBackend:
 		backend := b.(backends.IBackend)
 
-		if endpoints, err := patterns.RegisterHandlers(backend.GetName(), backend.GetPatternType(), b); err == nil {
+		if endpoints, err := backends.RegisterHandlers(backend); err == nil {
 			return endpoints, nil
 		} else {
 			return nil, err

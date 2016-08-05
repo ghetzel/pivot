@@ -6,7 +6,6 @@ import (
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"github.com/ghetzel/pivot/patterns"
 	"github.com/op/go-logging"
 	"net/http"
 	"time"
@@ -15,7 +14,6 @@ import (
 var log = logging.MustGetLogger(`backends`)
 
 type DummyBackend struct {
-	patterns.IRecordAccessPattern `json:"-"`
 	backends.Backend
 	Connected       bool `json:"connected"`
 	connectAt       time.Time
@@ -88,14 +86,6 @@ func (self *DummyBackend) Refresh() error {
 	}
 
 	return nil
-}
-
-func (self *DummyBackend) Info() map[string]interface{} {
-	return map[string]interface{}{}
-}
-
-func (self *DummyBackend) GetPatternType() patterns.PatternType {
-	return patterns.RecordPattern
 }
 
 func (self *DummyBackend) GetStatus() map[string]interface{} {

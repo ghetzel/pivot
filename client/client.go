@@ -1,10 +1,10 @@
 package pivot
 
 import (
+	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/pivot/util"
 	"time"
-	"fmt"
 )
 
 type PivotResponse struct {
@@ -71,11 +71,10 @@ func (self *Client) Call(method string, path string, payload interface{}) (Pivot
 
 	if err := self.Request(method, path, payload, &response, nil); err == nil {
 		return response, nil
-	}else{
+	} else {
 		return response, err
 	}
 }
-
 
 func (self *Client) GetBackend(name string) (*Backend, error) {
 	if backendDefs, err := self.Backends(); err == nil {
@@ -84,7 +83,7 @@ func (self *Client) GetBackend(name string) (*Backend, error) {
 				return backend, nil
 			}
 		}
-	}else{
+	} else {
 		return nil, err
 	}
 

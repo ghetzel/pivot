@@ -7,7 +7,6 @@ import (
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"github.com/ghetzel/pivot/patterns"
 	"github.com/op/go-logging"
 	"io/ioutil"
 	"net/http"
@@ -33,26 +32,36 @@ const (
 )
 
 type IBackend interface {
-	Connect() error
-	Disconnect()
+	Initialize() error
 	Finalize(IBackend) error
+	GetName() string
+	GetDataset() *dal.Dataset
 	GetConnectMaxAttempts() int
 	GetConnectTimeout() time.Duration
-	GetDataset() *dal.Dataset
-	GetName() string
-	GetPatternType() patterns.PatternType
-	Info() map[string]interface{}
-	Initialize() error
-	IsAvailable() bool
-	IsConnected() bool
-	ProcessPayload(PayloadType, *dal.RecordSet, *http.Request) error
-	Refresh() error
 	RefreshInterval() time.Duration
 	RefreshMaxFailures() int
-	RefreshTimeout() time.Duration
-	Resume()
-	SetConnected(bool)
+	IsAvailable() bool
+	Connect() error
+	Disconnect()
 	Suspend()
+	Resume()
+	ProcessPayload(PayloadType, *dal.RecordSet, *http.Request) error
+	RequestToFilter(*http.Request, map[string]string) (filter.Filter, error)
+
+	// data and schema access and control
+	GetRecords(collectionName string, query filter.Filter) (*dal.RecordSet, error)
+	DeleteCollectionSchema(collectionName string) error
+	DeleteRecords(collectionName string, query filter.Filter) error
+	GetStatus() map[string]interface{}
+	InsertRecords(collectionName string, query filter.Filter, records *dal.RecordSet) error
+	IsConnected() bool
+	ReadCollectionSchema(collectionName string) (dal.Collection, bool)
+	ReadDatasetSchema() *dal.Dataset
+	Refresh() error
+	RefreshTimeout() time.Duration
+	UpdateCollectionSchema(action dal.CollectionAction, collectionName string, schema dal.Collection) error
+	UpdateRecords(collectionName string, query filter.Filter, records *dal.RecordSet) error
+	SetConnected(bool)
 }
 
 type Backend struct {
@@ -183,12 +192,6 @@ func (self *Backend) Resume() {
 	}
 
 	self.Available = true
-}
-
-func (self *Backend) Info() map[string]interface{} {
-	return map[string]interface{}{
-		`type`: `generic`,
-	}
 }
 
 func (self *Backend) Disconnect() {
