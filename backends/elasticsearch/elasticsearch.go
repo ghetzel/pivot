@@ -333,7 +333,7 @@ func (self *ElasticsearchBackend) upsertDocument(collectionName string, f filter
 			var id string
 
 			for _, criterion := range f.Criteria {
-				if criterion.Field == `_id` {
+				if criterion.Field == `id` {
 					if len(criterion.Values) > 0 {
 						id = criterion.Values[0]
 						break
@@ -347,7 +347,7 @@ func (self *ElasticsearchBackend) upsertDocument(collectionName string, f filter
 
 			//  _id wasn't in the Filter criteria, check the payload itself
 			if id == `` {
-				if v, ok := record[`_id`]; ok {
+				if v, ok := record[`id`]; ok {
 					if s, err := stringutil.ToString(v); err == nil {
 						id = s
 					}
@@ -355,7 +355,7 @@ func (self *ElasticsearchBackend) upsertDocument(collectionName string, f filter
 			}
 
 			if id == `` {
-				return fmt.Errorf("Cannot insert/update document without an '_id' field in the query")
+				return fmt.Errorf("Cannot insert/update document without an 'id' field in the query")
 			} else {
 				_, err := self.client.IndexDocument(collectionName, docType, id, record.ToMap())
 				return err

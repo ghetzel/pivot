@@ -20,18 +20,21 @@ type Filter struct {
 	Options  map[string]string
 }
 
-func Parse(spec string) (Filter, error) {
-	var criterion Criterion
-
-	spec = strings.TrimPrefix(spec, `/`)
-
-	rv := Filter{
+func MakeFilter(spec string) Filter {
+	return Filter{
 		Spec:     spec,
 		Criteria: make([]Criterion, 0),
 		Fields:   make([]string, 0),
 		Options:  make(map[string]string),
 	}
+}
 
+func Parse(spec string) (Filter, error) {
+	var criterion Criterion
+
+	spec = strings.TrimPrefix(spec, `/`)
+
+	rv := MakeFilter(spec)
 	criteria := strings.Split(spec, `/`)
 
 	if len(criteria) >= 2 {
@@ -80,3 +83,6 @@ func Parse(spec string) (Filter, error) {
 
 	return rv, nil
 }
+
+
+var NullFilter Filter = MakeFilter(``)

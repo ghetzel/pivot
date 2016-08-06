@@ -2,11 +2,16 @@ package pivot
 
 import (
 	"fmt"
+	"encoding/csv"
 	"github.com/ghetzel/pivot/client"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/util"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"math/rand"
 	"os"
+	"crypto/sha256"
+	"encoding/hex"
+	"io"
 	"testing"
 	"time"
 )
@@ -15,6 +20,25 @@ var server *Server
 var client *pivot.Client
 var testBackend string
 var testSchema dal.Collection = dal.Collection{
+	Name: `test`,
+	Fields: []dal.Field{
+		{
+			Name:   `id`,
+			Type:   `str`,
+			Length: 16,
+		}, {
+			Name:   `state`,
+			Type:   `str`,
+			Length: 24,
+		}, {
+			Name:   `county`,
+			Type:   `str`,
+			Length: 32,
+		},
+	},
+}
+
+var testSchema2 dal.Collection = dal.Collection{
 	Name: `test`,
 	Fields: []dal.Field{
 		{
@@ -149,6 +173,54 @@ func TestBackendSchemaCreate(t *testing.T) {
 func TestBackendSchemaDelete(t *testing.T) {
 	if backend, err := client.GetBackend(testBackend); err == nil {
 		if err := backend.DeleteCollection(testSchema.Name); err != nil {
+			t.Error(err)
+		}
+	} else {
+		t.Error(err)
+	}
+}
+
+func TestBackendInsertData(t *testing.T) {
+	if backend, err := client.GetBackend(testBackend); err == nil {
+		if file, err := os.Open(`./test/us-fips.csv`); err == nil {
+			data := csv.NewReader(file)
+
+			for {
+				row, err := data.Read()
+
+				if err != nil {
+					if err != io.EOF {
+						t.Error(err)
+					}
+
+					break
+				}
+
+				if len(row) == 4 {
+					id := sha256.Sum256(append([]byte(row[2]), []byte(row[3])...))
+					idStr := hex.EncodeToString(append([]byte{}, id[:]...))
+
+					record := make(dal.Record)
+
+					record[`id`] = idStr[16:32]
+					record[`state`] = row[0]
+					record[`county`] = row[1]
+
+					if v, err := stringutil.ConvertToInteger(row[2]); err == nil {
+						record[`fips_state`] = v
+					}
+
+					if v, err := stringutil.ConvertToInteger(row[3]); err == nil {
+						record[`fips_county`] = v
+					}
+
+					if err := backend.InsertRecords(testSchema.Name, dal.NewRecordSet(record)); err != nil {
+						t.Error(err)
+						break
+					}
+				}
+			}
+		}else{
 			t.Error(err)
 		}
 	} else {

@@ -14,9 +14,9 @@ type RecordSet struct {
 	Options     map[string]interface{} `json:"options`
 }
 
-func NewRecordSet() *RecordSet {
+func NewRecordSet(records ...Record) *RecordSet {
 	return &RecordSet{
-		Records: make([]Record, 0),
+		Records: records,
 		Options: make(map[string]interface{}),
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/util"
 	"io/ioutil"
 	"net/http"
@@ -147,7 +148,21 @@ func RegisterHandlers(backend IBackend) ([]util.Endpoint, error) {
 			Method:      `POST`,
 			Path:        `/query/:collection`,
 			Handler: func(request *http.Request, params map[string]string) (int, interface{}, error) {
-				return http.StatusNotImplemented, nil, fmt.Errorf("NI: [%s].InsertRecords()", backendName)
+				if collectionName, ok := params[`collection`]; ok {
+					if data, err := ioutil.ReadAll(request.Body); err == nil {
+						recordset := dal.NewRecordSet()
+
+						if err := json.Unmarshal(data, &recordset); err == nil {
+							return http.StatusOK, nil, backend.InsertRecords(collectionName, filter.NullFilter, recordset)
+						} else {
+							return http.StatusBadRequest, nil, err
+						}
+					} else {
+						return http.StatusBadRequest, nil, err
+					}
+				} else {
+					return http.StatusBadRequest, nil, fmt.Errorf("Collection name not specified")
+				}
 			},
 		},
 	}, nil
