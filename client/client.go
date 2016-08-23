@@ -5,6 +5,7 @@ import (
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/pivot/util"
 	"github.com/op/go-logging"
+	"github.com/ghetzel/bee-hotel"
 	"time"
 )
 
@@ -18,11 +19,11 @@ type PivotResponse struct {
 }
 
 type Client struct {
-	*util.MultiClient
+	*bee.MultiClient
 }
 
 func NewClient(address string) *Client {
-	client := util.NewMultiClient(address)
+	client := bee.NewMultiClient(address)
 	maputil.DefaultStructTag = `json`
 
 	return &Client{

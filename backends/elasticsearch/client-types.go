@@ -201,3 +201,89 @@ type SearchResponse struct {
 	Shards   ShardStats         `json:"shards"`
 	Hits     SearchResponseHits `json:"hits"`
 }
+
+type BulkResponse struct {
+	Took int `json:"took"`
+}
+
+type BulkDescriptor struct {
+	Operation string
+	Index     string
+	Type      string
+	ID        string
+	Fields    map[string]interface{}
+	Options   map[string]interface{}
+}
+
+func (self *BulkDescriptor) GetRequestPayload() ([]string, error) {
+	output := make([]string, 0)
+
+	opline := map[string]interface{}{
+		self.Operation: map[string]interface{}{
+			`_index`: self.Index,
+			`_type`:  self.Type,
+			`_id`:    self.ID,
+		},
+	}
+
+	if opdata, err := json.Marshal(opline); err == nil {
+		output = append(output, string(opdata[:]))
+		fieldData := self.Fields
+
+		if self.Operation == `update` {
+			fieldData = map[string]interface{}{
+				`doc`: fieldData,
+			}
+
+			for k, v := range self.Options {
+				fieldData[k] = v
+			}
+		}
+
+		if fd, err := json.Marshal(fieldData); err == nil {
+			output = append(output, string(fd[:]))
+		} else {
+			return nil, err
+		}
+	} else {
+		return nil, err
+	}
+
+	return output, nil
+}
+
+type BulkOperation struct {
+	Operations []BulkDescriptor
+}
+
+func (self *BulkOperation) Add(descriptors ...BulkDescriptor) error {
+	if self.Operations == nil {
+		self.Operations = make([]BulkDescriptor, 0)
+	}
+
+	for _, descriptor := range descriptors {
+		switch descriptor.Operation {
+		case `index`, `delete`, `create`, `update`:
+			self.Operations = append(self.Operations, descriptor)
+
+		default:
+			return fmt.Errorf("Unknown bulk operation '%s'", descriptor.Operation)
+		}
+	}
+
+	return nil
+}
+
+func (self *BulkOperation) GetRequestPayload() ([]string, error) {
+	output := make([]string, 0)
+
+	for _, operation := range self.Operations {
+		if lines, err := operation.GetRequestPayload(); err == nil {
+			output = append(output, lines...)
+		} else {
+			return nil, err
+		}
+	}
+
+	return output, nil
+}

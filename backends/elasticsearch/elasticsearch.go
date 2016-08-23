@@ -97,6 +97,10 @@ func (self *ElasticsearchBackend) Connect() error {
 }
 
 func (self *ElasticsearchBackend) Refresh() error {
+	if err := self.client.CheckQuorum(); err != nil {
+		self.SetConnected(false)
+	}
+
 	if version, err := self.client.ServerVersion(); err == nil {
 		self.esVersion = version
 	} else {
@@ -362,8 +366,27 @@ func (self *ElasticsearchBackend) upsertDocument(collectionName string, f filter
 			}
 
 		default:
-			// TODO: implement Bulk API
-			return fmt.Errorf("Bulk insert not supported for this backend")
+			var bulk BulkOperation
+
+			for _, record := range payload.Records {
+				if v, ok := record[`id`]; ok {
+					if id, err := stringutil.ToString(v); err == nil {
+						delete(record, `id`)
+
+						if err := bulk.Add(BulkDescriptor{
+							Operation: `index`,
+							Index:     collectionName,
+							Type:      docType,
+							ID:        id,
+							Fields:    record.ToMap(),
+						}); err != nil {
+							return err
+						}
+					}
+				}
+			}
+
+			return self.client.BulkExecute(bulk)
 		}
 	} else {
 		return fmt.Errorf("No recordset specified")

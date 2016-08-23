@@ -1,17 +1,17 @@
 package pivot
 
 import (
-	"fmt"
+	"crypto/sha256"
 	"encoding/csv"
+	"encoding/hex"
+	"fmt"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/client"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/util"
-	"github.com/ghetzel/go-stockutil/stringutil"
+	"io"
 	"math/rand"
 	"os"
-	"crypto/sha256"
-	"encoding/hex"
-	"io"
 	"testing"
 	"time"
 )
@@ -170,20 +170,11 @@ func TestBackendSchemaCreate(t *testing.T) {
 	}
 }
 
-func TestBackendSchemaDelete(t *testing.T) {
-	if backend, err := client.GetBackend(testBackend); err == nil {
-		if err := backend.DeleteCollection(testSchema.Name); err != nil {
-			t.Error(err)
-		}
-	} else {
-		t.Error(err)
-	}
-}
-
 func TestBackendInsertData(t *testing.T) {
 	if backend, err := client.GetBackend(testBackend); err == nil {
 		if file, err := os.Open(`./test/us-fips.csv`); err == nil {
 			data := csv.NewReader(file)
+			rs := dal.NewRecordSet()
 
 			for {
 				row, err := data.Read()
@@ -214,19 +205,31 @@ func TestBackendInsertData(t *testing.T) {
 						record[`fips_county`] = v
 					}
 
-					if err := backend.InsertRecords(testSchema.Name, dal.NewRecordSet(record)); err != nil {
-						t.Error(err)
-						break
-					}
+					rs.Push(record)
+
 				}
 			}
-		}else{
+
+			if err := backend.InsertRecords(testSchema.Name, rs); err != nil {
+				t.Error(err)
+			}
+		} else {
 			t.Error(err)
 		}
 	} else {
 		t.Error(err)
 	}
 }
+
+// func TestBackendSchemaDelete(t *testing.T) {
+// 	if backend, err := client.GetBackend(testBackend); err == nil {
+// 		if err := backend.DeleteCollection(testSchema.Name); err != nil {
+// 			t.Error(err)
+// 		}
+// 	} else {
+// 		t.Error(err)
+// 	}
+// }
 
 func TestBackendConnectionClose(t *testing.T) {
 	if backend, err := client.GetBackend(testBackend); err == nil {

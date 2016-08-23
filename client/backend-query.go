@@ -8,7 +8,7 @@ func (self *Backend) InsertRecords(collectionName string, recordset *dal.RecordS
 	path := self.GetPath(`query`, collectionName)
 
 	if _, err := self.Client.Call(`POST`, path, recordset); err == nil {
-		return self.Refresh()
+		return nil
 	} else {
 		return err
 	}

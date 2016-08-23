@@ -2,21 +2,21 @@ package elasticsearch
 
 import (
 	"fmt"
+	"github.com/ghetzel/bee-hotel"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"github.com/ghetzel/pivot/util"
 	"math"
 	"strings"
 )
 
 type ElasticsearchClient struct {
-	*util.MultiClient
+	*bee.MultiClient
 }
 
 func NewClient() *ElasticsearchClient {
-	client := util.NewMultiClient()
+	client := bee.NewMultiClient()
 
 	return &ElasticsearchClient{
 		MultiClient: client,
@@ -305,5 +305,26 @@ func (self *ElasticsearchClient) IndexDocument(index string, docType string, id 
 		} else {
 			return indexResponse, err
 		}
+	}
+}
+
+func (self *ElasticsearchClient) BulkExecute(operation BulkOperation) error {
+	bulkResponse := BulkResponse{}
+	errResponse := make(map[string]interface{})
+
+	if lines, err := operation.GetRequestPayload(); err == nil {
+		data := strings.Join(lines, "\n")
+
+		if err := self.Request(`POST`, `_bulk`, &data, &bulkResponse, &errResponse); err == nil {
+			if len(errResponse) == 0 {
+				return nil
+			} else {
+				return fmt.Errorf("Encountered: %+v", errResponse)
+			}
+		} else {
+			return err
+		}
+	} else {
+		return err
 	}
 }

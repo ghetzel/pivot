@@ -84,5 +84,4 @@ func Parse(spec string) (Filter, error) {
 	return rv, nil
 }
 
-
 var NullFilter Filter = MakeFilter(``)
