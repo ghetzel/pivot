@@ -2,10 +2,10 @@ package pivot
 
 import (
 	"fmt"
+	"github.com/ghetzel/bee-hotel"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/pivot/util"
 	"github.com/op/go-logging"
-	"github.com/ghetzel/bee-hotel"
 	"time"
 )
 

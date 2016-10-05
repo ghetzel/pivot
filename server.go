@@ -49,10 +49,6 @@ func (self *Server) ListenAndServe() error {
 	self.server.Use(self.corsHandler)
 	self.server.UseHandler(self.router)
 
-	if err := self.setupBackendRoutes(); err != nil {
-		return err
-	}
-
 	self.server.Run(fmt.Sprintf("%s:%d", self.Address, self.Port))
 	return nil
 }
