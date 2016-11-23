@@ -3,15 +3,15 @@
 all: vendor fmt build bundle
 
 update:
-	test -d vendor && rm -rf vendor || exit 0
-	glide up --strip-vcs --update-vendored
+	-rm -rf vendor
+	govend -uvl
 
 vendor:
-	go list github.com/Masterminds/glide
-	glide install --strip-vcs --update-vendored
+	go list github.com/govend/govend
+	govend -v -l
 
 clean-bundle:
-	@test -d public && rm -rf public || true
+	-rm -rf public
 
 clean:
 	rm -rf vendor bin

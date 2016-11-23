@@ -49,6 +49,10 @@ func (self *Server) ListenAndServe() error {
 	self.server.Use(self.corsHandler)
 	self.server.UseHandler(self.router)
 
+	if err := self.setupRoutes(); err != nil {
+		return err
+	}
+
 	self.server.Run(fmt.Sprintf("%s:%d", self.Address, self.Port))
 	return nil
 }
@@ -75,4 +79,33 @@ func (self *Server) Respond(w http.ResponseWriter, code int, payload interface{}
 	} else {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func (self *Server) setupRoutes() error {
+	self.router.GET(`/query/:collection/where/:urlquery`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+
+		})
+
+	self.router.POST(`/query/:collection/where/:urlquery`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+
+		})
+
+	self.router.PUT(`/query/:collection/where/:urlquery`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+
+		})
+
+	self.router.DELETE(`/query/:collection/where/:urlquery`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+
+		})
+
+	self.router.GET(`/schema/:collection`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+
+		})
+
+	return nil
 }
