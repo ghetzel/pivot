@@ -1,5 +1,7 @@
 package dal
 
+type Identity string
+
 type Record map[string]interface{}
 
 func (self *Record) ToMap() map[string]interface{} {

@@ -3,6 +3,9 @@ package pivot
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ghetzel/pivot/backends"
+	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/util"
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/cors"
@@ -15,13 +18,15 @@ const DEFAULT_SERVER_ADDRESS = `127.0.0.1`
 const DEFAULT_SERVER_PORT = 29029
 
 type Server struct {
-	Address     string
-	Port        int
-	corsHandler *cors.Cors
-	router      *httprouter.Router
-	server      *negroni.Negroni
-	endpoints   []util.Endpoint
-	routeMap    map[string]util.EndpointResponseFunc
+	Address          string
+	Port             int
+	ConnectionString string
+	backend          backends.Backend
+	corsHandler      *cors.Cors
+	router           *httprouter.Router
+	server           *negroni.Negroni
+	endpoints        []util.Endpoint
+	routeMap         map[string]util.EndpointResponseFunc
 }
 
 func NewServer() *Server {
@@ -34,6 +39,16 @@ func NewServer() *Server {
 }
 
 func (self *Server) ListenAndServe() error {
+	if conn, err := dal.ParseConnectionString(self.ConnectionString); err == nil {
+		if backend, err := backends.MakeBackend(conn); err == nil {
+			self.backend = backend
+		} else {
+			return err
+		}
+	} else {
+		return err
+	}
+
 	self.server = negroni.New()
 	self.router = httprouter.New()
 
@@ -84,7 +99,15 @@ func (self *Server) Respond(w http.ResponseWriter, code int, payload interface{}
 func (self *Server) setupRoutes() error {
 	self.router.GET(`/query/:collection/where/:urlquery`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-
+			if f, err := filter.Parse(params.ByName(`urlquery`)); err == nil {
+				if recordset, err := self.backend.Query(params.ByName(`collection`), f); err == nil {
+					self.Respond(w, http.StatusOK, recordset, nil)
+				} else {
+					self.Respond(w, http.StatusInternalServerError, nil, err)
+				}
+			} else {
+				self.Respond(w, http.StatusInternalServerError, nil, err)
+			}
 		})
 
 	self.router.POST(`/query/:collection/where/:urlquery`,
