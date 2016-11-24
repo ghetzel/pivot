@@ -2,3 +2,4 @@
 /vendor
 /public
 /test.yml
+/*.db
