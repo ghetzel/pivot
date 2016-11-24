@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
+	"github.com/op/go-logging"
 )
+
+var log = logging.MustGetLogger(`backends`)
 
 type Backend interface {
 	Initialize() error
@@ -19,6 +22,8 @@ type Backend interface {
 }
 
 func MakeBackend(connection dal.ConnectionString) (Backend, error) {
+	log.Debugf("Creating backend for connection string %q", connection.String())
+
 	switch connection.Backend() {
 	case `bolt`:
 		return NewBoltBackend(connection), nil

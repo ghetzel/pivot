@@ -63,23 +63,13 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) {
-				if config, err := pivot.LoadConfigFile(c.String(`config`)); err == nil {
-					if err := config.Initialize(); err == nil {
-						server := pivot.NewServer()
-						server.Address = c.String(`address`)
-						server.Port = c.Int(`port`)
+				server := pivot.NewServer(c.Args().First())
+				server.Address = c.String(`address`)
+				server.Port = c.Int(`port`)
 
-						if err := server.ListenAndServe(); err != nil {
-							log.Fatalf("Failed to start server: %v", err)
-							os.Exit(3)
-						}
-					} else {
-						log.Fatalf("Failed to initialize: %v", err)
-						os.Exit(2)
-					}
-				} else {
-					log.Fatalf("Failed to load configuration: %v", err)
-					os.Exit(1)
+				if err := server.ListenAndServe(); err != nil {
+					log.Fatalf("Failed to start server: %v", err)
+					os.Exit(3)
 				}
 			},
 		},

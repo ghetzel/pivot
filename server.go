@@ -29,12 +29,13 @@ type Server struct {
 	routeMap         map[string]util.EndpointResponseFunc
 }
 
-func NewServer() *Server {
+func NewServer(connectionString ...string) *Server {
 	return &Server{
-		Address:   DEFAULT_SERVER_ADDRESS,
-		Port:      DEFAULT_SERVER_PORT,
-		endpoints: make([]util.Endpoint, 0),
-		routeMap:  make(map[string]util.EndpointResponseFunc),
+		Address:          DEFAULT_SERVER_ADDRESS,
+		Port:             DEFAULT_SERVER_PORT,
+		ConnectionString: connectionString[0],
+		endpoints:        make([]util.Endpoint, 0),
+		routeMap:         make(map[string]util.EndpointResponseFunc),
 	}
 }
 
@@ -42,6 +43,12 @@ func (self *Server) ListenAndServe() error {
 	if conn, err := dal.ParseConnectionString(self.ConnectionString); err == nil {
 		if backend, err := backends.MakeBackend(conn); err == nil {
 			self.backend = backend
+
+			if err := self.backend.Initialize(); err == nil {
+				log.Debugf("Initialized backend %T", self.backend)
+			} else {
+				return err
+			}
 		} else {
 			return err
 		}
@@ -97,7 +104,7 @@ func (self *Server) Respond(w http.ResponseWriter, code int, payload interface{}
 }
 
 func (self *Server) setupRoutes() error {
-	self.router.GET(`/query/:collection/where/:urlquery`,
+	self.router.GET(`/query/:collection/where/*urlquery`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 			if f, err := filter.Parse(params.ByName(`urlquery`)); err == nil {
 				if recordset, err := self.backend.Query(params.ByName(`collection`), f); err == nil {
@@ -110,17 +117,17 @@ func (self *Server) setupRoutes() error {
 			}
 		})
 
-	self.router.POST(`/query/:collection/where/:urlquery`,
+	self.router.POST(`/query/:collection/where/*urlquery`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 
 		})
 
-	self.router.PUT(`/query/:collection/where/:urlquery`,
+	self.router.PUT(`/query/:collection/where/*urlquery`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 
 		})
 
-	self.router.DELETE(`/query/:collection/where/:urlquery`,
+	self.router.DELETE(`/query/:collection/where/*urlquery`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 
 		})

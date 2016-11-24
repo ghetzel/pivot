@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
 	"os"
 )
 
@@ -48,6 +49,10 @@ func (self *BoltBackend) UpdateRecords(collection string, records *dal.RecordSet
 
 func (self *BoltBackend) DeleteRecords(collection string, id []dal.Identity) error {
 	return fmt.Errorf("NI")
+}
+
+func (self *BoltBackend) Query(collection string, filter filter.Filter) (*dal.RecordSet, error) {
+	return nil, fmt.Errorf("NI")
 }
 
 func (self *BoltBackend) CreateCollection(definition dal.Collection) error {
