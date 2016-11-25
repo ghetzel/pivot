@@ -5,6 +5,7 @@ import (
 	"github.com/boltdb/bolt"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
+	"github.com/vmihailenco/msgpack"
 	"os"
 )
 
@@ -35,16 +36,30 @@ func (self *BoltBackend) Initialize() error {
 	return nil
 }
 
-func (self *BoltBackend) InsertRecords(collection string, records *dal.RecordSet) error {
-	return fmt.Errorf("NI")
+func (self *BoltBackend) InsertRecords(collection string, recordset *dal.RecordSet) error {
+	return self.upsertRecords(collection, recordset, true)
 }
 
 func (self *BoltBackend) GetRecordById(collection string, id dal.Identity) (*dal.Record, error) {
-	return nil, fmt.Errorf("NI")
+	var record *dal.Record
+
+	err := self.db.View(func(tx *bolt.Tx) error {
+		if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
+			if data := bucket.Get([]byte(id[:])); data != nil {
+				return msgpack.Unmarshal(data, record)
+			}
+		} else {
+			return fmt.Errorf("Failed to retrieve bucket %q", collection)
+		}
+
+		return nil
+	})
+
+	return record, err
 }
 
-func (self *BoltBackend) UpdateRecords(collection string, records *dal.RecordSet) error {
-	return fmt.Errorf("NI")
+func (self *BoltBackend) UpdateRecords(collection string, recordset *dal.RecordSet) error {
+	return self.upsertRecords(collection, recordset, false)
 }
 
 func (self *BoltBackend) DeleteRecords(collection string, id []dal.Identity) error {
@@ -56,13 +71,51 @@ func (self *BoltBackend) Query(collection string, filter filter.Filter) (*dal.Re
 }
 
 func (self *BoltBackend) CreateCollection(definition dal.Collection) error {
-	return fmt.Errorf("NI")
+	return self.db.Update(func(tx *bolt.Tx) error {
+		bucketName := []byte(definition.Name[:])
+		_, err := tx.CreateBucket(bucketName)
+		return err
+	})
 }
 
 func (self *BoltBackend) DeleteCollection(collection string) error {
-	return fmt.Errorf("NI")
+	return self.db.Update(func(tx *bolt.Tx) error {
+		bucketName := []byte(collection[:])
+		return tx.DeleteBucket(bucketName)
+	})
 }
 
 func (self *BoltBackend) GetCollection(collection string) (dal.Collection, error) {
 	return dal.Collection{}, fmt.Errorf("NI")
+}
+
+func (self *BoltBackend) upsertRecords(collection string, recordset *dal.RecordSet, autocreateBucket bool) error {
+	return self.db.Update(func(tx *bolt.Tx) error {
+		bucketName := []byte(collection[:])
+		bucket := tx.Bucket(bucketName)
+
+		if bucket == nil {
+			if autocreateBucket {
+				if b, err := tx.CreateBucket(bucketName); err == nil {
+					bucket = b
+				} else {
+					return fmt.Errorf("Failed to create bucket %q: %v", collection, err)
+				}
+			} else {
+				return fmt.Errorf("Failed to retrieve bucket %q", collection)
+			}
+		}
+
+		for _, record := range recordset.Records {
+			if data, err := msgpack.Marshal(record); err == nil {
+				if err := bucket.Put([]byte(record.ID[:]), data); err != nil {
+					return err
+				}
+			} else {
+				return err
+			}
+		}
+
+		return nil
+	})
 }
