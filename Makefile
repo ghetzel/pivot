@@ -14,12 +14,12 @@ clean-bundle:
 	-rm -rf public
 
 clean:
-	rm -rf vendor bin
+	-rm -rf vendor bin
 
 fmt:
 	gofmt -w .
 
-test:
+test: vendor
 	go test -v .
 
 bundle: clean-bundle

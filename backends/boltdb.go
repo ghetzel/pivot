@@ -5,7 +5,7 @@ import (
 	"github.com/boltdb/bolt"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"github.com/vmihailenco/msgpack"
+	"gopkg.in/vmihailenco/msgpack.v2"
 	"os"
 )
 
