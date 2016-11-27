@@ -12,8 +12,27 @@ func NewRecord(id Identity) *Record {
 	return &Record{
 		ID:     id,
 		Fields: make(map[string]interface{}),
-		Data:   make([]byte, 0),
 	}
+}
+
+func (self *Record) Get(key string, fallback ...interface{}) interface{} {
+	if v, ok := self.Fields[key]; ok {
+		return v
+	}else if len(fallback) > 0 {
+		return fallback[0]
+	}else{
+		return nil
+	}
+}
+
+func (self *Record) Set(key string, value interface{}) *Record {
+	self.Fields[key] = value
+	return self
+}
+
+func (self *Record) SetData(data []byte) *Record {
+	self.Data = data
+	return self
 }
 
 type RecordSet struct {

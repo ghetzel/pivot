@@ -4,6 +4,9 @@ import (
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"net/url"
 	"strings"
+	"os/user"
+	"path/filepath"
+	"os"
 )
 
 type ConnectionString struct {
@@ -44,9 +47,13 @@ func (self *ConnectionString) Dataset() string {
 
 func ParseConnectionString(conn string) (ConnectionString, error) {
 	if uri, err := url.Parse(conn); err == nil {
-		return ConnectionString{
-			URI: uri,
-		}, nil
+		if err := prepareURI(uri); err == nil {
+			return ConnectionString{
+				URI: uri,
+			}, nil
+		}else{
+			return ConnectionString{}, err
+		}
 	} else {
 		return ConnectionString{}, err
 	}
@@ -73,7 +80,33 @@ func MakeConnectionString(scheme string, host string, dataset string, options ma
 		RawQuery: qs.Encode(),
 	}
 
-	return ConnectionString{
-		URI: uri,
-	}, nil
+	if err := prepareURI(uri); err == nil {
+		return ConnectionString{
+			URI: uri,
+		}, nil
+	}else{
+		return ConnectionString{}, err
+	}
+}
+
+func prepareURI(uri *url.URL) error {
+	if strings.HasPrefix(uri.Path, `/.`) {
+		if cwd, err := os.Getwd(); err == nil {
+			if abs, err := filepath.Abs(cwd); err == nil {
+				uri.Path = strings.Replace(uri.Path, `/.`, abs, 1)
+			}else{
+				return err
+			}
+		}else{
+			return err
+		}
+	}else if strings.HasPrefix(uri.Path, `/~`) {
+		if usr, err := user.Current(); err == nil {
+			uri.Path = strings.Replace(uri.Path, `/~`, usr.HomeDir, 1)
+		}else{
+			return err
+		}
+	}
+
+	return nil
 }

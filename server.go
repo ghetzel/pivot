@@ -107,10 +107,14 @@ func (self *Server) setupRoutes() error {
 	self.router.GET(`/query/:collection/where/*urlquery`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 			if f, err := filter.Parse(params.ByName(`urlquery`)); err == nil {
-				if recordset, err := self.backend.Query(params.ByName(`collection`), f); err == nil {
-					self.Respond(w, http.StatusOK, recordset, nil)
-				} else {
-					self.Respond(w, http.StatusInternalServerError, nil, err)
+				if search := self.backend.WithSearch(); search != nil {
+					if recordset, err := search.Query(params.ByName(`collection`), f); err == nil {
+						self.Respond(w, http.StatusOK, recordset, nil)
+					} else {
+						self.Respond(w, http.StatusInternalServerError, nil, err)
+					}
+				}else{
+					self.Respond(w, http.StatusBadRequest, nil, fmt.Errorf("Backend %T does not support complex queries."))
 				}
 			} else {
 				self.Respond(w, http.StatusInternalServerError, nil, err)

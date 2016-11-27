@@ -21,6 +21,14 @@ type Collection struct {
 	Properties map[string]interface{} `json:"properties"`
 }
 
+func NewCollection(name string) *Collection {
+	return &Collection{
+		Name:       name,
+		Fields:     make([]Field, 0),
+		Properties: make(map[string]interface{}),
+	}
+}
+
 func (self *Collection) GetField(name string) (Field, bool) {
 	for _, field := range self.Fields {
 		if field.Name == name {

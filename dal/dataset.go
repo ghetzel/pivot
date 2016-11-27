@@ -14,13 +14,9 @@ type Dataset struct {
 	MandatoryFieldProperties      []string               `json:"mandatory_field_properties"`
 }
 
-func (self *Dataset) MakeCollection(name string) Collection {
-	collection := Collection{
-		Dataset:    self,
-		Name:       name,
-		Fields:     make([]Field, 0),
-		Properties: make(map[string]interface{}),
-	}
+func (self *Dataset) MakeCollection(name string) *Collection {
+	collection := NewCollection(name)
+	collection.Dataset = self
 
 	if self.InheritedProperties != nil {
 		for k, v := range self.InheritedProperties {
