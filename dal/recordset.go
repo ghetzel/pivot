@@ -1,14 +1,12 @@
 package dal
 
-type Identity string
-
 type Record struct {
-	ID     Identity               `json:"id"`
+	ID     string                 `json:"id"`
 	Fields map[string]interface{} `json:"fields,omitempty"`
 	Data   []byte                 `json:"data,omitempty"`
 }
 
-func NewRecord(id Identity) *Record {
+func NewRecord(id string) *Record {
 	return &Record{
 		ID:     id,
 		Fields: make(map[string]interface{}),
@@ -40,7 +38,7 @@ type RecordSet struct {
 	Page        int                    `json:"page"`
 	TotalPages  int                    `json:"total_pages"`
 	Records     []*Record              `json:"records"`
-	Options     map[string]interface{} `json:"options`
+	Options     map[string]interface{} `json:"options"`
 }
 
 func NewRecordSet(records ...*Record) *RecordSet {

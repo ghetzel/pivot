@@ -56,7 +56,7 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter) (*dal.Record
 				recordset := dal.NewRecordSet()
 
 				for _, hit := range results.Hits {
-					if record, err := self.parent.GetRecordById(collection, dal.Identity(hit.ID)); err == nil {
+					if record, err := self.parent.GetRecordById(collection, hit.ID); err == nil {
 						recordset.Push(record)
 					}
 				}
@@ -77,7 +77,7 @@ func (self *BleveIndexer) QueryString(collection string, filterString string) (*
 	return DefaultQueryString(self, collection, filterString)
 }
 
-func (self *BleveIndexer) Remove(collection string, ids []dal.Identity) error {
+func (self *BleveIndexer) Remove(collection string, ids []string) error {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		batch := index.NewBatch()
 

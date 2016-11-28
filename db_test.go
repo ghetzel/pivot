@@ -16,7 +16,7 @@ func TestMain(m *testing.M) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
-	if b, err := makeBackend(`bolt:///./tmp/db_test`); err == nil {
+	if b, err := makeBackend(`boltdb:///./tmp/db_test`); err == nil {
 		backend = b
 	} else {
 		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
@@ -79,21 +79,21 @@ func TestBasicCRUD(t *testing.T) {
 	record, err = backend.GetRecordById(`TestBasicCRUD`, `1`)
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(dal.Identity(`1`), record.ID)
+	assert.Equal(string(`1`), record.ID)
 	assert.Equal(`First`, record.Get(`name`))
 	assert.Nil(record.Data)
 
 	record, err = backend.GetRecordById(`TestBasicCRUD`, `2`)
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(dal.Identity(`2`), record.ID)
+	assert.Equal(string(`2`), record.ID)
 	assert.Equal(`Second`, record.Get(`name`))
 	assert.Equal(TestData, record.Data)
 
 	record, err = backend.GetRecordById(`TestBasicCRUD`, `3`)
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(dal.Identity(`3`), record.ID)
+	assert.Equal(string(`3`), record.ID)
 	assert.Equal(`Third`, record.Get(`name`))
 	assert.Nil(record.Data)
 
@@ -105,16 +105,16 @@ func TestBasicCRUD(t *testing.T) {
 	record, err = backend.GetRecordById(`TestBasicCRUD`, `3`)
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(dal.Identity(`3`), record.ID)
+	assert.Equal(string(`3`), record.ID)
 	assert.Equal(`Threeve`, record.Get(`name`))
 
 	// Retrieve-Delete-Verify
 	// --------------------------------------------------------------------------------------------
 	record, err = backend.GetRecordById(`TestBasicCRUD`, `2`)
 	assert.Nil(err)
-	assert.Equal(dal.Identity(`2`), record.ID)
+	assert.Equal(string(`2`), record.ID)
 
-	assert.Nil(backend.DeleteRecords(`TestBasicCRUD`, []dal.Identity{`2`}))
+	assert.Nil(backend.DeleteRecords(`TestBasicCRUD`, []string{`2`}))
 
 	record, err = backend.GetRecordById(`TestBasicCRUD`, `2`)
 	assert.NotNil(err)
@@ -168,7 +168,7 @@ func TestSearchQuery(t *testing.T) {
 			record, ok = recordset.GetRecord(0)
 			assert.True(ok)
 			assert.NotNil(record)
-			assert.Equal(dal.Identity(`1`), record.ID)
+			assert.Equal(string(`1`), record.ID)
 			assert.Equal(`First`, record.Get(`name`))
 		}
 

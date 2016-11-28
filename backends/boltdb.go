@@ -74,7 +74,7 @@ func (self *BoltBackend) InsertRecords(collection string, recordset *dal.RecordS
 	return self.upsertRecords(collection, recordset, true)
 }
 
-func (self *BoltBackend) GetRecordById(collection string, id dal.Identity) (*dal.Record, error) {
+func (self *BoltBackend) GetRecordById(collection string, id string) (*dal.Record, error) {
 	record := dal.NewRecord(id)
 
 	err := self.db.View(func(tx *bolt.Tx) error {
@@ -102,7 +102,7 @@ func (self *BoltBackend) UpdateRecords(collection string, recordset *dal.RecordS
 	return self.upsertRecords(collection, recordset, false)
 }
 
-func (self *BoltBackend) DeleteRecords(collection string, ids []dal.Identity) error {
+func (self *BoltBackend) DeleteRecords(collection string, ids []string) error {
 	return self.db.Update(func(tx *bolt.Tx) error {
 		if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
 			for _, id := range ids {

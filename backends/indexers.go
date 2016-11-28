@@ -11,7 +11,7 @@ type Indexer interface {
 	Index(collection string, records *dal.RecordSet) error
 	Query(collection string, filter filter.Filter) (*dal.RecordSet, error)
 	QueryString(collection string, filterString string) (*dal.RecordSet, error)
-	Remove(collection string, ids []dal.Identity) error
+	Remove(collection string, ids []string) error
 }
 
 func DefaultQueryString(indexer Indexer, collection string, filterString string) (*dal.RecordSet, error) {

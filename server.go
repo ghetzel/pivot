@@ -153,7 +153,7 @@ func (self *Server) setupRoutes() error {
 
 	self.router.DELETE(`/query/:collection/where/*urlquery`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			var identities []dal.Identity
+			var identities []string
 
 			if err := json.NewDecoder(req.Body).Decode(&identities); err == nil {
 				if err := self.backend.DeleteRecords(params.ByName(`collection`), identities); err == nil {
