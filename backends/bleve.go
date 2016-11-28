@@ -1,14 +1,14 @@
 package backends
 
 import (
-	"github.com/blevesearch/bleve"
 	"fmt"
+	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/search/query"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"path"
 	"strings"
-	"github.com/ghetzel/go-stockutil/stringutil"
 )
 
 type BleveIndexer struct {
@@ -147,7 +147,7 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 					conjunction.AddQuery(bleve.NewDocIDQuery(criterion.Values))
 					skipNext = true
 					break
-				}else{
+				} else {
 					if value == `null` {
 						currentQuery = bleve.NewTermQuery(``)
 					} else {
@@ -155,11 +155,11 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 					}
 				}
 			case `prefix`:
-				currentQuery = bleve.NewWildcardQuery(value+`*`)
+				currentQuery = bleve.NewWildcardQuery(value + `*`)
 			case `suffix`:
-				currentQuery = bleve.NewWildcardQuery(`*`+value)
+				currentQuery = bleve.NewWildcardQuery(`*` + value)
 			case `contains`:
-				currentQuery = bleve.NewWildcardQuery(`*`+value+`*`)
+				currentQuery = bleve.NewWildcardQuery(`*` + value + `*`)
 
 			case `gt`, `lt`, `gte`, `lte`:
 				var min, max *float64
@@ -169,11 +169,11 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 					if strings.HasPrefix(criterion.Operator, `gt`) {
 						min = &v
 						minInc = strings.HasSuffix(criterion.Operator, `e`)
-					}else{
+					} else {
 						max = &v
 						maxInc = strings.HasSuffix(criterion.Operator, `e`)
 					}
-				}else{
+				} else {
 					return nil, err
 				}
 
@@ -210,7 +210,7 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 
 				if disjunction != nil {
 					disjunction.AddQuery(currentQuery)
-				}else{
+				} else {
 					conjunction.AddQuery(currentQuery)
 				}
 			}
@@ -227,7 +227,7 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 
 	if len(conjunction.Conjuncts) > 0 {
 		return conjunction, nil
-	}else{
+	} else {
 		return nil, fmt.Errorf("Filter did not produce a valid query")
 	}
 }
