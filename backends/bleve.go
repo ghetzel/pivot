@@ -2,10 +2,13 @@ package backends
 
 import (
 	"github.com/blevesearch/bleve"
+	"fmt"
+	"github.com/blevesearch/bleve/search/query"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"github.com/ghetzel/pivot/filter/generators"
 	"path"
+	"strings"
+	"github.com/ghetzel/go-stockutil/stringutil"
 )
 
 type BleveIndexer struct {
@@ -13,14 +16,12 @@ type BleveIndexer struct {
 	conn       dal.ConnectionString
 	parent     Backend
 	indexCache map[string]bleve.Index
-	generator  filter.IGenerator
 }
 
 func NewBleveIndexer(connection dal.ConnectionString) *BleveIndexer {
 	return &BleveIndexer{
 		conn:       connection,
 		indexCache: make(map[string]bleve.Index),
-		generator:  generators.NewBleveGenerator(),
 	}
 }
 
@@ -35,8 +36,6 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 		batch := index.NewBatch()
 
 		for _, record := range records.Records {
-			log.Debugf("Indexing %s/%+v", collection, record)
-
 			if err := batch.Index(string(record.ID), record.Fields); err != nil {
 				return err
 			}
@@ -50,11 +49,8 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 
 func (self *BleveIndexer) Query(collection string, f filter.Filter) (*dal.RecordSet, error) {
 	if index, err := self.getIndexForCollection(collection); err == nil {
-		if bleveQSQ, err := filter.Render(self.generator, collection, f); err == nil {
-			query := bleve.NewQueryStringQuery(string(bleveQSQ[:]))
-			request := bleve.NewSearchRequest(query)
-
-			log.Debugf("Querying: %+v", query)
+		if bq, err := self.filterToBleveQuery(index, f); err == nil {
+			request := bleve.NewSearchRequest(bq)
 
 			if results, err := index.Search(request); err == nil {
 				recordset := dal.NewRecordSet()
@@ -86,7 +82,6 @@ func (self *BleveIndexer) Remove(collection string, ids []dal.Identity) error {
 		batch := index.NewBatch()
 
 		for _, id := range ids {
-			log.Debugf("Deindexing %s/%s", collection, id)
 			batch.Delete(string(id))
 		}
 
@@ -125,5 +120,114 @@ func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index,
 
 		self.indexCache[collection] = index
 		return index, nil
+	}
+}
+
+func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter) (query.Query, error) {
+	conjunction := bleve.NewConjunctionQuery()
+
+	for _, criterion := range f.Criteria {
+		var skipNext bool
+		var disjunction *query.DisjunctionQuery
+
+		// this handles AND (field=a OR b OR ...)
+		if len(criterion.Values) > 1 {
+			disjunction = bleve.NewDisjunctionQuery()
+		}
+
+		for _, value := range criterion.Values {
+			// objects are indexed case-insensitive, so queries should be too
+			value = strings.ToLower(value)
+
+			var currentQuery query.FieldableQuery
+
+			switch criterion.Operator {
+			case `is`, ``:
+				if criterion.Field == `_id` {
+					conjunction.AddQuery(bleve.NewDocIDQuery(criterion.Values))
+					skipNext = true
+					break
+				}else{
+					if value == `null` {
+						currentQuery = bleve.NewTermQuery(``)
+					} else {
+						currentQuery = bleve.NewTermQuery(value)
+					}
+				}
+			case `prefix`:
+				currentQuery = bleve.NewWildcardQuery(value+`*`)
+			case `suffix`:
+				currentQuery = bleve.NewWildcardQuery(`*`+value)
+			case `contains`:
+				currentQuery = bleve.NewWildcardQuery(`*`+value+`*`)
+
+			case `gt`, `lt`, `gte`, `lte`:
+				var min, max *float64
+				var minInc, maxInc bool
+
+				if v, err := stringutil.ConvertToFloat(value); err == nil {
+					if strings.HasPrefix(criterion.Operator, `gt`) {
+						min = &v
+						minInc = strings.HasSuffix(criterion.Operator, `e`)
+					}else{
+						max = &v
+						maxInc = strings.HasSuffix(criterion.Operator, `e`)
+					}
+				}else{
+					return nil, err
+				}
+
+				currentQuery = bleve.NewNumericRangeInclusiveQuery(min, max, &minInc, &maxInc)
+
+			// case `not`:
+			// 	q := bleve.NewBooleanQuery()
+			// 	var subquery query.FieldableQuery
+
+			// 	if value == `null` {
+			// 		subquery = bleve.NewTermQuery(``)
+			// 	} else {
+			// 		subquery = bleve.NewTermQuery(value)
+			// 	}
+
+			// 	subquery.SetField(criterion.Field)
+			// 	q.AddMustNot(subquery)
+
+			// 	if disjunction != nil {
+			// 		disjunction.AddQuery(q)
+			// 		conjunction.AddQuery(disjunction)
+			// 	}else{
+			// 		conjunction.AddQuery(q)
+			// 	}
+
+			// 	continue
+
+			default:
+				return nil, fmt.Errorf("Unimplemented operator '%s'", criterion.Operator)
+			}
+
+			if currentQuery != nil {
+				currentQuery.SetField(criterion.Field)
+
+				if disjunction != nil {
+					disjunction.AddQuery(currentQuery)
+				}else{
+					conjunction.AddQuery(currentQuery)
+				}
+			}
+		}
+
+		if skipNext {
+			continue
+		}
+
+		if disjunction != nil {
+			conjunction.AddQuery(disjunction)
+		}
+	}
+
+	if len(conjunction.Conjuncts) > 0 {
+		return conjunction, nil
+	}else{
+		return nil, fmt.Errorf("Filter did not produce a valid query")
 	}
 }

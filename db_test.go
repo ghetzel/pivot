@@ -139,15 +139,28 @@ func TestSearchQuery(t *testing.T) {
 			dal.NewRecord(`2`).Set(`name`, `Second`),
 			dal.NewRecord(`3`).Set(`name`, `Third`))))
 
+		// twosies
+		for _, qs := range []string{
+			`name/contains:ir`,
+			`name/suffix:d`,
+		} {
+			t.Logf("Querying (want 2 results): %q\n", qs)
+			recordset, err = search.QueryString(`TestSearchQuery`, qs)
+			assert.Nil(err)
+			assert.NotNil(recordset)
+			assert.Equal(uint64(2), recordset.ResultCount)
+		}
+
+		// onesies
 		for _, qs := range []string{
 			`_id/1`,
-			`_id/lt:2`,
 			`name/first`,
 			`name/First`,
 			`name/contains:irs`,
 			`name/prefix:fir`,
+			`name/contains:ir/name/prefix:f`,
 		} {
-			t.Logf("Querying: %q\n", qs)
+			t.Logf("Querying (want 1 result): %q\n", qs)
 			recordset, err = search.QueryString(`TestSearchQuery`, qs)
 			assert.Nil(err)
 			assert.NotNil(recordset)
@@ -157,6 +170,18 @@ func TestSearchQuery(t *testing.T) {
 			assert.NotNil(record)
 			assert.Equal(dal.Identity(`1`), record.ID)
 			assert.Equal(`First`, record.Get(`name`))
+		}
+
+		// nonesies
+		for _, qs := range []string{
+			`name/contains:irs/name/prefix:sec`,
+		} {
+			t.Logf("Querying (want 0 results): %q\n", qs)
+			recordset, err = search.QueryString(`TestSearchQuery`, qs)
+			assert.Nil(err)
+			assert.NotNil(recordset)
+			assert.Equal(uint64(0), recordset.ResultCount)
+			assert.True(recordset.IsEmpty())
 		}
 	}
 }
