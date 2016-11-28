@@ -21,6 +21,7 @@ fmt:
 
 test: vendor
 	go test -v .
+	go test -v filter/*/*
 
 bundle: clean-bundle
 	@echo "Bundling static resources under ./public/"

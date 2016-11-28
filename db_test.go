@@ -1,21 +1,21 @@
 package pivot
 
 import (
-	"github.com/ghetzel/pivot/dal"
-	"github.com/ghetzel/pivot/backends"
-	"github.com/stretchr/testify/require"
-	"testing"
-	"os"
 	"fmt"
+	"github.com/ghetzel/pivot/backends"
+	"github.com/ghetzel/pivot/dal"
+	"github.com/stretchr/testify/require"
+	"os"
+	"testing"
 )
 
 var backend backends.Backend
-var TestData = []byte{ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07 }
+var TestData = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 
 func TestMain(m *testing.M) {
 	if b, err := makeBackend(`bolt:///./test.db`); err == nil {
 		backend = b
-	}else{
+	} else {
 		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
 		os.Exit(1)
 	}
@@ -50,10 +50,9 @@ func TestCollectionManagement(t *testing.T) {
 
 	assert.Nil(err)
 
-
 	if coll, err := backend.GetCollection(`test-collmgmt`); err == nil {
 		assert.Equal(`test-collmgmt`, coll.Name)
-	}else{
+	} else {
 		assert.Nil(err)
 	}
 }
@@ -67,7 +66,6 @@ func TestBasicCRUD(t *testing.T) {
 
 	assert.Nil(err)
 	var record *dal.Record
-
 
 	// Insert and Retrieve
 	// --------------------------------------------------------------------------------------------
@@ -97,7 +95,6 @@ func TestBasicCRUD(t *testing.T) {
 	assert.Equal(`Third`, record.Get(`name`))
 	assert.Nil(record.Data)
 
-
 	// Update and Retrieve
 	// --------------------------------------------------------------------------------------------
 	assert.Nil(backend.UpdateRecords(`test-crud`, dal.NewRecordSet(
@@ -109,20 +106,18 @@ func TestBasicCRUD(t *testing.T) {
 	assert.Equal(dal.Identity(`3`), record.ID)
 	assert.Equal(`Threeve`, record.Get(`name`))
 
-
 	// Retrieve-Delete-Verify
 	// --------------------------------------------------------------------------------------------
 	record, err = backend.GetRecordById(`test-crud`, `2`)
 	assert.Nil(err)
 	assert.Equal(dal.Identity(`2`), record.ID)
 
-	assert.Nil(backend.DeleteRecords(`test-crud`, []dal.Identity{ `2` }))
+	assert.Nil(backend.DeleteRecords(`test-crud`, []dal.Identity{`2`}))
 
 	record, err = backend.GetRecordById(`test-crud`, `2`)
 	assert.NotNil(err)
 	assert.Nil(record)
 }
-
 
 func TestSearchQuery(t *testing.T) {
 	assert := require.New(t)

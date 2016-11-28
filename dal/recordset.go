@@ -18,9 +18,9 @@ func NewRecord(id Identity) *Record {
 func (self *Record) Get(key string, fallback ...interface{}) interface{} {
 	if v, ok := self.Fields[key]; ok {
 		return v
-	}else if len(fallback) > 0 {
+	} else if len(fallback) > 0 {
 		return fallback[0]
-	}else{
+	} else {
 		return nil
 	}
 }
@@ -62,14 +62,6 @@ func (self *RecordSet) GetRecord(index int) (*Record, bool) {
 	}
 
 	return nil, false
-}
-
-func (self *RecordSet) ToMap(index int) (map[string]interface{}, bool) {
-	if record, ok := self.GetRecord(index); ok {
-		return record.Fields, true
-	}
-
-	return make(map[string]interface{}), false
 }
 
 func (self *RecordSet) IsEmpty() bool {

@@ -3,14 +3,16 @@ package dal
 import (
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"net/url"
-	"strings"
+	"os"
 	"os/user"
 	"path/filepath"
-	"os"
+	"strings"
+	"time"
 )
 
 type ConnectionString struct {
-	URI *url.URL
+	URI     *url.URL
+	Options map[string]interface{}
 }
 
 func (self *ConnectionString) String() string {
@@ -45,13 +47,64 @@ func (self *ConnectionString) Dataset() string {
 	return self.URI.Path
 }
 
+func (self *ConnectionString) OptString(key string, fallback string) string {
+	if v, ok := self.Options[key]; ok {
+		if vConv, err := stringutil.ConvertToString(v); err == nil {
+			return vConv
+		}
+	}
+
+	return fallback
+}
+
+func (self *ConnectionString) OptBool(key string, fallback bool) bool {
+	if v, ok := self.Options[key]; ok {
+		if vConv, err := stringutil.ConvertToBool(v); err == nil {
+			return vConv
+		}
+	}
+
+	return fallback
+}
+
+func (self *ConnectionString) OptInt(key string, fallback int64) int64 {
+	if v, ok := self.Options[key]; ok {
+		if vConv, err := stringutil.ConvertToInteger(v); err == nil {
+			return vConv
+		}
+	}
+
+	return fallback
+}
+
+func (self *ConnectionString) OptFloat(key string, fallback float64) float64 {
+	if v, ok := self.Options[key]; ok {
+		if vConv, err := stringutil.ConvertToFloat(v); err == nil {
+			return vConv
+		}
+	}
+
+	return fallback
+}
+
+func (self *ConnectionString) OptTime(key string, fallback time.Time) time.Time {
+	if v, ok := self.Options[key]; ok {
+		if vConv, err := stringutil.ConvertToTime(v); err == nil {
+			return vConv
+		}
+	}
+
+	return fallback
+}
+
 func ParseConnectionString(conn string) (ConnectionString, error) {
 	if uri, err := url.Parse(conn); err == nil {
 		if err := prepareURI(uri); err == nil {
 			return ConnectionString{
-				URI: uri,
+				URI:     uri,
+				Options: optionsFromURI(uri),
 			}, nil
-		}else{
+		} else {
 			return ConnectionString{}, err
 		}
 	} else {
@@ -82,9 +135,10 @@ func MakeConnectionString(scheme string, host string, dataset string, options ma
 
 	if err := prepareURI(uri); err == nil {
 		return ConnectionString{
-			URI: uri,
+			URI:     uri,
+			Options: optionsFromURI(uri),
 		}, nil
-	}else{
+	} else {
 		return ConnectionString{}, err
 	}
 }
@@ -94,19 +148,41 @@ func prepareURI(uri *url.URL) error {
 		if cwd, err := os.Getwd(); err == nil {
 			if abs, err := filepath.Abs(cwd); err == nil {
 				uri.Path = strings.Replace(uri.Path, `/.`, abs, 1)
-			}else{
+			} else {
 				return err
 			}
-		}else{
+		} else {
 			return err
 		}
-	}else if strings.HasPrefix(uri.Path, `/~`) {
+	} else if strings.HasPrefix(uri.Path, `/~`) {
 		if usr, err := user.Current(); err == nil {
 			uri.Path = strings.Replace(uri.Path, `/~`, usr.HomeDir, 1)
-		}else{
+		} else {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func optionsFromURI(uri *url.URL) map[string]interface{} {
+	rv := make(map[string]interface{})
+
+	for key, values := range uri.Query() {
+		if len(values) > 0 {
+			if len(values) == 1 {
+				rv[key] = stringutil.Autotype(values[0])
+			} else {
+				vI := make([]interface{}, len(values))
+
+				for i, vv := range values {
+					vI[i] = stringutil.Autotype(vv)
+				}
+
+				rv[key] = vI
+			}
+		}
+	}
+
+	return rv
 }

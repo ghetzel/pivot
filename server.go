@@ -113,7 +113,7 @@ func (self *Server) setupRoutes() error {
 					} else {
 						self.Respond(w, http.StatusInternalServerError, nil, err)
 					}
-				}else{
+				} else {
 					self.Respond(w, http.StatusBadRequest, nil, fmt.Errorf("Backend %T does not support complex queries."))
 				}
 			} else {

@@ -6,30 +6,64 @@ import (
 	"github.com/ghetzel/pivot/dal"
 	"gopkg.in/vmihailenco/msgpack.v2"
 	"os"
+	"path"
+	"strings"
 )
 
 var DatabaseMode = os.FileMode(0644)
 var DatabaseOptions *bolt.Options = nil
+var DefaultSearchIndexer = `bleve:///`
+var DatabaseIndexSuffix = `.index`
 
 // BoltDB ->
 //
 type BoltBackend struct {
 	Backend
-	path string
-	db   *bolt.DB
+	conn        dal.ConnectionString
+	db          *bolt.DB
+	indexerConn dal.ConnectionString
+	indexer     Indexer
 }
 
 func NewBoltBackend(connection dal.ConnectionString) *BoltBackend {
 	return &BoltBackend{
-		path: connection.Dataset(),
+		conn: connection,
 	}
 }
 
+func (self *BoltBackend) GetConnectionString() *dal.ConnectionString {
+	return &self.conn
+}
+
 func (self *BoltBackend) Initialize() error {
-	if db, err := bolt.Open(self.path, DatabaseMode, DatabaseOptions); err == nil {
+	if db, err := bolt.Open(self.conn.Dataset(), DatabaseMode, DatabaseOptions); err == nil {
 		self.db = db
 	} else {
 		return err
+	}
+
+	if ixConn := self.conn.OptString(`indexer`, DefaultSearchIndexer); ixConn != `` {
+		if ics, err := dal.ParseConnectionString(ixConn); err == nil {
+			// an empty path denotes using the same parent directory as the DB we're indexing
+			if ics.Dataset() == `/` {
+				baseToReplace := path.Base(self.conn.Dataset())
+				ics.URI.Path = strings.TrimSuffix(self.conn.Dataset(), path.Ext(baseToReplace)) + DatabaseIndexSuffix
+			}
+
+			if indexer, err := MakeIndexer(ics); err == nil {
+				if err := indexer.Initialize(self); err == nil {
+					self.indexerConn = ics
+					self.indexer = indexer
+					log.Debugf("Search indexing enabled for %T backend at %q", self, self.indexerConn.String())
+				} else {
+					return err
+				}
+			} else {
+				return err
+			}
+		} else {
+			return err
+		}
 	}
 
 	return nil
@@ -46,7 +80,7 @@ func (self *BoltBackend) GetRecordById(collection string, id dal.Identity) (*dal
 		if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
 			if data := bucket.Get([]byte(id[:])); data != nil {
 				return msgpack.Unmarshal(data, record)
-			}else{
+			} else {
 				return fmt.Errorf("Record %q does not exist", id)
 			}
 		} else {
@@ -58,7 +92,7 @@ func (self *BoltBackend) GetRecordById(collection string, id dal.Identity) (*dal
 
 	if err == nil {
 		return record, nil
-	}else{
+	} else {
 		return nil, err
 	}
 }
@@ -83,8 +117,8 @@ func (self *BoltBackend) DeleteRecords(collection string, ids []dal.Identity) er
 	})
 }
 
-func (self *BoltBackend) WithSearch() Searchable {
-	return nil
+func (self *BoltBackend) WithSearch() Indexer {
+	return self.indexer
 }
 
 func (self *BoltBackend) CreateCollection(definition dal.Collection) error {
@@ -109,7 +143,7 @@ func (self *BoltBackend) GetCollection(name string) (dal.Collection, error) {
 		if bucket := tx.Bucket([]byte(name[:])); bucket != nil {
 			collection.Name = name
 			collection.Properties[`FillPercent`] = bucket.FillPercent
-		}else{
+		} else {
 			return fmt.Errorf("No such collection %q", name)
 		}
 
