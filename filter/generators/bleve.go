@@ -12,8 +12,14 @@ import (
 type Bleve struct {
 	filter.Generator
 	collection string
-	must       []string
-	mustNot    []string
+	docID []string
+	matchAll bool
+	matchPhrase []string
+	matchPrefix []string
+	matchRanges [][]float64
+	matchRegexp []string
+	matchTerms []string
+	matchWildcard []string
 }
 
 func NewBleveGenerator() *Bleve {
@@ -24,33 +30,30 @@ func NewBleveGenerator() *Bleve {
 
 func (self *Bleve) Initialize(collectionName string) error {
 	self.collection = collectionName
-	self.must = make([]string, 0)
-	self.mustNot = make([]string, 0)
+	self.docID = make([]string, 0)
+	self.matchPhrase = make([]string, 0)
+	self.matchPrefix = make([]string, 0)
+	self.matchRanges = make([][]float64, 0)
+	self.matchRegexp = make([]string, 0)
+	self.matchTerms = make([]string, 0)
+	self.matchWildcard = make([]string, 0)
 
 	return nil
 }
 
 func (self *Bleve) Finalize(filter filter.Filter) error {
-	for i, c := range self.must {
-		self.must[i] = `+` + c
-	}
+	serialized := make(map[string]interface{})
 
-	for i, c := range self.mustNot {
-		self.mustNot[i] = `-` + c
-	}
-
-	if len(self.must) > 0 {
-		line := strings.Join(self.must, ` `)
-		self.Push([]byte(line[:]))
-
-		if len(self.mustNot) > 0 {
-			self.Push([]byte{' '})
-		}
-	}
-
-	if len(self.mustNot) > 0 {
-		line := strings.Join(self.mustNot, ` `)
-		self.Push([]byte(line[:]))
+	if self.matchAll {
+		serialized[`match_all`] = true
+	}else{
+		serialized[`id`] = self.docID
+		serialized[`phrase`] = self.matchPhrase
+		serialized[`prefix`] = self.matchPrefix
+		serialized[`range`] = self.matchRanges
+		serialized[`regexp`] = self.matchRegexp
+		serialized[`term`] = self.matchTerm
+		serialized[`wildcard`] = self.matchWildcard
 	}
 
 	return nil
@@ -66,21 +69,6 @@ func (self *Bleve) SetOption(key, value string) error {
 
 func (self *Bleve) WithCriterion(criterion filter.Criterion) error {
 	for _, value := range criterion.Values {
-		op := ``
-
-		switch criterion.Operator {
-		case `prefix`:
-			value = value + `*`
-		case `suffix`:
-			value = `*` + value
-		case `contains`:
-			value = `*` + value + `*`
-		}
-
-		// quote strings
-		if criterion.Type == `str` || strings.Contains(value, ` `) {
-			value = fmt.Sprintf("%q", value)
-		}
 
 		switch criterion.Operator {
 		case `is`, ``:

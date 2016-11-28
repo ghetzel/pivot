@@ -13,7 +13,10 @@ var backend backends.Backend
 var TestData = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 
 func TestMain(m *testing.M) {
-	if b, err := makeBackend(`bolt:///./test.db`); err == nil {
+	os.RemoveAll(`./tmp/db_test`)
+	os.MkdirAll(`./tmp/db_test`, 0755)
+
+	if b, err := makeBackend(`bolt:///./tmp/db_test`); err == nil {
 		backend = b
 	} else {
 		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
@@ -21,7 +24,6 @@ func TestMain(m *testing.M) {
 	}
 
 	i := m.Run()
-	os.Remove(`./test.db`)
 	os.Exit(i)
 }
 
@@ -45,13 +47,13 @@ func TestCollectionManagement(t *testing.T) {
 	assert := require.New(t)
 
 	err := backend.CreateCollection(dal.Collection{
-		Name: `test-collmgmt`,
+		Name: `TestCollectionManagement`,
 	})
 
 	assert.Nil(err)
 
-	if coll, err := backend.GetCollection(`test-collmgmt`); err == nil {
-		assert.Equal(`test-collmgmt`, coll.Name)
+	if coll, err := backend.GetCollection(`TestCollectionManagement`); err == nil {
+		assert.Equal(`TestCollectionManagement`, coll.Name)
 	} else {
 		assert.Nil(err)
 	}
@@ -69,26 +71,26 @@ func TestBasicCRUD(t *testing.T) {
 
 	// Insert and Retrieve
 	// --------------------------------------------------------------------------------------------
-	assert.Nil(backend.InsertRecords(`test-crud`, dal.NewRecordSet(
+	assert.Nil(backend.InsertRecords(`TestBasicCRUD`, dal.NewRecordSet(
 		dal.NewRecord(`1`).Set(`name`, `First`),
 		dal.NewRecord(`2`).Set(`name`, `Second`).SetData(TestData),
 		dal.NewRecord(`3`).Set(`name`, `Third`))))
 
-	record, err = backend.GetRecordById(`test-crud`, `1`)
+	record, err = backend.GetRecordById(`TestBasicCRUD`, `1`)
 	assert.Nil(err)
 	assert.NotNil(record)
 	assert.Equal(dal.Identity(`1`), record.ID)
 	assert.Equal(`First`, record.Get(`name`))
 	assert.Nil(record.Data)
 
-	record, err = backend.GetRecordById(`test-crud`, `2`)
+	record, err = backend.GetRecordById(`TestBasicCRUD`, `2`)
 	assert.Nil(err)
 	assert.NotNil(record)
 	assert.Equal(dal.Identity(`2`), record.ID)
 	assert.Equal(`Second`, record.Get(`name`))
 	assert.Equal(TestData, record.Data)
 
-	record, err = backend.GetRecordById(`test-crud`, `3`)
+	record, err = backend.GetRecordById(`TestBasicCRUD`, `3`)
 	assert.Nil(err)
 	assert.NotNil(record)
 	assert.Equal(dal.Identity(`3`), record.ID)
@@ -97,10 +99,10 @@ func TestBasicCRUD(t *testing.T) {
 
 	// Update and Retrieve
 	// --------------------------------------------------------------------------------------------
-	assert.Nil(backend.UpdateRecords(`test-crud`, dal.NewRecordSet(
+	assert.Nil(backend.UpdateRecords(`TestBasicCRUD`, dal.NewRecordSet(
 		dal.NewRecord(`3`).Set(`name`, `Threeve`))))
 
-	record, err = backend.GetRecordById(`test-crud`, `3`)
+	record, err = backend.GetRecordById(`TestBasicCRUD`, `3`)
 	assert.Nil(err)
 	assert.NotNil(record)
 	assert.Equal(dal.Identity(`3`), record.ID)
@@ -108,13 +110,13 @@ func TestBasicCRUD(t *testing.T) {
 
 	// Retrieve-Delete-Verify
 	// --------------------------------------------------------------------------------------------
-	record, err = backend.GetRecordById(`test-crud`, `2`)
+	record, err = backend.GetRecordById(`TestBasicCRUD`, `2`)
 	assert.Nil(err)
 	assert.Equal(dal.Identity(`2`), record.ID)
 
-	assert.Nil(backend.DeleteRecords(`test-crud`, []dal.Identity{`2`}))
+	assert.Nil(backend.DeleteRecords(`TestBasicCRUD`, []dal.Identity{`2`}))
 
-	record, err = backend.GetRecordById(`test-crud`, `2`)
+	record, err = backend.GetRecordById(`TestBasicCRUD`, `2`)
 	assert.NotNil(err)
 	assert.Nil(record)
 }
@@ -124,7 +126,7 @@ func TestSearchQuery(t *testing.T) {
 
 	if search := backend.WithSearch(); search != nil {
 		err := backend.CreateCollection(dal.Collection{
-			Name: `test-search`,
+			Name: `TestSearchQuery`,
 		})
 
 		assert.Nil(err)
@@ -132,23 +134,24 @@ func TestSearchQuery(t *testing.T) {
 		var record *dal.Record
 		var ok bool
 
-		assert.Nil(backend.InsertRecords(`test-search`, dal.NewRecordSet(
+		assert.Nil(backend.InsertRecords(`TestSearchQuery`, dal.NewRecordSet(
 			dal.NewRecord(`1`).Set(`name`, `First`),
 			dal.NewRecord(`2`).Set(`name`, `Second`),
 			dal.NewRecord(`3`).Set(`name`, `Third`))))
 
 		for _, qs := range []string{
-			`id/1`,
-			`id/lt:2`,
+			`_id/1`,
+			`_id/lt:2`,
 			`name/first`,
 			`name/First`,
 			`name/contains:irs`,
 			`name/prefix:fir`,
 		} {
-			recordset, err = search.QueryString(`test-search`, qs)
+			t.Logf("Querying: %q\n", qs)
+			recordset, err = search.QueryString(`TestSearchQuery`, qs)
 			assert.Nil(err)
 			assert.NotNil(recordset)
-			assert.Equal(1, recordset.ResultCount)
+			assert.Equal(uint64(1), recordset.ResultCount)
 			record, ok = recordset.GetRecord(0)
 			assert.True(ok)
 			assert.NotNil(record)

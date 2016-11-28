@@ -38,7 +38,7 @@ func TestBleveGenerator(t *testing.T) {
 		`id/4/name/contains:Test Phrase`:               `+id:4 +name:"*Test Phrase*"`,
 		`name/prefix:Starts With/name/not:Starts With`: `+name:"Starts With*" -name:"Starts With"`,
 		`name/prefix:Starts With/name/not:Starts`:      `+name:"Starts With*" -name:Starts`,
-		`id/null`: `+id:""`,
+		`id/null`:     `+id:""`,
 		`id/not:null`: `-id:""`,
 	}
 

@@ -7,13 +7,12 @@ import (
 	"gopkg.in/vmihailenco/msgpack.v2"
 	"os"
 	"path"
-	"strings"
 )
 
 var DatabaseMode = os.FileMode(0644)
 var DatabaseOptions *bolt.Options = nil
 var DefaultSearchIndexer = `bleve:///`
-var DatabaseIndexSuffix = `.index`
+var DatabaseIndexSubdirectory = `indexes`
 
 // BoltDB ->
 //
@@ -36,7 +35,10 @@ func (self *BoltBackend) GetConnectionString() *dal.ConnectionString {
 }
 
 func (self *BoltBackend) Initialize() error {
-	if db, err := bolt.Open(self.conn.Dataset(), DatabaseMode, DatabaseOptions); err == nil {
+	dbBaseDir := self.conn.Dataset()
+	dbFileName := `data.boltdb`
+
+	if db, err := bolt.Open(path.Join(dbBaseDir, dbFileName), DatabaseMode, DatabaseOptions); err == nil {
 		self.db = db
 	} else {
 		return err
@@ -46,8 +48,7 @@ func (self *BoltBackend) Initialize() error {
 		if ics, err := dal.ParseConnectionString(ixConn); err == nil {
 			// an empty path denotes using the same parent directory as the DB we're indexing
 			if ics.Dataset() == `/` {
-				baseToReplace := path.Base(self.conn.Dataset())
-				ics.URI.Path = strings.TrimSuffix(self.conn.Dataset(), path.Ext(baseToReplace)) + DatabaseIndexSuffix
+				ics.URI.Path = path.Join(dbBaseDir, DatabaseIndexSubdirectory)
 			}
 
 			if indexer, err := MakeIndexer(ics); err == nil {
@@ -106,6 +107,13 @@ func (self *BoltBackend) DeleteRecords(collection string, ids []dal.Identity) er
 		if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
 			for _, id := range ids {
 				if err := bucket.Delete([]byte(id[:])); err != nil {
+					return err
+				}
+			}
+
+			// if we have a search index, update it now
+			if search := self.WithSearch(); search != nil {
+				if err := search.Remove(collection, ids); err != nil {
 					return err
 				}
 			}
@@ -176,6 +184,13 @@ func (self *BoltBackend) upsertRecords(collection string, recordset *dal.RecordS
 					return err
 				}
 			} else {
+				return err
+			}
+		}
+
+		// if we have a search index, update it now
+		if search := self.WithSearch(); search != nil {
+			if err := search.Index(collection, recordset); err != nil {
 				return err
 			}
 		}
