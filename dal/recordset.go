@@ -28,6 +28,14 @@ func (self *Record) Set(key string, value interface{}) *Record {
 	return self
 }
 
+func (self *Record) SetFields(values map[string]interface{}) *Record {
+	for k, v := range values {
+		self.Set(k, v)
+	}
+
+	return self
+}
+
 func (self *Record) SetData(data []byte) *Record {
 	self.Data = data
 	return self
