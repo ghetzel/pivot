@@ -1,6 +1,7 @@
 package pivot
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
@@ -71,38 +72,42 @@ func TestBasicCRUD(t *testing.T) {
 
 	// Insert and Retrieve
 	// --------------------------------------------------------------------------------------------
-	assert.Nil(backend.InsertRecords(`TestBasicCRUD`, dal.NewRecordSet(
+	assert.Nil(backend.Insert(`TestBasicCRUD`, dal.NewRecordSet(
 		dal.NewRecord(`1`).Set(`name`, `First`),
 		dal.NewRecord(`2`).Set(`name`, `Second`).SetData(TestData),
 		dal.NewRecord(`3`).Set(`name`, `Third`))))
 
-	record, err = backend.GetRecordById(`TestBasicCRUD`, `1`)
+	record, err = backend.Retrieve(`TestBasicCRUD`, `1`)
 	assert.Nil(err)
 	assert.NotNil(record)
 	assert.Equal(string(`1`), record.ID)
 	assert.Equal(`First`, record.Get(`name`))
-	assert.Nil(record.Data)
+	assert.Empty(record.Data)
 
-	record, err = backend.GetRecordById(`TestBasicCRUD`, `2`)
+	record, err = backend.Retrieve(`TestBasicCRUD`, `2`)
 	assert.Nil(err)
 	assert.NotNil(record)
 	assert.Equal(string(`2`), record.ID)
 	assert.Equal(`Second`, record.Get(`name`))
 	assert.Equal(TestData, record.Data)
 
-	record, err = backend.GetRecordById(`TestBasicCRUD`, `3`)
+	record, err = backend.Retrieve(`TestBasicCRUD`, `3`)
 	assert.Nil(err)
 	assert.NotNil(record)
 	assert.Equal(string(`3`), record.ID)
 	assert.Equal(`Third`, record.Get(`name`))
-	assert.Nil(record.Data)
+	assert.Empty(record.Data)
+
+	// make sure we can json encode the record, too
+	_, err = json.Marshal(record)
+	assert.Nil(err)
 
 	// Update and Retrieve
 	// --------------------------------------------------------------------------------------------
-	assert.Nil(backend.UpdateRecords(`TestBasicCRUD`, dal.NewRecordSet(
+	assert.Nil(backend.Update(`TestBasicCRUD`, dal.NewRecordSet(
 		dal.NewRecord(`3`).Set(`name`, `Threeve`))))
 
-	record, err = backend.GetRecordById(`TestBasicCRUD`, `3`)
+	record, err = backend.Retrieve(`TestBasicCRUD`, `3`)
 	assert.Nil(err)
 	assert.NotNil(record)
 	assert.Equal(string(`3`), record.ID)
@@ -110,13 +115,13 @@ func TestBasicCRUD(t *testing.T) {
 
 	// Retrieve-Delete-Verify
 	// --------------------------------------------------------------------------------------------
-	record, err = backend.GetRecordById(`TestBasicCRUD`, `2`)
+	record, err = backend.Retrieve(`TestBasicCRUD`, `2`)
 	assert.Nil(err)
 	assert.Equal(string(`2`), record.ID)
 
-	assert.Nil(backend.DeleteRecords(`TestBasicCRUD`, []string{`2`}))
+	assert.Nil(backend.Delete(`TestBasicCRUD`, []string{`2`}))
 
-	record, err = backend.GetRecordById(`TestBasicCRUD`, `2`)
+	record, err = backend.Retrieve(`TestBasicCRUD`, `2`)
 	assert.NotNil(err)
 	assert.Nil(record)
 }
@@ -134,7 +139,7 @@ func TestSearchQuery(t *testing.T) {
 		var record *dal.Record
 		var ok bool
 
-		assert.Nil(backend.InsertRecords(`TestSearchQuery`, dal.NewRecordSet(
+		assert.Nil(backend.Insert(`TestSearchQuery`, dal.NewRecordSet(
 			dal.NewRecord(`1`).Set(`name`, `First`),
 			dal.NewRecord(`2`).Set(`name`, `Second`),
 			dal.NewRecord(`3`).Set(`name`, `Third`))))

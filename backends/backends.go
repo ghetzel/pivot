@@ -11,10 +11,11 @@ var log = logging.MustGetLogger(`backends`)
 type Backend interface {
 	Initialize() error
 	GetConnectionString() *dal.ConnectionString
-	InsertRecords(collection string, records *dal.RecordSet) error
-	GetRecordById(collection string, id string) (*dal.Record, error)
-	UpdateRecords(collection string, records *dal.RecordSet) error
-	DeleteRecords(collection string, ids []string) error
+	Exists(collection string, id string) bool
+	Retrieve(collection string, id string) (*dal.Record, error)
+	Insert(collection string, records *dal.RecordSet) error
+	Update(collection string, records *dal.RecordSet) error
+	Delete(collection string, ids []string) error
 	CreateCollection(definition dal.Collection) error
 	DeleteCollection(collection string) error
 	GetCollection(collection string) (dal.Collection, error)

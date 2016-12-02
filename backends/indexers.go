@@ -8,6 +8,8 @@ import (
 
 type Indexer interface {
 	Initialize(Backend) error
+	Exists(collection string, id string) bool
+	Retrieve(collection string, id string) (*dal.Record, error)
 	Index(collection string, records *dal.RecordSet) error
 	Query(collection string, filter filter.Filter) (*dal.RecordSet, error)
 	QueryString(collection string, filterString string) (*dal.RecordSet, error)

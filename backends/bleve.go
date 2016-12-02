@@ -31,6 +31,32 @@ func (self *BleveIndexer) Initialize(parent Backend) error {
 	return nil
 }
 
+func (self *BleveIndexer) Retrieve(collection string, id string) (*dal.Record, error) {
+	if index, err := self.getIndexForCollection(collection); err == nil {
+		request := bleve.NewSearchRequest(bleve.NewDocIDQuery([]string{id}))
+
+		if results, err := index.Search(request); err == nil {
+			if results.Total == 1 {
+				return dal.NewRecord(results.Hits[0].ID).SetFields(results.Hits[0].Fields), nil
+			} else {
+				return nil, fmt.Errorf("Too many results; expected: 1, got: %d", results.Total)
+			}
+		} else {
+			return nil, err
+		}
+	} else {
+		return nil, err
+	}
+}
+
+func (self *BleveIndexer) Exists(collection string, id string) bool {
+	if _, err := self.Retrieve(collection, id); err == nil {
+		return true
+	}
+
+	return false
+}
+
 func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		batch := index.NewBatch()
@@ -56,7 +82,7 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter) (*dal.Record
 				recordset := dal.NewRecordSet()
 
 				for _, hit := range results.Hits {
-					if record, err := self.parent.GetRecordById(collection, hit.ID); err == nil {
+					if record, err := self.parent.Retrieve(collection, hit.ID); err == nil {
 						recordset.Push(record)
 					}
 				}

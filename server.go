@@ -104,6 +104,54 @@ func (self *Server) Respond(w http.ResponseWriter, code int, payload interface{}
 }
 
 func (self *Server) setupRoutes() error {
+	self.router.GET(`/records/:collection/:id/`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+			if record, err := self.backend.Retrieve(params.ByName(`collection`), params.ByName(`id`)); err == nil {
+				self.Respond(w, http.StatusOK, record, nil)
+			} else {
+				self.Respond(w, http.StatusInternalServerError, nil, err)
+			}
+		})
+
+	self.router.DELETE(`/records/:collection/:id/`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+			if err := self.backend.Delete(params.ByName(`collection`), []string{params.ByName(`id`)}); err == nil {
+				self.Respond(w, http.StatusNoContent, nil, nil)
+			} else {
+				self.Respond(w, http.StatusInternalServerError, nil, err)
+			}
+		})
+
+	self.router.POST(`/records/:collection/`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+			var recordset dal.RecordSet
+
+			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
+				if err := self.backend.Insert(params.ByName(`collection`), &recordset); err == nil {
+					self.Respond(w, http.StatusNoContent, nil, nil)
+				} else {
+					self.Respond(w, http.StatusInternalServerError, nil, err)
+				}
+			} else {
+				self.Respond(w, http.StatusBadRequest, nil, err)
+			}
+		})
+
+	self.router.PUT(`/records/:collection/`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+			var recordset dal.RecordSet
+
+			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
+				if err := self.backend.Update(params.ByName(`collection`), &recordset); err == nil {
+					self.Respond(w, http.StatusNoContent, nil, nil)
+				} else {
+					self.Respond(w, http.StatusInternalServerError, nil, err)
+				}
+			} else {
+				self.Respond(w, http.StatusBadRequest, nil, err)
+			}
+		})
+
 	self.router.GET(`/query/:collection/where/*urlquery`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 			if f, err := filter.Parse(params.ByName(`urlquery`)); err == nil {
@@ -121,42 +169,12 @@ func (self *Server) setupRoutes() error {
 			}
 		})
 
-	self.router.POST(`/query/:collection`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			var recordset dal.RecordSet
-
-			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
-				if err := self.backend.InsertRecords(params.ByName(`collection`), &recordset); err == nil {
-					self.Respond(w, http.StatusNoContent, nil, nil)
-				} else {
-					self.Respond(w, http.StatusInternalServerError, nil, err)
-				}
-			} else {
-				self.Respond(w, http.StatusBadRequest, nil, err)
-			}
-		})
-
-	self.router.PUT(`/query/:collection`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			var recordset dal.RecordSet
-
-			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
-				if err := self.backend.UpdateRecords(params.ByName(`collection`), &recordset); err == nil {
-					self.Respond(w, http.StatusNoContent, nil, nil)
-				} else {
-					self.Respond(w, http.StatusInternalServerError, nil, err)
-				}
-			} else {
-				self.Respond(w, http.StatusBadRequest, nil, err)
-			}
-		})
-
 	self.router.DELETE(`/query/:collection/where/*urlquery`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 			var identities []string
 
 			if err := json.NewDecoder(req.Body).Decode(&identities); err == nil {
-				if err := self.backend.DeleteRecords(params.ByName(`collection`), identities); err == nil {
+				if err := self.backend.Delete(params.ByName(`collection`), identities); err == nil {
 					self.Respond(w, http.StatusNoContent, nil, nil)
 				} else {
 					self.Respond(w, http.StatusBadRequest, nil, err)

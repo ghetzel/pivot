@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -15,7 +16,9 @@ type Criterion struct {
 
 type Filter struct {
 	Spec     string
+	MatchAll bool
 	Criteria []Criterion
+	Sort     []string
 	Fields   []string
 	Options  map[string]string
 }
@@ -24,11 +27,23 @@ func MakeFilter(spec string) Filter {
 	return Filter{
 		Spec:     spec,
 		Criteria: make([]Criterion, 0),
+		Sort:     make([]string, 0),
 		Fields:   make([]string, 0),
 		Options:  make(map[string]string),
 	}
 }
 
+var NullFilter Filter = MakeFilter(``)
+
+// Filter syntax definition
+//
+// filter     ::= ([sort]field/value | [sort]type:field/value | [sort]type:field/comparator:value)+
+// sort       ::= ASCII plus (+), minus (-)
+// field      ::= ? US-ASCII field name ?;
+// value      ::= ? UTF-8 field value ?;
+// type       ::= str | bool | int | float | date
+// comparator :=  is | not | gt | gte | lt | lte | prefix | suffix | regex
+//
 func Parse(spec string) (Filter, error) {
 	var criterion Criterion
 
@@ -37,10 +52,28 @@ func Parse(spec string) (Filter, error) {
 	rv := MakeFilter(spec)
 	criteria := strings.Split(spec, `/`)
 
-	if len(criteria) >= 2 {
+	switch {
+	case spec == ``:
+		return NullFilter, nil
+
+	case spec == `all`:
+		rv.MatchAll = true
+		return rv, nil
+
+	case len(criteria) >= 2:
 		for i, token := range criteria {
 			if (i % 2) == 0 {
 				parts := strings.SplitN(token, `:`, 2)
+
+				var addSortAsc *bool
+
+				if strings.HasPrefix(token, `+`) {
+					v := true
+					addSortAsc = &v
+				} else if strings.HasPrefix(token, `-`) {
+					v := false
+					addSortAsc = &v
+				}
 
 				if len(parts) == 1 {
 					criterion = Criterion{
@@ -66,6 +99,14 @@ func Parse(spec string) (Filter, error) {
 						}
 					}
 				}
+
+				if addSortAsc != nil {
+					if *addSortAsc == true {
+						rv.Sort = append(rv.Sort, criterion.Field)
+					} else {
+						rv.Sort = append(rv.Sort, `-`+criterion.Field)
+					}
+				}
 			} else {
 				parts := strings.SplitN(token, `:`, 2)
 
@@ -79,9 +120,9 @@ func Parse(spec string) (Filter, error) {
 				rv.Criteria = append(rv.Criteria, criterion)
 			}
 		}
+	default:
+		return rv, fmt.Errorf("Invalid filter spec %q", spec)
 	}
 
 	return rv, nil
 }
-
-var NullFilter Filter = MakeFilter(``)

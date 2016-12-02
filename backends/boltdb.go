@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"github.com/ghetzel/pivot/dal"
-	"gopkg.in/vmihailenco/msgpack.v2"
+	"gopkg.in/mgo.v2/bson"
 	"os"
 	"path"
 )
@@ -70,17 +70,33 @@ func (self *BoltBackend) Initialize() error {
 	return nil
 }
 
-func (self *BoltBackend) InsertRecords(collection string, recordset *dal.RecordSet) error {
+func (self *BoltBackend) Insert(collection string, recordset *dal.RecordSet) error {
 	return self.upsertRecords(collection, recordset, true)
 }
 
-func (self *BoltBackend) GetRecordById(collection string, id string) (*dal.Record, error) {
+func (self *BoltBackend) Exists(collection string, id string) bool {
+	exists := false
+
+	self.db.View(func(tx *bolt.Tx) error {
+		if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
+			if data := bucket.Get([]byte(id[:])); data != nil {
+				exists = true
+			}
+		}
+
+		return nil
+	})
+
+	return exists
+}
+
+func (self *BoltBackend) Retrieve(collection string, id string) (*dal.Record, error) {
 	record := dal.NewRecord(id)
 
 	err := self.db.View(func(tx *bolt.Tx) error {
 		if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
 			if data := bucket.Get([]byte(id[:])); data != nil {
-				return msgpack.Unmarshal(data, record)
+				return bson.Unmarshal(data, record)
 			} else {
 				return fmt.Errorf("Record %q does not exist", id)
 			}
@@ -98,11 +114,11 @@ func (self *BoltBackend) GetRecordById(collection string, id string) (*dal.Recor
 	}
 }
 
-func (self *BoltBackend) UpdateRecords(collection string, recordset *dal.RecordSet) error {
+func (self *BoltBackend) Update(collection string, recordset *dal.RecordSet) error {
 	return self.upsertRecords(collection, recordset, false)
 }
 
-func (self *BoltBackend) DeleteRecords(collection string, ids []string) error {
+func (self *BoltBackend) Delete(collection string, ids []string) error {
 	return self.db.Update(func(tx *bolt.Tx) error {
 		if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
 			for _, id := range ids {
@@ -179,7 +195,7 @@ func (self *BoltBackend) upsertRecords(collection string, recordset *dal.RecordS
 		}
 
 		for _, record := range recordset.Records {
-			if data, err := msgpack.Marshal(record); err == nil {
+			if data, err := bson.Marshal(record); err == nil {
 				if err := bucket.Put([]byte(record.ID[:]), data); err != nil {
 					return err
 				}

@@ -53,6 +53,8 @@ vendors:
   rev: d9eb7a3d35ec988b8585d4a0068e462c27d28380
 - path: github.com/google/go-querystring
   rev: 9235644dd9e52eeae6fa48efd539fdc351a0af53
+- path: github.com/hashicorp/go-msgpack
+  rev: fa3f63826f7c23912c15263591e65d54d080b458
 - path: github.com/jmhodges/levigo
   rev: c42d9e0ca023e2198120196f842701bb4c55d7b9
 - path: github.com/julienschmidt/httprouter
@@ -91,7 +93,7 @@ vendors:
   rev: ca59ef35f409df61fa4a5f8290ff289b37eccfb8
 - path: gopkg.in/check.v1
   rev: aa8c43564278bc4c58e8ca51bfc5f1c149925cf0
-- path: gopkg.in/vmihailenco/msgpack.v2
-  rev: 402848aa02a6334afb0a5f48fe2f8cd0ee12d8d7
+- path: gopkg.in/mgo.v2
+  rev: 3f83fa5005286a7fe593b055f0d7771a7dce4655
 - path: gopkg.in/yaml.v2
   rev: a5b47d31c556af34a302ce5d659e6fea44d90de0
