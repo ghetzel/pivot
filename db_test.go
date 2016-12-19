@@ -190,3 +190,33 @@ func TestSearchQuery(t *testing.T) {
 		}
 	}
 }
+
+func TestSearchQueryPaginated(t *testing.T) {
+	assert := require.New(t)
+
+	// set the global page size at the package level for this test
+	backends.BleveIndexerPageSize = 5
+
+	if search := backend.WithSearch(); search != nil {
+		err := backend.CreateCollection(dal.Collection{
+			Name: `TestSearchQueryPaginated`,
+		})
+
+		assert.Nil(err)
+
+		rsSave := dal.NewRecordSet()
+
+		for i := 0; i < 21; i++ {
+			rsSave.Push(dal.NewRecord(fmt.Sprintf("%d", i)))
+		}
+
+		assert.Nil(backend.Insert(`TestSearchQueryPaginated`, rsSave))
+
+		recordset, err := search.QueryString(`TestSearchQueryPaginated`, `all`)
+		assert.Nil(err)
+		assert.NotNil(recordset)
+		assert.Equal(uint64(21), recordset.ResultCount)
+		assert.Equal(21, len(recordset.Records))
+		assert.Equal(5, recordset.TotalPages)
+	}
+}

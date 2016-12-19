@@ -6,11 +6,22 @@ import (
 	"github.com/ghetzel/pivot/filter"
 )
 
+type IndexPage struct {
+	Page         int
+	TotalPages int
+	PerPage int
+	Offset       int
+	TotalResults uint64
+}
+
+type IndexResultFunc func(record *dal.Record, page IndexPage) error
+
 type Indexer interface {
 	Initialize(Backend) error
 	Exists(collection string, id string) bool
 	Retrieve(collection string, id string) (*dal.Record, error)
 	Index(collection string, records *dal.RecordSet) error
+	QueryFunc(collection string, filter filter.Filter, resultFn IndexResultFunc) error
 	Query(collection string, filter filter.Filter) (*dal.RecordSet, error)
 	QueryString(collection string, filterString string) (*dal.RecordSet, error)
 	Remove(collection string, ids []string) error
