@@ -7,9 +7,9 @@ import (
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
+	"math"
 	"path"
 	"strings"
-	"math"
 )
 
 var BleveIndexerPageSize int = 1000
@@ -79,21 +79,25 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn IndexResultFunc) error {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		if bq, err := self.filterToBleveQuery(index, f); err == nil {
-			offset := 0
+			offset := f.Offset
 			page := 1
 
+			if f.Size == 0 {
+				f.Size = BleveIndexerPageSize
+			}
+
 			for {
-				request := bleve.NewSearchRequestOptions(bq, BleveIndexerPageSize, offset, false)
+				request := bleve.NewSearchRequestOptions(bq, f.Size, offset, false)
 
 				if results, err := index.Search(request); err == nil {
-					totalPages := int(math.Ceil(float64(results.Total) / float64(BleveIndexerPageSize)))
+					totalPages := int(math.Ceil(float64(results.Total) / float64(f.Size)))
 
 					// call the resultFn for each hit on this page
 					for _, hit := range results.Hits {
 						if err := resultFn(dal.NewRecord(hit.ID).SetFields(hit.Fields), IndexPage{
 							Page:         page,
 							TotalPages:   totalPages,
-							PerPage: BleveIndexerPageSize,
+							PerPage:      f.Size,
 							Offset:       offset,
 							TotalResults: results.Total,
 						}); err != nil {

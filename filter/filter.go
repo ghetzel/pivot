@@ -17,6 +17,8 @@ type Criterion struct {
 type Filter struct {
 	Spec     string
 	MatchAll bool
+	Offset   int
+	Size     int
 	Criteria []Criterion
 	Sort     []string
 	Fields   []string

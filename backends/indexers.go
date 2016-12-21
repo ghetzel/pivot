@@ -8,8 +8,8 @@ import (
 
 type IndexPage struct {
 	Page         int
-	TotalPages int
-	PerPage int
+	TotalPages   int
+	PerPage      int
 	Offset       int
 	TotalResults uint64
 }
