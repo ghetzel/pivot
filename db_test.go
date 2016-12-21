@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
 	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
@@ -218,5 +219,120 @@ func TestSearchQueryPaginated(t *testing.T) {
 		assert.Equal(uint64(21), recordset.ResultCount)
 		assert.Equal(21, len(recordset.Records))
 		assert.Equal(5, recordset.TotalPages)
+	}
+}
+
+func TestSearchQueryLimit(t *testing.T) {
+	assert := require.New(t)
+	backends.BleveIndexerPageSize = 100
+
+	if search := backend.WithSearch(); search != nil {
+		err := backend.CreateCollection(dal.Collection{
+			Name: `TestSearchQueryLimit`,
+		})
+
+		assert.Nil(err)
+
+		rsSave := dal.NewRecordSet()
+
+		for i := 0; i < 21; i++ {
+			rsSave.Push(dal.NewRecord(fmt.Sprintf("%02d", i)))
+		}
+
+		assert.Nil(backend.Insert(`TestSearchQueryLimit`, rsSave))
+
+		f, err := filter.Parse(`all`)
+		assert.Nil(err)
+
+		f.Limit = 9
+
+		recordset, err := search.Query(`TestSearchQueryLimit`, f)
+		assert.Nil(err)
+		assert.NotNil(recordset)
+		assert.Equal(uint64(21), recordset.ResultCount)
+		assert.Equal(9, len(recordset.Records))
+		assert.Equal(1, recordset.TotalPages)
+
+		record, ok := recordset.GetRecord(0)
+		assert.True(ok)
+		assert.NotNil(record)
+		assert.Equal(`00`, record.ID)
+	}
+}
+
+func TestSearchQueryOffset(t *testing.T) {
+	assert := require.New(t)
+	backends.BleveIndexerPageSize = 100
+
+	if search := backend.WithSearch(); search != nil {
+		err := backend.CreateCollection(dal.Collection{
+			Name: `TestSearchQueryOffset`,
+		})
+
+		assert.Nil(err)
+
+		rsSave := dal.NewRecordSet()
+
+		for i := 0; i < 21; i++ {
+			rsSave.Push(dal.NewRecord(fmt.Sprintf("%02d", i)))
+		}
+
+		assert.Nil(backend.Insert(`TestSearchQueryOffset`, rsSave))
+
+		f, err := filter.Parse(`all`)
+		assert.Nil(err)
+
+		f.Offset = 20
+
+		recordset, err := search.Query(`TestSearchQueryOffset`, f)
+		assert.Nil(err)
+		assert.NotNil(recordset)
+		assert.Equal(uint64(21), recordset.ResultCount)
+		assert.Equal(1, len(recordset.Records))
+		assert.Equal(1, recordset.TotalPages)
+
+		record, ok := recordset.GetRecord(0)
+		assert.True(ok)
+		assert.NotNil(record)
+		assert.Equal(`20`, record.ID)
+	}
+}
+
+func TestSearchQueryOffsetLimit(t *testing.T) {
+	assert := require.New(t)
+
+	if search := backend.WithSearch(); search != nil {
+		err := backend.CreateCollection(dal.Collection{
+			Name: `TestSearchQueryOffsetLimit`,
+		})
+
+		assert.Nil(err)
+
+		rsSave := dal.NewRecordSet()
+
+		for i := 0; i < 21; i++ {
+			rsSave.Push(dal.NewRecord(fmt.Sprintf("%02d", i)))
+		}
+
+		assert.Nil(backend.Insert(`TestSearchQueryOffsetLimit`, rsSave))
+
+		f, err := filter.Parse(`all`)
+		assert.Nil(err)
+
+		f.Offset = 3
+		f.Size = 3
+		f.Limit = 9
+
+		recordset, err := search.Query(`TestSearchQueryOffsetLimit`, f)
+		assert.Nil(err)
+		assert.NotNil(recordset)
+		assert.Equal(uint64(21), recordset.ResultCount)
+		assert.Equal(9, len(recordset.Records))
+		assert.Equal(3, recordset.TotalPages)
+
+		record, ok := recordset.GetRecord(0)
+		assert.True(ok)
+		assert.NotNil(record)
+		assert.Equal(`03`, record.ID)
 	}
 }

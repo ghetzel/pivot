@@ -19,6 +19,7 @@ type Filter struct {
 	MatchAll bool
 	Offset   int
 	Size     int
+	Limit    int
 	Criteria []Criterion
 	Sort     []string
 	Fields   []string

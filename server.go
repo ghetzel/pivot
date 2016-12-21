@@ -3,6 +3,7 @@ package pivot
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -16,6 +17,8 @@ import (
 
 const DEFAULT_SERVER_ADDRESS = `127.0.0.1`
 const DEFAULT_SERVER_PORT = 29029
+
+var DefaultResultLimit = 25
 
 type Server struct {
 	Address          string
@@ -154,7 +157,31 @@ func (self *Server) setupRoutes() error {
 
 	self.router.GET(`/query/:collection/where/*urlquery`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+			limit := 0
+			offset := 0
+
+			if i, err := self.qsInt(req, `limit`); err == nil {
+				if i > 0 {
+					limit = int(i)
+				} else {
+					limit = DefaultResultLimit
+				}
+			} else {
+				self.Respond(w, http.StatusBadRequest, nil, err)
+				return
+			}
+
+			if i, err := self.qsInt(req, `offset`); err == nil {
+				offset = int(i)
+			} else {
+				self.Respond(w, http.StatusBadRequest, nil, err)
+				return
+			}
+
 			if f, err := filter.Parse(params.ByName(`urlquery`)); err == nil {
+				f.Limit = limit
+				f.Offset = offset
+
 				if search := self.backend.WithSearch(); search != nil {
 					if recordset, err := search.Query(params.ByName(`collection`), f); err == nil {
 						self.Respond(w, http.StatusOK, recordset, nil)
@@ -194,4 +221,16 @@ func (self *Server) setupRoutes() error {
 		})
 
 	return nil
+}
+
+func (self *Server) qsInt(req *http.Request, key string) (int64, error) {
+	if v := req.URL.Query().Get(key); v != `` {
+		if i, err := stringutil.ConvertToInteger(v); err == nil {
+			return i, nil
+		} else {
+			return 0, fmt.Errorf("%s: %v", key, err)
+		}
+	}
+
+	return 0, nil
 }
