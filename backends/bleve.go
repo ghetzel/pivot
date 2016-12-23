@@ -3,6 +3,11 @@ package backends
 import (
 	"fmt"
 	"github.com/blevesearch/bleve"
+	"github.com/blevesearch/bleve/analysis/analyzer/custom"
+	"github.com/blevesearch/bleve/analysis/char/regexp"
+	"github.com/blevesearch/bleve/analysis/token/lowercase"
+	"github.com/blevesearch/bleve/analysis/tokenizer/single"
+	"github.com/blevesearch/bleve/mapping"
 	"github.com/blevesearch/bleve/search/query"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
@@ -208,6 +213,9 @@ func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index,
 		var index bleve.Index
 		mapping := bleve.NewIndexMapping()
 
+		// setup the mapping and text analysis settings for this index
+		self.useFilterMapping(mapping)
+
 		switch self.conn.Dataset() {
 		case `/memory`:
 			if ix, err := bleve.NewMemOnly(mapping); err == nil {
@@ -237,11 +245,15 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 	if f.MatchAll {
 		return bleve.NewMatchAllQuery(), nil
 	} else {
+		mapping := index.Mapping()
 		conjunction := bleve.NewConjunctionQuery()
 
 		for _, criterion := range f.Criteria {
 			var skipNext bool
 			var disjunction *query.DisjunctionQuery
+
+			analyzerName := mapping.AnalyzerNameForPath(criterion.Field)
+			log.Debugf("Analyzer for field %s: %s", criterion.Field, analyzerName)
 
 			// this handles AND (field=a OR b OR ...)
 			if len(criterion.Values) > 1 {
@@ -249,8 +261,17 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 			}
 
 			for _, value := range criterion.Values {
-				// objects are indexed case-insensitive, so queries should be too
-				value = strings.ToLower(value)
+				var analyzedValue string
+
+				if az := mapping.AnalyzerNamed(analyzerName); az != nil {
+					for _, token := range az.Analyze([]byte(value[:])) {
+						analyzedValue += string(token.Term[:])
+					}
+				}else{
+					analyzedValue = value
+				}
+
+				log.Debugf("v: %+v", analyzedValue)
 
 				var currentQuery query.FieldableQuery
 
@@ -261,24 +282,24 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 						skipNext = true
 						break
 					} else {
-						if value == `null` {
+						if analyzedValue == `null` {
 							currentQuery = bleve.NewTermQuery(``)
 						} else {
-							currentQuery = bleve.NewTermQuery(value)
+							currentQuery = bleve.NewTermQuery(analyzedValue)
 						}
 					}
 				case `prefix`:
-					currentQuery = bleve.NewWildcardQuery(value + `*`)
+					currentQuery = bleve.NewWildcardQuery(analyzedValue + `*`)
 				case `suffix`:
-					currentQuery = bleve.NewWildcardQuery(`*` + value)
+					currentQuery = bleve.NewWildcardQuery(`*` + analyzedValue)
 				case `contains`:
-					currentQuery = bleve.NewWildcardQuery(`*` + value + `*`)
+					currentQuery = bleve.NewWildcardQuery(`*` + analyzedValue + `*`)
 
 				case `gt`, `lt`, `gte`, `lte`:
 					var min, max *float64
 					var minInc, maxInc bool
 
-					if v, err := stringutil.ConvertToFloat(value); err == nil {
+					if v, err := stringutil.ConvertToFloat(analyzedValue); err == nil {
 						if strings.HasPrefix(criterion.Operator, `gt`) {
 							min = &v
 							minInc = strings.HasSuffix(criterion.Operator, `e`)
@@ -296,10 +317,10 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 				// 	q := bleve.NewBooleanQuery()
 				// 	var subquery query.FieldableQuery
 
-				// 	if value == `null` {
+				// 	if analyzedValue == `null` {
 				// 		subquery = bleve.NewTermQuery(``)
 				// 	} else {
-				// 		subquery = bleve.NewTermQuery(value)
+				// 		subquery = bleve.NewTermQuery(analyzedValue)
 				// 	}
 
 				// 	subquery.SetField(criterion.Field)
@@ -344,4 +365,24 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 			return nil, fmt.Errorf("Filter did not produce a valid query")
 		}
 	}
+}
+
+func (self *BleveIndexer) useFilterMapping(mappingImpl *mapping.IndexMappingImpl) {
+	mappingImpl.AddCustomCharFilter(`remove_expression_tokens`, map[string]interface{}{
+		`type`:   regexp.Name,
+		`regexp`: `[\:\[\]\*]+`,
+	})
+
+	mappingImpl.AddCustomAnalyzer(`pivot_filter`, map[string]interface{}{
+		`type`: custom.Name,
+		`char_filters`: []string{
+			`remove_expression_tokens`,
+		},
+		`tokenizer`:     single.Name,
+		`token_filters`: []string{
+			lowercase.Name,
+		},
+	})
+
+	mappingImpl.DefaultAnalyzer = `pivot_filter`
 }

@@ -160,11 +160,14 @@ func TestSearchQuery(t *testing.T) {
 		// onesies
 		for _, qs := range []string{
 			`_id/1`,
-			`name/first`,
 			`name/First`,
+			`name/first`,
 			`name/contains:irs`,
+			`name/contains:irS`,
 			`name/prefix:fir`,
+			`name/prefix:fIr`,
 			`name/contains:ir/name/prefix:f`,
+			`name/contains:ir/name/prefix:F`,
 		} {
 			t.Logf("Querying (want 1 result): %q\n", qs)
 			recordset, err = search.QueryString(`TestSearchQuery`, qs)
@@ -334,5 +337,44 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 		assert.True(ok)
 		assert.NotNil(record)
 		assert.Equal(`03`, record.ID)
+	}
+}
+
+func TestSearchAnalysis(t *testing.T) {
+	assert := require.New(t)
+
+	if search := backend.WithSearch(); search != nil {
+		err := backend.CreateCollection(dal.Collection{
+			Name: `TestSearchAnalysis`,
+		})
+
+		assert.Nil(err)
+
+		assert.Nil(backend.Insert(`TestSearchAnalysis`, dal.NewRecordSet(
+			dal.NewRecord(`1`).SetFields(map[string]interface{}{
+				`single`: `first-result`,
+				`char_filter_test`: `this:resUlt`,
+			}),
+			dal.NewRecord(`2`).SetFields(map[string]interface{}{
+				`single`: `second-result`,
+				`char_filter_test`: `This[Result`,
+			}),
+			dal.NewRecord(`3`).SetFields(map[string]interface{}{
+				`single`: `third-result`,
+				`char_filter_test`: `this*result`,
+			}))))
+
+		// threesies
+		for _, qs := range []string{
+			`single/contains:result`,
+			`single/suffix:result`,
+			`char_filter_test/this%20result`,
+		} {
+			t.Logf("Querying (want 3 results): %q\n", qs)
+			recordset, err := search.QueryString(`TestSearchAnalysis`, qs)
+			assert.Nil(err)
+			assert.NotNil(recordset)
+			assert.Equal(uint64(3), recordset.ResultCount)
+		}
 	}
 }

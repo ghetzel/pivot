@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"net/url"
 )
 
 type Criterion struct {
@@ -118,6 +119,14 @@ func Parse(spec string) (Filter, error) {
 				} else {
 					criterion.Operator = parts[0]
 					criterion.Values = strings.Split(parts[1], `|`)
+				}
+
+				for i, value := range criterion.Values {
+					if v, err := url.QueryUnescape(value); err == nil {
+						criterion.Values[i] = v
+					}else{
+						return rv, err
+					}
 				}
 
 				rv.Criteria = append(rv.Criteria, criterion)
