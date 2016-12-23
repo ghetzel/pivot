@@ -8,6 +8,7 @@ import (
 )
 
 var CriteriaSeparator = `/`
+var FieldTermSeparator = `/`
 var ModifierDelimiter = `:`
 var ValueSeparator = `|`
 var QueryUnescapeValues = false
@@ -59,7 +60,18 @@ func Parse(spec string) (Filter, error) {
 	spec = strings.TrimPrefix(spec, CriteriaSeparator)
 
 	rv := MakeFilter(spec)
-	criteria := strings.Split(spec, CriteriaSeparator)
+	criteriaPre := strings.Split(spec, CriteriaSeparator)
+	criteria := make([]string, 0)
+
+	if CriteriaSeparator == FieldTermSeparator {
+		criteria = criteriaPre
+	} else {
+		for _, fieldTerm := range criteriaPre {
+			parts := strings.SplitN(fieldTerm, FieldTermSeparator, 2)
+
+			criteria = append(criteria, parts...)
+		}
+	}
 
 	switch {
 	case spec == ``:
