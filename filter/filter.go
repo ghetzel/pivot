@@ -21,6 +21,38 @@ type Criterion struct {
 	Values   []string `json:"values"`
 }
 
+func (self *Criterion) String() string {
+	rv := ``
+
+	if self.Type != `` {
+		if self.Length > 0 {
+			rv += self.Type + fmt.Sprintf("#%d", self.Length) + ModifierDelimiter
+		}else{
+			rv += self.Type + ModifierDelimiter
+		}
+	}
+
+	rv += self.Field + FieldTermSeparator
+
+	if self.Operator != `` {
+		rv += self.Operator + ModifierDelimiter
+	}
+
+	values := make([]string, 0)
+
+	for _, value := range self.Values {
+		if QueryUnescapeValues {
+			values = append(values, url.QueryEscape(value))
+		}else{
+			values = append(values, value)
+		}
+	}
+
+	rv += strings.Join(values, ValueSeparator)
+
+	return rv
+}
+
 type Filter struct {
 	Spec     string
 	MatchAll bool
@@ -156,4 +188,18 @@ func Parse(spec string) (Filter, error) {
 	}
 
 	return rv, nil
+}
+
+func (self *Filter) String() string {
+	if self.MatchAll {
+		return `all`
+	}else{
+		criteria := make([]string, 0)
+
+		for _, criterion := range self.Criteria {
+			criteria = append(criteria, criterion.String())
+		}
+
+		return strings.Join(criteria, CriteriaSeparator)
+	}
 }

@@ -40,6 +40,22 @@ func TestFilterParse(t *testing.T) {
 	}
 }
 
+func TestFilterIdentity(t *testing.T) {
+	assert := require.New(t)
+	spec := `str#16:name/prefix:foo`
+
+	filter, err := Parse(spec)
+	assert.Nil(err)
+	assert.Equal(1, len(filter.Criteria))
+	assert.Equal(`str`, filter.Criteria[0].Type)
+	assert.Equal(16, filter.Criteria[0].Length)
+	assert.Equal(`name`, filter.Criteria[0].Field)
+	assert.Equal(`prefix`, filter.Criteria[0].Operator)
+	assert.Equal([]string{`foo`}, filter.Criteria[0].Values)
+
+	assert.Equal(spec, filter.String())
+}
+
 func TestFilterParseAltDelimiters(t *testing.T) {
 	assert := require.New(t)
 
