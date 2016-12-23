@@ -352,15 +352,15 @@ func TestSearchAnalysis(t *testing.T) {
 
 		assert.Nil(backend.Insert(`TestSearchAnalysis`, dal.NewRecordSet(
 			dal.NewRecord(`1`).SetFields(map[string]interface{}{
-				`single`: `first-result`,
+				`single`:           `first-result`,
 				`char_filter_test`: `this:resUlt`,
 			}),
 			dal.NewRecord(`2`).SetFields(map[string]interface{}{
-				`single`: `second-result`,
+				`single`:           `second-result`,
 				`char_filter_test`: `This[Result`,
 			}),
 			dal.NewRecord(`3`).SetFields(map[string]interface{}{
-				`single`: `third-result`,
+				`single`:           `third-result`,
 				`char_filter_test`: `this*result`,
 			}))))
 
@@ -368,7 +368,7 @@ func TestSearchAnalysis(t *testing.T) {
 		for _, qs := range []string{
 			`single/contains:result`,
 			`single/suffix:result`,
-			`char_filter_test/this%20result`,
+			`char_filter_test/this result`,
 		} {
 			t.Logf("Querying (want 3 results): %q\n", qs)
 			recordset, err := search.QueryString(`TestSearchAnalysis`, qs)

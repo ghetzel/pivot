@@ -2,10 +2,15 @@ package filter
 
 import (
 	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
-	"net/url"
 )
+
+var CriteriaSeparator = `/`
+var ModifierDelimiter = `:`
+var ValueSeparator = `|`
+var QueryUnescapeValues = false
 
 type Criterion struct {
 	Type     string   `json:"type,omitempty"`
@@ -51,10 +56,10 @@ var NullFilter Filter = MakeFilter(``)
 func Parse(spec string) (Filter, error) {
 	var criterion Criterion
 
-	spec = strings.TrimPrefix(spec, `/`)
+	spec = strings.TrimPrefix(spec, CriteriaSeparator)
 
 	rv := MakeFilter(spec)
-	criteria := strings.Split(spec, `/`)
+	criteria := strings.Split(spec, CriteriaSeparator)
 
 	switch {
 	case spec == ``:
@@ -67,7 +72,7 @@ func Parse(spec string) (Filter, error) {
 	case len(criteria) >= 2:
 		for i, token := range criteria {
 			if (i % 2) == 0 {
-				parts := strings.SplitN(token, `:`, 2)
+				parts := strings.SplitN(token, ModifierDelimiter, 2)
 
 				var addSortAsc *bool
 
@@ -112,20 +117,22 @@ func Parse(spec string) (Filter, error) {
 					}
 				}
 			} else {
-				parts := strings.SplitN(token, `:`, 2)
+				parts := strings.SplitN(token, ModifierDelimiter, 2)
 
 				if len(parts) == 1 {
-					criterion.Values = strings.Split(parts[0], `|`)
+					criterion.Values = strings.Split(parts[0], ValueSeparator)
 				} else {
 					criterion.Operator = parts[0]
-					criterion.Values = strings.Split(parts[1], `|`)
+					criterion.Values = strings.Split(parts[1], ValueSeparator)
 				}
 
-				for i, value := range criterion.Values {
-					if v, err := url.QueryUnescape(value); err == nil {
-						criterion.Values[i] = v
-					}else{
-						return rv, err
+				if QueryUnescapeValues {
+					for i, value := range criterion.Values {
+						if v, err := url.QueryUnescape(value); err == nil {
+							criterion.Values[i] = v
+						} else {
+							return rv, err
+						}
 					}
 				}
 

@@ -266,7 +266,7 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 					for _, token := range az.Analyze([]byte(value[:])) {
 						analyzedValue += string(token.Term[:])
 					}
-				}else{
+				} else {
 					analyzedValue = value
 				}
 
@@ -375,7 +375,7 @@ func (self *BleveIndexer) useFilterMapping(mappingImpl *mapping.IndexMappingImpl
 		`char_filters`: []string{
 			`remove_expression_tokens`,
 		},
-		`tokenizer`:     single.Name,
+		`tokenizer`: single.Name,
 		`token_filters`: []string{
 			lowercase.Name,
 		},
