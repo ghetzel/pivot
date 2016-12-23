@@ -89,7 +89,7 @@ var NullFilter Filter = MakeFilter(``)
 func Parse(spec string) (Filter, error) {
 	var criterion Criterion
 
-	spec = strings.TrimPrefix(spec, CriteriaSeparator)
+	spec = strings.TrimPrefix(spec, `/`)
 
 	rv := MakeFilter(spec)
 	criteriaPre := strings.Split(spec, CriteriaSeparator)
