@@ -253,7 +253,6 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 			var disjunction *query.DisjunctionQuery
 
 			analyzerName := mapping.AnalyzerNameForPath(criterion.Field)
-			log.Debugf("Analyzer for field %s: %s", criterion.Field, analyzerName)
 
 			// this handles AND (field=a OR b OR ...)
 			if len(criterion.Values) > 1 {
@@ -270,8 +269,6 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 				}else{
 					analyzedValue = value
 				}
-
-				log.Debugf("v: %+v", analyzedValue)
 
 				var currentQuery query.FieldableQuery
 
