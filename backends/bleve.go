@@ -97,6 +97,11 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 			for {
 				request := bleve.NewSearchRequestOptions(bq, f.Size, offset, false)
 
+				// apply sorting (if specified)
+				if f.Sort != nil && len(f.Sort) > 0 {
+					request.SortBy(f.Sort)
+				}
+
 				// apply restriction on returned fields
 				if f.Fields != nil {
 					request.Fields = f.Fields

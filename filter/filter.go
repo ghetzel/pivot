@@ -27,7 +27,7 @@ func (self *Criterion) String() string {
 	if self.Type != `` {
 		if self.Length > 0 {
 			rv += self.Type + fmt.Sprintf("#%d", self.Length) + ModifierDelimiter
-		}else{
+		} else {
 			rv += self.Type + ModifierDelimiter
 		}
 	}
@@ -43,7 +43,7 @@ func (self *Criterion) String() string {
 	for _, value := range self.Values {
 		if QueryUnescapeValues {
 			values = append(values, url.QueryEscape(value))
-		}else{
+		} else {
 			values = append(values, value)
 		}
 	}
@@ -193,7 +193,7 @@ func Parse(spec string) (Filter, error) {
 func (self *Filter) String() string {
 	if self.MatchAll {
 		return `all`
-	}else{
+	} else {
 		criteria := make([]string, 0)
 
 		for _, criterion := range self.Criteria {

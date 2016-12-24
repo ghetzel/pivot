@@ -71,8 +71,6 @@ vendors:
   rev: ed27b6fd65218132ee50cd95f38474a3d8a2cd12
 - path: github.com/steveyen/gtreap
   rev: 0abe01ef9be25c4aedc174758ec2d917314d6d70
-- path: github.com/stretchr/objx
-  rev: 1a9d0bb9f541897e62256577b352fdbc1fb4fd94
 - path: github.com/stretchr/testify
   rev: 2402e8e7a02fc811447d11f881aa9746cdc57983
 - path: github.com/syndtr/goleveldb
