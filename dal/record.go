@@ -2,6 +2,7 @@ package dal
 
 import (
 	"github.com/ghetzel/go-stockutil/maputil"
+	"reflect"
 	"strings"
 )
 
@@ -64,4 +65,31 @@ func (self *Record) SetFields(values map[string]interface{}) *Record {
 func (self *Record) SetData(data []byte) *Record {
 	self.Data = data
 	return self
+}
+
+func (self *Record) Append(key string, value ...interface{}) *Record {
+	return self.Set(key, self.appendValue(key, value...))
+}
+
+func (self *Record) AppendNested(key string, value ...interface{}) *Record {
+	return self.SetNested(key, self.appendValue(key, value...))
+}
+
+func (self *Record) appendValue(key string, value ...interface{}) []interface{} {
+	newValue := make([]interface{}, 0)
+
+	if v := self.Get(key); v != nil {
+		valueV := reflect.ValueOf(v)
+
+		switch valueV.Type().Kind() {
+		case reflect.Array, reflect.Slice:
+			for i := 0; i < valueV.Len(); i++ {
+				newValue = append(newValue, valueV.Index(i).Interface())
+			}
+		default:
+			newValue = append(newValue, v)
+		}
+	}
+
+	return append(newValue, value...)
 }

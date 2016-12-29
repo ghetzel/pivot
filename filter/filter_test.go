@@ -99,8 +99,8 @@ func TestFilterFromMap(t *testing.T) {
 	assert := require.New(t)
 
 	f, err := FromMap(map[string]interface{}{
-		`f1`: `v1`,
-		`int:f2`: 2,
+		`f1`:       `v1`,
+		`int:f2`:   2,
 		`float:f3`: `gte:3`,
 	})
 

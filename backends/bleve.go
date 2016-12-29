@@ -235,20 +235,43 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 
 			if results, err := index.Search(request); err == nil {
 				recordset := dal.NewRecordSet()
+				groupedByField := make(map[string]*dal.Record)
 
 				for name, facet := range results.Facets {
 					for _, term := range facet.Terms {
-						recordset.Push(
-							dal.NewRecord(name).Set(`value`, term.Term),
-						)
+						var record *dal.Record
+
+						if r, ok := groupedByField[name]; ok {
+							record = r
+						} else {
+							record = dal.NewRecord(name)
+							groupedByField[name] = record
+						}
+
+						record.Append(`value`, term.Term)
 					}
 				}
 
 				if idQuery {
 					for _, hit := range results.Hits {
-						recordset.Push(
-							dal.NewRecord(`_id`).Set(`value`, hit.ID),
-						)
+						var record *dal.Record
+
+						if r, ok := groupedByField[`_id`]; ok {
+							record = r
+						} else {
+							record = dal.NewRecord(`_id`)
+							groupedByField[`_id`] = record
+						}
+
+						record.Append(`value`, hit.ID)
+					}
+				}
+
+				for _, field := range fields {
+					if record, ok := groupedByField[field]; ok {
+						recordset.Push(record)
+					} else {
+						return nil, fmt.Errorf("Field %q missing from result set", field)
 					}
 				}
 

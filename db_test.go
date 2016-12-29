@@ -367,20 +367,27 @@ func TestListValues(t *testing.T) {
 		recordset, err := search.ListValues(`TestListValues`, []string{`name`}, filter.All)
 		assert.Nil(err)
 		assert.NotNil(recordset)
-		assert.Equal([]interface{}{`first`, `second`, `third`}, recordset.Pluck(`value`))
-		assert.Equal(uint64(3), recordset.ResultCount)
+		assert.Equal(uint64(1), recordset.ResultCount)
+		assert.Equal([]interface{}{`first`, `second`, `third`}, recordset.Records[0].Get(`value`))
 
 		recordset, err = search.ListValues(`TestListValues`, []string{`group`}, filter.All)
 		assert.Nil(err)
 		assert.NotNil(recordset)
-		assert.Equal([]interface{}{`reds`, `blues`}, recordset.Pluck(`value`))
-		assert.Equal(uint64(2), recordset.ResultCount)
+		assert.Equal(uint64(1), recordset.ResultCount)
+		assert.Equal([]interface{}{`reds`, `blues`}, recordset.Records[0].Get(`value`))
 
 		recordset, err = search.ListValues(`TestListValues`, []string{`_id`}, filter.All)
 		assert.Nil(err)
 		assert.NotNil(recordset)
-		assert.Equal([]interface{}{`1`, `2`, `3`}, recordset.Pluck(`value`))
-		assert.Equal(uint64(3), recordset.ResultCount)
+		assert.Equal(uint64(1), recordset.ResultCount)
+		assert.Equal([]interface{}{`1`, `2`, `3`}, recordset.Records[0].Get(`value`))
+
+		recordset, err = search.ListValues(`TestListValues`, []string{`_id`, `group`}, filter.All)
+		assert.Nil(err)
+		assert.NotNil(recordset)
+		assert.Equal(uint64(2), recordset.ResultCount)
+		assert.Equal([]interface{}{`1`, `2`, `3`}, recordset.Records[0].Get(`value`))
+		assert.Equal([]interface{}{`reds`, `blues`}, recordset.Records[1].Get(`value`))
 	}
 }
 
