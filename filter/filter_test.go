@@ -59,6 +59,7 @@ func TestFilterIdentity(t *testing.T) {
 func TestFilterParseAltDelimiters(t *testing.T) {
 	assert := require.New(t)
 
+	cs, fts := CriteriaSeparator, FieldTermSeparator
 	CriteriaSeparator = ` `
 	FieldTermSeparator = `=`
 
@@ -88,5 +89,39 @@ func TestFilterParseAltDelimiters(t *testing.T) {
 	for spec, fn := range tests {
 		f, err := Parse(spec)
 		fn(f, err)
+	}
+
+	// reset these
+	CriteriaSeparator, FieldTermSeparator = cs, fts
+}
+
+func TestFilterFromMap(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := FromMap(map[string]interface{}{
+		`f1`: `v1`,
+		`int:f2`: 2,
+		`float:f3`: `gte:3`,
+	})
+
+	assert.Nil(err)
+	assert.Equal(3, len(f.Criteria))
+
+	for _, criterion := range f.Criteria {
+		switch criterion.Field {
+		case `f1`:
+			assert.Equal([]string{`v1`}, criterion.Values)
+
+		case `f2`:
+			assert.Equal(`int`, criterion.Type)
+			assert.Equal([]string{`2`}, criterion.Values)
+
+		case `f3`:
+			assert.Equal(`float`, criterion.Type)
+			assert.Equal(`gte`, criterion.Operator)
+			assert.Equal([]string{`3`}, criterion.Values)
+		default:
+			t.Errorf("Unknown field %q", criterion.Field)
+		}
 	}
 }

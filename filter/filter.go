@@ -81,6 +81,16 @@ func MakeFilter(spec string) Filter {
 	return f
 }
 
+func FromMap(in map[string]interface{}) (Filter, error) {
+	criteria := make([]string, 0)
+
+	for typeField, opValue := range in {
+		criteria = append(criteria, fmt.Sprintf("%s%s%v", typeField, FieldTermSeparator, opValue))
+	}
+
+	return Parse(strings.Join(criteria, CriteriaSeparator))
+}
+
 var Null Filter = MakeFilter(``)
 var All Filter = MakeFilter(`all`)
 
