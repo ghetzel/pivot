@@ -14,7 +14,7 @@ type IndexPage struct {
 	TotalResults uint64
 }
 
-type IndexResultFunc func(record *dal.Record, page IndexPage) error
+type IndexResultFunc func(record *dal.Record, page IndexPage) error // {}
 
 type Indexer interface {
 	Initialize(Backend) error
@@ -25,6 +25,7 @@ type Indexer interface {
 	Query(collection string, filter filter.Filter) (*dal.RecordSet, error)
 	QueryString(collection string, filterString string) (*dal.RecordSet, error)
 	Remove(collection string, ids []string) error
+	ListValues(collection string, fields []string, filter filter.Filter) (*dal.RecordSet, error)
 }
 
 func DefaultQueryString(indexer Indexer, collection string, filterString string) (*dal.RecordSet, error) {

@@ -340,6 +340,50 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 	}
 }
 
+func TestListValues(t *testing.T) {
+	assert := require.New(t)
+
+	if search := backend.WithSearch(); search != nil {
+		err := backend.CreateCollection(dal.Collection{
+			Name: `TestListValues`,
+		})
+
+		assert.Nil(err)
+
+		assert.Nil(backend.Insert(`TestListValues`, dal.NewRecordSet(
+			dal.NewRecord(`1`).SetFields(map[string]interface{}{
+				`name`:  `first`,
+				`group`: `reds`,
+			}),
+			dal.NewRecord(`2`).SetFields(map[string]interface{}{
+				`name`:  `second`,
+				`group`: `reds`,
+			}),
+			dal.NewRecord(`3`).SetFields(map[string]interface{}{
+				`name`:  `third`,
+				`group`: `blues`,
+			}))))
+
+		recordset, err := search.ListValues(`TestListValues`, []string{`name`}, filter.All)
+		assert.Nil(err)
+		assert.NotNil(recordset)
+		assert.Equal([]interface{}{`first`, `second`, `third`}, recordset.Pluck(`value`))
+		assert.Equal(uint64(3), recordset.ResultCount)
+
+		recordset, err = search.ListValues(`TestListValues`, []string{`group`}, filter.All)
+		assert.Nil(err)
+		assert.NotNil(recordset)
+		assert.Equal([]interface{}{`reds`, `blues`}, recordset.Pluck(`value`))
+		assert.Equal(uint64(2), recordset.ResultCount)
+
+		recordset, err = search.ListValues(`TestListValues`, []string{`_id`}, filter.All)
+		assert.Nil(err)
+		assert.NotNil(recordset)
+		assert.Equal([]interface{}{`1`, `2`, `3`}, recordset.Pluck(`value`))
+		assert.Equal(uint64(3), recordset.ResultCount)
+	}
+}
+
 func TestSearchAnalysis(t *testing.T) {
 	assert := require.New(t)
 

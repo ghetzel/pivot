@@ -21,6 +21,7 @@ fmt:
 
 test: vendor
 	go test -v .
+	go test -v ./dal/
 	go test -v ./filter/
 	go test -v ./filter/*/*
 

@@ -18,6 +18,7 @@ import (
 )
 
 var BleveIndexerPageSize int = 100
+var BleveMaxFacetCardinality int = 10000
 
 type BleveIndexer struct {
 	Indexer
@@ -208,6 +209,58 @@ func (self *BleveIndexer) Remove(collection string, ids []string) error {
 		return index.Batch(batch)
 	} else {
 		return err
+	}
+}
+
+func (self *BleveIndexer) ListValues(collection string, fields []string, f filter.Filter) (*dal.RecordSet, error) {
+	if index, err := self.getIndexForCollection(collection); err == nil {
+		if bq, err := self.filterToBleveQuery(index, f); err == nil {
+			request := bleve.NewSearchRequestOptions(bq, 0, 0, false)
+			request.Fields = []string{}
+			idQuery := false
+
+			for _, field := range fields {
+				switch field {
+				case `_id`, `id`:
+					idQuery = true
+					request.Size = BleveMaxFacetCardinality
+					request.Fields = append(request.Fields, `_id`)
+				default:
+					request.AddFacet(
+						field,
+						bleve.NewFacetRequest(field, BleveMaxFacetCardinality),
+					)
+				}
+			}
+
+			if results, err := index.Search(request); err == nil {
+				recordset := dal.NewRecordSet()
+
+				for name, facet := range results.Facets {
+					for _, term := range facet.Terms {
+						recordset.Push(
+							dal.NewRecord(name).Set(`value`, term.Term),
+						)
+					}
+				}
+
+				if idQuery {
+					for _, hit := range results.Hits {
+						recordset.Push(
+							dal.NewRecord(`_id`).Set(`value`, hit.ID),
+						)
+					}
+				}
+
+				return recordset, nil
+			} else {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	} else {
+		return nil, err
 	}
 }
 

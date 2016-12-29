@@ -12,6 +12,7 @@ import (
 	"github.com/rs/cors"
 	"github.com/urfave/negroni"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -192,7 +193,32 @@ func (self *Server) setupRoutes() error {
 					self.Respond(w, http.StatusBadRequest, nil, fmt.Errorf("Backend %T does not support complex queries."))
 				}
 			} else {
-				self.Respond(w, http.StatusInternalServerError, nil, err)
+				self.Respond(w, http.StatusBadRequest, nil, err)
+			}
+		})
+
+	self.router.GET(`/query/:collection/list/*fields`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+			f := filter.All
+
+			if v := req.URL.Query().Get(`q`); v != `` {
+				if fV, err := filter.Parse(v); err == nil {
+					f = fV
+				} else {
+					self.Respond(w, http.StatusBadRequest, nil, err)
+				}
+			}
+
+			if search := self.backend.WithSearch(); search != nil {
+				fields := strings.TrimPrefix(params.ByName(`fields`), `/`)
+
+				if recordset, err := search.ListValues(params.ByName(`collection`), strings.Split(fields, `/`), f); err == nil {
+					self.Respond(w, http.StatusOK, recordset, nil)
+				} else {
+					self.Respond(w, http.StatusInternalServerError, nil, err)
+				}
+			} else {
+				self.Respond(w, http.StatusBadRequest, nil, fmt.Errorf("Backend %T does not support complex queries."))
 			}
 		})
 

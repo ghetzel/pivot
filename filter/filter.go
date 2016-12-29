@@ -66,16 +66,23 @@ type Filter struct {
 }
 
 func MakeFilter(spec string) Filter {
-	return Filter{
+	f := Filter{
 		Spec:     spec,
 		Criteria: make([]Criterion, 0),
 		Sort:     make([]string, 0),
 		Fields:   make([]string, 0),
 		Options:  make(map[string]string),
 	}
+
+	if spec == `all` {
+		f.MatchAll = true
+	}
+
+	return f
 }
 
-var NullFilter Filter = MakeFilter(``)
+var Null Filter = MakeFilter(``)
+var All Filter = MakeFilter(`all`)
 
 // Filter syntax definition
 //
@@ -107,10 +114,9 @@ func Parse(spec string) (Filter, error) {
 
 	switch {
 	case spec == ``:
-		return NullFilter, nil
+		return Null, nil
 
 	case spec == `all`:
-		rv.MatchAll = true
 		return rv, nil
 
 	case len(criteria) >= 2:

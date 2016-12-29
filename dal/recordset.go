@@ -30,6 +30,16 @@ func (self *RecordSet) GetRecord(index int) (*Record, bool) {
 	return nil, false
 }
 
+func (self *RecordSet) Pluck(field string, fallback ...interface{}) []interface{} {
+	rv := make([]interface{}, 0)
+
+	for _, record := range self.Records {
+		rv = append(rv, record.Get(field, fallback...))
+	}
+
+	return rv
+}
+
 func (self *RecordSet) IsEmpty() bool {
 	if self.ResultCount == 0 {
 		return true
