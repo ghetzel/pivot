@@ -248,7 +248,7 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 							groupedByField[name] = record
 						}
 
-						record.Append(`value`, term.Term)
+						record.Append(`values`, term.Term)
 					}
 				}
 
@@ -263,7 +263,7 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 							groupedByField[`_id`] = record
 						}
 
-						record.Append(`value`, hit.ID)
+						record.Append(`values`, hit.ID)
 					}
 				}
 
