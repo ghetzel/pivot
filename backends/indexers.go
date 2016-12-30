@@ -9,7 +9,7 @@ import (
 type IndexPage struct {
 	Page         int
 	TotalPages   int
-	PageSize     int
+	Limit     int
 	Offset       int
 	TotalResults uint64
 }
@@ -23,17 +23,8 @@ type Indexer interface {
 	Index(collection string, records *dal.RecordSet) error
 	QueryFunc(collection string, filter filter.Filter, resultFn IndexResultFunc) error
 	Query(collection string, filter filter.Filter) (*dal.RecordSet, error)
-	QueryString(collection string, filterString string) (*dal.RecordSet, error)
 	Remove(collection string, ids []string) error
 	ListValues(collection string, fields []string, filter filter.Filter) (*dal.RecordSet, error)
-}
-
-func DefaultQueryString(indexer Indexer, collection string, filterString string) (*dal.RecordSet, error) {
-	if f, err := filter.Parse(filterString); err == nil {
-		return indexer.Query(collection, f)
-	} else {
-		return nil, err
-	}
 }
 
 func MakeIndexer(connection dal.ConnectionString) (Indexer, error) {

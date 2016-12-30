@@ -59,7 +59,6 @@ type Filter struct {
 	Spec     string
 	MatchAll bool
 	Offset   int
-	PageSize int
 	Limit    int
 	Criteria []Criterion
 	Sort     []string

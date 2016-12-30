@@ -152,7 +152,9 @@ func TestSearchQuery(t *testing.T) {
 			`name/suffix:d`,
 		} {
 			t.Logf("Querying (want 2 results): %q\n", qs)
-			recordset, err = search.QueryString(`TestSearchQuery`, qs)
+			f, err := filter.Parse(qs)
+			assert.Nil(err)
+			recordset, err = search.Query(`TestSearchQuery`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
 			assert.Equal(uint64(2), recordset.ResultCount)
@@ -171,7 +173,9 @@ func TestSearchQuery(t *testing.T) {
 			`name/contains:ir/name/prefix:F`,
 		} {
 			t.Logf("Querying (want 1 result): %q\n", qs)
-			recordset, err = search.QueryString(`TestSearchQuery`, qs)
+			f, err := filter.Parse(qs)
+			assert.Nil(err)
+			recordset, err = search.Query(`TestSearchQuery`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
 			assert.Equal(uint64(1), recordset.ResultCount)
@@ -187,7 +191,9 @@ func TestSearchQuery(t *testing.T) {
 			`name/contains:irs/name/prefix:sec`,
 		} {
 			t.Logf("Querying (want 0 results): %q\n", qs)
-			recordset, err = search.QueryString(`TestSearchQuery`, qs)
+			f, err := filter.Parse(qs)
+			assert.Nil(err)
+			recordset, err = search.Query(`TestSearchQuery`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
 			assert.Equal(uint64(0), recordset.ResultCount)
@@ -217,12 +223,15 @@ func TestSearchQueryPaginated(t *testing.T) {
 
 		assert.Nil(backend.Insert(`TestSearchQueryPaginated`, rsSave))
 
-		recordset, err := search.QueryString(`TestSearchQueryPaginated`, `all`)
+		f := filter.All
+		f.Limit = 25
+
+		recordset, err := search.Query(`TestSearchQueryPaginated`, f)
 		assert.Nil(err)
 		assert.NotNil(recordset)
 		assert.Equal(uint64(21), recordset.ResultCount)
 		assert.Equal(21, len(recordset.Records))
-		assert.Equal(5, recordset.TotalPages)
+		assert.Equal(1, recordset.TotalPages)
 	}
 }
 
@@ -255,7 +264,7 @@ func TestSearchQueryLimit(t *testing.T) {
 		assert.NotNil(recordset)
 		assert.Equal(uint64(21), recordset.ResultCount)
 		assert.Equal(9, len(recordset.Records))
-		assert.Equal(1, recordset.TotalPages)
+		assert.Equal(3, recordset.TotalPages)
 
 		record, ok := recordset.GetRecord(0)
 		assert.True(ok)
@@ -306,6 +315,13 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 	assert := require.New(t)
 
 	if search := backend.WithSearch(); search != nil {
+		old := backends.BleveIndexerPageSize
+		backends.BleveIndexerPageSize = 3
+
+		defer func(){
+			backends.BleveIndexerPageSize = old
+		}()
+
 		err := backend.CreateCollection(dal.Collection{
 			Name: `TestSearchQueryOffsetLimit`,
 		})
@@ -324,7 +340,6 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 		assert.Nil(err)
 
 		f.Offset = 3
-		f.PageSize = 3
 		f.Limit = 9
 
 		recordset, err := search.Query(`TestSearchQueryOffsetLimit`, f)
@@ -423,7 +438,9 @@ func TestSearchAnalysis(t *testing.T) {
 			`char_filter_test/this result`,
 		} {
 			t.Logf("Querying (want 3 results): %q\n", qs)
-			recordset, err := search.QueryString(`TestSearchAnalysis`, qs)
+			f, err := filter.Parse(qs)
+			assert.Nil(err)
+			recordset, err := search.Query(`TestSearchAnalysis`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
 			assert.Equal(uint64(3), recordset.ResultCount)

@@ -1,25 +1,20 @@
-.PHONY: test
+.PHONY: test deps
 
-all: vendor fmt build bundle
+all: fmt deps build bundle
 
-update:
-	-rm -rf vendor
-	govend -uvl
-
-vendor:
-	go list github.com/govend/govend
-	govend -v -l
+deps:
+	go get .
 
 clean-bundle:
 	-rm -rf public
 
 clean:
-	-rm -rf vendor bin
+	-rm -rf bin
 
 fmt:
 	gofmt -w .
 
-test: vendor
+test:
 	go test -v .
 	go test -v ./dal/
 	go test -v ./filter/
