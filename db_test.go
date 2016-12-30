@@ -17,6 +17,7 @@ var TestData = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 func TestMain(m *testing.M) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
+	backends.BleveBatchFlushCount = 1
 
 	if b, err := makeBackend(`boltdb:///./tmp/db_test`); err == nil {
 		backend = b
@@ -323,7 +324,7 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 		assert.Nil(err)
 
 		f.Offset = 3
-		f.Size = 3
+		f.PageSize = 3
 		f.Limit = 9
 
 		recordset, err := search.Query(`TestSearchQueryOffsetLimit`, f)

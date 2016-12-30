@@ -159,13 +159,13 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 			processed := 0
 
 			// filter size falls back to package default
-			if f.Size == 0 {
-				f.Size = BleveIndexerPageSize
+			if f.PageSize == 0 {
+				f.PageSize = BleveIndexerPageSize
 			}
 
 			// perform requests until we have enough results or the index is out of them
 			for {
-				request := bleve.NewSearchRequestOptions(bq, f.Size, offset, false)
+				request := bleve.NewSearchRequestOptions(bq, f.PageSize, offset, false)
 
 				// apply sorting (if specified)
 				if f.Sort != nil && len(f.Sort) > 0 {
@@ -191,14 +191,14 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 					}
 
 					// totalPages = ceil(result count / page size)
-					totalPages := int(math.Ceil(float64(total) / float64(f.Size)))
+					totalPages := int(math.Ceil(float64(total) / float64(f.PageSize)))
 
 					// call the resultFn for each hit on this page
 					for _, hit := range results.Hits {
 						if err := resultFn(dal.NewRecord(hit.ID).SetFields(hit.Fields), IndexPage{
 							Page:         page,
 							TotalPages:   totalPages,
-							PerPage:      f.Size,
+							PageSize:     f.PageSize,
 							Offset:       offset,
 							TotalResults: results.Total,
 						}); err != nil {
@@ -242,14 +242,14 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter) (*dal.Record
 		}
 
 		if recordset.RecordsPerPage == 0 {
-			recordset.RecordsPerPage = page.PerPage
+			recordset.RecordsPerPage = page.PageSize
 		}
 
 		// result count is whatever Bleve told us it was for this query
 		recordset.ResultCount = page.TotalResults
 
 		// page is the last page number set
-		recordset.Page = page.Page
+		recordset.Page = int(math.Ceil(float64(f.Offset+1) / float64(page.PageSize)))
 
 		if f.IdOnly() {
 			recordset.Records = append(recordset.Records, dal.NewRecord(indexRecord.ID))
