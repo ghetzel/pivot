@@ -182,8 +182,12 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter) (*dal.Record
 		// page is the last page number set
 		recordset.Page = page.Page
 
-		if record, err := self.parent.Retrieve(collection, indexRecord.ID); err == nil {
-			recordset.Records = append(recordset.Records, record)
+		if f.IdOnly() {
+			recordset.Records = append(recordset.Records, dal.NewRecord(indexRecord.ID))
+		} else {
+			if record, err := self.parent.Retrieve(collection, indexRecord.ID); err == nil {
+				recordset.Records = append(recordset.Records, record)
+			}
 		}
 
 		return nil

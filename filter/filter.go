@@ -12,6 +12,8 @@ var FieldTermSeparator = `/`
 var ModifierDelimiter = `:`
 var ValueSeparator = `|`
 var QueryUnescapeValues = false
+var IdentityField = `_id`
+var AllValue = `all`
 
 type Criterion struct {
 	Type     string   `json:"type,omitempty"`
@@ -65,6 +67,14 @@ type Filter struct {
 	Options  map[string]string
 }
 
+func (self *Filter) IdOnly() bool {
+	if self.Fields != nil && len(self.Fields) == 1 && self.Fields[0] == IdentityField {
+		return true
+	}
+
+	return false
+}
+
 func MakeFilter(spec string) Filter {
 	f := Filter{
 		Spec:     spec,
@@ -74,7 +84,7 @@ func MakeFilter(spec string) Filter {
 		Options:  make(map[string]string),
 	}
 
-	if spec == `all` {
+	if spec == AllValue {
 		f.MatchAll = true
 	}
 
@@ -92,7 +102,7 @@ func FromMap(in map[string]interface{}) (Filter, error) {
 }
 
 var Null Filter = MakeFilter(``)
-var All Filter = MakeFilter(`all`)
+var All Filter = MakeFilter(AllValue)
 
 // Filter syntax definition
 //
@@ -126,7 +136,7 @@ func Parse(spec string) (Filter, error) {
 	case spec == ``:
 		return Null, nil
 
-	case spec == `all`:
+	case spec == AllValue:
 		return rv, nil
 
 	case len(criteria) >= 2:
@@ -208,7 +218,7 @@ func Parse(spec string) (Filter, error) {
 
 func (self *Filter) String() string {
 	if self.MatchAll {
-		return `all`
+		return AllValue
 	} else {
 		criteria := make([]string, 0)
 

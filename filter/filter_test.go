@@ -56,6 +56,17 @@ func TestFilterIdentity(t *testing.T) {
 	assert.Equal(spec, filter.String())
 }
 
+func TestFilterIdOnly(t *testing.T) {
+	assert := require.New(t)
+
+	f := MakeFilter(AllValue)
+	f.Fields = []string{IdentityField}
+	assert.True(f.IdOnly())
+
+	f = MakeFilter(AllValue)
+	assert.False(f.IdOnly())
+}
+
 func TestFilterParseAltDelimiters(t *testing.T) {
 	assert := require.New(t)
 
