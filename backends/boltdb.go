@@ -178,12 +178,18 @@ func (self *BoltBackend) GetCollection(name string) (dal.Collection, error) {
 }
 
 func (self *BoltBackend) upsertRecords(collection string, recordset *dal.RecordSet, autocreateBucket bool) error {
+	defer stats.NewTiming().Send(`pivot.backends.boltdb.upsert_time`)
+
 	return self.db.Update(func(tx *bolt.Tx) error {
+		stats.Increment(`pivot.backends.boltdb.upsert`)
+
 		bucketName := []byte(collection[:])
 		bucket := tx.Bucket(bucketName)
 
 		if bucket == nil {
 			if autocreateBucket {
+				stats.Increment(`pivot.backends.boltdb.create_collection`)
+
 				if b, err := tx.CreateBucket(bucketName); err == nil {
 					bucket = b
 				} else {
@@ -195,8 +201,15 @@ func (self *BoltBackend) upsertRecords(collection string, recordset *dal.RecordS
 		}
 
 		for _, record := range recordset.Records {
+			tm := stats.NewTiming()
+
 			if data, err := bson.Marshal(record); err == nil {
-				if err := bucket.Put([]byte(record.ID[:]), data); err != nil {
+				tm.Send(`pivot.backends.boltdb.serialize_record`)
+				tm = stats.NewTiming()
+
+				if err := bucket.Put([]byte(record.ID[:]), data); err == nil {
+					tm.Send(`pivot.backends.boltdb.commit_record`)
+				} else {
 					return err
 				}
 			} else {
@@ -204,9 +217,12 @@ func (self *BoltBackend) upsertRecords(collection string, recordset *dal.RecordS
 			}
 		}
 
-		// if we have a search index, update it now
 		if search := self.WithSearch(); search != nil {
-			if err := search.Index(collection, recordset); err != nil {
+			tm := stats.NewTiming()
+
+			if err := search.Index(collection, recordset); err == nil {
+				tm.Send(`pivot.backends.boltdb.index_record`)
+			} else {
 				return err
 			}
 		}

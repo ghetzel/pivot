@@ -22,6 +22,14 @@ func (self *RecordSet) Push(record *Record) *RecordSet {
 	return self
 }
 
+func (self *RecordSet) Append(other *RecordSet) *RecordSet {
+	for _, record := range other.Records {
+		self.Push(record)
+	}
+
+	return self
+}
+
 func (self *RecordSet) GetRecord(index int) (*Record, bool) {
 	if index < len(self.Records) {
 		return self.Records[index], true

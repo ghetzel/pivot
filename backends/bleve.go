@@ -15,22 +15,34 @@ import (
 	"math"
 	"path"
 	"strings"
+	"sync"
+	"time"
 )
 
 var BleveIndexerPageSize int = 100
 var BleveMaxFacetCardinality int = 10000
+var BleveBatchFlushCount = 250
+var BleveBatchFlushInterval = 10 * time.Second
+
+type deferredBatch struct {
+	batch     *bleve.Batch
+	lastFlush time.Time
+}
 
 type BleveIndexer struct {
 	Indexer
-	conn       dal.ConnectionString
-	parent     Backend
-	indexCache map[string]bleve.Index
+	conn               dal.ConnectionString
+	parent             Backend
+	indexCache         map[string]bleve.Index
+	indexDeferredBatch map[string]*deferredBatch
+	batchLock          sync.RWMutex
 }
 
 func NewBleveIndexer(connection dal.ConnectionString) *BleveIndexer {
 	return &BleveIndexer{
-		conn:       connection,
-		indexCache: make(map[string]bleve.Index),
+		conn:               connection,
+		indexCache:         make(map[string]bleve.Index),
+		indexDeferredBatch: make(map[string]*deferredBatch),
 	}
 }
 
@@ -41,6 +53,8 @@ func (self *BleveIndexer) Initialize(parent Backend) error {
 }
 
 func (self *BleveIndexer) Retrieve(collection string, id string) (*dal.Record, error) {
+	defer stats.NewTiming().Send(`pivot.backends.bleve.retrieve_time`)
+
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		request := bleve.NewSearchRequest(bleve.NewDocIDQuery([]string{id}))
 
@@ -67,8 +81,26 @@ func (self *BleveIndexer) Exists(collection string, id string) bool {
 }
 
 func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error {
+	defer stats.NewTiming().Send(`pivot.backends.bleve.index_time`)
+
 	if index, err := self.getIndexForCollection(collection); err == nil {
-		batch := index.NewBatch()
+		var batch *bleve.Batch
+
+		self.batchLock.RLock()
+		d, ok := self.indexDeferredBatch[collection]
+		self.batchLock.RUnlock()
+
+		if ok {
+			batch = d.batch
+		} else {
+			batch = index.NewBatch()
+			self.batchLock.Lock()
+			self.indexDeferredBatch[collection] = &deferredBatch{
+				batch:     batch,
+				lastFlush: time.Now(),
+			}
+			self.batchLock.Unlock()
+		}
 
 		for _, record := range records.Records {
 			if err := batch.Index(string(record.ID), record.Fields); err != nil {
@@ -76,13 +108,50 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 			}
 		}
 
-		return index.Batch(batch)
+		self.checkAndFlushBatches()
+		return nil
 	} else {
 		return err
 	}
 }
 
+func (self *BleveIndexer) checkAndFlushBatches() {
+	self.batchLock.RLock()
+	defer self.batchLock.RUnlock()
+
+	for collection, deferred := range self.indexDeferredBatch {
+		if deferred.batch != nil {
+			shouldFlush := false
+
+			if deferred.batch.Size() >= BleveBatchFlushCount {
+				shouldFlush = true
+			}
+
+			if time.Since(deferred.lastFlush) >= BleveBatchFlushInterval {
+				shouldFlush = true
+			}
+
+			if shouldFlush {
+				defer stats.NewTiming().Send(`pivot.backends.bleve.deferred_batch_flush`)
+
+				if index, err := self.getIndexForCollection(collection); err == nil {
+					// log.Debugf("[%T] Indexing %d records to %s", self, deferred.batch.Size(), collection)
+
+					if err := index.Batch(deferred.batch); err == nil {
+						deferred.batch = index.NewBatch()
+						deferred.lastFlush = time.Now()
+					} else {
+						log.Errorf("[%T] error indexing %d records to %s: %v", self, deferred.batch.Size(), collection, err)
+					}
+				}
+			}
+		}
+	}
+}
+
 func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn IndexResultFunc) error {
+	defer stats.NewTiming().Send(`pivot.backends.bleve.query_time`)
+
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		if bq, err := self.filterToBleveQuery(index, f); err == nil {
 			offset := f.Offset
@@ -292,6 +361,8 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 }
 
 func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index, error) {
+	defer stats.NewTiming().Send(`pivot.backends.bleve.retrieve_index`)
+
 	if v, ok := self.indexCache[collection]; ok {
 		return v, nil
 	} else {
@@ -327,6 +398,8 @@ func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index,
 }
 
 func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter) (query.Query, error) {
+	defer stats.NewTiming().Send(`pivot.backends.bleve.filter_to_native`)
+
 	if f.MatchAll {
 		return bleve.NewMatchAllQuery(), nil
 	} else {

@@ -2,11 +2,13 @@ package backends
 
 import (
 	"fmt"
+	"github.com/alexcesaro/statsd"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/op/go-logging"
 )
 
 var log = logging.MustGetLogger(`backends`)
+var stats, _ = statsd.New()
 
 type Backend interface {
 	Initialize() error
