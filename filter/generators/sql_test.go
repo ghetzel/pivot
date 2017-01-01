@@ -233,6 +233,22 @@ func TestSqlTypeMapping(t *testing.T) {
 		string(actual[:]),
 	)
 
+	// test null type mapping
+	gen = NewSqlGenerator()
+	gen.UsePlaceholders = true
+	gen.TypeMapping = NoTypeMapping
+	actual, err = filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(
+		`SELECT * FROM foo `+
+			`WHERE (age = ?) `+
+			`AND (name = ?) `+
+			`AND (enabled = ?) `+
+			`AND (rating = ?) `+
+			`AND (created_at < ?)`,
+		string(actual[:]),
+	)
+
 	// test postgres type mapping
 	gen = NewSqlGenerator()
 	gen.UsePlaceholders = true
