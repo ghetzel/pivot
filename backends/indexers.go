@@ -9,7 +9,7 @@ import (
 type IndexPage struct {
 	Page         int
 	TotalPages   int
-	Limit     int
+	Limit        int
 	Offset       int
 	TotalResults uint64
 }

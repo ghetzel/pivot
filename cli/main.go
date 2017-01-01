@@ -86,8 +86,8 @@ func main() {
 					var generator filter.IGenerator
 
 					switch generatorType {
-					case `sql92`:
-						generator = generators.NewSql92Generator()
+					case `sql`:
+						generator = generators.NewSqlGenerator()
 					case `elasticsearch`:
 						generator = generators.NewElasticsearchGenerator()
 					default:

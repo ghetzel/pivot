@@ -47,6 +47,11 @@ func (self *ConnectionString) Dataset() string {
 	return self.URI.Path
 }
 
+func (self *ConnectionString) HasOpt(key string) bool {
+	_, ok := self.Options[key]
+	return ok
+}
+
 func (self *ConnectionString) OptString(key string, fallback string) string {
 	if v, ok := self.Options[key]; ok {
 		if vConv, err := stringutil.ConvertToString(v); err == nil {

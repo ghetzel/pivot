@@ -9,10 +9,10 @@ import (
 	"path"
 )
 
-var DatabaseMode = os.FileMode(0644)
-var DatabaseOptions *bolt.Options = nil
-var DefaultSearchIndexer = `bleve:///`
-var DatabaseIndexSubdirectory = `indexes`
+var BoltDatabaseMode = os.FileMode(0644)
+var BoltDatabaseOptions *bolt.Options = nil
+var BoltDefaultSearchIndexer = `bleve:///`
+var BoltDatabaseIndexSubdirectory = `indexes`
 
 // BoltDB ->
 //
@@ -38,17 +38,17 @@ func (self *BoltBackend) Initialize() error {
 	dbBaseDir := self.conn.Dataset()
 	dbFileName := `data.boltdb`
 
-	if db, err := bolt.Open(path.Join(dbBaseDir, dbFileName), DatabaseMode, DatabaseOptions); err == nil {
+	if db, err := bolt.Open(path.Join(dbBaseDir, dbFileName), BoltDatabaseMode, BoltDatabaseOptions); err == nil {
 		self.db = db
 	} else {
 		return err
 	}
 
-	if ixConn := self.conn.OptString(`indexer`, DefaultSearchIndexer); ixConn != `` {
+	if ixConn := self.conn.OptString(`indexer`, BoltDefaultSearchIndexer); ixConn != `` {
 		if ics, err := dal.ParseConnectionString(ixConn); err == nil {
 			// an empty path denotes using the same parent directory as the DB we're indexing
 			if ics.Dataset() == `/` {
-				ics.URI.Path = path.Join(dbBaseDir, DatabaseIndexSubdirectory)
+				ics.URI.Path = path.Join(dbBaseDir, BoltDatabaseIndexSubdirectory)
 			}
 
 			if indexer, err := MakeIndexer(ics); err == nil {
@@ -90,7 +90,7 @@ func (self *BoltBackend) Exists(collection string, id string) bool {
 	return exists
 }
 
-func (self *BoltBackend) Retrieve(collection string, id string) (*dal.Record, error) {
+func (self *BoltBackend) Retrieve(collection string, id string, fields ...string) (*dal.Record, error) {
 	record := dal.NewRecord(id)
 
 	err := self.db.View(func(tx *bolt.Tx) error {

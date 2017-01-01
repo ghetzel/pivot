@@ -108,6 +108,15 @@ func (self *Server) Respond(w http.ResponseWriter, code int, payload interface{}
 }
 
 func (self *Server) setupRoutes() error {
+	self.router.GET(`/records/:collection`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+			if collection, err := self.backend.GetCollection(params.ByName(`collection`)); err == nil {
+				self.Respond(w, http.StatusOK, collection, nil)
+			} else {
+				self.Respond(w, http.StatusNotFound, nil, err)
+			}
+		})
+
 	self.router.GET(`/records/:collection/:id/`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 			if record, err := self.backend.Retrieve(params.ByName(`collection`), params.ByName(`id`)); err == nil {

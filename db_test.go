@@ -318,7 +318,7 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 		old := backends.BleveIndexerPageSize
 		backends.BleveIndexerPageSize = 3
 
-		defer func(){
+		defer func() {
 			backends.BleveIndexerPageSize = old
 		}()
 

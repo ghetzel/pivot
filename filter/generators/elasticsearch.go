@@ -14,6 +14,7 @@ type Elasticsearch struct {
 	fields     []string
 	criteria   []map[string]interface{}
 	options    map[string]string
+	values     []interface{}
 }
 
 func NewElasticsearchGenerator() *Elasticsearch {
@@ -23,10 +24,12 @@ func NewElasticsearchGenerator() *Elasticsearch {
 }
 
 func (self *Elasticsearch) Initialize(collectionName string) error {
+	self.Reset()
 	self.collection = collectionName
 	self.fields = make([]string, 0)
 	self.criteria = make([]map[string]interface{}, 0)
 	self.options = make(map[string]string)
+	self.values = make([]interface{}, 0)
 
 	return nil
 }
@@ -61,6 +64,10 @@ func (self *Elasticsearch) WithField(field string) error {
 func (self *Elasticsearch) SetOption(key, value string) error {
 	self.options[key] = value
 	return nil
+}
+
+func (self *Elasticsearch) GetValues() []interface{} {
+	return self.values
 }
 
 func (self *Elasticsearch) WithCriterion(criterion filter.Criterion) error {

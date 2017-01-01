@@ -9,6 +9,8 @@ type IGenerator interface {
 	OrCriterion(Criterion) error
 	WithField(string) error
 	SetOption(string, string) error
+	GetValues() []interface{}
+	Reset()
 }
 
 type Generator struct {
@@ -57,6 +59,10 @@ func (self *Generator) Push(data []byte) {
 	}
 
 	self.payload = append(self.payload, data...)
+}
+
+func (self *Generator) Reset() {
+	self.payload = nil
 }
 
 func (self *Generator) Payload() []byte {

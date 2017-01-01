@@ -14,10 +14,14 @@ func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[
 			`existence`:  true,
 			`null_value`: true,
 		}
+
+		gen.values = append(gen.values, nil)
 	} else {
 		or_terms := make([]map[string]interface{}, 0)
 
 		for _, value := range criterion.Values {
+			gen.values = append(gen.values, value)
+
 			or_terms = append(or_terms, map[string]interface{}{
 				`term`: map[string]interface{}{
 					criterion.Field: value,
@@ -46,6 +50,8 @@ func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map
 		return c, fmt.Errorf("The not criterion must have at least one value")
 
 	} else if len(criterion.Values) == 1 && criterion.Values[0] == `null` {
+		gen.values = append(gen.values, nil)
+
 		c[`bool`] = map[string]interface{}{
 			`must_not`: map[string]interface{}{
 				`missing`: map[string]interface{}{
@@ -59,6 +65,8 @@ func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map
 		and_not := make([]map[string]interface{}, 0)
 
 		for _, value := range criterion.Values {
+			gen.values = append(gen.values, value)
+
 			//  strings get treated as regular expressions
 			if criterion.Type == `str` {
 				and_not = append(and_not, map[string]interface{}{
@@ -102,6 +110,8 @@ func esCriterionOperatorContains(gen *Elasticsearch, criterion filter.Criterion)
 		or_regexp := make([]map[string]interface{}, 0)
 
 		for _, value := range criterion.Values {
+			gen.values = append(gen.values, value)
+
 			or_regexp = append(or_regexp, map[string]interface{}{
 				`regexp`: map[string]interface{}{
 					criterion.Field: map[string]interface{}{
@@ -133,6 +143,8 @@ func esCriterionOperatorRange(gen *Elasticsearch, criterion filter.Criterion, op
 	c := make(map[string]interface{})
 
 	if l := len(criterion.Values); l == 1 {
+		gen.values = append(gen.values, criterion.Values[0])
+
 		c[`range`] = map[string]interface{}{
 			criterion.Field: map[string]interface{}{
 				operator: criterion.Values[0],

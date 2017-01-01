@@ -14,7 +14,7 @@ type Backend interface {
 	Initialize() error
 	GetConnectionString() *dal.ConnectionString
 	Exists(collection string, id string) bool
-	Retrieve(collection string, id string) (*dal.Record, error)
+	Retrieve(collection string, id string, fields ...string) (*dal.Record, error)
 	Insert(collection string, records *dal.RecordSet) error
 	Update(collection string, records *dal.RecordSet) error
 	Delete(collection string, ids []string) error
@@ -30,6 +30,8 @@ func MakeBackend(connection dal.ConnectionString) (Backend, error) {
 	switch connection.Backend() {
 	case `boltdb`:
 		return NewBoltBackend(connection), nil
+	case `sqlite`:
+		return NewSqlBackend(connection), nil
 	default:
 		return nil, fmt.Errorf("Unknown backend type %q", connection.Backend())
 	}

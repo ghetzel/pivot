@@ -14,18 +14,22 @@ const (
 	SchemaEnforce
 )
 
+var DefaultIdentityField = `id`
+
 type Collection struct {
-	Dataset    *Dataset               `json:"-"`
-	Name       string                 `json:"name"`
-	Fields     []Field                `json:"fields"`
-	Properties map[string]interface{} `json:"properties"`
+	Dataset       *Dataset               `json:"-"`
+	Name          string                 `json:"name"`
+	Fields        []Field                `json:"fields"`
+	IdentityField string                 `json:"identity_field,omitempty"`
+	Properties    map[string]interface{} `json:"properties"`
 }
 
 func NewCollection(name string) *Collection {
 	return &Collection{
-		Name:       name,
-		Fields:     make([]Field, 0),
-		Properties: make(map[string]interface{}),
+		Name:          name,
+		Fields:        make([]Field, 0),
+		Properties:    make(map[string]interface{}),
+		IdentityField: DefaultIdentityField,
 	}
 }
 

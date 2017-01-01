@@ -66,14 +66,6 @@ type Filter struct {
 	Options  map[string]string
 }
 
-func (self *Filter) IdOnly() bool {
-	if self.Fields != nil && len(self.Fields) == 1 && self.Fields[0] == IdentityField {
-		return true
-	}
-
-	return false
-}
-
 func MakeFilter(spec string) Filter {
 	f := Filter{
 		Spec:     spec,
@@ -213,6 +205,24 @@ func Parse(spec string) (Filter, error) {
 	}
 
 	return rv, nil
+}
+
+func (self *Filter) CriteriaFields() []string {
+	fields := make([]string, len(self.Criteria))
+
+	for i, criterion := range self.Criteria {
+		fields[i] = criterion.Field
+	}
+
+	return fields
+}
+
+func (self *Filter) IdOnly() bool {
+	if self.Fields != nil && len(self.Fields) == 1 && self.Fields[0] == IdentityField {
+		return true
+	}
+
+	return false
 }
 
 func (self *Filter) String() string {
