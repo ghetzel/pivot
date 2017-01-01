@@ -70,15 +70,34 @@ func (self *SqlBackend) Initialize() error {
 }
 
 func (self *SqlBackend) Insert(collection string, recordset *dal.RecordSet) error {
-	return fmt.Errorf("Not Implemented")
+	if tx, err := self.db.Begin(); err == nil {
+		for _, record := range recordset.Records {
+			queryGen := self.makeQueryGen()
+			queryGen.Type = generators.SqlInsertStatement
 
-	// if tx, err := self.db.Begin(); err == nil {
-	// 	for _, record := range recordset.Records {
-	// 		queryGen := self.makeQueryGen()
-	// 	}
-	// } else {
-	// 	return err
-	// }
+			for k, v := range record.Fields {
+				queryGen.InputData[k] = v
+			}
+
+			if record.ID != `` {
+				queryGen.InputData[dal.DefaultIdentityField] = record.ID
+			}
+
+			if stmt, err := filter.Render(queryGen, collection, filter.Null); err == nil {
+				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
+					return tx.Commit()
+				} else {
+					return err
+				}
+			} else {
+				return err
+			}
+		}
+
+		return nil
+	} else {
+		return err
+	}
 }
 
 func (self *SqlBackend) Exists(collection string, id string) bool {
@@ -96,10 +115,12 @@ func (self *SqlBackend) Retrieve(collection string, id string, fields ...string)
 			if sqlString, err := filter.Render(queryGen, collection, f); err == nil {
 				values := queryGen.GetValues()
 
-				log.Debugf("EXECSQL: %s %+v", string(sqlString[:]), values)
+				log.Debugf("%s %+v", string(sqlString[:]), values)
 
 				// perform query
 				if rows, err := self.db.Query(string(sqlString[:]), values...); err == nil {
+					defer rows.Close()
+
 					if columns, err := rows.Columns(); err == nil {
 						if rows.Next() {
 							return self.scanFnValueToRecord(columns, reflect.ValueOf(rows.Scan))

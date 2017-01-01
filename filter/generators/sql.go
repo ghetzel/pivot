@@ -2,8 +2,10 @@ package generators
 
 import (
 	"fmt"
+	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/filter"
+	"sort"
 	"strings"
 )
 
@@ -65,11 +67,10 @@ type Sql struct {
 	FieldNameFormat     string
 	TypeMapping         SqlTypeMapping
 	Type                SqlStatementType
+	InputData           map[string]interface{}
 	collection          string
 	fields              []string
 	criteria            []string
-	criteriaFields      []string
-	criteriaValues      []string
 	values              []interface{}
 }
 
@@ -78,11 +79,12 @@ func NewSqlGenerator() *Sql {
 		Generator:           filter.Generator{},
 		PlaceholderFormat:   `?`,
 		PlaceholderArgument: ``,
-		UnquotedValueFormat: "%s",
+		UnquotedValueFormat: "%v",
 		QuotedValueFormat:   "'%s'",
 		FieldNameFormat:     "%s",
 		TypeMapping:         DefaultSqlTypeMapping,
 		Type:                SqlSelectStatement,
+		InputData:           make(map[string]interface{}),
 	}
 }
 
@@ -91,14 +93,12 @@ func (self *Sql) Initialize(collectionName string) error {
 	self.collection = collectionName
 	self.fields = make([]string, 0)
 	self.criteria = make([]string, 0)
-	self.criteriaFields = make([]string, 0)
-	self.criteriaValues = make([]string, 0)
 	self.values = make([]interface{}, 0)
 
 	return nil
 }
 
-func (self *Sql) Finalize(filter filter.Filter) error {
+func (self *Sql) Finalize(_ filter.Filter) error {
 	switch self.Type {
 	case SqlSelectStatement:
 		self.Push([]byte(`SELECT `))
@@ -112,41 +112,73 @@ func (self *Sql) Finalize(filter filter.Filter) error {
 		self.Push([]byte(` FROM `))
 		self.Push([]byte(self.collection))
 
-		if len(self.criteria) > 0 {
-			self.Push([]byte(` `))
-
-			for i, criterionStr := range self.criteria {
-				self.Push([]byte(criterionStr))
-
-				// do this for all but the last criterion
-				if i+1 < len(self.criteria) {
-					self.Push([]byte(` `))
-				}
-			}
-		}
+		self.populateWhereClause()
 
 	case SqlInsertStatement:
-		if len(self.criteria) == 0 {
-			return fmt.Errorf("INSERT statements must specify at least one criterion")
+		if self.InputData == nil || len(self.InputData) == 0 {
+			return fmt.Errorf("INSERT statements must specify input data")
 		}
 
 		self.Push([]byte(`INSERT INTO `))
 		self.Push([]byte(self.collection))
 
-		self.Push([]byte(`(`))
+		self.Push([]byte(` (`))
 
-		fieldNames := make([]string, len(self.criteriaFields))
+		fieldNames := maputil.StringKeys(self.InputData)
 
-		for i, f := range self.criteriaFields {
+		for i, f := range fieldNames {
 			fieldNames[i] = fmt.Sprintf(self.FieldNameFormat, f)
 		}
 
-		self.Push([]byte(strings.Join(fieldNames, `,`)))
+		sort.Strings(fieldNames)
+
+		self.Push([]byte(strings.Join(fieldNames, `, `)))
 		self.Push([]byte(`) VALUES (`))
-		self.Push([]byte(strings.Join(self.criteriaValues, `,`)))
+
+		values := make([]string, 0)
+
+		for i, field := range fieldNames {
+			v, _ := self.InputData[field]
+			values = append(values, self.prepareValue(field, i, v, ``))
+			self.values = append(self.values, v)
+		}
+
+		self.Push([]byte(strings.Join(values, `, `)))
 		self.Push([]byte(`)`))
 
 	case SqlUpdateStatement:
+		if self.InputData == nil || len(self.InputData) == 0 {
+			return fmt.Errorf("UPDATE statements must specify input data")
+		}
+
+		self.Push([]byte(`UPDATE `))
+		self.Push([]byte(self.collection))
+		self.Push([]byte(` SET (`))
+
+		updatePairs := make([]string, 0)
+
+		var i int
+		fieldNames := maputil.StringKeys(self.InputData)
+		sort.Strings(fieldNames)
+
+		for _, field := range fieldNames {
+			value, _ := self.InputData[field]
+
+			// do this first because we want the unmodified field name
+			vStr := self.prepareValue(field, i, value, ``)
+			self.values = append(self.values, value)
+
+			field := fmt.Sprintf(self.FieldNameFormat, field)
+
+			updatePairs = append(updatePairs, fmt.Sprintf("%s = %s", field, vStr))
+
+			i += 1
+		}
+
+		self.Push([]byte(strings.Join(updatePairs, `, `)))
+		self.Push([]byte(`)`))
+
+		self.populateWhereClause()
 
 	default:
 		return fmt.Errorf("Unknown statement type")
@@ -179,11 +211,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 	outValues := make([]string, 0)
 
-	self.criteriaFields = append(self.criteriaFields, criterion.Field)
-
 	for i, value := range criterion.Values {
-		self.criteriaValues = append(self.criteriaValues, value)
-
 		var typedValue interface{}
 		var convertErr error
 
@@ -208,29 +236,9 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 		self.values = append(self.values, typedValue)
 
-		if self.UsePlaceholders {
-			switch self.PlaceholderArgument {
-			case `index`:
-				value = fmt.Sprintf(self.PlaceholderFormat, i)
-			case `index1`:
-				value = fmt.Sprintf(self.PlaceholderFormat, i+1)
-			case `field`:
-				value = fmt.Sprintf(self.PlaceholderFormat, criterion.Field)
-			default:
-				value = self.PlaceholderFormat
-			}
-		}
+		value = self.prepareValue(criterion.Field, i, typedValue, criterion.Operator)
 
 		outVal := ``
-		var fmtstr string
-
-		// handle quoting of string values in query statements
-		switch typedValue.(type) {
-		case string:
-			fmtstr = self.QuotedValueFormat
-		default:
-			fmtstr = self.UnquotedValueFormat
-		}
 
 		if criterion.Type != `` {
 			if criterionType, err := self.filterTypeToSqlType(criterion.Type, criterion.Length); err == nil {
@@ -244,16 +252,16 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 		switch criterion.Operator {
 		case `is`, ``:
-			if value == `null` {
+			if value == `NULL` {
 				outVal = outVal + ` IS NULL`
 			} else {
-				outVal = outVal + fmt.Sprintf(" = "+fmtstr, value)
+				outVal = outVal + fmt.Sprintf(" = %s", value)
 			}
 		case `not`:
-			if value == `null` {
+			if value == `NULL` {
 				outVal = outVal + ` IS NOT NULL`
 			} else {
-				outVal = outVal + fmt.Sprintf(" <> "+fmtstr, value)
+				outVal = outVal + fmt.Sprintf(" <> %s", value)
 			}
 		case `contains`:
 			outVal = outVal + fmt.Sprintf(` LIKE '%%%%%s%%%%'`, value)
@@ -262,13 +270,13 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 		case `suffix`:
 			outVal = outVal + fmt.Sprintf(` LIKE '%%%%%s'`, value)
 		case `gt`:
-			outVal = outVal + fmt.Sprintf(" > "+fmtstr, value)
+			outVal = outVal + fmt.Sprintf(" > %s", value)
 		case `gte`:
-			outVal = outVal + fmt.Sprintf(" >= "+fmtstr, value)
+			outVal = outVal + fmt.Sprintf(" >= %s", value)
 		case `lt`:
-			outVal = outVal + fmt.Sprintf(" < "+fmtstr, value)
+			outVal = outVal + fmt.Sprintf(" < %s", value)
 		case `lte`:
-			outVal = outVal + fmt.Sprintf(" <= "+fmtstr, value)
+			outVal = outVal + fmt.Sprintf(" <= %s", value)
 		default:
 			return fmt.Errorf("Unimplemented operator '%s'", criterion.Operator)
 		}
@@ -310,4 +318,54 @@ func (self *Sql) filterTypeToSqlType(in string, length int) (string, error) {
 	}
 
 	return strings.ToUpper(out), nil
+}
+
+func (self *Sql) prepareValue(fieldName string, fieldIndex int, in interface{}, operator string) string {
+	if self.UsePlaceholders {
+		switch self.PlaceholderArgument {
+		case `index`:
+			return fmt.Sprintf(self.PlaceholderFormat, fieldIndex)
+		case `index1`:
+			return fmt.Sprintf(self.PlaceholderFormat, fieldIndex+1)
+		case `field`:
+			return fmt.Sprintf(self.PlaceholderFormat, fieldName)
+		default:
+			return self.PlaceholderFormat
+		}
+	}
+
+	// handle quoting of string values in query statements
+	switch in.(type) {
+	case nil:
+		return `NULL`
+	case string:
+		switch in.(string) {
+		case `null`:
+			return `NULL`
+		default:
+			switch operator {
+			case `prefix`, `contains`, `suffix`:
+				return in.(string)
+			default:
+				return fmt.Sprintf(self.QuotedValueFormat, in.(string))
+			}
+		}
+	default:
+		return fmt.Sprintf(self.UnquotedValueFormat, in)
+	}
+}
+
+func (self *Sql) populateWhereClause() {
+	if len(self.criteria) > 0 {
+		self.Push([]byte(` `))
+
+		for i, criterionStr := range self.criteria {
+			self.Push([]byte(criterionStr))
+
+			// do this for all but the last criterion
+			if i+1 < len(self.criteria) {
+				self.Push([]byte(` `))
+			}
+		}
+	}
 }
