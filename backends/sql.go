@@ -11,9 +11,11 @@ import (
 
 type SqlBackend struct {
 	Backend
-	conn                dal.ConnectionString
-	db                  *sql.DB
-	queryGenTypeMapping generators.SqlTypeMapping
+	conn                        dal.ConnectionString
+	db                          *sql.DB
+	queryGenTypeMapping         generators.SqlTypeMapping
+	queryGenPlaceholderArgument string
+	queryGenPlaceholderFormat   string
 }
 
 func NewSqlBackend(connection dal.ConnectionString) *SqlBackend {
@@ -39,8 +41,6 @@ func (self *SqlBackend) Initialize() error {
 
 	switch backend {
 	case `sqlite`:
-		self.queryGenTypeMapping = generators.SqliteTypeMapping
-
 		name, dsn, err = self.initializeSqlite()
 	default:
 		return fmt.Errorf("Unsupported backend %q", backend)
@@ -71,6 +71,14 @@ func (self *SqlBackend) Initialize() error {
 
 func (self *SqlBackend) Insert(collection string, recordset *dal.RecordSet) error {
 	return fmt.Errorf("Not Implemented")
+
+	// if tx, err := self.db.Begin(); err == nil {
+	// 	for _, record := range recordset.Records {
+	// 		queryGen := self.makeQueryGen()
+	// 	}
+	// } else {
+	// 	return err
+	// }
 }
 
 func (self *SqlBackend) Exists(collection string, id string) bool {
@@ -87,6 +95,8 @@ func (self *SqlBackend) Retrieve(collection string, id string, fields ...string)
 		if err := queryGen.Initialize(collection); err == nil {
 			if sqlString, err := filter.Render(queryGen, collection, f); err == nil {
 				values := queryGen.GetValues()
+
+				log.Debugf("EXECSQL: %s %+v", string(sqlString[:]), values)
 
 				// perform query
 				if rows, err := self.db.Query(string(sqlString[:]), values...); err == nil {
@@ -142,6 +152,14 @@ func (self *SqlBackend) makeQueryGen() *generators.Sql {
 	queryGen := generators.NewSqlGenerator()
 	queryGen.UsePlaceholders = true
 	queryGen.TypeMapping = self.queryGenTypeMapping
+
+	if v := self.queryGenPlaceholderFormat; v != `` {
+		queryGen.PlaceholderFormat = v
+	}
+
+	if v := self.queryGenPlaceholderArgument; v != `` {
+		queryGen.PlaceholderArgument = v
+	}
 
 	return queryGen
 }

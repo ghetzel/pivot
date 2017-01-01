@@ -9,6 +9,14 @@ import (
 
 // SQL Generator
 
+type SqlStatementType int
+
+const (
+	SqlSelectStatement SqlStatementType = iota
+	SqlInsertStatement
+	SqlUpdateStatement
+)
+
 type SqlTypeMapping struct {
 	StringType        string
 	StringTypeLength  int
@@ -49,18 +57,32 @@ var DefaultSqlTypeMapping = MysqlTypeMapping
 
 type Sql struct {
 	filter.Generator
-	UsePlaceholders bool
-	TypeMapping     SqlTypeMapping
-	collection      string
-	fields          []string
-	criteria        []string
-	values          []interface{}
+	UsePlaceholders     bool
+	PlaceholderFormat   string
+	PlaceholderArgument string // if specified, either "index", "index1" or "field"
+	UnquotedValueFormat string
+	QuotedValueFormat   string
+	FieldNameFormat     string
+	TypeMapping         SqlTypeMapping
+	Type                SqlStatementType
+	collection          string
+	fields              []string
+	criteria            []string
+	criteriaFields      []string
+	criteriaValues      []string
+	values              []interface{}
 }
 
 func NewSqlGenerator() *Sql {
 	return &Sql{
-		Generator:   filter.Generator{},
-		TypeMapping: DefaultSqlTypeMapping,
+		Generator:           filter.Generator{},
+		PlaceholderFormat:   `?`,
+		PlaceholderArgument: ``,
+		UnquotedValueFormat: "%s",
+		QuotedValueFormat:   "'%s'",
+		FieldNameFormat:     "%s",
+		TypeMapping:         DefaultSqlTypeMapping,
+		Type:                SqlSelectStatement,
 	}
 }
 
@@ -69,34 +91,65 @@ func (self *Sql) Initialize(collectionName string) error {
 	self.collection = collectionName
 	self.fields = make([]string, 0)
 	self.criteria = make([]string, 0)
+	self.criteriaFields = make([]string, 0)
+	self.criteriaValues = make([]string, 0)
 	self.values = make([]interface{}, 0)
 
 	return nil
 }
 
 func (self *Sql) Finalize(filter filter.Filter) error {
-	self.Push([]byte(`SELECT `))
+	switch self.Type {
+	case SqlSelectStatement:
+		self.Push([]byte(`SELECT `))
 
-	if len(self.fields) == 0 {
-		self.Push([]byte(`*`))
-	} else {
-		self.Push([]byte(strings.Join(self.fields, `,`)))
-	}
+		if len(self.fields) == 0 {
+			self.Push([]byte(`*`))
+		} else {
+			self.Push([]byte(strings.Join(self.fields, `,`)))
+		}
 
-	self.Push([]byte(` FROM `))
-	self.Push([]byte(self.collection))
+		self.Push([]byte(` FROM `))
+		self.Push([]byte(self.collection))
 
-	if len(self.criteria) > 0 {
-		self.Push([]byte(` `))
+		if len(self.criteria) > 0 {
+			self.Push([]byte(` `))
 
-		for i, criterionStr := range self.criteria {
-			self.Push([]byte(criterionStr))
+			for i, criterionStr := range self.criteria {
+				self.Push([]byte(criterionStr))
 
-			// do this for all but the last criterion
-			if i+1 < len(self.criteria) {
-				self.Push([]byte(` `))
+				// do this for all but the last criterion
+				if i+1 < len(self.criteria) {
+					self.Push([]byte(` `))
+				}
 			}
 		}
+
+	case SqlInsertStatement:
+		if len(self.criteria) == 0 {
+			return fmt.Errorf("INSERT statements must specify at least one criterion")
+		}
+
+		self.Push([]byte(`INSERT INTO `))
+		self.Push([]byte(self.collection))
+
+		self.Push([]byte(`(`))
+
+		fieldNames := make([]string, len(self.criteriaFields))
+
+		for i, f := range self.criteriaFields {
+			fieldNames[i] = fmt.Sprintf(self.FieldNameFormat, f)
+		}
+
+		self.Push([]byte(strings.Join(fieldNames, `,`)))
+		self.Push([]byte(`) VALUES (`))
+		self.Push([]byte(strings.Join(self.criteriaValues, `,`)))
+		self.Push([]byte(`)`))
+
+	case SqlUpdateStatement:
+
+	default:
+		return fmt.Errorf("Unknown statement type")
 	}
 
 	return nil
@@ -126,7 +179,11 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 	outValues := make([]string, 0)
 
-	for _, value := range criterion.Values {
+	self.criteriaFields = append(self.criteriaFields, criterion.Field)
+
+	for i, value := range criterion.Values {
+		self.criteriaValues = append(self.criteriaValues, value)
+
 		var typedValue interface{}
 		var convertErr error
 
@@ -152,19 +209,37 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 		self.values = append(self.values, typedValue)
 
 		if self.UsePlaceholders {
-			value = `?`
+			switch self.PlaceholderArgument {
+			case `index`:
+				value = fmt.Sprintf(self.PlaceholderFormat, i)
+			case `index1`:
+				value = fmt.Sprintf(self.PlaceholderFormat, i+1)
+			case `field`:
+				value = fmt.Sprintf(self.PlaceholderFormat, criterion.Field)
+			default:
+				value = self.PlaceholderFormat
+			}
 		}
 
 		outVal := ``
+		var fmtstr string
+
+		// handle quoting of string values in query statements
+		switch typedValue.(type) {
+		case string:
+			fmtstr = self.QuotedValueFormat
+		default:
+			fmtstr = self.UnquotedValueFormat
+		}
 
 		if criterion.Type != `` {
 			if criterionType, err := self.filterTypeToSqlType(criterion.Type, criterion.Length); err == nil {
-				outVal = outVal + fmt.Sprintf("CAST(%s AS %s)", criterion.Field, criterionType)
+				outVal = outVal + fmt.Sprintf("CAST(%s AS %s)", fmt.Sprintf(self.FieldNameFormat, criterion.Field), criterionType)
 			} else {
 				return err
 			}
 		} else {
-			outVal = outVal + criterion.Field
+			outVal = outVal + fmt.Sprintf(self.FieldNameFormat, criterion.Field)
 		}
 
 		switch criterion.Operator {
@@ -172,24 +247,28 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 			if value == `null` {
 				outVal = outVal + ` IS NULL`
 			} else {
-				outVal = outVal + fmt.Sprintf(" = %s", value)
+				outVal = outVal + fmt.Sprintf(" = "+fmtstr, value)
 			}
 		case `not`:
 			if value == `null` {
 				outVal = outVal + ` IS NOT NULL`
 			} else {
-				outVal = outVal + fmt.Sprintf(" <> %s", value)
+				outVal = outVal + fmt.Sprintf(" <> "+fmtstr, value)
 			}
 		case `contains`:
-			outVal = outVal + fmt.Sprintf(" LIKE '%%%s%%'", value)
+			outVal = outVal + fmt.Sprintf(` LIKE '%%%%%s%%%%'`, value)
+		case `prefix`:
+			outVal = outVal + fmt.Sprintf(` LIKE '%s%%%%'`, value)
+		case `suffix`:
+			outVal = outVal + fmt.Sprintf(` LIKE '%%%%%s'`, value)
 		case `gt`:
-			outVal = outVal + fmt.Sprintf(" > %s", value)
+			outVal = outVal + fmt.Sprintf(" > "+fmtstr, value)
 		case `gte`:
-			outVal = outVal + fmt.Sprintf(" >= %s", value)
+			outVal = outVal + fmt.Sprintf(" >= "+fmtstr, value)
 		case `lt`:
-			outVal = outVal + fmt.Sprintf(" < %s", value)
+			outVal = outVal + fmt.Sprintf(" < "+fmtstr, value)
 		case `lte`:
-			outVal = outVal + fmt.Sprintf(" <= %s", value)
+			outVal = outVal + fmt.Sprintf(" <= "+fmtstr, value)
 		default:
 			return fmt.Errorf("Unimplemented operator '%s'", criterion.Operator)
 		}

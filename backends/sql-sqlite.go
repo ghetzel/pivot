@@ -4,11 +4,17 @@ import (
 	// "fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/pathutil"
+	"github.com/ghetzel/pivot/filter/generators"
 	_ "github.com/mattn/go-sqlite3"
 	"strings"
 )
 
 func (self *SqlBackend) initializeSqlite() (string, string, error) {
+	// tell the query generator cool details about generating sqlite-compatible SQL
+	self.queryGenTypeMapping = generators.SqliteTypeMapping
+	self.queryGenPlaceholderFormat = `?`
+	self.queryGenPlaceholderArgument = ``
+
 	dataset := self.conn.Dataset()
 	var dsn string
 
