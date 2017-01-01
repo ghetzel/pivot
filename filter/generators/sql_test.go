@@ -104,47 +104,47 @@ func TestSqlUpdates(t *testing.T) {
 	assert := require.New(t)
 
 	tests := map[string]updateTestData{
-		`UPDATE foo SET (id = 1)`: updateTestData{
+		`UPDATE foo SET id = 1`: updateTestData{
 			Input: map[string]interface{}{
 				`id`: 1,
 			},
 		},
-		`UPDATE foo SET (name = 'Bob Johnson') WHERE (id = 1)`: updateTestData{
+		`UPDATE foo SET name = 'Bob Johnson' WHERE (id = 1)`: updateTestData{
 			Input: map[string]interface{}{
 				`name`: `Bob Johnson`,
 			},
 			Filter: `id/1`,
 		},
-		`UPDATE foo SET (age = 21) WHERE (age < 21)`: updateTestData{
+		`UPDATE foo SET age = 21 WHERE (age < 21)`: updateTestData{
 			Input: map[string]interface{}{
 				`age`: 21,
 			},
 			Filter: `age/lt:21`,
 		},
-		`UPDATE foo SET (enabled = true) WHERE (enabled IS NULL)`: updateTestData{
+		`UPDATE foo SET enabled = true WHERE (enabled IS NULL)`: updateTestData{
 			Input: map[string]interface{}{
 				`enabled`: true,
 			},
 			Filter: `enabled/null`,
 		},
-		`UPDATE foo SET (enabled = false)`: updateTestData{
+		`UPDATE foo SET enabled = false`: updateTestData{
 			Input: map[string]interface{}{
 				`enabled`: false,
 			},
 		},
-		`UPDATE foo SET (enabled = NULL)`: updateTestData{
+		`UPDATE foo SET enabled = NULL`: updateTestData{
 			Input: map[string]interface{}{
 				`enabled`: nil,
 			},
 		},
-		`UPDATE foo SET (age = 7, name = 'ted') WHERE (id = 42)`: updateTestData{
+		`UPDATE foo SET age = 7, name = 'ted' WHERE (id = 42)`: updateTestData{
 			Input: map[string]interface{}{
 				`name`: `ted`,
 				`age`:  7,
 			},
 			Filter: `id/42`,
 		},
-		`UPDATE foo SET (age = 7, name = 'ted') WHERE (age < 7) AND (name <> 'ted')`: updateTestData{
+		`UPDATE foo SET age = 7, name = 'ted' WHERE (age < 7) AND (name <> 'ted')`: updateTestData{
 			Input: map[string]interface{}{
 				`name`: `ted`,
 				`age`:  7,
@@ -228,7 +228,7 @@ func TestSqlTypeMapping(t *testing.T) {
 			`WHERE (CAST(age AS BIGINT) = ?) `+
 			`AND (CAST(name AS VARCHAR(255)) = ?) `+
 			`AND (CAST(enabled AS BOOL) = ?) `+
-			`AND (CAST(rating AS DECIMAL) = ?) ` +
+			`AND (CAST(rating AS DECIMAL) = ?) `+
 			`AND (CAST(created_at AS DATETIME) < ?)`,
 		string(actual[:]),
 	)
@@ -244,7 +244,7 @@ func TestSqlTypeMapping(t *testing.T) {
 			`WHERE (CAST(age AS BIGINT) = ?) `+
 			`AND (CAST(name AS TEXT) = ?) `+
 			`AND (CAST(enabled AS BOOLEAN) = ?) `+
-			`AND (CAST(rating AS NUMERIC) = ?) ` +
+			`AND (CAST(rating AS NUMERIC) = ?) `+
 			`AND (CAST(created_at AS TIMESTAMP) < ?)`,
 		string(actual[:]),
 	)
@@ -260,7 +260,7 @@ func TestSqlTypeMapping(t *testing.T) {
 			`WHERE (CAST(age AS INTEGER) = ?) `+
 			`AND (CAST(name AS TEXT) = ?) `+
 			`AND (CAST(enabled AS INTEGER) = ?) `+
-			`AND (CAST(rating AS REAL) = ?) ` +
+			`AND (CAST(rating AS REAL) = ?) `+
 			`AND (CAST(created_at AS INTEGER) < ?)`,
 		string(actual[:]),
 	)
@@ -276,12 +276,153 @@ func TestSqlTypeMapping(t *testing.T) {
 			`WHERE (CAST(age AS INT) = ?) `+
 			`AND (CAST(name AS VARCHAR) = ?) `+
 			`AND (CAST(enabled AS TINYINT(1)) = ?) `+
-			`AND (CAST(rating AS FLOAT) = ?) ` +
+			`AND (CAST(rating AS FLOAT) = ?) `+
 			`AND (CAST(created_at AS DATETIME) < ?)`,
 		string(actual[:]),
 	)
 }
 
-// func TestSqlQuoting(t *testing.T) {
-// 	assert := require.New(t)
-// }
+func TestSqlQuoting(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := filter.Parse(`name/Bob Johnson/str:num/42/num1/42`)
+	assert.Nil(err)
+
+	// test default quoting
+	gen := NewSqlGenerator()
+	gen.TypeMapping = NoTypeMapping
+	actual, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(
+		`SELECT * FROM foo `+
+			`WHERE (name = 'Bob Johnson') `+
+			`AND (num = '42') `+
+			`AND (num1 = 42)`,
+		string(actual[:]),
+	)
+
+	// test backtick quoting
+	gen = NewSqlGenerator()
+	gen.TypeMapping = NoTypeMapping
+	gen.QuotedValueFormat = "`%s`"
+	actual, err = filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(
+		`SELECT * FROM foo `+
+			"WHERE (name = `Bob Johnson`) "+
+			"AND (num = `42`) "+
+			`AND (num1 = 42)`,
+		string(actual[:]),
+	)
+
+	// test double quoting
+	gen = NewSqlGenerator()
+	gen.TypeMapping = NoTypeMapping
+	gen.QuotedValueFormat = "%q"
+	actual, err = filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(
+		`SELECT * FROM foo `+
+			`WHERE (name = "Bob Johnson") `+
+			`AND (num = "42") `+
+			`AND (num1 = 42)`,
+		string(actual[:]),
+	)
+
+	// test weird treatment of unquoted values
+	gen = NewSqlGenerator()
+	gen.TypeMapping = NoTypeMapping
+	gen.UnquotedValueFormat = "<%v>"
+	actual, err = filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(
+		`SELECT * FROM foo `+
+			`WHERE (name = 'Bob Johnson') `+
+			`AND (num = '42') `+
+			`AND (num1 = <42>)`,
+		string(actual[:]),
+	)
+}
+
+func TestSqlFieldQuoting(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := filter.Parse(`age/7/name/ted/multi field/true`)
+	assert.Nil(err)
+
+	for format, quotechar := range map[string]string{
+		``:     ``,
+		`%q`:   `"`,
+		"`%s`": "`",
+	} {
+		// test default field naming
+		gen := NewSqlGenerator()
+		gen.UsePlaceholders = true
+
+		if format != `` {
+			gen.FieldNameFormat = format
+		}
+
+		actual, err := filter.Render(gen, `foo`, f)
+		assert.Nil(err)
+		assert.Equal(
+			`SELECT * FROM foo `+
+				`WHERE (`+quotechar+`age`+quotechar+` = ?) `+
+				`AND (`+quotechar+`name`+quotechar+` = ?) `+
+				`AND (`+quotechar+`multi field`+quotechar+` = ?)`,
+			string(actual[:]),
+		)
+
+		// test field naming for inserts
+		gen = NewSqlGenerator()
+		gen.UsePlaceholders = true
+
+		if format != `` {
+			gen.FieldNameFormat = format
+		}
+
+		gen.Type = SqlInsertStatement
+		gen.InputData = map[string]interface{}{
+			`age`:         7,
+			`name`:        `ted`,
+			`multi field`: true,
+		}
+
+		actual, err = filter.Render(gen, `foo`, f)
+		assert.Nil(err)
+		assert.Equal(
+			`INSERT INTO foo (`+quotechar+`age`+quotechar+`, `+
+				quotechar+`multi field`+quotechar+`, `+
+				quotechar+`name`+quotechar+`) VALUES (?, ?, ?)`,
+			string(actual[:]),
+		)
+
+		// test field naming for updates
+		gen = NewSqlGenerator()
+		gen.UsePlaceholders = true
+
+		if format != `` {
+			gen.FieldNameFormat = format
+		}
+
+		gen.Type = SqlUpdateStatement
+		gen.InputData = map[string]interface{}{
+			`age`:         7,
+			`name`:        `ted`,
+			`multi field`: true,
+		}
+
+		actual, err = filter.Render(gen, `foo`, f)
+		assert.Nil(err)
+		assert.Equal(
+			`UPDATE foo SET `+
+				quotechar+`age`+quotechar+` = ?, `+
+				quotechar+`multi field`+quotechar+` = ?, `+
+				quotechar+`name`+quotechar+` = ? `+
+				`WHERE (`+quotechar+`age`+quotechar+` = ?) `+
+				`AND (`+quotechar+`name`+quotechar+` = ?) `+
+				`AND (`+quotechar+`multi field`+quotechar+` = ?)`,
+			string(actual[:]),
+		)
+	}
+}

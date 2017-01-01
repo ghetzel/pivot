@@ -29,6 +29,8 @@ type SqlTypeMapping struct {
 	DateTimeType      string
 }
 
+var NoTypeMapping = SqlTypeMapping{}
+
 var CassandraTypeMapping = SqlTypeMapping{
 	StringType:        `VARCHAR`,
 	IntegerType:       `INT`,
@@ -48,11 +50,11 @@ var MysqlTypeMapping = SqlTypeMapping{
 }
 
 var PostgresTypeMapping = SqlTypeMapping{
-	StringType:       `TEXT`,
-	IntegerType:      `BIGINT`,
-	FloatType:        `NUMERIC`,
-	BooleanType:      `BOOLEAN`,
-	DateTimeType:     `TIMESTAMP`,
+	StringType:   `TEXT`,
+	IntegerType:  `BIGINT`,
+	FloatType:    `NUMERIC`,
+	BooleanType:  `BOOLEAN`,
+	DateTimeType: `TIMESTAMP`,
 }
 
 var SqliteTypeMapping = SqlTypeMapping{
@@ -161,7 +163,7 @@ func (self *Sql) Finalize(_ filter.Filter) error {
 
 		self.Push([]byte(`UPDATE `))
 		self.Push([]byte(self.collection))
-		self.Push([]byte(` SET (`))
+		self.Push([]byte(` SET `))
 
 		updatePairs := make([]string, 0)
 
@@ -184,7 +186,6 @@ func (self *Sql) Finalize(_ filter.Filter) error {
 		}
 
 		self.Push([]byte(strings.Join(updatePairs, `, `)))
-		self.Push([]byte(`)`))
 
 		self.populateWhereClause()
 
@@ -250,12 +251,16 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 		if criterion.Type != `` {
 			if criterionType, err := self.filterTypeToSqlType(criterion.Type, criterion.Length); err == nil {
-				outVal = outVal + fmt.Sprintf("CAST(%s AS %s)", fmt.Sprintf(self.FieldNameFormat, criterion.Field), criterionType)
+				if criterionType != `` {
+					outVal = fmt.Sprintf("CAST(%s AS %s)", fmt.Sprintf(self.FieldNameFormat, criterion.Field), criterionType)
+				}
 			} else {
 				return err
 			}
-		} else {
-			outVal = outVal + fmt.Sprintf(self.FieldNameFormat, criterion.Field)
+		}
+
+		if outVal == `` {
+			outVal = fmt.Sprintf(self.FieldNameFormat, criterion.Field)
 		}
 
 		switch criterion.Operator {
