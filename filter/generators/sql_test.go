@@ -144,6 +144,13 @@ func TestSqlUpdates(t *testing.T) {
 			},
 			Filter: `id/42`,
 		},
+		`UPDATE foo SET (age = 7, name = 'ted') WHERE (age < 7) AND (name <> 'ted')`: updateTestData{
+			Input: map[string]interface{}{
+				`name`: `ted`,
+				`age`:  7,
+			},
+			Filter: `age/lt:7/name/not:ted`,
+		},
 	}
 
 	for expected, testData := range tests {
@@ -159,3 +166,122 @@ func TestSqlUpdates(t *testing.T) {
 		assert.Equal(expected, string(actual[:]))
 	}
 }
+
+func TestSqlPlaceholderStyles(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := filter.Parse(`age/7/name/ted/enabled/true`)
+	assert.Nil(err)
+
+	// test defaults (MySQL/sqlite compatible)
+	gen := NewSqlGenerator()
+	gen.UsePlaceholders = true
+	actual, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(`SELECT * FROM foo WHERE (age = ?) AND (name = ?) AND (enabled = ?)`, string(actual[:]))
+	assert.Equal([]interface{}{int64(7), `ted`, true}, gen.GetValues())
+
+	// test PostgreSQL compatible
+	gen = NewSqlGenerator()
+	gen.UsePlaceholders = true
+	gen.PlaceholderFormat = `$%d`
+	gen.PlaceholderArgument = `index1`
+	actual, err = filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(`SELECT * FROM foo WHERE (age = $1) AND (name = $2) AND (enabled = $3)`, string(actual[:]))
+	assert.Equal([]interface{}{int64(7), `ted`, true}, gen.GetValues())
+
+	// test Oracle compatible
+	gen = NewSqlGenerator()
+	gen.UsePlaceholders = true
+	gen.PlaceholderFormat = `:%s`
+	gen.PlaceholderArgument = `field`
+	actual, err = filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(`SELECT * FROM foo WHERE (age = :age) AND (name = :name) AND (enabled = :enabled)`, string(actual[:]))
+	assert.Equal([]interface{}{int64(7), `ted`, true}, gen.GetValues())
+
+	// test zero-indexed bracketed wacky fun placeholders
+	gen = NewSqlGenerator()
+	gen.UsePlaceholders = true
+	gen.PlaceholderFormat = `<arg%d>`
+	gen.PlaceholderArgument = `index`
+	actual, err = filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(`SELECT * FROM foo WHERE (age = <arg0>) AND (name = <arg1>) AND (enabled = <arg2>)`, string(actual[:]))
+	assert.Equal([]interface{}{int64(7), `ted`, true}, gen.GetValues())
+}
+
+func TestSqlTypeMapping(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := filter.Parse(`int:age/7/str:name/ted/bool:enabled/true/float:rating/4.5/date:created_at/lt:now`)
+	assert.Nil(err)
+
+	// test default type mapping
+	gen := NewSqlGenerator()
+	gen.UsePlaceholders = true
+	actual, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(
+		`SELECT * FROM foo `+
+			`WHERE (CAST(age AS BIGINT) = ?) `+
+			`AND (CAST(name AS VARCHAR(255)) = ?) `+
+			`AND (CAST(enabled AS BOOL) = ?) `+
+			`AND (CAST(rating AS DECIMAL) = ?) ` +
+			`AND (CAST(created_at AS DATETIME) < ?)`,
+		string(actual[:]),
+	)
+
+	// test postgres type mapping
+	gen = NewSqlGenerator()
+	gen.UsePlaceholders = true
+	gen.TypeMapping = PostgresTypeMapping
+	actual, err = filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(
+		`SELECT * FROM foo `+
+			`WHERE (CAST(age AS BIGINT) = ?) `+
+			`AND (CAST(name AS TEXT) = ?) `+
+			`AND (CAST(enabled AS BOOLEAN) = ?) `+
+			`AND (CAST(rating AS NUMERIC) = ?) ` +
+			`AND (CAST(created_at AS TIMESTAMP) < ?)`,
+		string(actual[:]),
+	)
+
+	// test sqlite type mapping
+	gen = NewSqlGenerator()
+	gen.UsePlaceholders = true
+	gen.TypeMapping = SqliteTypeMapping
+	actual, err = filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(
+		`SELECT * FROM foo `+
+			`WHERE (CAST(age AS INTEGER) = ?) `+
+			`AND (CAST(name AS TEXT) = ?) `+
+			`AND (CAST(enabled AS INTEGER) = ?) `+
+			`AND (CAST(rating AS REAL) = ?) ` +
+			`AND (CAST(created_at AS INTEGER) < ?)`,
+		string(actual[:]),
+	)
+
+	// test Cassandra/CQL type mapping
+	gen = NewSqlGenerator()
+	gen.UsePlaceholders = true
+	gen.TypeMapping = CassandraTypeMapping
+	actual, err = filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(
+		`SELECT * FROM foo `+
+			`WHERE (CAST(age AS INT) = ?) `+
+			`AND (CAST(name AS VARCHAR) = ?) `+
+			`AND (CAST(enabled AS TINYINT(1)) = ?) `+
+			`AND (CAST(rating AS FLOAT) = ?) ` +
+			`AND (CAST(created_at AS DATETIME) < ?)`,
+		string(actual[:]),
+	)
+}
+
+// func TestSqlQuoting(t *testing.T) {
+// 	assert := require.New(t)
+// }

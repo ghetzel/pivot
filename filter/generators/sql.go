@@ -47,6 +47,14 @@ var MysqlTypeMapping = SqlTypeMapping{
 	DateTimeType:     `DATETIME`,
 }
 
+var PostgresTypeMapping = SqlTypeMapping{
+	StringType:       `TEXT`,
+	IntegerType:      `BIGINT`,
+	FloatType:        `NUMERIC`,
+	BooleanType:      `BOOLEAN`,
+	DateTimeType:     `TIMESTAMP`,
+}
+
 var SqliteTypeMapping = SqlTypeMapping{
 	StringType:   `TEXT`,
 	IntegerType:  `INTEGER`,
@@ -211,7 +219,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 	outValues := make([]string, 0)
 
-	for i, value := range criterion.Values {
+	for _, value := range criterion.Values {
 		var typedValue interface{}
 		var convertErr error
 
@@ -236,7 +244,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 		self.values = append(self.values, typedValue)
 
-		value = self.prepareValue(criterion.Field, i, typedValue, criterion.Operator)
+		value = self.prepareValue(criterion.Field, len(self.criteria), typedValue, criterion.Operator)
 
 		outVal := ``
 
@@ -297,6 +305,10 @@ func (self *Sql) filterTypeToSqlType(in string, length int) (string, error) {
 	switch strings.ToLower(in) {
 	case `str`:
 		out = self.TypeMapping.StringType
+
+		if l := self.TypeMapping.StringTypeLength; l > 0 {
+			length = l
+		}
 	case `int`:
 		out = self.TypeMapping.IntegerType
 	case `float`:
