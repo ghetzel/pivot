@@ -17,6 +17,7 @@ const (
 	SqlSelectStatement SqlStatementType = iota
 	SqlInsertStatement
 	SqlUpdateStatement
+	SqlDeleteStatement
 )
 
 type SqlTypeMapping struct {
@@ -75,6 +76,7 @@ type Sql struct {
 	UnquotedValueFormat string
 	QuotedValueFormat   string
 	FieldNameFormat     string
+	UseInStatement      bool
 	TypeMapping         SqlTypeMapping
 	Type                SqlStatementType
 	InputData           map[string]interface{}
@@ -92,6 +94,7 @@ func NewSqlGenerator() *Sql {
 		UnquotedValueFormat: "%v",
 		QuotedValueFormat:   "'%s'",
 		FieldNameFormat:     "%s",
+		UseInStatement:      true,
 		TypeMapping:         DefaultSqlTypeMapping,
 		Type:                SqlSelectStatement,
 		InputData:           make(map[string]interface{}),
@@ -189,6 +192,11 @@ func (self *Sql) Finalize(_ filter.Filter) error {
 
 		self.populateWhereClause()
 
+	case SqlDeleteStatement:
+		self.Push([]byte(`DELETE FROM `))
+		self.Push([]byte(self.collection))
+		self.populateWhereClause()
+
 	default:
 		return fmt.Errorf("Unknown statement type")
 	}
@@ -220,6 +228,22 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 	outValues := make([]string, 0)
 
+	// whether to wrap is: and not: queries containing multiple values in an IN() group
+	// rather than producing "f = x OR f = y OR f = x ..."
+	//
+	var useInStatement bool
+
+	if self.UseInStatement {
+		if len(criterion.Values) > 1 {
+			switch criterion.Operator {
+			case ``, `is`, `not`:
+				useInStatement = true
+			}
+		}
+	}
+
+	outFieldName := criterion.Field
+
 	for _, value := range criterion.Values {
 		var typedValue interface{}
 		var convertErr error
@@ -249,18 +273,22 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 		outVal := ``
 
-		if criterion.Type != `` {
-			if criterionType, err := self.filterTypeToSqlType(criterion.Type, criterion.Length); err == nil {
-				if criterionType != `` {
-					outVal = fmt.Sprintf("CAST(%s AS %s)", fmt.Sprintf(self.FieldNameFormat, criterion.Field), criterionType)
+		if !useInStatement {
+			if criterion.Type != `` {
+				if criterionType, err := self.filterTypeToSqlType(criterion.Type, criterion.Length); err == nil {
+					if criterionType != `` {
+						outFieldName = fmt.Sprintf("CAST(%s AS %s)", fmt.Sprintf(self.FieldNameFormat, criterion.Field), criterionType)
+						outVal = outFieldName
+					}
+				} else {
+					return err
 				}
-			} else {
-				return err
 			}
-		}
 
-		if outVal == `` {
-			outVal = fmt.Sprintf(self.FieldNameFormat, criterion.Field)
+			if outVal == `` {
+				outFieldName = fmt.Sprintf(self.FieldNameFormat, criterion.Field)
+				outVal = outFieldName
+			}
 		}
 
 		switch criterion.Operator {
@@ -268,13 +296,21 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 			if value == `NULL` {
 				outVal = outVal + ` IS NULL`
 			} else {
-				outVal = outVal + fmt.Sprintf(" = %s", value)
+				if useInStatement {
+					outVal = outVal + fmt.Sprintf("%s", value)
+				} else {
+					outVal = outVal + fmt.Sprintf(" = %s", value)
+				}
 			}
 		case `not`:
 			if value == `NULL` {
 				outVal = outVal + ` IS NOT NULL`
 			} else {
-				outVal = outVal + fmt.Sprintf(" <> %s", value)
+				if useInStatement {
+					outVal = outVal + fmt.Sprintf("%s", value)
+				} else {
+					outVal = outVal + fmt.Sprintf(" <> %s", value)
+				}
 			}
 		case `contains`:
 			outVal = outVal + fmt.Sprintf(` LIKE '%%%%%s%%%%'`, value)
@@ -297,7 +333,17 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 		outValues = append(outValues, outVal)
 	}
 
-	criterionStr = criterionStr + strings.Join(outValues, ` OR `) + `)`
+	if useInStatement {
+		criterionStr = criterionStr + outFieldName + ` `
+
+		if criterion.Operator == `not` {
+			criterionStr = criterionStr + `NOT `
+		}
+
+		criterionStr = criterionStr + `IN(` + strings.Join(outValues, `, `) + `))`
+	} else {
+		criterionStr = criterionStr + strings.Join(outValues, ` OR `) + `)`
+	}
 
 	self.criteria = append(self.criteria, criterionStr)
 

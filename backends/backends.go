@@ -16,7 +16,7 @@ type Backend interface {
 	Exists(collection string, id string) bool
 	Retrieve(collection string, id string, fields ...string) (*dal.Record, error)
 	Insert(collection string, records *dal.RecordSet) error
-	Update(collection string, records *dal.RecordSet) error
+	Update(collection string, records *dal.RecordSet, target ...string) error
 	Delete(collection string, ids []string) error
 	CreateCollection(definition dal.Collection) error
 	DeleteCollection(collection string) error

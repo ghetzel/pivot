@@ -167,6 +167,43 @@ func TestSqlUpdates(t *testing.T) {
 	}
 }
 
+func TestSqlDeletes(t *testing.T) {
+	assert := require.New(t)
+
+	tests := map[string]string{
+		`all`:              `DELETE FROM foo`,
+		`id/1`:             `DELETE FROM foo WHERE (id = 1)`,
+		`id/not:1`:         `DELETE FROM foo WHERE (id <> 1)`,
+		`name/Bob Johnson`: `DELETE FROM foo WHERE (name = 'Bob Johnson')`,
+		`age/21`:           `DELETE FROM foo WHERE (age = 21)`,
+		`int:age/21`:       `DELETE FROM foo WHERE (CAST(age AS BIGINT) = 21)`,
+		`float:age/21`:     `DELETE FROM foo WHERE (CAST(age AS DECIMAL) = 21)`,
+		`enabled/true`:     `DELETE FROM foo WHERE (enabled = true)`,
+		`enabled/false`:    `DELETE FROM foo WHERE (enabled = false)`,
+		`enabled/null`:     `DELETE FROM foo WHERE (enabled IS NULL)`,
+		`enabled/not:null`: `DELETE FROM foo WHERE (enabled IS NOT NULL)`,
+		`age/lt:21`:        `DELETE FROM foo WHERE (age < 21)`,
+		`age/lte:21`:       `DELETE FROM foo WHERE (age <= 21)`,
+		`age/gt:21`:        `DELETE FROM foo WHERE (age > 21)`,
+		`age/gte:21`:       `DELETE FROM foo WHERE (age >= 21)`,
+		`name/contains:ob`: `DELETE FROM foo WHERE (name LIKE '%%ob%%')`,
+		`name/prefix:ob`:   `DELETE FROM foo WHERE (name LIKE 'ob%%')`,
+		`name/suffix:ob`:   `DELETE FROM foo WHERE (name LIKE '%%ob')`,
+		`age/7/name/ted`:   `DELETE FROM foo WHERE (age = 7) AND (name = 'ted')`,
+	}
+
+	for spec, expected := range tests {
+		f, err := filter.Parse(spec)
+		assert.Nil(err)
+
+		gen := NewSqlGenerator()
+		gen.Type = SqlDeleteStatement
+		actual, err := filter.Render(gen, `foo`, f)
+		assert.Nil(err)
+		assert.Equal(expected, string(actual[:]))
+	}
+}
+
 func TestSqlPlaceholderStyles(t *testing.T) {
 	assert := require.New(t)
 
@@ -441,4 +478,36 @@ func TestSqlFieldQuoting(t *testing.T) {
 			string(actual[:]),
 		)
 	}
+}
+
+func TestSqlMultipleValues(t *testing.T) {
+	assert := require.New(t)
+
+	fn := func(tests map[string]string, withIn bool) {
+		for spec, expected := range tests {
+			f, err := filter.Parse(spec)
+			assert.Nil(err)
+
+			gen := NewSqlGenerator()
+			gen.UseInStatement = withIn
+
+			actual, err := filter.Render(gen, `foo`, f)
+			assert.Nil(err)
+			assert.Equal(expected, string(actual[:]))
+		}
+	}
+
+	fn(map[string]string{
+		`id/1`:           `SELECT * FROM foo WHERE (id = 1)`,
+		`id/1|2`:         `SELECT * FROM foo WHERE (id IN(1, 2))`,
+		`id/1|2|3`:       `SELECT * FROM foo WHERE (id IN(1, 2, 3))`,
+		`id/1|2|3/age/7`: `SELECT * FROM foo WHERE (id IN(1, 2, 3)) AND (age = 7)`,
+	}, true)
+
+	fn(map[string]string{
+		`id/1`:           `SELECT * FROM foo WHERE (id = 1)`,
+		`id/1|2`:         `SELECT * FROM foo WHERE (id = 1 OR id = 2)`,
+		`id/1|2|3`:       `SELECT * FROM foo WHERE (id = 1 OR id = 2 OR id = 3)`,
+		`id/1|2|3/age/7`: `SELECT * FROM foo WHERE (id = 1 OR id = 2 OR id = 3) AND (age = 7)`,
+	}, false)
 }

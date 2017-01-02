@@ -114,7 +114,11 @@ func (self *BoltBackend) Retrieve(collection string, id string, fields ...string
 	}
 }
 
-func (self *BoltBackend) Update(collection string, recordset *dal.RecordSet) error {
+func (self *BoltBackend) Update(collection string, recordset *dal.RecordSet, target ...string) error {
+	if len(target) > 0 {
+		return fmt.Errorf("Multi-target updates are not supported on this backend")
+	}
+
 	return self.upsertRecords(collection, recordset, false)
 }
 

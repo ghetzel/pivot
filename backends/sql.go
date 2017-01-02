@@ -144,8 +144,67 @@ func (self *SqlBackend) Retrieve(collection string, id string, fields ...string)
 	}
 }
 
-func (self *SqlBackend) Update(collection string, recordset *dal.RecordSet) error {
-	return fmt.Errorf("Not Implemented")
+func (self *SqlBackend) Update(collection string, recordset *dal.RecordSet, target ...string) error {
+	var targetFilter filter.Filter
+
+	if len(target) > 0 {
+		if f, err := filter.Parse(target[0]); err == nil {
+			targetFilter = f
+		} else {
+			return err
+		}
+	}
+
+	if tx, err := self.db.Begin(); err == nil {
+		for _, record := range recordset.Records {
+			queryGen := self.makeQueryGen()
+			queryGen.Type = generators.SqlUpdateStatement
+
+			var recordUpdateFilter filter.Filter
+
+			// if this record was specified without a specific ID, attempt to use the broader
+			// target filter (if specified)
+			if record.ID == `` {
+				if len(target) > 0 {
+					recordUpdateFilter = targetFilter
+				} else {
+					return fmt.Errorf("Update must target at least one record")
+				}
+			} else {
+				// try to build a filter targeting this specific record
+				if f, err := filter.FromMap(map[string]interface{}{
+					dal.DefaultIdentityField: record.ID,
+				}); err == nil {
+					recordUpdateFilter = f
+				} else {
+					return err
+				}
+			}
+
+			// add all non-ID fields to the record's Fields set
+			for k, v := range record.Fields {
+				if k != dal.DefaultIdentityField {
+					queryGen.InputData[k] = v
+				}
+			}
+
+			// generate SQL
+			if stmt, err := filter.Render(queryGen, collection, recordUpdateFilter); err == nil {
+				// execute SQL
+				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
+					return tx.Commit()
+				} else {
+					return err
+				}
+			} else {
+				return err
+			}
+		}
+
+		return nil
+	} else {
+		return err
+	}
 }
 
 func (self *SqlBackend) Delete(collection string, ids []string) error {
