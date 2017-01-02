@@ -70,12 +70,13 @@ var DefaultSqlTypeMapping = MysqlTypeMapping
 
 type Sql struct {
 	filter.Generator
+	TableNameFormat     string
+	FieldNameFormat     string
 	UsePlaceholders     bool
 	PlaceholderFormat   string
 	PlaceholderArgument string // if specified, either "index", "index1" or "field"
 	UnquotedValueFormat string
 	QuotedValueFormat   string
-	FieldNameFormat     string
 	UseInStatement      bool
 	TypeMapping         SqlTypeMapping
 	Type                SqlStatementType
@@ -93,6 +94,7 @@ func NewSqlGenerator() *Sql {
 		PlaceholderArgument: ``,
 		UnquotedValueFormat: "%v",
 		QuotedValueFormat:   "'%s'",
+		TableNameFormat:     "%s",
 		FieldNameFormat:     "%s",
 		UseInStatement:      true,
 		TypeMapping:         DefaultSqlTypeMapping,
@@ -103,7 +105,7 @@ func NewSqlGenerator() *Sql {
 
 func (self *Sql) Initialize(collectionName string) error {
 	self.Reset()
-	self.collection = collectionName
+	self.collection = self.ToTableName(collectionName)
 	self.fields = make([]string, 0)
 	self.criteria = make([]string, 0)
 	self.values = make([]interface{}, 0)
@@ -140,7 +142,7 @@ func (self *Sql) Finalize(_ filter.Filter) error {
 		fieldNames := maputil.StringKeys(self.InputData)
 
 		for i, f := range fieldNames {
-			fieldNames[i] = fmt.Sprintf(self.FieldNameFormat, f)
+			fieldNames[i] = self.ToFieldName(f)
 		}
 
 		sort.Strings(fieldNames)
@@ -181,7 +183,7 @@ func (self *Sql) Finalize(_ filter.Filter) error {
 			vStr := self.prepareValue(field, i, value, ``)
 			self.values = append(self.values, value)
 
-			field := fmt.Sprintf(self.FieldNameFormat, field)
+			field := self.ToFieldName(field)
 
 			updatePairs = append(updatePairs, fmt.Sprintf("%s = %s", field, vStr))
 
@@ -275,9 +277,9 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 		if !useInStatement {
 			if criterion.Type != `` {
-				if criterionType, err := self.filterTypeToSqlType(criterion.Type, criterion.Length); err == nil {
+				if criterionType, err := self.ToNativeType(criterion.Type, criterion.Length); err == nil {
 					if criterionType != `` {
-						outFieldName = fmt.Sprintf("CAST(%s AS %s)", fmt.Sprintf(self.FieldNameFormat, criterion.Field), criterionType)
+						outFieldName = fmt.Sprintf("CAST(%s AS %s)", self.ToFieldName(criterion.Field), criterionType)
 						outVal = outFieldName
 					}
 				} else {
@@ -286,7 +288,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 			}
 
 			if outVal == `` {
-				outFieldName = fmt.Sprintf(self.FieldNameFormat, criterion.Field)
+				outFieldName = self.ToFieldName(criterion.Field)
 				outVal = outFieldName
 			}
 		}
@@ -350,14 +352,22 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 	return nil
 }
 
-func (self *Sql) filterTypeToSqlType(in string, length int) (string, error) {
+func (self *Sql) ToTableName(table string) string {
+	return fmt.Sprintf(self.TableNameFormat, table)
+}
+
+func (self *Sql) ToFieldName(field string) string {
+	return fmt.Sprintf(self.FieldNameFormat, field)
+}
+
+func (self *Sql) ToNativeType(in string, length int) (string, error) {
 	out := ``
 
 	switch strings.ToLower(in) {
 	case `str`:
 		out = self.TypeMapping.StringType
 
-		if l := self.TypeMapping.StringTypeLength; l > 0 {
+		if l := self.TypeMapping.StringTypeLength; length == 0 && l > 0 {
 			length = l
 		}
 	case `int`:
@@ -367,7 +377,7 @@ func (self *Sql) filterTypeToSqlType(in string, length int) (string, error) {
 	case `bool`:
 		out = self.TypeMapping.BooleanType
 
-		if l := self.TypeMapping.BooleanTypeLength; l > 0 {
+		if l := self.TypeMapping.BooleanTypeLength; length == 0 && l > 0 {
 			length = l
 		}
 	case `date`, `time`:

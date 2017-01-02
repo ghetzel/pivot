@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/alexcesaro/statsd"
 	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
 	"github.com/op/go-logging"
 )
 
@@ -17,10 +18,10 @@ type Backend interface {
 	Retrieve(collection string, id string, fields ...string) (*dal.Record, error)
 	Insert(collection string, records *dal.RecordSet) error
 	Update(collection string, records *dal.RecordSet, target ...string) error
-	Delete(collection string, ids []string) error
+	Delete(collection string, f filter.Filter) error
 	CreateCollection(definition dal.Collection) error
 	DeleteCollection(collection string) error
-	GetCollection(collection string) (dal.Collection, error)
+	GetCollection(collection string) (*dal.Collection, error)
 	WithSearch() Indexer
 }
 

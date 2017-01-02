@@ -128,10 +128,16 @@ func (self *Server) setupRoutes() error {
 
 	self.router.DELETE(`/records/:collection/:id/`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			if err := self.backend.Delete(params.ByName(`collection`), []string{params.ByName(`id`)}); err == nil {
-				self.Respond(w, http.StatusNoContent, nil, nil)
+			if f, err := filter.FromMap(map[string]interface{}{
+				`id`: params.ByName(`id`),
+			}); err == nil {
+				if err := self.backend.Delete(params.ByName(`collection`), f); err == nil {
+					self.Respond(w, http.StatusNoContent, nil, nil)
+				} else {
+					self.Respond(w, http.StatusInternalServerError, nil, err)
+				}
 			} else {
-				self.Respond(w, http.StatusInternalServerError, nil, err)
+				self.Respond(w, http.StatusBadRequest, nil, err)
 			}
 		})
 
@@ -233,16 +239,14 @@ func (self *Server) setupRoutes() error {
 
 	self.router.DELETE(`/query/:collection/where/*urlquery`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			var identities []string
-
-			if err := json.NewDecoder(req.Body).Decode(&identities); err == nil {
-				if err := self.backend.Delete(params.ByName(`collection`), identities); err == nil {
+			if f, err := filter.Parse(params.ByName(`urlquery`)); err == nil {
+				if err := self.backend.Delete(params.ByName(`collection`), f); err == nil {
 					self.Respond(w, http.StatusNoContent, nil, nil)
 				} else {
 					self.Respond(w, http.StatusBadRequest, nil, err)
 				}
 			} else {
-				self.Respond(w, http.StatusInternalServerError, nil, err)
+				self.Respond(w, http.StatusBadRequest, nil, err)
 			}
 		})
 

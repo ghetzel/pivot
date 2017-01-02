@@ -14,6 +14,8 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	self.queryGenTypeMapping = generators.SqliteTypeMapping
 	self.queryGenPlaceholderFormat = `?`
 	self.queryGenPlaceholderArgument = ``
+	self.listAllTablesQuery = `SELECT name FROM sqlite_master`
+	self.showTableDetailQuery = `PRAGMA table_info(%s)`
 
 	dataset := self.conn.Dataset()
 	var dsn string

@@ -3,10 +3,16 @@ package backends
 import (
 	"database/sql"
 	"fmt"
+	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
 	"reflect"
+	"regexp"
+	"strings"
+	"sync"
 )
 
 type SqlBackend struct {
@@ -16,12 +22,19 @@ type SqlBackend struct {
 	queryGenTypeMapping         generators.SqlTypeMapping
 	queryGenPlaceholderArgument string
 	queryGenPlaceholderFormat   string
+	listAllTablesQuery          string
+	showTableDetailQuery        string
+	dropTableQuery              string
+	collectionCache             map[string]*dal.Collection
+	collectionCacheLock         sync.RWMutex
 }
 
 func NewSqlBackend(connection dal.ConnectionString) *SqlBackend {
 	return &SqlBackend{
 		conn:                connection,
 		queryGenTypeMapping: generators.DefaultSqlTypeMapping,
+		collectionCache:     make(map[string]*dal.Collection),
+		dropTableQuery:      `DROP TABLE %s`,
 	}
 }
 
@@ -66,6 +79,11 @@ func (self *SqlBackend) Initialize() error {
 		return err
 	}
 
+	// refresh schema cache
+	if err := self.refreshAllCollections(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -104,28 +122,36 @@ func (self *SqlBackend) Exists(collection string, id string) bool {
 	return false
 }
 
-func (self *SqlBackend) Retrieve(collection string, id string, fields ...string) (*dal.Record, error) {
-	if f, err := filter.FromMap(map[string]interface{}{
-		dal.DefaultIdentityField: id,
-	}); err == nil {
-		f.Fields = fields
-		queryGen := self.makeQueryGen()
+func (self *SqlBackend) Retrieve(name string, id string, fields ...string) (*dal.Record, error) {
+	self.collectionCacheLock.RLock()
+	collection, ok := self.collectionCache[name]
+	self.collectionCacheLock.RUnlock()
 
-		if err := queryGen.Initialize(collection); err == nil {
-			if sqlString, err := filter.Render(queryGen, collection, f); err == nil {
-				values := queryGen.GetValues()
+	if ok {
+		if f, err := filter.FromMap(map[string]interface{}{
+			collection.IdentityField: id,
+		}); err == nil {
+			f.Fields = fields
+			queryGen := self.makeQueryGen()
 
-				log.Debugf("%s %+v", string(sqlString[:]), values)
+			if err := queryGen.Initialize(collection.Name); err == nil {
+				if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
+					values := queryGen.GetValues()
 
-				// perform query
-				if rows, err := self.db.Query(string(sqlString[:]), values...); err == nil {
-					defer rows.Close()
+					log.Debugf("%s %+v", string(sqlString[:]), values)
 
-					if columns, err := rows.Columns(); err == nil {
-						if rows.Next() {
-							return self.scanFnValueToRecord(columns, reflect.ValueOf(rows.Scan))
+					// perform query
+					if rows, err := self.db.Query(string(sqlString[:]), values...); err == nil {
+						defer rows.Close()
+
+						if columns, err := rows.Columns(); err == nil {
+							if rows.Next() {
+								return self.scanFnValueToRecord(collection, columns, reflect.ValueOf(rows.Scan))
+							} else {
+								return nil, fmt.Errorf("Record %s does not exist", id)
+							}
 						} else {
-							return nil, fmt.Errorf("Record %s does not exist", id)
+							return nil, err
 						}
 					} else {
 						return nil, err
@@ -140,7 +166,7 @@ func (self *SqlBackend) Retrieve(collection string, id string, fields ...string)
 			return nil, err
 		}
 	} else {
-		return nil, err
+		return nil, dal.CollectionNotFound
 	}
 }
 
@@ -207,8 +233,25 @@ func (self *SqlBackend) Update(collection string, recordset *dal.RecordSet, targ
 	}
 }
 
-func (self *SqlBackend) Delete(collection string, ids []string) error {
-	return fmt.Errorf("Not Implemented")
+func (self *SqlBackend) Delete(collection string, f filter.Filter) error {
+	if tx, err := self.db.Begin(); err == nil {
+		queryGen := self.makeQueryGen()
+		queryGen.Type = generators.SqlDeleteStatement
+
+		// generate SQL
+		if stmt, err := filter.Render(queryGen, collection, f); err == nil {
+			// execute SQL
+			if _, err := tx.Exec(string(stmt[:])); err == nil {
+				return tx.Commit()
+			} else {
+				return err
+			}
+		} else {
+			return err
+		}
+	} else {
+		return err
+	}
 }
 
 func (self *SqlBackend) WithSearch() Indexer {
@@ -216,16 +259,68 @@ func (self *SqlBackend) WithSearch() Indexer {
 }
 
 func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
+	// -- sqlite3
+	// CREATE TABLE foo (
+	//     "id"         INTEGER PRIMARY KEY ASC,
+	//     "name"       TEXT NOT NULL,
+	//     "enabled"    INTEGER(1),
+	//     "created_at" TEXT DEFAULT CURRENT_TIMESTAMP
+	// );
+
+	// -- MySQL
+	// CREATE TABLE foo (
+	//     `id`         INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	//     `name`       TEXT NOT NULL,
+	//     `enabled`    TINYINT(1),
+	//     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
+	// );
+
+	// -- PostgreSQL
+	// CREATE TABLE foo (
+	//     "id"         BIGSERIAL PRIMARY KEY,
+	//     "name"       TEXT NOT NULL,
+	//     "enabled"    BOOLEAN,
+	//     "created_at" TIMESTAMP WITHOUT TIME ZONE DEFAULT now_utc()
+	// );
+
+	// -- MS SQL Server
+	// CREATE TABLE [foo] (
+	//     [id]         INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	//     [name]       NVARCHAR(MAX) NOT NULL,
+	//     [enabled     BIT,
+	//     [created_at] [DATETIME] DEFAULT CURRENT_TIMESTAMP
+	// );
+
 	return fmt.Errorf("Not Implemented")
 }
 
 func (self *SqlBackend) DeleteCollection(collection string) error {
-	return fmt.Errorf("Not Implemented")
+	gen := self.makeQueryGen()
+
+	if tx, err := self.db.Begin(); err == nil {
+		if _, err := tx.Exec(
+			fmt.Sprintf(self.dropTableQuery, gen.ToTableName(collection)),
+		); err == nil {
+			return tx.Commit()
+		} else {
+			return err
+		}
+	} else {
+		return err
+	}
 }
 
-func (self *SqlBackend) GetCollection(name string) (dal.Collection, error) {
-	c := dal.NewCollection(name)
-	return *c, fmt.Errorf("Not Implemented")
+func (self *SqlBackend) GetCollection(name string) (*dal.Collection, error) {
+	if err := self.refreshCollection(name); err == nil {
+		self.collectionCacheLock.RLock()
+		defer self.collectionCacheLock.RUnlock()
+
+		if collection, ok := self.collectionCache[name]; ok {
+			return collection, nil
+		}
+	}
+
+	return nil, dal.CollectionNotFound
 }
 
 func (self *SqlBackend) makeQueryGen() *generators.Sql {
@@ -244,7 +339,7 @@ func (self *SqlBackend) makeQueryGen() *generators.Sql {
 	return queryGen
 }
 
-func (self *SqlBackend) scanFnValueToRecord(columns []string, scanFn reflect.Value) (*dal.Record, error) {
+func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns []string, scanFn reflect.Value) (*dal.Record, error) {
 	if scanFn.Kind() != reflect.Func {
 		return nil, fmt.Errorf("Can only accept a function value")
 	}
@@ -295,7 +390,7 @@ func (self *SqlBackend) scanFnValueToRecord(columns []string, scanFn reflect.Val
 				value = output[i]
 			}
 
-			if column == dal.DefaultIdentityField {
+			if column == collection.IdentityField {
 				id = fmt.Sprintf("%v", value)
 			} else {
 				fields[column] = value
@@ -309,5 +404,131 @@ func (self *SqlBackend) scanFnValueToRecord(columns []string, scanFn reflect.Val
 		}
 	} else {
 		return nil, err
+	}
+}
+
+func (self *SqlBackend) refreshAllCollections() error {
+	if rows, err := self.db.Query(self.listAllTablesQuery); err == nil {
+		defer rows.Close()
+		knownTables := make([]string, 0)
+
+		for rows.Next() {
+			var tableName string
+
+			if err := rows.Scan(&tableName); err == nil {
+				knownTables = append(knownTables, tableName)
+
+				if err := self.refreshCollection(tableName); err != nil {
+					return err
+				}
+			} else {
+				return err
+			}
+		}
+
+		// purge tables that the list all query didn't just return
+		self.collectionCacheLock.RLock()
+		cachedTables := maputil.StringKeys(self.collectionCache)
+		self.collectionCacheLock.RUnlock()
+
+		for _, cached := range cachedTables {
+			if !sliceutil.ContainsString(knownTables, cached) {
+				self.collectionCacheLock.Lock()
+				delete(self.collectionCache, cached)
+				self.collectionCacheLock.Unlock()
+			}
+		}
+
+		return rows.Err()
+	} else {
+		return err
+	}
+}
+
+func (self *SqlBackend) refreshCollection(name string) error {
+	if rows, err := self.db.Query(
+		fmt.Sprintf(self.showTableDetailQuery, name),
+	); err == nil {
+		defer rows.Close()
+
+		collection := dal.NewCollection(name)
+		var primaryKeyFound bool
+
+		for rows.Next() {
+			var i, nullable, pk int
+			var column, columnType string
+			var defaultValue sql.NullString
+
+			if err := rows.Scan(&i, &column, &columnType, &nullable, &defaultValue, &pk); err == nil {
+
+				var dalType string
+				var length int
+
+				columnType = strings.ToUpper(columnType)
+				parts := strings.SplitN(columnType, `(`, 2)
+
+				if len(parts) == 2 {
+					if v, err := stringutil.ConvertToInteger(strings.TrimSuffix(parts[1], `)`)); err == nil {
+						length = int(v)
+					}
+				}
+
+				if ok, err := regexp.MatchString(`^(TEXT|N?VARCHAR|CHARACTER|CHARACTER VARYING)$`, parts[0]); err == nil && ok {
+					dalType = `str`
+				} else if ok, err := regexp.MatchString(`^(BOOL|BOOLEAN|TINYINT\(1\)|BIT|INTEGER\(1\))`, columnType); err == nil && ok {
+					dalType = `bool`
+				} else if ok, err := regexp.MatchString(`^(SERIAL|INT|INTEGER|SMALLINT|BIGINT)$`, parts[0]); err == nil && ok {
+					dalType = `int`
+				} else if ok, err := regexp.MatchString(`^(FLOAT|DOUBLE|DECIMAL|REAL|NUMERIC|CURRENCY)$`, parts[0]); err == nil && ok {
+					dalType = `float`
+				} else if ok, err := regexp.MatchString(`^(DATE|TIME|DATETIME|TIMESTAMP)$`, parts[0]); err == nil && ok {
+					dalType = `date`
+				} else {
+					dalType = parts[0]
+				}
+
+				dalField := dal.Field{
+					Name:   column,
+					Type:   dalType,
+					Length: length,
+					Properties: map[string]interface{}{
+						`native_type`: columnType,
+					},
+				}
+
+				if nullable == 0 {
+					dalField.Properties[`required`] = true
+				}
+
+				if v := defaultValue.String; v != `` {
+					dalField.Properties[`default`] = v
+				}
+
+				if pk == 1 {
+					if !primaryKeyFound {
+						dalField.Properties[`identity`] = true
+						collection.IdentityField = column
+						primaryKeyFound = true
+					} else {
+						dalField.Properties[`key`] = true
+					}
+				}
+
+				collection.Fields = append(collection.Fields, dalField)
+			} else {
+				return err
+			}
+		}
+
+		if len(collection.Fields) > 0 {
+			self.collectionCacheLock.Lock()
+			defer self.collectionCacheLock.Unlock()
+
+			self.collectionCache[name] = collection
+		}
+
+		return nil
+	} else {
+		return err
 	}
 }

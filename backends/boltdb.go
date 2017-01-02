@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
 	"gopkg.in/mgo.v2/bson"
 	"os"
 	"path"
@@ -122,27 +123,44 @@ func (self *BoltBackend) Update(collection string, recordset *dal.RecordSet, tar
 	return self.upsertRecords(collection, recordset, false)
 }
 
-func (self *BoltBackend) Delete(collection string, ids []string) error {
-	return self.db.Update(func(tx *bolt.Tx) error {
-		if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
-			for _, id := range ids {
-				if err := bucket.Delete([]byte(id[:])); err != nil {
-					return err
+func (self *BoltBackend) Delete(collection string, f filter.Filter) error {
+	switch len(f.Criteria) {
+	case 0:
+		// TODO: implementent delete `all`
+		return fmt.Errorf("Delete requires at least one criterion")
+
+	case 1:
+		return self.db.Update(func(tx *bolt.Tx) error {
+			if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
+				ids := make([]string, len(f.Criteria[0].Values))
+
+				// stringify all ID values
+				for i, v := range f.Criteria[0].Values {
+					ids[i] = fmt.Sprintf("%v", v)
 				}
+
+				// perform deletes
+				for _, id := range ids {
+					if err := bucket.Delete([]byte(id[:])); err != nil {
+						return err
+					}
+				}
+
+				// if we have a search index, remove the corresponding documents from it
+				if search := self.WithSearch(); search != nil {
+					if err := search.Remove(collection, ids); err != nil {
+						return err
+					}
+				}
+			} else {
+				return fmt.Errorf("Failed to retrieve bucket %q", collection)
 			}
 
-			// if we have a search index, update it now
-			if search := self.WithSearch(); search != nil {
-				if err := search.Remove(collection, ids); err != nil {
-					return err
-				}
-			}
-		} else {
-			return fmt.Errorf("Failed to retrieve bucket %q", collection)
-		}
-
-		return nil
-	})
+			return nil
+		})
+	default:
+		return fmt.Errorf("Delete by query not supported on this backend")
+	}
 }
 
 func (self *BoltBackend) WithSearch() Indexer {
@@ -164,7 +182,7 @@ func (self *BoltBackend) DeleteCollection(collection string) error {
 	})
 }
 
-func (self *BoltBackend) GetCollection(name string) (dal.Collection, error) {
+func (self *BoltBackend) GetCollection(name string) (*dal.Collection, error) {
 	collection := dal.NewCollection(name)
 
 	err := self.db.View(func(tx *bolt.Tx) error {
@@ -178,7 +196,7 @@ func (self *BoltBackend) GetCollection(name string) (dal.Collection, error) {
 		return nil
 	})
 
-	return *collection, err
+	return collection, err
 }
 
 func (self *BoltBackend) upsertRecords(collection string, recordset *dal.RecordSet, autocreateBucket bool) error {

@@ -16,6 +16,9 @@ const (
 
 var DefaultIdentityField = `id`
 
+// errors
+var CollectionNotFound = fmt.Errorf("Collection not found")
+
 type Collection struct {
 	Dataset       *Dataset               `json:"-"`
 	Name          string                 `json:"name"`

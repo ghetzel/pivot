@@ -14,7 +14,19 @@ import (
 var backend backends.Backend
 var TestData = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 
-func TestMain(m *testing.M) {
+func setupTestSqlite() {
+	os.RemoveAll(`./tmp/db_test`)
+	os.MkdirAll(`./tmp/db_test`, 0755)
+
+	if b, err := makeBackend(`sqlite:///./tmp/db_test/test.db`); err == nil {
+		backend = b
+	} else {
+		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func setupTestBoltDB() {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 	backends.BleveBatchFlushCount = 1
@@ -25,9 +37,24 @@ func TestMain(m *testing.M) {
 		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
 		os.Exit(1)
 	}
+}
 
-	i := m.Run()
-	os.Exit(i)
+func TestMain(m *testing.M) {
+	var i int
+
+	run := func() {
+		i = m.Run()
+
+		if i != 0 {
+			os.Exit(i)
+		}
+	}
+
+	setupTestSqlite()
+	run()
+
+	setupTestBoltDB()
+	run()
 }
 
 func makeBackend(conn string) (backends.Backend, error) {
@@ -121,7 +148,9 @@ func TestBasicCRUD(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(string(`2`), record.ID)
 
-	assert.Nil(backend.Delete(`TestBasicCRUD`, []string{`2`}))
+	f, err := filter.Parse(fmt.Sprintf("id/2"))
+	assert.Nil(err)
+	assert.Nil(backend.Delete(`TestBasicCRUD`, f))
 
 	record, err = backend.Retrieve(`TestBasicCRUD`, `2`)
 	assert.NotNil(err)
