@@ -9,12 +9,12 @@ import (
 var FieldNestingSeparator string = `.`
 
 type Record struct {
-	ID     string                 `json:"id"`
+	ID     interface{}                 `json:"id"`
 	Fields map[string]interface{} `json:"fields,omitempty"`
 	Data   []byte                 `json:"data,omitempty"`
 }
 
-func NewRecord(id string) *Record {
+func NewRecord(id interface{}) *Record {
 	return &Record{
 		ID:     id,
 		Fields: make(map[string]interface{}),

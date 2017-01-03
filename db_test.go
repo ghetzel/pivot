@@ -93,7 +93,13 @@ func TestBasicCRUD(t *testing.T) {
 	assert := require.New(t)
 
 	err := backend.CreateCollection(dal.Collection{
-		Name: `test-crud`,
+		Name: `TestBasicCRUD`,
+		Fields: []dal.Field{
+			{
+				Name: `name`,
+				Type: `str`,
+			},
+		},
 	})
 
 	assert.Nil(err)
@@ -103,7 +109,7 @@ func TestBasicCRUD(t *testing.T) {
 	// --------------------------------------------------------------------------------------------
 	assert.Nil(backend.Insert(`TestBasicCRUD`, dal.NewRecordSet(
 		dal.NewRecord(`1`).Set(`name`, `First`),
-		dal.NewRecord(`2`).Set(`name`, `Second`).SetData(TestData),
+		dal.NewRecord(`2`).Set(`name`, `Second`),
 		dal.NewRecord(`3`).Set(`name`, `Third`))))
 
 	record, err = backend.Retrieve(`TestBasicCRUD`, `1`)
@@ -118,14 +124,12 @@ func TestBasicCRUD(t *testing.T) {
 	assert.NotNil(record)
 	assert.Equal(string(`2`), record.ID)
 	assert.Equal(`Second`, record.Get(`name`))
-	assert.Equal(TestData, record.Data)
 
 	record, err = backend.Retrieve(`TestBasicCRUD`, `3`)
 	assert.Nil(err)
 	assert.NotNil(record)
 	assert.Equal(string(`3`), record.ID)
 	assert.Equal(`Third`, record.Get(`name`))
-	assert.Empty(record.Data)
 
 	// make sure we can json encode the record, too
 	_, err = json.Marshal(record)

@@ -312,7 +312,7 @@ func TestSqlTypeMapping(t *testing.T) {
 		`SELECT * FROM foo `+
 			`WHERE (CAST(age AS INTEGER) = ?) `+
 			`AND (CAST(name AS TEXT) = ?) `+
-			`AND (CAST(enabled AS INTEGER) = ?) `+
+			`AND (CAST(enabled AS INTEGER(1)) = ?) `+
 			`AND (CAST(rating AS REAL) = ?) `+
 			`AND (CAST(created_at AS INTEGER) < ?)`,
 		string(actual[:]),

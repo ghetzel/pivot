@@ -59,11 +59,12 @@ var PostgresTypeMapping = SqlTypeMapping{
 }
 
 var SqliteTypeMapping = SqlTypeMapping{
-	StringType:   `TEXT`,
-	IntegerType:  `INTEGER`,
-	FloatType:    `REAL`,
-	BooleanType:  `INTEGER`,
-	DateTimeType: `INTEGER`,
+	StringType:        `TEXT`,
+	IntegerType:       `INTEGER`,
+	FloatType:         `REAL`,
+	BooleanType:       `INTEGER`,
+	BooleanTypeLength: 1,
+	DateTimeType:      `INTEGER`,
 }
 
 var DefaultSqlTypeMapping = MysqlTypeMapping
@@ -84,6 +85,7 @@ type Sql struct {
 	collection          string
 	fields              []string
 	criteria            []string
+	inputValues              []interface{}
 	values              []interface{}
 }
 
@@ -108,6 +110,7 @@ func (self *Sql) Initialize(collectionName string) error {
 	self.collection = self.ToTableName(collectionName)
 	self.fields = make([]string, 0)
 	self.criteria = make([]string, 0)
+	self.inputValues = make([]interface{}, 0)
 	self.values = make([]interface{}, 0)
 
 	return nil
@@ -152,10 +155,10 @@ func (self *Sql) Finalize(_ filter.Filter) error {
 
 		values := make([]string, 0)
 
-		for i, field := range fieldNames {
+		for i, field := range maputil.StringKeys(self.InputData) {
 			v, _ := self.InputData[field]
-			values = append(values, self.prepareValue(field, i, v, ``))
-			self.values = append(self.values, v)
+			values = append(values, self.ToValue(field, i, v, ``))
+			self.inputValues = append(self.inputValues, v)
 		}
 
 		self.Push([]byte(strings.Join(values, `, `)))
@@ -180,8 +183,8 @@ func (self *Sql) Finalize(_ filter.Filter) error {
 			value, _ := self.InputData[field]
 
 			// do this first because we want the unmodified field name
-			vStr := self.prepareValue(field, i, value, ``)
-			self.values = append(self.values, value)
+			vStr := self.ToValue(field, i, value, ``)
+			self.inputValues = append(self.inputValues, value)
 
 			field := self.ToFieldName(field)
 
@@ -216,7 +219,7 @@ func (self *Sql) SetOption(key, value string) error {
 }
 
 func (self *Sql) GetValues() []interface{} {
-	return self.values
+	return append(self.inputValues, self.values...)
 }
 
 func (self *Sql) WithCriterion(criterion filter.Criterion) error {
@@ -271,7 +274,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 		self.values = append(self.values, typedValue)
 
-		value = self.prepareValue(criterion.Field, len(self.criteria), typedValue, criterion.Operator)
+		value = self.ToValue(criterion.Field, len(self.criteria), typedValue, criterion.Operator)
 
 		outVal := ``
 
@@ -393,7 +396,7 @@ func (self *Sql) ToNativeType(in string, length int) (string, error) {
 	return strings.ToUpper(out), nil
 }
 
-func (self *Sql) prepareValue(fieldName string, fieldIndex int, in interface{}, operator string) string {
+func (self *Sql) ToValue(fieldName string, fieldIndex int, in interface{}, operator string) string {
 	if self.UsePlaceholders {
 		switch self.PlaceholderArgument {
 		case `index`:

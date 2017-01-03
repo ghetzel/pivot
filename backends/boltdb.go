@@ -91,12 +91,14 @@ func (self *BoltBackend) Exists(collection string, id string) bool {
 	return exists
 }
 
-func (self *BoltBackend) Retrieve(collection string, id string, fields ...string) (*dal.Record, error) {
+func (self *BoltBackend) Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error) {
 	record := dal.NewRecord(id)
 
 	err := self.db.View(func(tx *bolt.Tx) error {
 		if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
-			if data := bucket.Get([]byte(id[:])); data != nil {
+			idS := fmt.Sprintf("%v", id)
+
+			if data := bucket.Get([]byte(idS[:])); data != nil {
 				return bson.Unmarshal(data, record)
 			} else {
 				return fmt.Errorf("Record %q does not exist", id)
@@ -229,7 +231,9 @@ func (self *BoltBackend) upsertRecords(collection string, recordset *dal.RecordS
 				tm.Send(`pivot.backends.boltdb.serialize_record`)
 				tm = stats.NewTiming()
 
-				if err := bucket.Put([]byte(record.ID[:]), data); err == nil {
+				idS := fmt.Sprintf("%v", record.ID)
+
+				if err := bucket.Put([]byte(idS[:]), data); err == nil {
 					tm.Send(`pivot.backends.boltdb.commit_record`)
 				} else {
 					return err

@@ -259,6 +259,21 @@ func (self *Server) setupRoutes() error {
 			}
 		})
 
+	self.router.POST(`/schema`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+			var collection dal.Collection
+
+			if err := json.NewDecoder(req.Body).Decode(&collection); err == nil {
+				if err := self.backend.CreateCollection(collection); err == nil {
+					self.Respond(w, http.StatusNoContent, nil, nil)
+				} else {
+					self.Respond(w, http.StatusInternalServerError, nil, err)
+				}
+			} else {
+				self.Respond(w, http.StatusBadRequest, nil, err)
+			}
+		})
+
 	return nil
 }
 

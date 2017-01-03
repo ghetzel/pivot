@@ -22,7 +22,10 @@ type SqlBackend struct {
 	queryGenTypeMapping         generators.SqlTypeMapping
 	queryGenPlaceholderArgument string
 	queryGenPlaceholderFormat   string
+	queryGenTableFormat   string
+	queryGenFieldFormat string
 	listAllTablesQuery          string
+	createPrimaryKeyFormat      string
 	showTableDetailQuery        string
 	dropTableQuery              string
 	collectionCache             map[string]*dal.Collection
@@ -102,9 +105,9 @@ func (self *SqlBackend) Insert(collection string, recordset *dal.RecordSet) erro
 			}
 
 			if stmt, err := filter.Render(queryGen, collection, filter.Null); err == nil {
-				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
-					return tx.Commit()
-				} else {
+				log.Debugf("%s %+v", string(stmt[:]), queryGen.GetValues())
+
+				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
 					return err
 				}
 			} else {
@@ -112,7 +115,7 @@ func (self *SqlBackend) Insert(collection string, recordset *dal.RecordSet) erro
 			}
 		}
 
-		return nil
+		return tx.Commit()
 	} else {
 		return err
 	}
@@ -122,7 +125,7 @@ func (self *SqlBackend) Exists(collection string, id string) bool {
 	return false
 }
 
-func (self *SqlBackend) Retrieve(name string, id string, fields ...string) (*dal.Record, error) {
+func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
 	self.collectionCacheLock.RLock()
 	collection, ok := self.collectionCache[name]
 	self.collectionCacheLock.RUnlock()
@@ -216,10 +219,10 @@ func (self *SqlBackend) Update(collection string, recordset *dal.RecordSet, targ
 
 			// generate SQL
 			if stmt, err := filter.Render(queryGen, collection, recordUpdateFilter); err == nil {
+				log.Debugf("%s %+v", string(stmt[:]), queryGen.GetValues())
+
 				// execute SQL
-				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
-					return tx.Commit()
-				} else {
+				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
 					return err
 				}
 			} else {
@@ -227,7 +230,7 @@ func (self *SqlBackend) Update(collection string, recordset *dal.RecordSet, targ
 			}
 		}
 
-		return nil
+		return tx.Commit()
 	} else {
 		return err
 	}
@@ -291,7 +294,70 @@ func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
 	//     [created_at] [DATETIME] DEFAULT CURRENT_TIMESTAMP
 	// );
 
-	return fmt.Errorf("Not Implemented")
+	if definition.IdentityField == `` {
+		definition.IdentityField = dal.DefaultIdentityField
+	}
+
+	gen := self.makeQueryGen()
+
+	// disable placeholders so that .ToValue() will return actual values
+	gen.UsePlaceholders = false
+
+	query := fmt.Sprintf("CREATE TABLE %s (", gen.ToTableName(definition.Name))
+
+	fields := []string{}
+
+	if definition.IdentityField != `` {
+		fields = append(fields, fmt.Sprintf(self.createPrimaryKeyFormat, gen.ToFieldName(definition.IdentityField)))
+	}
+
+	for i, field := range definition.Fields {
+		var def string
+
+		if nativeType, err := gen.ToNativeType(field.Type, field.Length); err == nil {
+			def = fmt.Sprintf("%s %s", gen.ToFieldName(field.Name), nativeType)
+		} else {
+			return err
+		}
+
+		if field.Properties != nil {
+			if field.Properties.Required {
+				def += ` NOT NULL`
+			}
+
+			if field.Properties.Unique {
+				def += ` UNIQUE`
+			}
+
+			if v := field.Properties.DefaultValue; v != nil {
+				def += ` ` + fmt.Sprintf(
+					"DEFAULT %v",
+					gen.ToValue(field.Name, i, v, ``),
+				)
+			}
+		}
+
+		fields = append(fields, def)
+	}
+
+	query += strings.Join(fields, `, `)
+	query += `)`
+
+	log.Debugf("CreateCollection: %v", query)
+
+	if tx, err := self.db.Begin(); err == nil {
+		if _, err := tx.Exec(query); err == nil {
+			if err := tx.Commit(); err == nil {
+				return self.refreshAllCollections()
+			} else {
+				return err
+			}
+		} else {
+			return err
+		}
+	} else {
+		return err
+	}
 }
 
 func (self *SqlBackend) DeleteCollection(collection string) error {
@@ -334,6 +400,14 @@ func (self *SqlBackend) makeQueryGen() *generators.Sql {
 
 	if v := self.queryGenPlaceholderArgument; v != `` {
 		queryGen.PlaceholderArgument = v
+	}
+
+	if v := self.queryGenTableFormat; v != `` {
+		queryGen.TableNameFormat = v
+	}
+
+	if v := self.queryGenFieldFormat; v != `` {
+		queryGen.FieldNameFormat = v
 	}
 
 	return queryGen
@@ -491,26 +565,26 @@ func (self *SqlBackend) refreshCollection(name string) error {
 					Name:   column,
 					Type:   dalType,
 					Length: length,
-					Properties: map[string]interface{}{
-						`native_type`: columnType,
+					Properties: &dal.FieldProperties{
+						NativeType: columnType,
 					},
 				}
 
 				if nullable == 0 {
-					dalField.Properties[`required`] = true
+					dalField.Properties.Required = true
 				}
 
 				if v := defaultValue.String; v != `` {
-					dalField.Properties[`default`] = v
+					dalField.Properties.DefaultValue = v
 				}
 
 				if pk == 1 {
 					if !primaryKeyFound {
-						dalField.Properties[`identity`] = true
+						dalField.Properties.Identity = true
 						collection.IdentityField = column
 						primaryKeyFound = true
 					} else {
-						dalField.Properties[`key`] = true
+						dalField.Properties.Key = true
 					}
 				}
 

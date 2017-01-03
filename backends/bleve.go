@@ -103,7 +103,7 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 		}
 
 		for _, record := range records.Records {
-			if err := batch.Index(string(record.ID), record.Fields); err != nil {
+			if err := batch.Index(fmt.Sprintf("%v", record.ID), record.Fields); err != nil {
 				return err
 			}
 		}

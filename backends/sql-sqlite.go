@@ -10,12 +10,15 @@ import (
 )
 
 func (self *SqlBackend) initializeSqlite() (string, string, error) {
-	// tell the query generator cool details about generating sqlite-compatible SQL
+	// tell the backend cool details about generating sqlite-compatible SQL
 	self.queryGenTypeMapping = generators.SqliteTypeMapping
 	self.queryGenPlaceholderFormat = `?`
 	self.queryGenPlaceholderArgument = ``
+	self.queryGenTableFormat = "%q"
+	self.queryGenFieldFormat = "%q"
 	self.listAllTablesQuery = `SELECT name FROM sqlite_master`
 	self.showTableDetailQuery = `PRAGMA table_info(%s)`
+	self.createPrimaryKeyFormat = `%s INTEGER NOT NULL PRIMARY KEY ASC`
 
 	dataset := self.conn.Dataset()
 	var dsn string

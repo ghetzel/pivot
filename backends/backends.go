@@ -15,7 +15,7 @@ type Backend interface {
 	Initialize() error
 	GetConnectionString() *dal.ConnectionString
 	Exists(collection string, id string) bool
-	Retrieve(collection string, id string, fields ...string) (*dal.Record, error)
+	Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error)
 	Insert(collection string, records *dal.RecordSet) error
 	Update(collection string, records *dal.RecordSet, target ...string) error
 	Delete(collection string, f filter.Filter) error
