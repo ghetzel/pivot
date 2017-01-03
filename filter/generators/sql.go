@@ -85,7 +85,7 @@ type Sql struct {
 	collection          string
 	fields              []string
 	criteria            []string
-	inputValues              []interface{}
+	inputValues         []interface{}
 	values              []interface{}
 }
 

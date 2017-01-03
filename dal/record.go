@@ -9,7 +9,7 @@ import (
 var FieldNestingSeparator string = `.`
 
 type Record struct {
-	ID     interface{}                 `json:"id"`
+	ID     interface{}            `json:"id"`
 	Fields map[string]interface{} `json:"fields,omitempty"`
 	Data   []byte                 `json:"data,omitempty"`
 }

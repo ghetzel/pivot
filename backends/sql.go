@@ -22,8 +22,8 @@ type SqlBackend struct {
 	queryGenTypeMapping         generators.SqlTypeMapping
 	queryGenPlaceholderArgument string
 	queryGenPlaceholderFormat   string
-	queryGenTableFormat   string
-	queryGenFieldFormat string
+	queryGenTableFormat         string
+	queryGenFieldFormat         string
 	listAllTablesQuery          string
 	createPrimaryKeyFormat      string
 	showTableDetailQuery        string
