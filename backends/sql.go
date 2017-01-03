@@ -45,8 +45,6 @@ func (self *SqlBackend) GetConnectionString() *dal.ConnectionString {
 	return &self.conn
 }
 
-// sqlite3:///
-
 func (self *SqlBackend) Initialize() error {
 	backend := self.conn.Backend()
 	internalBackend := backend
