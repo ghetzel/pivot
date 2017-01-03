@@ -55,6 +55,7 @@ func (self *SqlBackend) Initialize() error {
 	var dsn string
 	var err error
 
+	// setup driver-specific settings
 	switch backend {
 	case `sqlite`:
 		name, dsn, err = self.initializeSqlite()
@@ -68,7 +69,7 @@ func (self *SqlBackend) Initialize() error {
 		internalBackend = name
 	}
 
-	log.Debugf("SQL: driver=%s, dsn=%s", internalBackend, dsn)
+	// log.Debugf("SQL: driver=%s, dsn=%s", internalBackend, dsn)
 
 	// setup the database driver for use
 	if db, err := sql.Open(internalBackend, dsn); err == nil {
@@ -90,34 +91,47 @@ func (self *SqlBackend) Initialize() error {
 	return nil
 }
 
-func (self *SqlBackend) Insert(collection string, recordset *dal.RecordSet) error {
-	if tx, err := self.db.Begin(); err == nil {
-		for _, record := range recordset.Records {
-			queryGen := self.makeQueryGen()
-			queryGen.Type = generators.SqlInsertStatement
+func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
+	self.collectionCacheLock.RLock()
+	collection, ok := self.collectionCache[name]
+	self.collectionCacheLock.RUnlock()
 
-			for k, v := range record.Fields {
-				queryGen.InputData[k] = v
-			}
+	if ok {
+		if tx, err := self.db.Begin(); err == nil {
+			// for each record being inserted...
+			for _, record := range recordset.Records {
+				// setup query generator
+				queryGen := self.makeQueryGen()
+				queryGen.Type = generators.SqlInsertStatement
 
-			if record.ID != `` {
-				queryGen.InputData[dal.DefaultIdentityField] = record.ID
-			}
+				// add record data to query input
+				for k, v := range record.Fields {
+					queryGen.InputData[k] = v
+				}
 
-			if stmt, err := filter.Render(queryGen, collection, filter.Null); err == nil {
-				log.Debugf("%s %+v", string(stmt[:]), queryGen.GetValues())
+				// set the primary key
+				if record.ID != `` {
+					queryGen.InputData[collection.IdentityField] = record.ID
+				}
 
-				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
+				// render the query into the final SQL
+				if stmt, err := filter.Render(queryGen, collection.Name, filter.Null); err == nil {
+					// execute the SQL
+					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
+						return err
+					}
+				} else {
 					return err
 				}
-			} else {
-				return err
 			}
-		}
 
-		return tx.Commit()
+			// commit transaction
+			return tx.Commit()
+		} else {
+			return err
+		}
 	} else {
-		return err
+		return dal.CollectionNotFound
 	}
 }
 
@@ -140,8 +154,6 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 			if err := queryGen.Initialize(collection.Name); err == nil {
 				if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
 					values := queryGen.GetValues()
-
-					log.Debugf("%s %+v", string(sqlString[:]), values)
 
 					// perform query
 					if rows, err := self.db.Query(string(sqlString[:]), values...); err == nil {
@@ -173,7 +185,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 	}
 }
 
-func (self *SqlBackend) Update(collection string, recordset *dal.RecordSet, target ...string) error {
+func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...string) error {
 	var targetFilter filter.Filter
 
 	if len(target) > 0 {
@@ -184,68 +196,84 @@ func (self *SqlBackend) Update(collection string, recordset *dal.RecordSet, targ
 		}
 	}
 
-	if tx, err := self.db.Begin(); err == nil {
-		for _, record := range recordset.Records {
-			queryGen := self.makeQueryGen()
-			queryGen.Type = generators.SqlUpdateStatement
+	self.collectionCacheLock.RLock()
+	collection, ok := self.collectionCache[name]
+	self.collectionCacheLock.RUnlock()
 
-			var recordUpdateFilter filter.Filter
+	if ok {
+		if tx, err := self.db.Begin(); err == nil {
+			// for each record being updated...
+			for _, record := range recordset.Records {
+				// setup query generator
+				queryGen := self.makeQueryGen()
+				queryGen.Type = generators.SqlUpdateStatement
 
-			// if this record was specified without a specific ID, attempt to use the broader
-			// target filter (if specified)
-			if record.ID == `` {
-				if len(target) > 0 {
-					recordUpdateFilter = targetFilter
+				var recordUpdateFilter filter.Filter
+
+				// if this record was specified without a specific ID, attempt to use the broader
+				// target filter (if given)
+				if record.ID == `` {
+					if len(target) > 0 {
+						recordUpdateFilter = targetFilter
+					} else {
+						return fmt.Errorf("Update must target at least one record")
+					}
 				} else {
-					return fmt.Errorf("Update must target at least one record")
+					// try to build a filter targeting this specific record
+					if f, err := filter.FromMap(map[string]interface{}{
+						collection.IdentityField: record.ID,
+					}); err == nil {
+						recordUpdateFilter = f
+					} else {
+						return err
+					}
 				}
-			} else {
-				// try to build a filter targeting this specific record
-				if f, err := filter.FromMap(map[string]interface{}{
-					dal.DefaultIdentityField: record.ID,
-				}); err == nil {
-					recordUpdateFilter = f
+
+				// add all non-ID fields to the record's Fields set
+				for k, v := range record.Fields {
+					if k != collection.IdentityField {
+						queryGen.InputData[k] = v
+					}
+				}
+
+				// generate SQL
+				if stmt, err := filter.Render(queryGen, collection.Name, recordUpdateFilter); err == nil {
+					// execute SQL
+					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
+						return err
+					}
 				} else {
 					return err
 				}
 			}
 
-			// add all non-ID fields to the record's Fields set
-			for k, v := range record.Fields {
-				if k != dal.DefaultIdentityField {
-					queryGen.InputData[k] = v
-				}
-			}
-
-			// generate SQL
-			if stmt, err := filter.Render(queryGen, collection, recordUpdateFilter); err == nil {
-				log.Debugf("%s %+v", string(stmt[:]), queryGen.GetValues())
-
-				// execute SQL
-				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
-					return err
-				}
-			} else {
-				return err
-			}
+			return tx.Commit()
+		} else {
+			return err
 		}
-
-		return tx.Commit()
 	} else {
-		return err
+		return dal.CollectionNotFound
 	}
 }
 
-func (self *SqlBackend) Delete(collection string, f filter.Filter) error {
-	if tx, err := self.db.Begin(); err == nil {
-		queryGen := self.makeQueryGen()
-		queryGen.Type = generators.SqlDeleteStatement
+func (self *SqlBackend) Delete(name string, f filter.Filter) error {
+	self.collectionCacheLock.RLock()
+	collection, ok := self.collectionCache[name]
+	self.collectionCacheLock.RUnlock()
 
-		// generate SQL
-		if stmt, err := filter.Render(queryGen, collection, f); err == nil {
-			// execute SQL
-			if _, err := tx.Exec(string(stmt[:])); err == nil {
-				return tx.Commit()
+	if ok {
+		if tx, err := self.db.Begin(); err == nil {
+			queryGen := self.makeQueryGen()
+			queryGen.Type = generators.SqlDeleteStatement
+
+			// generate SQL
+			if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
+				// execute SQL
+				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
+					return tx.Commit()
+				} else {
+					return err
+				}
 			} else {
 				return err
 			}
@@ -253,7 +281,7 @@ func (self *SqlBackend) Delete(collection string, f filter.Filter) error {
 			return err
 		}
 	} else {
-		return err
+		return dal.CollectionNotFound
 	}
 }
 
@@ -342,8 +370,6 @@ func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
 
 	query += strings.Join(fields, `, `)
 	query += `)`
-
-	log.Debugf("CreateCollection: %v", query)
 
 	if tx, err := self.db.Begin(); err == nil {
 		if _, err := tx.Exec(query); err == nil {
