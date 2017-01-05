@@ -17,6 +17,7 @@ type Field struct {
 	Name       string           `json:"name"`
 	Type       string           `json:"type"`
 	Length     int              `json:"length,omitempty"`
+	Precision  int              `json:"precision,omitempty"`
 	Properties *FieldProperties `json:"properties,omitempty"`
 }
 
@@ -32,6 +33,10 @@ func (self *Field) VerifyEqual(dataset *Dataset, other Field) error {
 	if !dataset.SkipFieldLength {
 		if other.Length != self.Length {
 			return fmt.Errorf("Field lengths do not match; expected: %d, got: %d", self.Length, other.Length)
+		}
+
+		if other.Precision != self.Precision {
+			return fmt.Errorf("Field precisions do not match; expected: %d, got: %d", self.Precision, other.Precision)
 		}
 	}
 	return nil

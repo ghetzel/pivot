@@ -14,11 +14,21 @@ import (
 var backend backends.Backend
 var TestData = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 
+
 func setupTestSqlite() {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
 	if b, err := makeBackend(`sqlite:///./tmp/db_test/test.db`); err == nil {
+		backend = b
+	} else {
+		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func setupTestMysql() {
+	if b, err := makeBackend(`mysql://test:test@db/test`); err == nil {
 		backend = b
 	} else {
 		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
@@ -49,6 +59,9 @@ func TestMain(m *testing.M) {
 			os.Exit(i)
 		}
 	}
+
+	setupTestMysql()
+	run()
 
 	setupTestSqlite()
 	run()

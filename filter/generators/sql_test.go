@@ -7,6 +7,42 @@ import (
 	"testing"
 )
 
+func TestSqlSplitTypeLength(t *testing.T) {
+	assert := require.New(t)
+
+	gen := NewSqlGenerator()
+
+	typeName, length, precision := gen.SplitTypeLength(`integer`)
+	assert.Equal(`INTEGER`, typeName)
+	assert.Equal(0, length)
+	assert.Equal(0, precision)
+
+	typeName, length, precision = gen.SplitTypeLength(`integer(1)`)
+	assert.Equal(`INTEGER`, typeName)
+	assert.Equal(1, length)
+	assert.Equal(0, precision)
+
+	typeName, length, precision = gen.SplitTypeLength(`float(255,12)`)
+	assert.Equal(`FLOAT`, typeName)
+	assert.Equal(255, length)
+	assert.Equal(12, precision)
+
+	typeName, length, precision = gen.SplitTypeLength(`INTEGER`)
+	assert.Equal(`INTEGER`, typeName)
+	assert.Equal(0, length)
+	assert.Equal(0, precision)
+
+	typeName, length, precision = gen.SplitTypeLength(`INTEGER(1)`)
+	assert.Equal(`INTEGER`, typeName)
+	assert.Equal(1, length)
+	assert.Equal(0, precision)
+
+	typeName, length, precision = gen.SplitTypeLength(`FLOAT(255,12)`)
+	assert.Equal(`FLOAT`, typeName)
+	assert.Equal(255, length)
+	assert.Equal(12, precision)
+}
+
 func TestSqlSelects(t *testing.T) {
 	assert := require.New(t)
 

@@ -5,15 +5,30 @@ import (
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
-	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
 	"reflect"
-	"regexp"
 	"strings"
 	"sync"
 )
+
+type sqlTableDetails struct {
+	Index        int
+	Name         string
+	Type         string
+	TypeLength   int
+	Precision    int
+	NativeType   string
+	PrimaryKey   bool
+	KeyField     bool
+	Nullable     bool
+	Unique       bool
+	DefaultValue string
+}
+
+type sqlAddFieldFunc func(details sqlTableDetails) error     // {}
+type sqlTableDetailsFunc func(string, sqlAddFieldFunc) error // {}
 
 type SqlBackend struct {
 	Backend
@@ -27,6 +42,8 @@ type SqlBackend struct {
 	listAllTablesQuery          string
 	createPrimaryKeyFormat      string
 	showTableDetailQuery        string
+	tableDetailsFunc            sqlTableDetailsFunc
+	tableDetailAddFieldFunc     sqlAddFieldFunc
 	dropTableQuery              string
 	collectionCache             map[string]*dal.Collection
 	collectionCacheLock         sync.RWMutex
@@ -57,6 +74,8 @@ func (self *SqlBackend) Initialize() error {
 	switch backend {
 	case `sqlite`:
 		name, dsn, err = self.initializeSqlite()
+	case `mysql`:
+		name, dsn, err = self.initializeMysql()
 	default:
 		return fmt.Errorf("Unsupported backend %q", backend)
 	}
@@ -544,80 +563,32 @@ func (self *SqlBackend) refreshAllCollections() error {
 }
 
 func (self *SqlBackend) refreshCollection(name string) error {
-	if rows, err := self.db.Query(
-		fmt.Sprintf(self.showTableDetailQuery, name),
-	); err == nil {
-		defer rows.Close()
+	collection := dal.NewCollection(name)
 
-		collection := dal.NewCollection(name)
-		var primaryKeyFound bool
-
-		for rows.Next() {
-			var i, nullable, pk int
-			var column, columnType string
-			var defaultValue sql.NullString
-
-			if err := rows.Scan(&i, &column, &columnType, &nullable, &defaultValue, &pk); err == nil {
-
-				var dalType string
-				var length int
-
-				columnType = strings.ToUpper(columnType)
-				parts := strings.SplitN(columnType, `(`, 2)
-
-				if len(parts) == 2 {
-					if v, err := stringutil.ConvertToInteger(strings.TrimSuffix(parts[1], `)`)); err == nil {
-						length = int(v)
-					}
-				}
-
-				if ok, err := regexp.MatchString(`^(TEXT|N?VARCHAR|CHARACTER|CHARACTER VARYING)$`, parts[0]); err == nil && ok {
-					dalType = `str`
-				} else if ok, err := regexp.MatchString(`^(BOOL|BOOLEAN|TINYINT\(1\)|BIT|INTEGER\(1\))`, columnType); err == nil && ok {
-					dalType = `bool`
-				} else if ok, err := regexp.MatchString(`^(SERIAL|INT|INTEGER|SMALLINT|BIGINT)$`, parts[0]); err == nil && ok {
-					dalType = `int`
-				} else if ok, err := regexp.MatchString(`^(FLOAT|DOUBLE|DECIMAL|REAL|NUMERIC|CURRENCY)$`, parts[0]); err == nil && ok {
-					dalType = `float`
-				} else if ok, err := regexp.MatchString(`^(DATE|TIME|DATETIME|TIMESTAMP)$`, parts[0]); err == nil && ok {
-					dalType = `date`
-				} else {
-					dalType = parts[0]
-				}
-
-				dalField := dal.Field{
-					Name:   column,
-					Type:   dalType,
-					Length: length,
-					Properties: &dal.FieldProperties{
-						NativeType: columnType,
-					},
-				}
-
-				if nullable == 0 {
-					dalField.Properties.Required = true
-				}
-
-				if v := defaultValue.String; v != `` {
-					dalField.Properties.DefaultValue = v
-				}
-
-				if pk == 1 {
-					if !primaryKeyFound {
-						dalField.Properties.Identity = true
-						collection.IdentityField = column
-						primaryKeyFound = true
-					} else {
-						dalField.Properties.Key = true
-					}
-				}
-
-				collection.Fields = append(collection.Fields, dalField)
-			} else {
-				return err
-			}
+	if err := self.tableDetailsFunc(name, func(details sqlTableDetails) error {
+		dalField := dal.Field{
+			Name:      details.Name,
+			Type:      details.Type,
+			Length:    details.TypeLength,
+			Precision: details.Precision,
+			Properties: &dal.FieldProperties{
+				NativeType:   details.NativeType,
+				Required:     !details.Nullable,
+				Unique:       details.Unique,
+				DefaultValue: details.DefaultValue,
+				Identity:     details.PrimaryKey,
+				Key:          details.KeyField,
+			},
 		}
 
+		if details.PrimaryKey {
+			collection.IdentityField = details.Name
+		}
+
+		collection.Fields = append(collection.Fields, dalField)
+
+		return nil
+	}); err == nil {
 		if len(collection.Fields) > 0 {
 			self.collectionCacheLock.Lock()
 			defer self.collectionCacheLock.Unlock()

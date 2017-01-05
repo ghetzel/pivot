@@ -396,6 +396,29 @@ func (self *Sql) ToNativeType(in string, length int) (string, error) {
 	return strings.ToUpper(out), nil
 }
 
+func (self *Sql) SplitTypeLength(in string) (string, int, int) {
+	var length int
+	var precision int
+
+	parts := strings.SplitN(strings.ToUpper(in), `(`, 2)
+
+	if len(parts) == 2 {
+		nums := strings.SplitN(strings.TrimSuffix(parts[1], `)`), `,`, 2)
+
+		if len(nums) == 2 {
+			if v, err := stringutil.ConvertToInteger(nums[1]); err == nil {
+				precision = int(v)
+			}
+		}
+
+		if v, err := stringutil.ConvertToInteger(nums[0]); err == nil {
+			length = int(v)
+		}
+	}
+
+	return parts[0], length, precision
+}
+
 func (self *Sql) ToValue(fieldName string, fieldIndex int, in interface{}, operator string) string {
 	if self.UsePlaceholders {
 		switch self.PlaceholderArgument {

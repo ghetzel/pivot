@@ -31,7 +31,7 @@ func MakeBackend(connection dal.ConnectionString) (Backend, error) {
 	switch connection.Backend() {
 	case `boltdb`:
 		return NewBoltBackend(connection), nil
-	case `sqlite`:
+	case `sqlite`, `mysql`:
 		return NewSqlBackend(connection), nil
 	default:
 		return nil, fmt.Errorf("Unknown backend type %q", connection.Backend())
