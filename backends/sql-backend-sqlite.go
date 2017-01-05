@@ -2,6 +2,7 @@ package backends
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/pathutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
@@ -13,8 +14,6 @@ import (
 func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	// tell the backend cool details about generating sqlite-compatible SQL
 	self.queryGenTypeMapping = generators.SqliteTypeMapping
-	self.queryGenPlaceholderFormat = `?`
-	self.queryGenPlaceholderArgument = ``
 	self.queryGenTableFormat = "%q"
 	self.queryGenFieldFormat = "%q"
 	self.listAllTablesQuery = `SELECT name FROM sqlite_master`
@@ -22,7 +21,7 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 
 	// the bespoke method for determining table information for sqlite3
 	self.tableDetailsFunc = func(collectionName string, fieldFn sqlAddFieldFunc) error {
-		if rows, err := self.db.Query("PRAGMA table_info(?)", collectionName); err == nil {
+		if rows, err := self.db.Query(fmt.Sprintf("PRAGMA table_info(%q)", collectionName)); err == nil {
 			defer rows.Close()
 			queryGen := self.makeQueryGen()
 

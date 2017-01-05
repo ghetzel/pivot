@@ -116,7 +116,7 @@ func (self *Sql) Initialize(collectionName string) error {
 	return nil
 }
 
-func (self *Sql) Finalize(_ filter.Filter) error {
+func (self *Sql) Finalize(f filter.Filter) error {
 	switch self.Type {
 	case SqlSelectStatement:
 		self.Push([]byte(`SELECT `))
@@ -124,13 +124,23 @@ func (self *Sql) Finalize(_ filter.Filter) error {
 		if len(self.fields) == 0 {
 			self.Push([]byte(`*`))
 		} else {
-			self.Push([]byte(strings.Join(self.fields, `,`)))
+			fieldNames := make([]string, len(self.fields))
+
+			for i, f := range self.fields {
+				fieldNames[i] = self.ToFieldName(f)
+			}
+
+			self.Push([]byte(strings.Join(fieldNames, `, `)))
 		}
 
 		self.Push([]byte(` FROM `))
 		self.Push([]byte(self.collection))
 
 		self.populateWhereClause()
+
+		self.populateOrderBy(f)
+
+		self.populateLimitOffset(f)
 
 	case SqlInsertStatement:
 		if self.InputData == nil || len(self.InputData) == 0 {
@@ -465,6 +475,37 @@ func (self *Sql) populateWhereClause() {
 			if i+1 < len(self.criteria) {
 				self.Push([]byte(` `))
 			}
+		}
+	}
+}
+
+func (self *Sql) populateOrderBy(f filter.Filter) {
+	if len(f.Sort) > 0 {
+		self.Push([]byte(` ORDER BY `))
+		orderByFields := make([]string, len(f.Sort))
+
+		for i, sortBy := range f.GetSort() {
+			v := self.ToFieldName(sortBy.Field)
+
+			if !sortBy.Descending {
+				v += ` ASC`
+			} else {
+				v += ` DESC`
+			}
+
+			orderByFields[i] = v
+		}
+
+		self.Push([]byte(strings.Join(orderByFields, `, `)))
+	}
+}
+
+func (self *Sql) populateLimitOffset(f filter.Filter) {
+	if f.Limit > 0 {
+		self.Push([]byte(fmt.Sprintf(" LIMIT %d", f.Limit)))
+
+		if f.Offset > 0 {
+			self.Push([]byte(fmt.Sprintf(" OFFSET %d", f.Offset)))
 		}
 	}
 }

@@ -21,6 +21,7 @@ type Backend interface {
 	Delete(collection string, f filter.Filter) error
 	CreateCollection(definition dal.Collection) error
 	DeleteCollection(collection string) error
+	ListCollections() ([]string, error)
 	GetCollection(collection string) (*dal.Collection, error)
 	WithSearch() Indexer
 }

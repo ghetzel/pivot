@@ -32,6 +32,7 @@ type sqlTableDetailsFunc func(string, sqlAddFieldFunc) error // {}
 
 type SqlBackend struct {
 	Backend
+	Indexer
 	conn                        dal.ConnectionString
 	db                          *sql.DB
 	queryGenTypeMapping         generators.SqlTypeMapping
@@ -51,10 +52,11 @@ type SqlBackend struct {
 
 func NewSqlBackend(connection dal.ConnectionString) *SqlBackend {
 	return &SqlBackend{
-		conn:                connection,
-		queryGenTypeMapping: generators.DefaultSqlTypeMapping,
-		collectionCache:     make(map[string]*dal.Collection),
-		dropTableQuery:      `DROP TABLE %s`,
+		conn:                      connection,
+		queryGenTypeMapping:       generators.DefaultSqlTypeMapping,
+		queryGenPlaceholderFormat: `?`,
+		collectionCache:           make(map[string]*dal.Collection),
+		dropTableQuery:            `DROP TABLE %s`,
 	}
 }
 
@@ -86,7 +88,7 @@ func (self *SqlBackend) Initialize() error {
 		internalBackend = name
 	}
 
-	// log.Debugf("SQL: driver=%s, dsn=%s", internalBackend, dsn)
+	log.Debugf("SQL: driver=%s, dsn=%s", internalBackend, dsn)
 
 	// setup the database driver for use
 	if db, err := sql.Open(internalBackend, dsn); err == nil {
@@ -109,12 +111,18 @@ func (self *SqlBackend) Initialize() error {
 }
 
 func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
-	self.collectionCacheLock.RLock()
-	collection, ok := self.collectionCache[name]
-	self.collectionCacheLock.RUnlock()
+	if collection, err := self.getCollectionFromCache(name); err == nil {
 
-	if ok {
 		if tx, err := self.db.Begin(); err == nil {
+			switch self.conn.Backend() {
+			case `mysql`:
+				// disable zero-means-use-autoincrement for inserts in MySQL
+				if _, err := tx.Exec(`SET sql_mode='NO_AUTO_VALUE_ON_ZERO'`); err != nil {
+					defer tx.Rollback()
+					return err
+				}
+			}
+
 			// for each record being inserted...
 			for _, record := range recordset.Records {
 				// setup query generator
@@ -123,21 +131,35 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 				// add record data to query input
 				for k, v := range record.Fields {
-					queryGen.InputData[k] = v
+					// convert incoming values to their destination field types
+					if cV, err := collection.ConvertValue(k, v); err == nil {
+						queryGen.InputData[k] = cV
+					} else {
+						defer tx.Rollback()
+						return err
+					}
 				}
 
 				// set the primary key
 				if record.ID != `` {
-					queryGen.InputData[collection.IdentityField] = record.ID
+					// convert incoming ID to it's destination field type
+					if v, err := collection.ConvertValue(collection.IdentityField, record.ID); err == nil {
+						queryGen.InputData[collection.IdentityField] = v
+					} else {
+						defer tx.Rollback()
+						return err
+					}
 				}
 
 				// render the query into the final SQL
 				if stmt, err := filter.Render(queryGen, collection.Name, filter.Null); err == nil {
 					// execute the SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
+						defer tx.Rollback()
 						return err
 					}
 				} else {
+					defer tx.Rollback()
 					return err
 				}
 			}
@@ -148,20 +170,41 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 			return err
 		}
 	} else {
-		return dal.CollectionNotFound
+		return err
 	}
 }
 
-func (self *SqlBackend) Exists(collection string, id string) bool {
+func (self *SqlBackend) Exists(name string, id string) bool {
+	if collection, err := self.getCollectionFromCache(name); err == nil {
+		if tx, err := self.db.Begin(); err == nil {
+			defer tx.Commit()
+
+			if f, err := filter.FromMap(map[string]interface{}{
+				collection.IdentityField: id,
+			}); err == nil {
+				f.Fields = []string{collection.IdentityField}
+				queryGen := self.makeQueryGen()
+
+				if err := queryGen.Initialize(collection.Name); err == nil {
+					if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
+						// perform query
+						row := tx.QueryRow(string(sqlString[:]), queryGen.GetValues()...)
+						var outId string
+
+						if err := row.Scan(&outId); err == nil {
+							return (id == outId)
+						}
+					}
+				}
+			}
+		}
+	}
+
 	return false
 }
 
 func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
-	self.collectionCacheLock.RLock()
-	collection, ok := self.collectionCache[name]
-	self.collectionCacheLock.RUnlock()
-
-	if ok {
+	if collection, err := self.getCollectionFromCache(name); err == nil {
 		if f, err := filter.FromMap(map[string]interface{}{
 			collection.IdentityField: id,
 		}); err == nil {
@@ -170,10 +213,8 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 
 			if err := queryGen.Initialize(collection.Name); err == nil {
 				if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
-					values := queryGen.GetValues()
-
 					// perform query
-					if rows, err := self.db.Query(string(sqlString[:]), values...); err == nil {
+					if rows, err := self.db.Query(string(sqlString[:]), queryGen.GetValues()...); err == nil {
 						defer rows.Close()
 
 						if columns, err := rows.Columns(); err == nil {
@@ -213,11 +254,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 		}
 	}
 
-	self.collectionCacheLock.RLock()
-	collection, ok := self.collectionCache[name]
-	self.collectionCacheLock.RUnlock()
-
-	if ok {
+	if collection, err := self.getCollectionFromCache(name); err == nil {
 		if tx, err := self.db.Begin(); err == nil {
 			// for each record being updated...
 			for _, record := range recordset.Records {
@@ -233,6 +270,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 					if len(target) > 0 {
 						recordUpdateFilter = targetFilter
 					} else {
+						defer tx.Rollback()
 						return fmt.Errorf("Update must target at least one record")
 					}
 				} else {
@@ -242,6 +280,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 					}); err == nil {
 						recordUpdateFilter = f
 					} else {
+						defer tx.Rollback()
 						return err
 					}
 				}
@@ -257,9 +296,11 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 				if stmt, err := filter.Render(queryGen, collection.Name, recordUpdateFilter); err == nil {
 					// execute SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
+						defer tx.Rollback()
 						return err
 					}
 				} else {
+					defer tx.Rollback()
 					return err
 				}
 			}
@@ -269,16 +310,12 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 			return err
 		}
 	} else {
-		return dal.CollectionNotFound
+		return err
 	}
 }
 
 func (self *SqlBackend) Delete(name string, f filter.Filter) error {
-	self.collectionCacheLock.RLock()
-	collection, ok := self.collectionCache[name]
-	self.collectionCacheLock.RUnlock()
-
-	if ok {
+	if collection, err := self.getCollectionFromCache(name); err == nil {
 		if tx, err := self.db.Begin(); err == nil {
 			queryGen := self.makeQueryGen()
 			queryGen.Type = generators.SqlDeleteStatement
@@ -289,21 +326,31 @@ func (self *SqlBackend) Delete(name string, f filter.Filter) error {
 				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
 					return tx.Commit()
 				} else {
+					defer tx.Rollback()
 					return err
 				}
 			} else {
+				defer tx.Rollback()
 				return err
 			}
 		} else {
 			return err
 		}
 	} else {
-		return dal.CollectionNotFound
+		return err
 	}
 }
 
 func (self *SqlBackend) WithSearch() Indexer {
-	return nil
+	return self
+}
+
+func (self *SqlBackend) ListCollections() ([]string, error) {
+	if err := self.refreshAllCollections(); err == nil {
+		return maputil.StringKeys(self.collectionCache), nil
+	} else {
+		return nil, err
+	}
 }
 
 func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
@@ -396,6 +443,7 @@ func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
 				return err
 			}
 		} else {
+			defer tx.Rollback()
 			return err
 		}
 	} else {
@@ -407,11 +455,13 @@ func (self *SqlBackend) DeleteCollection(collection string) error {
 	gen := self.makeQueryGen()
 
 	if tx, err := self.db.Begin(); err == nil {
-		if _, err := tx.Exec(
-			fmt.Sprintf(self.dropTableQuery, gen.ToTableName(collection)),
-		); err == nil {
+		query := fmt.Sprintf(self.dropTableQuery, gen.ToTableName(collection))
+
+		if _, err := tx.Exec(query); err == nil {
+			log.Debugf(query)
 			return tx.Commit()
 		} else {
+			defer tx.Rollback()
 			return err
 		}
 	} else {
@@ -421,10 +471,7 @@ func (self *SqlBackend) DeleteCollection(collection string) error {
 
 func (self *SqlBackend) GetCollection(name string) (*dal.Collection, error) {
 	if err := self.refreshCollection(name); err == nil {
-		self.collectionCacheLock.RLock()
-		defer self.collectionCacheLock.RUnlock()
-
-		if collection, ok := self.collectionCache[name]; ok {
+		if collection, err := self.getCollectionFromCache(name); err == nil {
 			return collection, nil
 		}
 	}
@@ -599,5 +646,17 @@ func (self *SqlBackend) refreshCollection(name string) error {
 		return nil
 	} else {
 		return err
+	}
+}
+
+func (self *SqlBackend) getCollectionFromCache(name string) (*dal.Collection, error) {
+	self.collectionCacheLock.RLock()
+	collection, ok := self.collectionCache[name]
+	self.collectionCacheLock.RUnlock()
+
+	if ok {
+		return collection, nil
+	} else {
+		return nil, dal.CollectionNotFound
 	}
 }

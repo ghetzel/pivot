@@ -136,3 +136,20 @@ func TestFilterFromMap(t *testing.T) {
 		}
 	}
 }
+
+func TestFilterGetSort(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := Parse(`name/test/-age/4/+group/one`)
+	assert.Nil(err)
+
+	sortBy := f.GetSort()
+
+	assert.Equal(2, len(sortBy))
+
+	assert.Equal(`age`, sortBy[0].Field)
+	assert.True(sortBy[0].Descending)
+
+	assert.Equal(`group`, sortBy[1].Field)
+	assert.False(sortBy[1].Descending)
+}

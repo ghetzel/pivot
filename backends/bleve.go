@@ -19,10 +19,9 @@ import (
 	"time"
 )
 
-var BleveIndexerPageSize int = 100
-var BleveMaxFacetCardinality int = 10000
 var BleveBatchFlushCount = 250
 var BleveBatchFlushInterval = 10 * time.Second
+var BleveIdentityField = `_id`
 
 type deferredBatch struct {
 	batch     *bleve.Batch
@@ -46,13 +45,13 @@ func NewBleveIndexer(connection dal.ConnectionString) *BleveIndexer {
 	}
 }
 
-func (self *BleveIndexer) Initialize(parent Backend) error {
+func (self *BleveIndexer) IndexInitialize(parent Backend) error {
 	self.parent = parent
 
 	return nil
 }
 
-func (self *BleveIndexer) Retrieve(collection string, id string) (*dal.Record, error) {
+func (self *BleveIndexer) IndexRetrieve(collection string, id string) (*dal.Record, error) {
 	defer stats.NewTiming().Send(`pivot.backends.bleve.retrieve_time`)
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
@@ -72,8 +71,8 @@ func (self *BleveIndexer) Retrieve(collection string, id string) (*dal.Record, e
 	}
 }
 
-func (self *BleveIndexer) Exists(collection string, id string) bool {
-	if _, err := self.Retrieve(collection, id); err == nil {
+func (self *BleveIndexer) IndexExists(collection string, id string) bool {
+	if _, err := self.IndexRetrieve(collection, id); err == nil {
 		return true
 	}
 
@@ -152,6 +151,10 @@ func (self *BleveIndexer) checkAndFlushBatches() {
 func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn IndexResultFunc) error {
 	defer stats.NewTiming().Send(`pivot.backends.bleve.query_time`)
 
+	if f.IdentityField == `` {
+		f.IdentityField = BleveIdentityField
+	}
+
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		if bq, err := self.filterToBleveQuery(index, f); err == nil {
 			offset := f.Offset
@@ -160,12 +163,12 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 
 			// filter size falls back to package default
 			if f.Limit == 0 {
-				f.Limit = BleveIndexerPageSize
+				f.Limit = IndexerPageSize
 			}
 
 			// perform requests until we have enough results or the index is out of them
 			for {
-				request := bleve.NewSearchRequestOptions(bq, BleveIndexerPageSize, offset, false)
+				request := bleve.NewSearchRequestOptions(bq, IndexerPageSize, offset, false)
 
 				// apply sorting (if specified)
 				if f.Sort != nil && len(f.Sort) > 0 {
@@ -229,20 +232,12 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 func (self *BleveIndexer) Query(collection string, f filter.Filter) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
 
+	if f.IdentityField == `` {
+		f.IdentityField = BleveIdentityField
+	}
+
 	if err := self.QueryFunc(collection, f, func(indexRecord *dal.Record, page IndexPage) error {
-		if recordset.TotalPages == 0 {
-			recordset.TotalPages = page.TotalPages
-		}
-
-		if recordset.RecordsPerPage == 0 {
-			recordset.RecordsPerPage = page.Limit
-		}
-
-		// result count is whatever Bleve told us it was for this query
-		recordset.ResultCount = page.TotalResults
-
-		// page is the last page number set
-		recordset.Page = int(math.Ceil(float64(f.Offset+1) / float64(page.Limit)))
+		PopulateRecordSetPageDetails(recordset, f, page)
 
 		if f.IdOnly() {
 			recordset.Records = append(recordset.Records, dal.NewRecord(indexRecord.ID))
@@ -260,7 +255,7 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter) (*dal.Record
 	return recordset, nil
 }
 
-func (self *BleveIndexer) Remove(collection string, ids []string) error {
+func (self *BleveIndexer) IndexRemove(collection string, ids []string) error {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		batch := index.NewBatch()
 
@@ -285,12 +280,12 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 				switch field {
 				case `_id`, `id`:
 					idQuery = true
-					request.Size = BleveMaxFacetCardinality
+					request.Size = MaxFacetCardinality
 					request.Fields = append(request.Fields, `_id`)
 				default:
 					request.AddFacet(
 						field,
-						bleve.NewFacetRequest(field, BleveMaxFacetCardinality),
+						bleve.NewFacetRequest(field, MaxFacetCardinality),
 					)
 				}
 			}

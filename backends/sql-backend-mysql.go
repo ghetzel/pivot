@@ -15,10 +15,10 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 
 	// tell the backend cool details about generating sqlite-compatible SQL
 	self.queryGenTypeMapping = generators.MysqlTypeMapping
-	self.queryGenPlaceholderFormat = `$%d`
-	self.queryGenPlaceholderArgument = `index1`
-	self.queryGenTableFormat = "%q"
-	self.queryGenFieldFormat = "%q"
+	self.queryGenPlaceholderFormat = `?`
+	self.queryGenPlaceholderArgument = ``
+	self.queryGenTableFormat = "`%s`"
+	self.queryGenFieldFormat = "`%s`"
 	self.listAllTablesQuery = `SHOW TABLES`
 	self.createPrimaryKeyFormat = `%s INT AUTO_INCREMENT NOT NULL PRIMARY KEY`
 
@@ -39,7 +39,11 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 
 			queryGen := self.makeQueryGen()
 
-			if sqlString, err := filter.Render(queryGen, `information_schema.COLUMNS`, f); err == nil {
+			// make this instance of the query generator use the table name as given because
+			// we need to reference another database (information_schema)
+			queryGen.TableNameFormat = "%s"
+
+			if sqlString, err := filter.Render(queryGen, "`information_schema`.`COLUMNS`", f); err == nil {
 				if rows, err := self.db.Query(string(sqlString[:]), queryGen.GetValues()...); err == nil {
 					defer rows.Close()
 
@@ -111,16 +115,32 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 		}
 	}
 
-	var dsn string
+	var dsn, protocol, host string
+
+	// set or autodetect protocol
+	if v := self.conn.Protocol(); v != `` {
+		protocol = v
+	} else if strings.HasPrefix(self.conn.Host(), `/`) {
+		protocol = `unix`
+	} else {
+		protocol = `tcp`
+	}
+
+	// prepend port to host if not present
+	if strings.Contains(self.conn.Host(), `:`) {
+		host = self.conn.Host()
+	} else {
+		host = fmt.Sprintf("%s:3306", self.conn.Host())
+	}
 
 	if up := self.conn.URI.User; up != nil {
 		dsn += up.String() + `@`
 	}
 
 	dsn += fmt.Sprintf(
-		"%s%s(%s)%s",
-		self.conn.Protocol(),
-		self.conn.Host(),
+		"%s(%s)%s",
+		protocol,
+		host,
 		self.conn.Dataset(),
 	)
 

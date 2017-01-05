@@ -12,7 +12,6 @@ var FieldTermSeparator = `/`
 var ModifierDelimiter = `:`
 var ValueSeparator = `|`
 var QueryUnescapeValues = false
-var IdentityField = `_id`
 var AllValue = `all`
 
 type Criterion struct {
@@ -21,6 +20,11 @@ type Criterion struct {
 	Field    string   `json:"field"`
 	Operator string   `json:"operator,omitempty"`
 	Values   []string `json:"values"`
+}
+
+type SortBy struct {
+	Field      string
+	Descending bool
 }
 
 func (self *Criterion) String() string {
@@ -56,14 +60,15 @@ func (self *Criterion) String() string {
 }
 
 type Filter struct {
-	Spec     string
-	MatchAll bool
-	Offset   int
-	Limit    int
-	Criteria []Criterion
-	Sort     []string
-	Fields   []string
-	Options  map[string]string
+	Spec          string
+	MatchAll      bool
+	Offset        int
+	Limit         int
+	Criteria      []Criterion
+	Sort          []string
+	Fields        []string
+	Options       map[string]string
+	IdentityField string
 }
 
 func MakeFilter(spec string) Filter {
@@ -133,8 +138,6 @@ func Parse(spec string) (Filter, error) {
 	case len(criteria) >= 2:
 		for i, token := range criteria {
 			if (i % 2) == 0 {
-				parts := strings.SplitN(token, ModifierDelimiter, 2)
-
 				var addSortAsc *bool
 
 				if strings.HasPrefix(token, `+`) {
@@ -144,6 +147,12 @@ func Parse(spec string) (Filter, error) {
 					v := false
 					addSortAsc = &v
 				}
+
+				// remove sort prefixes
+				token = strings.TrimPrefix(token, `-`)
+				token = strings.TrimPrefix(token, `+`)
+
+				parts := strings.SplitN(token, ModifierDelimiter, 2)
 
 				if len(parts) == 1 {
 					criterion = Criterion{
@@ -218,7 +227,7 @@ func (self *Filter) CriteriaFields() []string {
 }
 
 func (self *Filter) IdOnly() bool {
-	if self.Fields != nil && len(self.Fields) == 1 && self.Fields[0] == IdentityField {
+	if self.Fields != nil && len(self.Fields) == 1 && self.Fields[0] == self.IdentityField {
 		return true
 	}
 
@@ -237,4 +246,21 @@ func (self *Filter) String() string {
 
 		return strings.Join(criteria, CriteriaSeparator)
 	}
+}
+
+func (self *Filter) GetSort() []SortBy {
+	sortBy := make([]SortBy, len(self.Sort))
+
+	for i, s := range self.Sort {
+		desc := strings.HasPrefix(s, `-`)
+		s = strings.TrimPrefix(s, `-`)
+		s = strings.TrimPrefix(s, `+`)
+
+		sortBy[i] = SortBy{
+			Field:      s,
+			Descending: desc,
+		}
+	}
+
+	return sortBy
 }

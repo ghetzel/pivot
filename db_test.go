@@ -14,7 +14,6 @@ import (
 var backend backends.Backend
 var TestData = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 
-
 func setupTestSqlite() {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
@@ -93,6 +92,10 @@ func TestCollectionManagement(t *testing.T) {
 		Name: `TestCollectionManagement`,
 	})
 
+	defer func() {
+		assert.Nil(backend.DeleteCollection(`TestCollectionManagement`))
+	}()
+
 	assert.Nil(err)
 
 	if coll, err := backend.GetCollection(`TestCollectionManagement`); err == nil {
@@ -114,6 +117,10 @@ func TestBasicCRUD(t *testing.T) {
 			},
 		},
 	})
+
+	defer func() {
+		assert.Nil(backend.DeleteCollection(`TestBasicCRUD`))
+	}()
 
 	assert.Nil(err)
 	var record *dal.Record
@@ -180,7 +187,17 @@ func TestSearchQuery(t *testing.T) {
 	if search := backend.WithSearch(); search != nil {
 		err := backend.CreateCollection(dal.Collection{
 			Name: `TestSearchQuery`,
+			Fields: []dal.Field{
+				{
+					Name: `name`,
+					Type: `str`,
+				},
+			},
 		})
+
+		defer func() {
+			assert.Nil(backend.DeleteCollection(`TestSearchQuery`))
+		}()
 
 		assert.Nil(err)
 		var recordset *dal.RecordSet
@@ -252,12 +269,16 @@ func TestSearchQueryPaginated(t *testing.T) {
 	assert := require.New(t)
 
 	// set the global page size at the package level for this test
-	backends.BleveIndexerPageSize = 5
+	backends.IndexerPageSize = 5
 
 	if search := backend.WithSearch(); search != nil {
 		err := backend.CreateCollection(dal.Collection{
 			Name: `TestSearchQueryPaginated`,
 		})
+
+		defer func() {
+			assert.Nil(backend.DeleteCollection(`TestSearchQueryPaginated`))
+		}()
 
 		assert.Nil(err)
 
@@ -274,6 +295,7 @@ func TestSearchQueryPaginated(t *testing.T) {
 
 		recordset, err := search.Query(`TestSearchQueryPaginated`, f)
 		assert.Nil(err)
+
 		assert.NotNil(recordset)
 		assert.Equal(uint64(21), recordset.ResultCount)
 		assert.Equal(21, len(recordset.Records))
@@ -283,12 +305,16 @@ func TestSearchQueryPaginated(t *testing.T) {
 
 func TestSearchQueryLimit(t *testing.T) {
 	assert := require.New(t)
-	backends.BleveIndexerPageSize = 100
+	backends.IndexerPageSize = 100
 
 	if search := backend.WithSearch(); search != nil {
 		err := backend.CreateCollection(dal.Collection{
 			Name: `TestSearchQueryLimit`,
 		})
+
+		defer func() {
+			assert.Nil(backend.DeleteCollection(`TestSearchQueryLimit`))
+		}()
 
 		assert.Nil(err)
 
@@ -321,12 +347,16 @@ func TestSearchQueryLimit(t *testing.T) {
 
 func TestSearchQueryOffset(t *testing.T) {
 	assert := require.New(t)
-	backends.BleveIndexerPageSize = 100
+	backends.IndexerPageSize = 100
 
 	if search := backend.WithSearch(); search != nil {
 		err := backend.CreateCollection(dal.Collection{
 			Name: `TestSearchQueryOffset`,
 		})
+
+		defer func() {
+			assert.Nil(backend.DeleteCollection(`TestSearchQueryOffset`))
+		}()
 
 		assert.Nil(err)
 
@@ -361,16 +391,20 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 	assert := require.New(t)
 
 	if search := backend.WithSearch(); search != nil {
-		old := backends.BleveIndexerPageSize
-		backends.BleveIndexerPageSize = 3
+		old := backends.IndexerPageSize
+		backends.IndexerPageSize = 3
 
 		defer func() {
-			backends.BleveIndexerPageSize = old
+			backends.IndexerPageSize = old
 		}()
 
 		err := backend.CreateCollection(dal.Collection{
 			Name: `TestSearchQueryOffsetLimit`,
 		})
+
+		defer func() {
+			assert.Nil(backend.DeleteCollection(`TestSearchQueryOffsetLimit`))
+		}()
 
 		assert.Nil(err)
 
@@ -408,7 +442,20 @@ func TestListValues(t *testing.T) {
 	if search := backend.WithSearch(); search != nil {
 		err := backend.CreateCollection(dal.Collection{
 			Name: `TestListValues`,
+			Fields: []dal.Field{
+				{
+					Name: `name`,
+					Type: `str`,
+				}, {
+					Name: `group`,
+					Type: `str`,
+				},
+			},
 		})
+
+		defer func() {
+			assert.Nil(backend.DeleteCollection(`TestListValues`))
+		}()
 
 		assert.Nil(err)
 
@@ -459,7 +506,20 @@ func TestSearchAnalysis(t *testing.T) {
 	if search := backend.WithSearch(); search != nil {
 		err := backend.CreateCollection(dal.Collection{
 			Name: `TestSearchAnalysis`,
+			Fields: []dal.Field{
+				{
+					Name: `single`,
+					Type: `str`,
+				}, {
+					Name: `char_filter_test`,
+					Type: `str`,
+				},
+			},
 		})
+
+		defer func() {
+			assert.Nil(backend.DeleteCollection(`TestSearchAnalysis`))
+		}()
 
 		assert.Nil(err)
 

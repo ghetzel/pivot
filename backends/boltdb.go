@@ -53,7 +53,7 @@ func (self *BoltBackend) Initialize() error {
 			}
 
 			if indexer, err := MakeIndexer(ics); err == nil {
-				if err := indexer.Initialize(self); err == nil {
+				if err := indexer.IndexInitialize(self); err == nil {
 					self.indexerConn = ics
 					self.indexer = indexer
 					log.Debugf("Search indexing enabled for %T backend at %q", self, self.indexerConn.String())
@@ -150,7 +150,7 @@ func (self *BoltBackend) Delete(collection string, f filter.Filter) error {
 
 				// if we have a search index, remove the corresponding documents from it
 				if search := self.WithSearch(); search != nil {
-					if err := search.Remove(collection, ids); err != nil {
+					if err := search.IndexRemove(collection, ids); err != nil {
 						return err
 					}
 				}
@@ -167,6 +167,19 @@ func (self *BoltBackend) Delete(collection string, f filter.Filter) error {
 
 func (self *BoltBackend) WithSearch() Indexer {
 	return self.indexer
+}
+
+func (self *BoltBackend) ListCollections() ([]string, error) {
+	collectionNames := make([]string, 0)
+
+	err := self.db.View(func(tx *bolt.Tx) error {
+		return tx.ForEach(func(name []byte, _ *bolt.Bucket) error {
+			collectionNames = append(collectionNames, string(name[:]))
+			return nil
+		})
+	})
+
+	return collectionNames, err
 }
 
 func (self *BoltBackend) CreateCollection(definition dal.Collection) error {

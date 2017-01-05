@@ -250,12 +250,12 @@ func (self *Server) setupRoutes() error {
 			}
 		})
 
-	self.router.GET(`/schema/:collection`,
+	self.router.GET(`/schema`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			if collection, err := self.backend.GetCollection(params.ByName(`collection`)); err == nil {
-				self.Respond(w, http.StatusOK, collection, nil)
+			if names, err := self.backend.ListCollections(); err == nil {
+				self.Respond(w, http.StatusOK, names, nil)
 			} else {
-				self.Respond(w, http.StatusBadRequest, nil, err)
+				self.Respond(w, http.StatusInternalServerError, nil, err)
 			}
 		})
 
@@ -269,6 +269,15 @@ func (self *Server) setupRoutes() error {
 				} else {
 					self.Respond(w, http.StatusInternalServerError, nil, err)
 				}
+			} else {
+				self.Respond(w, http.StatusBadRequest, nil, err)
+			}
+		})
+
+	self.router.GET(`/schema/:collection`,
+		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+			if collection, err := self.backend.GetCollection(params.ByName(`collection`)); err == nil {
+				self.Respond(w, http.StatusOK, collection, nil)
 			} else {
 				self.Respond(w, http.StatusBadRequest, nil, err)
 			}

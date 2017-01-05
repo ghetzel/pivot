@@ -79,7 +79,7 @@ func TestSqlSelects(t *testing.T) {
 			f, err := filter.Parse(spec)
 			assert.Nil(err)
 			if field != `*` {
-				f.Fields = strings.Split(field, `,`)
+				f.Fields = strings.Split(field, `, `)
 			}
 
 			gen := NewSqlGenerator()
@@ -546,4 +546,59 @@ func TestSqlMultipleValues(t *testing.T) {
 		`id/1|2|3`:       `SELECT * FROM foo WHERE (id = 1 OR id = 2 OR id = 3)`,
 		`id/1|2|3/age/7`: `SELECT * FROM foo WHERE (id = 1 OR id = 2 OR id = 3) AND (age = 7)`,
 	}, false)
+}
+
+func TestSqlSorting(t *testing.T) {
+	assert := require.New(t)
+
+	f := filter.MakeFilter(`all`)
+	f.Sort = []string{`+name`, `-age`}
+
+	gen := NewSqlGenerator()
+
+	sql, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+
+	assert.Equal(`SELECT * FROM foo ORDER BY name ASC, age DESC`, string(sql[:]))
+}
+
+func TestSqlLimitOffset(t *testing.T) {
+	assert := require.New(t)
+
+	f := filter.MakeFilter(`all`)
+	f.Limit = 4
+	gen := NewSqlGenerator()
+	sql, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(`SELECT * FROM foo LIMIT 4`, string(sql[:]))
+
+	f = filter.MakeFilter(`all`)
+	f.Limit = 4
+	f.Offset = 12
+	gen = NewSqlGenerator()
+	sql, err = filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+	assert.Equal(`SELECT * FROM foo LIMIT 4 OFFSET 12`, string(sql[:]))
+}
+
+func TestSqlSelectFull(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := filter.Parse(`+name/prefix:ted/-age/gt:7`)
+	assert.Nil(err)
+	f.Limit = 4
+	f.Offset = 12
+	f.Fields = []string{`id`, `age`}
+
+	gen := NewSqlGenerator()
+	sql, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+
+	assert.Equal(
+		`SELECT id, age FROM foo `+
+			`WHERE (name LIKE 'ted%%') AND (age > 7) `+
+			`ORDER BY name ASC, age DESC `+
+			`LIMIT 4 OFFSET 12`,
+		string(sql[:]),
+	)
 }

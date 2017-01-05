@@ -46,6 +46,14 @@ func (self *Collection) GetField(name string) (Field, bool) {
 	return Field{}, false
 }
 
+func (self *Collection) ConvertValue(name string, value interface{}) (interface{}, error) {
+	if field, ok := self.GetField(name); ok {
+		return field.ConvertValue(value)
+	} else {
+		return nil, fmt.Errorf("Unknown field '%s'", name)
+	}
+}
+
 func (self *Collection) VerifyEqual(other Collection) error {
 	if other.Name != self.Name {
 		return fmt.Errorf("Collection names do not match; expected: '%s', got: '%s'", self.Name, other.Name)
