@@ -1,7 +1,8 @@
 package dal
 
 type RecordSet struct {
-	ResultCount    uint64                 `json:"result_count"`
+	Unbounded      bool                   `json:"unbounded,omitempty"`
+	ResultCount    int64                  `json:"result_count"`
 	Page           int                    `json:"page,omitempty"`
 	TotalPages     int                    `json:"total_pages,omitempty"`
 	RecordsPerPage int                    `json:"records_per_page,omitempty"`

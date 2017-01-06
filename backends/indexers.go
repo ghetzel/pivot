@@ -15,7 +15,7 @@ type IndexPage struct {
 	TotalPages   int
 	Limit        int
 	Offset       int
-	TotalResults uint64
+	TotalResults int64
 }
 
 type IndexResultFunc func(record *dal.Record, page IndexPage) error // {}

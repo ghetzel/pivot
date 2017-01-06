@@ -282,6 +282,16 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 			return convertErr
 		}
 
+		// these operators use a LIKE statement, so we need to add in the right LIKE syntax
+		switch criterion.Operator {
+		case `prefix`:
+			typedValue = fmt.Sprintf("%v%%", typedValue)
+		case `contains`:
+			typedValue = fmt.Sprintf("%%%v%%", typedValue)
+		case `suffix`:
+			typedValue = fmt.Sprintf("%%%v", typedValue)
+		}
+
 		self.values = append(self.values, typedValue)
 
 		value = self.ToValue(criterion.Field, len(self.criteria), typedValue, criterion.Operator)
@@ -327,12 +337,8 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 					outVal = outVal + fmt.Sprintf(" <> %s", value)
 				}
 			}
-		case `contains`:
-			outVal = outVal + fmt.Sprintf(` LIKE '%%%%%s%%%%'`, value)
-		case `prefix`:
-			outVal = outVal + fmt.Sprintf(` LIKE '%s%%%%'`, value)
-		case `suffix`:
-			outVal = outVal + fmt.Sprintf(` LIKE '%%%%%s'`, value)
+		case `contains`, `prefix`, `suffix`:
+			outVal = outVal + fmt.Sprintf(` LIKE %s`, value)
 		case `gt`:
 			outVal = outVal + fmt.Sprintf(" > %s", value)
 		case `gte`:

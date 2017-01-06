@@ -41,7 +41,8 @@ type SqlBackend struct {
 	queryGenTableFormat         string
 	queryGenFieldFormat         string
 	listAllTablesQuery          string
-	createPrimaryKeyFormat      string
+	createPrimaryKeyIntFormat   string
+	createPrimaryKeyStrFormat   string
 	showTableDetailQuery        string
 	tableDetailsFunc            sqlTableDetailsFunc
 	tableDetailAddFieldFunc     sqlAddFieldFunc
@@ -400,7 +401,12 @@ func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
 	fields := []string{}
 
 	if definition.IdentityField != `` {
-		fields = append(fields, fmt.Sprintf(self.createPrimaryKeyFormat, gen.ToFieldName(definition.IdentityField)))
+		switch definition.IdentityFieldType {
+		case `str`:
+			fields = append(fields, fmt.Sprintf(self.createPrimaryKeyStrFormat, gen.ToFieldName(definition.IdentityField)))
+		default:
+			fields = append(fields, fmt.Sprintf(self.createPrimaryKeyIntFormat, gen.ToFieldName(definition.IdentityField)))
+		}
 	}
 
 	for i, field := range definition.Fields {
@@ -458,7 +464,6 @@ func (self *SqlBackend) DeleteCollection(collection string) error {
 		query := fmt.Sprintf(self.dropTableQuery, gen.ToTableName(collection))
 
 		if _, err := tx.Exec(query); err == nil {
-			log.Debugf(query)
 			return tx.Commit()
 		} else {
 			defer tx.Rollback()

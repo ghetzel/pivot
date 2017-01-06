@@ -15,10 +15,10 @@ fmt:
 	gofmt -w .
 
 test:
-	go test -v .
-	go test -v ./dal/
-	go test -v ./filter/
-	go test -v ./filter/*/*
+	go test .
+	go test ./dal/
+	go test ./filter/
+	go test ./filter/*/*
 
 bundle: clean-bundle
 	@echo "Bundling static resources under ./public/"

@@ -29,7 +29,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 				f.Offset = offset
 
 				if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
-					log.Debugf("%s %+v; ptq=%d", string(sqlString[:]), queryGen.GetValues(), processed)
+					// log.Debugf("%s %+v; processed=%d", string(sqlString[:]), queryGen.GetValues(), processed)
 
 					// perform query
 					if rows, err := self.db.Query(string(sqlString[:]), queryGen.GetValues()...); err == nil {
@@ -39,7 +39,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 							processedThisQuery := 0
 
 							for rows.Next() {
-								log.Debugf("  row: %d", processed)
+								// log.Debugf("  row: %d", processed)
 
 								if record, err := self.scanFnValueToRecord(collection, columns, reflect.ValueOf(rows.Scan)); err == nil {
 									processed += 1
@@ -50,7 +50,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 										TotalPages:   0,
 										Limit:        f.Limit,
 										Offset:       offset,
-										TotalResults: uint64(processed),
+										TotalResults: int64(processed),
 									}); err != nil {
 										return err
 									}
@@ -61,8 +61,8 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 
 							// if the number of records we just processed was less than the limit we set,
 							// break early
-							if processedThisQuery <= f.Limit {
-								log.Debugf("returning: ptd=%d, ptotal=%d", processedThisQuery, processed)
+							if processedThisQuery <= f.Limit || f.Limit == 0 {
+								// log.Debugf("returning: ptd=%d, ptotal=%d", processedThisQuery, processed)
 								return nil
 							}
 
@@ -92,6 +92,9 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 
 func (self *SqlBackend) Query(collection string, f filter.Filter) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
+
+	// TODO: figure out a smart way to get row counts so that we can offer bounded/paginated resultsets
+	recordset.Unbounded = true
 
 	if err := self.QueryFunc(collection, f, func(record *dal.Record, page IndexPage) error {
 		PopulateRecordSetPageDetails(recordset, f, page)

@@ -220,12 +220,12 @@ func TestSearchQuery(t *testing.T) {
 			recordset, err = search.Query(`TestSearchQuery`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
-			assert.Equal(uint64(2), recordset.ResultCount)
+			assert.Equal(int64(2), recordset.ResultCount)
 		}
 
 		// onesies
 		for _, qs := range []string{
-			`_id/1`,
+			`id/1`,
 			`name/First`,
 			`name/first`,
 			`name/contains:irs`,
@@ -241,7 +241,7 @@ func TestSearchQuery(t *testing.T) {
 			recordset, err = search.Query(`TestSearchQuery`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
-			assert.Equal(uint64(1), recordset.ResultCount)
+			assert.Equal(int64(1), recordset.ResultCount)
 			record, ok = recordset.GetRecord(0)
 			assert.True(ok)
 			assert.NotNil(record)
@@ -259,7 +259,7 @@ func TestSearchQuery(t *testing.T) {
 			recordset, err = search.Query(`TestSearchQuery`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
-			assert.Equal(uint64(0), recordset.ResultCount)
+			assert.Equal(int64(0), recordset.ResultCount)
 			assert.True(recordset.IsEmpty())
 		}
 	}
@@ -297,9 +297,12 @@ func TestSearchQueryPaginated(t *testing.T) {
 		assert.Nil(err)
 
 		assert.NotNil(recordset)
-		assert.Equal(uint64(21), recordset.ResultCount)
 		assert.Equal(21, len(recordset.Records))
-		assert.Equal(1, recordset.TotalPages)
+
+		if !recordset.Unbounded {
+			assert.Equal(int64(21), recordset.ResultCount)
+			assert.Equal(1, recordset.TotalPages)
+		}
 	}
 }
 
@@ -309,7 +312,8 @@ func TestSearchQueryLimit(t *testing.T) {
 
 	if search := backend.WithSearch(); search != nil {
 		err := backend.CreateCollection(dal.Collection{
-			Name: `TestSearchQueryLimit`,
+			Name:              `TestSearchQueryLimit`,
+			IdentityFieldType: `str`,
 		})
 
 		defer func() {
@@ -334,9 +338,13 @@ func TestSearchQueryLimit(t *testing.T) {
 		recordset, err := search.Query(`TestSearchQueryLimit`, f)
 		assert.Nil(err)
 		assert.NotNil(recordset)
-		assert.Equal(uint64(21), recordset.ResultCount)
+
 		assert.Equal(9, len(recordset.Records))
-		assert.Equal(3, recordset.TotalPages)
+
+		if !recordset.Unbounded {
+			assert.Equal(int64(21), recordset.ResultCount)
+			assert.Equal(3, recordset.TotalPages)
+		}
 
 		record, ok := recordset.GetRecord(0)
 		assert.True(ok)
@@ -351,7 +359,8 @@ func TestSearchQueryOffset(t *testing.T) {
 
 	if search := backend.WithSearch(); search != nil {
 		err := backend.CreateCollection(dal.Collection{
-			Name: `TestSearchQueryOffset`,
+			Name:              `TestSearchQueryOffset`,
+			IdentityFieldType: `str`,
 		})
 
 		defer func() {
@@ -376,9 +385,12 @@ func TestSearchQueryOffset(t *testing.T) {
 		recordset, err := search.Query(`TestSearchQueryOffset`, f)
 		assert.Nil(err)
 		assert.NotNil(recordset)
-		assert.Equal(uint64(21), recordset.ResultCount)
 		assert.Equal(1, len(recordset.Records))
-		assert.Equal(1, recordset.TotalPages)
+
+		if !recordset.Unbounded {
+			assert.Equal(int64(21), recordset.ResultCount)
+			assert.Equal(1, recordset.TotalPages)
+		}
 
 		record, ok := recordset.GetRecord(0)
 		assert.True(ok)
@@ -399,7 +411,8 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 		}()
 
 		err := backend.CreateCollection(dal.Collection{
-			Name: `TestSearchQueryOffsetLimit`,
+			Name:              `TestSearchQueryOffsetLimit`,
+			IdentityFieldType: `str`,
 		})
 
 		defer func() {
@@ -425,9 +438,12 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 		recordset, err := search.Query(`TestSearchQueryOffsetLimit`, f)
 		assert.Nil(err)
 		assert.NotNil(recordset)
-		assert.Equal(uint64(21), recordset.ResultCount)
 		assert.Equal(9, len(recordset.Records))
-		assert.Equal(3, recordset.TotalPages)
+
+		if !recordset.Unbounded {
+			assert.Equal(int64(21), recordset.ResultCount)
+			assert.Equal(3, recordset.TotalPages)
+		}
 
 		record, ok := recordset.GetRecord(0)
 		assert.True(ok)
@@ -476,25 +492,25 @@ func TestListValues(t *testing.T) {
 		recordset, err := search.ListValues(`TestListValues`, []string{`name`}, filter.All)
 		assert.Nil(err)
 		assert.NotNil(recordset)
-		assert.Equal(uint64(1), recordset.ResultCount)
+		assert.Equal(int64(1), recordset.ResultCount)
 		assert.Equal([]interface{}{`first`, `second`, `third`}, recordset.Records[0].Get(`values`))
 
 		recordset, err = search.ListValues(`TestListValues`, []string{`group`}, filter.All)
 		assert.Nil(err)
 		assert.NotNil(recordset)
-		assert.Equal(uint64(1), recordset.ResultCount)
+		assert.Equal(int64(1), recordset.ResultCount)
 		assert.Equal([]interface{}{`reds`, `blues`}, recordset.Records[0].Get(`values`))
 
-		recordset, err = search.ListValues(`TestListValues`, []string{`_id`}, filter.All)
+		recordset, err = search.ListValues(`TestListValues`, []string{`id`}, filter.All)
 		assert.Nil(err)
 		assert.NotNil(recordset)
-		assert.Equal(uint64(1), recordset.ResultCount)
+		assert.Equal(int64(1), recordset.ResultCount)
 		assert.Equal([]interface{}{`1`, `2`, `3`}, recordset.Records[0].Get(`values`))
 
-		recordset, err = search.ListValues(`TestListValues`, []string{`_id`, `group`}, filter.All)
+		recordset, err = search.ListValues(`TestListValues`, []string{`id`, `group`}, filter.All)
 		assert.Nil(err)
 		assert.NotNil(recordset)
-		assert.Equal(uint64(2), recordset.ResultCount)
+		assert.Equal(int64(2), recordset.ResultCount)
 		assert.Equal([]interface{}{`1`, `2`, `3`}, recordset.Records[0].Get(`values`))
 		assert.Equal([]interface{}{`reds`, `blues`}, recordset.Records[1].Get(`values`))
 	}
@@ -549,7 +565,7 @@ func TestSearchAnalysis(t *testing.T) {
 			recordset, err := search.Query(`TestSearchAnalysis`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
-			assert.Equal(uint64(3), recordset.ResultCount)
+			assert.Equal(int64(3), recordset.ResultCount)
 		}
 	}
 }

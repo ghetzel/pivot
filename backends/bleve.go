@@ -196,7 +196,7 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 							TotalPages:   totalPages,
 							Limit:        f.Limit,
 							Offset:       offset,
-							TotalResults: results.Total,
+							TotalResults: int64(results.Total),
 						}); err != nil {
 							return err
 						}
@@ -281,7 +281,7 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 				case `_id`, `id`:
 					idQuery = true
 					request.Size = MaxFacetCardinality
-					request.Fields = append(request.Fields, `_id`)
+					request.Fields = append(request.Fields, BleveIdentityField)
 				default:
 					request.AddFacet(
 						field,
@@ -313,11 +313,11 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 					for _, hit := range results.Hits {
 						var record *dal.Record
 
-						if r, ok := groupedByField[`_id`]; ok {
+						if r, ok := groupedByField[`id`]; ok {
 							record = r
 						} else {
-							record = dal.NewRecord(`_id`)
-							groupedByField[`_id`] = record
+							record = dal.NewRecord(`id`)
+							groupedByField[`id`] = record
 						}
 
 						record.Append(`values`, hit.ID)
@@ -391,6 +391,15 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 		conjunction := bleve.NewConjunctionQuery()
 
 		for _, criterion := range f.Criteria {
+			// map any field called "id" to the identity field name
+			if criterion.Field == `id` {
+				if f.IdentityField == `` {
+					criterion.Field = BleveIdentityField
+				} else {
+					criterion.Field = f.IdentityField
+				}
+			}
+
 			var skipNext bool
 			var disjunction *query.DisjunctionQuery
 
@@ -416,7 +425,7 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 
 				switch criterion.Operator {
 				case `is`, ``:
-					if criterion.Field == `_id` {
+					if criterion.Field == f.IdentityField {
 						conjunction.AddQuery(bleve.NewDocIDQuery(criterion.Values))
 						skipNext = true
 						break

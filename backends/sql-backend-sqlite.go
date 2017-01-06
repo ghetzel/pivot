@@ -17,7 +17,8 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	self.queryGenTableFormat = "%q"
 	self.queryGenFieldFormat = "%q"
 	self.listAllTablesQuery = `SELECT name FROM sqlite_master`
-	self.createPrimaryKeyFormat = `%s INTEGER NOT NULL PRIMARY KEY ASC`
+	self.createPrimaryKeyIntFormat = `%s INTEGER NOT NULL PRIMARY KEY ASC`
+	self.createPrimaryKeyStrFormat = `%s TEXT NOT NULL PRIMARY KEY`
 
 	// the bespoke method for determining table information for sqlite3
 	self.tableDetailsFunc = func(collectionName string, fieldFn sqlAddFieldFunc) error {
