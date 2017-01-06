@@ -13,7 +13,7 @@ type Elasticsearch struct {
 	collection string
 	fields     []string
 	criteria   []map[string]interface{}
-	options    map[string]string
+	options    map[string]interface{}
 	values     []interface{}
 }
 
@@ -28,7 +28,7 @@ func (self *Elasticsearch) Initialize(collectionName string) error {
 	self.collection = collectionName
 	self.fields = make([]string, 0)
 	self.criteria = make([]map[string]interface{}, 0)
-	self.options = make(map[string]string)
+	self.options = make(map[string]interface{})
 	self.values = make([]interface{}, 0)
 
 	return nil
@@ -61,7 +61,7 @@ func (self *Elasticsearch) WithField(field string) error {
 	return nil
 }
 
-func (self *Elasticsearch) SetOption(key, value string) error {
+func (self *Elasticsearch) SetOption(key string, value interface{}) error {
 	self.options[key] = value
 	return nil
 }

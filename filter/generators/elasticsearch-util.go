@@ -29,11 +29,13 @@ func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[
 			})
 
 			if v, ok := gen.options[`multifield`]; ok {
-				or_terms = append(or_terms, map[string]interface{}{
-					`term`: map[string]interface{}{
-						(criterion.Field + `.` + v): value,
-					},
-				})
+				if vS, ok := v.(string); ok {
+					or_terms = append(or_terms, map[string]interface{}{
+						`term`: map[string]interface{}{
+							(criterion.Field + `.` + vS): value,
+						},
+					})
+				}
 			}
 
 			c[`or`] = or_terms
@@ -122,14 +124,16 @@ func esCriterionOperatorContains(gen *Elasticsearch, criterion filter.Criterion)
 			})
 
 			if v, ok := gen.options[`multifield`]; ok {
-				or_regexp = append(or_regexp, map[string]interface{}{
-					`regexp`: map[string]interface{}{
-						(criterion.Field + `.` + v): map[string]interface{}{
-							`value`: fmt.Sprintf(".*%s.*", value),
-							`flags`: `ALL`,
+				if vS, ok := v.(string); ok {
+					or_regexp = append(or_regexp, map[string]interface{}{
+						`regexp`: map[string]interface{}{
+							(criterion.Field + `.` + vS): map[string]interface{}{
+								`value`: fmt.Sprintf(".*%s.*", value),
+								`flags`: `ALL`,
+							},
 						},
-					},
-				})
+					})
+				}
 			}
 		}
 

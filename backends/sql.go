@@ -566,11 +566,7 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 			}
 		}
 
-		if id != `` {
-			return dal.NewRecord(id).SetFields(fields), nil
-		} else {
-			return nil, fmt.Errorf("Record ID missing from result set")
-		}
+		return dal.NewRecord(id).SetFields(fields), nil
 	} else {
 		return nil, err
 	}

@@ -77,6 +77,7 @@ type Sql struct {
 	PlaceholderArgument    string                 // if specified, either "index", "index1" or "field"
 	StringNormalizerFormat string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
 	UseInStatement         bool                   // whether multiple values in a criterion should be tested using an IN() statement
+	Distinct bool // whether a DISTINCT clause should be used in SELECT statements
 	TypeMapping            SqlTypeMapping         // provides mapping information between DAL types and native SQL types
 	Type                   SqlStatementType       // what type of SQL statement is being generated
 	InputData              map[string]interface{} // key-value data for statement types that require input data (e.g.: inserts, updates)
@@ -118,6 +119,10 @@ func (self *Sql) Finalize(f filter.Filter) error {
 	switch self.Type {
 	case SqlSelectStatement:
 		self.Push([]byte(`SELECT `))
+
+		if self.Distinct {
+			self.Push([]byte(`DISTINCT `))
+		}
 
 		if len(self.fields) == 0 {
 			self.Push([]byte(`*`))
@@ -219,7 +224,7 @@ func (self *Sql) WithField(field string) error {
 	return nil
 }
 
-func (self *Sql) SetOption(key, value string) error {
+func (self *Sql) SetOption(_ string, _ interface{}) error {
 	return nil
 }
 

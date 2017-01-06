@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"github.com/fatih/structs"
 	"strings"
 )
 
@@ -67,7 +68,7 @@ type Filter struct {
 	Criteria      []Criterion
 	Sort          []string
 	Fields        []string
-	Options       map[string]string
+	Options       map[string]interface{}
 	IdentityField string
 }
 
@@ -77,7 +78,7 @@ func MakeFilter(spec string) Filter {
 		Criteria: make([]Criterion, 0),
 		Sort:     make([]string, 0),
 		Fields:   make([]string, 0),
-		Options:  make(map[string]string),
+		Options:  make(map[string]interface{}),
 	}
 
 	if spec == AllValue {
@@ -263,4 +264,20 @@ func (self *Filter) GetSort() []SortBy {
 	}
 
 	return sortBy
+}
+
+func (self *Filter) ApplyOptions(in interface{}) error {
+	if len(self.Options) > 0 {
+		s := structs.New(in)
+
+		for name, value := range self.Options {
+			if f, ok := s.FieldOk(name); ok {
+				if err := f.Set(value); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	return nil
 }

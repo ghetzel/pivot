@@ -3,7 +3,6 @@ package backends
 // this file satifies the Indexer interface for SqlBackend
 
 import (
-	"fmt"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"reflect"
@@ -24,6 +23,10 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 
 		for {
 			queryGen := self.makeQueryGen()
+
+			if err := f.ApplyOptions(&queryGen); err != nil {
+				return nil
+			}
 
 			if err := queryGen.Initialize(collection.Name); err == nil {
 				f.Offset = offset
@@ -112,8 +115,53 @@ func (self *SqlBackend) Query(collection string, f filter.Filter) (*dal.RecordSe
 
 	return recordset, nil
 }
-func (self *SqlBackend) ListValues(collection string, fields []string, f filter.Filter) (*dal.RecordSet, error) {
-	return nil, fmt.Errorf("Not Implemented")
+func (self *SqlBackend) ListValues(collectionName string, fields []string, f filter.Filter) (*dal.RecordSet, error) {
+	if collection, err := self.getCollectionFromCache(collectionName); err == nil {
+		for i, f := range fields {
+			if f == `id` {
+				fields[i] = collection.IdentityField
+			}
+		}
+
+		recordset := dal.NewRecordSet()
+		groupedByField := make(map[string]*dal.Record)
+
+		for _, field := range fields {
+			f.Fields = []string{ field }
+			f.Options[`Distinct`] = true
+
+			if results, err := self.Query(collectionName, f); err == nil {
+				var record *dal.Record
+
+				if r, ok := groupedByField[field]; ok {
+					record = r
+				} else {
+					record = dal.NewRecord(field)
+					groupedByField[field] = record
+				}
+
+				if field == collection.IdentityField {
+					values := make([]interface{}, 0)
+
+					for _, result := range results.Records {
+						values = append(values, result.ID)
+					}
+
+					record.Set(`values`, values)
+				}else{
+					record.Set(`values`, results.Pluck(field))
+				}
+
+				recordset.Push(record)
+			}else{
+				return nil, err
+			}
+		}
+
+		return recordset, nil
+	}else{
+		return nil, err
+	}
 }
 
 func (self *SqlBackend) IndexInitialize(parent Backend) error {

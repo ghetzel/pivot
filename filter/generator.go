@@ -8,7 +8,7 @@ type IGenerator interface {
 	WithCriterion(Criterion) error
 	OrCriterion(Criterion) error
 	WithField(string) error
-	SetOption(string, string) error
+	SetOption(string, interface{}) error
 	GetValues() []interface{}
 	Reset()
 }
