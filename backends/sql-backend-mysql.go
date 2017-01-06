@@ -19,6 +19,7 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 	self.queryGenPlaceholderArgument = ``
 	self.queryGenTableFormat = "`%s`"
 	self.queryGenFieldFormat = "`%s`"
+	self.queryGenStringNormalizerFormat = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(%v, ':', ' '), '[', ' '), ']', ' '), '*', ' '))"
 	self.listAllTablesQuery = `SHOW TABLES`
 	self.createPrimaryKeyIntFormat = `%s INT AUTO_INCREMENT NOT NULL PRIMARY KEY`
 	self.createPrimaryKeyStrFormat = `%s VARCHAR(255) NOT NULL PRIMARY KEY`

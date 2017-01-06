@@ -33,22 +33,23 @@ type sqlTableDetailsFunc func(string, sqlAddFieldFunc) error // {}
 type SqlBackend struct {
 	Backend
 	Indexer
-	conn                        dal.ConnectionString
-	db                          *sql.DB
-	queryGenTypeMapping         generators.SqlTypeMapping
-	queryGenPlaceholderArgument string
-	queryGenPlaceholderFormat   string
-	queryGenTableFormat         string
-	queryGenFieldFormat         string
-	listAllTablesQuery          string
-	createPrimaryKeyIntFormat   string
-	createPrimaryKeyStrFormat   string
-	showTableDetailQuery        string
-	tableDetailsFunc            sqlTableDetailsFunc
-	tableDetailAddFieldFunc     sqlAddFieldFunc
-	dropTableQuery              string
-	collectionCache             map[string]*dal.Collection
-	collectionCacheLock         sync.RWMutex
+	conn                           dal.ConnectionString
+	db                             *sql.DB
+	queryGenTypeMapping            generators.SqlTypeMapping
+	queryGenPlaceholderArgument    string
+	queryGenPlaceholderFormat      string
+	queryGenTableFormat            string
+	queryGenFieldFormat            string
+	queryGenStringNormalizerFormat string
+	listAllTablesQuery             string
+	createPrimaryKeyIntFormat      string
+	createPrimaryKeyStrFormat      string
+	showTableDetailQuery           string
+	tableDetailsFunc               sqlTableDetailsFunc
+	tableDetailAddFieldFunc        sqlAddFieldFunc
+	dropTableQuery                 string
+	collectionCache                map[string]*dal.Collection
+	collectionCacheLock            sync.RWMutex
 }
 
 func NewSqlBackend(connection dal.ConnectionString) *SqlBackend {
@@ -430,7 +431,7 @@ func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
 			if v := field.Properties.DefaultValue; v != nil {
 				def += ` ` + fmt.Sprintf(
 					"DEFAULT %v",
-					gen.ToValue(field.Name, i, v, ``),
+					gen.ToValue(field.Name, i, v, ``, false),
 				)
 			}
 		}
@@ -503,6 +504,10 @@ func (self *SqlBackend) makeQueryGen() *generators.Sql {
 
 	if v := self.queryGenFieldFormat; v != `` {
 		queryGen.FieldNameFormat = v
+	}
+
+	if v := self.queryGenStringNormalizerFormat; v != `` {
+		queryGen.StringNormalizerFormat = v
 	}
 
 	return queryGen

@@ -60,7 +60,7 @@ func TestFilterIdOnly(t *testing.T) {
 	assert := require.New(t)
 
 	f := MakeFilter(AllValue)
-	f.Fields = []string{IdentityField}
+	f.Fields = []string{f.IdentityField}
 	assert.True(f.IdOnly())
 
 	f = MakeFilter(AllValue)

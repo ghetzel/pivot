@@ -16,6 +16,7 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	self.queryGenTypeMapping = generators.SqliteTypeMapping
 	self.queryGenTableFormat = "%q"
 	self.queryGenFieldFormat = "%q"
+	self.queryGenStringNormalizerFormat = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(%v, ':', ' '), '[', ' '), ']', ' '), '*', ' '))"
 	self.listAllTablesQuery = `SELECT name FROM sqlite_master`
 	self.createPrimaryKeyIntFormat = `%s INTEGER NOT NULL PRIMARY KEY ASC`
 	self.createPrimaryKeyStrFormat = `%s TEXT NOT NULL PRIMARY KEY`

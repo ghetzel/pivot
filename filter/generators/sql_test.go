@@ -584,7 +584,7 @@ func TestSqlLimitOffset(t *testing.T) {
 func TestSqlSelectFull(t *testing.T) {
 	assert := require.New(t)
 
-	f, err := filter.Parse(`+name/prefix:ted/-age/gt:7`)
+	f, err := filter.Parse(`+name/prefix:ted/-age/gt:7/city/suffix:berg/state/contains:new`)
 	assert.Nil(err)
 	f.Limit = 4
 	f.Offset = 12
@@ -596,9 +596,72 @@ func TestSqlSelectFull(t *testing.T) {
 
 	assert.Equal(
 		`SELECT id, age FROM foo `+
-			`WHERE (name LIKE 'ted%%') AND (age > 7) `+
+			`WHERE (name LIKE 'ted%%') `+
+			`AND (age > 7) `+
+			`AND (city LIKE '%%berg') `+
+			`AND (state LIKE '%%new%%') `+
 			`ORDER BY name ASC, age DESC `+
 			`LIMIT 4 OFFSET 12`,
 		string(sql[:]),
 	)
+}
+
+func TestSqlSelectWithNormalizer(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := filter.Parse(`+name/prefix:ted/-age/gt:7/city/suffix:berg/state/contains:new`)
+	assert.Nil(err)
+	f.Limit = 4
+	f.Offset = 12
+	f.Fields = []string{`id`, `age`}
+
+	gen := NewSqlGenerator()
+	gen.StringNormalizerFormat = `LOWER(%s)`
+	sql, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+
+	assert.Equal(
+		`SELECT id, age FROM foo `+
+			`WHERE (LOWER(name) LIKE LOWER('ted%%')) `+
+			`AND (age > 7) `+
+			`AND (LOWER(city) LIKE LOWER('%%berg')) `+
+			`AND (LOWER(state) LIKE LOWER('%%new%%')) `+
+			`ORDER BY name ASC, age DESC `+
+			`LIMIT 4 OFFSET 12`,
+		string(sql[:]),
+	)
+}
+
+func TestSqlSelectWithNormalizerAndPlaceholders(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := filter.Parse(`+name/prefix:ted/-age/gt:7/city/suffix:berg/state/contains:new`)
+	assert.Nil(err)
+	f.Limit = 4
+	f.Offset = 12
+	f.Fields = []string{`id`, `age`}
+
+	gen := NewSqlGenerator()
+	gen.UsePlaceholders = true
+	gen.StringNormalizerFormat = `LOWER(%s)`
+	sql, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+
+	assert.Equal(
+		`SELECT id, age FROM foo `+
+			`WHERE (LOWER(name) LIKE LOWER(? + '%%')) `+
+			`AND (age > ?) `+
+			`AND (LOWER(city) LIKE LOWER('%%' + ?)) `+
+			`AND (LOWER(state) LIKE LOWER('%%' + ? + '%%')) `+
+			`ORDER BY name ASC, age DESC `+
+			`LIMIT 4 OFFSET 12`,
+		string(sql[:]),
+	)
+
+	assert.Equal([]interface{}{
+		`ted`,
+		int64(7),
+		`berg`,
+		`new`,
+	}, gen.GetValues())
 }
