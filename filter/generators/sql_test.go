@@ -1,11 +1,19 @@
 package generators
 
 import (
+	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/stretchr/testify/require"
+	"sort"
 	"strings"
 	"testing"
 )
+
+type qv struct {
+	query  string
+	values []interface{}
+	input  map[string]interface{}
+}
 
 func TestSqlSplitTypeLength(t *testing.T) {
 	assert := require.New(t)
@@ -53,26 +61,83 @@ func TestSqlSelects(t *testing.T) {
 	}
 
 	for _, field := range fieldsets {
-		tests := map[string]string{
-			`all`:              `SELECT ` + field + ` FROM foo`,
-			`id/1`:             `SELECT ` + field + ` FROM foo WHERE (id = 1)`,
-			`id/not:1`:         `SELECT ` + field + ` FROM foo WHERE (id <> 1)`,
-			`name/Bob Johnson`: `SELECT ` + field + ` FROM foo WHERE (name = 'Bob Johnson')`,
-			`age/21`:           `SELECT ` + field + ` FROM foo WHERE (age = 21)`,
-			`int:age/21`:       `SELECT ` + field + ` FROM foo WHERE (CAST(age AS BIGINT) = 21)`,
-			`float:age/21`:     `SELECT ` + field + ` FROM foo WHERE (CAST(age AS DECIMAL) = 21)`,
-			`enabled/true`:     `SELECT ` + field + ` FROM foo WHERE (enabled = true)`,
-			`enabled/false`:    `SELECT ` + field + ` FROM foo WHERE (enabled = false)`,
-			`enabled/null`:     `SELECT ` + field + ` FROM foo WHERE (enabled IS NULL)`,
-			`enabled/not:null`: `SELECT ` + field + ` FROM foo WHERE (enabled IS NOT NULL)`,
-			`age/lt:21`:        `SELECT ` + field + ` FROM foo WHERE (age < 21)`,
-			`age/lte:21`:       `SELECT ` + field + ` FROM foo WHERE (age <= 21)`,
-			`age/gt:21`:        `SELECT ` + field + ` FROM foo WHERE (age > 21)`,
-			`age/gte:21`:       `SELECT ` + field + ` FROM foo WHERE (age >= 21)`,
-			`name/contains:ob`: `SELECT ` + field + ` FROM foo WHERE (name LIKE '%%ob%%')`,
-			`name/prefix:ob`:   `SELECT ` + field + ` FROM foo WHERE (name LIKE 'ob%%')`,
-			`name/suffix:ob`:   `SELECT ` + field + ` FROM foo WHERE (name LIKE '%%ob')`,
-			`age/7/name/ted`:   `SELECT ` + field + ` FROM foo WHERE (age = 7) AND (name = 'ted')`,
+		tests := map[string]qv{
+			`all`: {
+				query:  `SELECT ` + field + ` FROM foo`,
+				values: []interface{}{},
+			},
+			`id/1`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (id = ?)`,
+				values: []interface{}{int64(1)},
+			},
+			`id/not:1`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (id <> ?)`,
+				values: []interface{}{int64(1)},
+			},
+			`name/Bob Johnson`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (name = ?)`,
+				values: []interface{}{`Bob Johnson`},
+			},
+			`age/21`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (age = ?)`,
+				values: []interface{}{int64(21)},
+			},
+			`int:age/21`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (CAST(age AS BIGINT) = ?)`,
+				values: []interface{}{int64(21)},
+			},
+			`float:age/21`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (CAST(age AS DECIMAL) = ?)`,
+				values: []interface{}{float64(21)},
+			},
+			`enabled/true`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (enabled = ?)`,
+				values: []interface{}{true},
+			},
+			`enabled/false`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (enabled = ?)`,
+				values: []interface{}{false},
+			},
+			`enabled/null`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (enabled IS NULL)`,
+				values: []interface{}{nil},
+			},
+			`enabled/not:null`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (enabled IS NOT NULL)`,
+				values: []interface{}{nil},
+			},
+			`age/lt:21`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (age < ?)`,
+				values: []interface{}{int64(21)},
+			},
+			`age/lte:21`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (age <= ?)`,
+				values: []interface{}{int64(21)},
+			},
+			`age/gt:21`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (age > ?)`,
+				values: []interface{}{int64(21)},
+			},
+			`age/gte:21`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (age >= ?)`,
+				values: []interface{}{int64(21)},
+			},
+			`name/contains:ob`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (name LIKE ?)`,
+				values: []interface{}{`%%ob%%`},
+			},
+			`name/prefix:ob`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (name LIKE ?)`,
+				values: []interface{}{`ob%%`},
+			},
+			`name/suffix:ob`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (name LIKE ?)`,
+				values: []interface{}{`%%ob`},
+			},
+			`age/7/name/ted`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (age = ?) AND (name = ?)`,
+				values: []interface{}{int64(7), `ted`},
+			},
 		}
 
 		for spec, expected := range tests {
@@ -85,7 +150,8 @@ func TestSqlSelects(t *testing.T) {
 			gen := NewSqlGenerator()
 			actual, err := filter.Render(gen, `foo`, f)
 			assert.Nil(err)
-			assert.Equal(expected, string(actual[:]))
+			assert.Equal(expected.query, string(actual[:]))
+			assert.Equal(expected.values, gen.GetValues())
 		}
 	}
 }
@@ -93,41 +159,75 @@ func TestSqlSelects(t *testing.T) {
 func TestSqlInserts(t *testing.T) {
 	assert := require.New(t)
 
-	tests := map[string]map[string]interface{}{
-		`INSERT INTO foo (id) VALUES (1)`: map[string]interface{}{
-			`id`: 1,
-		},
-		`INSERT INTO foo (name) VALUES ('Bob Johnson')`: map[string]interface{}{
-			`name`: `Bob Johnson`,
-		},
-		`INSERT INTO foo (age) VALUES (21)`: map[string]interface{}{
-			`age`: 21,
-		},
-		`INSERT INTO foo (enabled) VALUES (true)`: map[string]interface{}{
-			`enabled`: true,
-		},
-		`INSERT INTO foo (enabled) VALUES (false)`: map[string]interface{}{
-			`enabled`: false,
-		},
-		`INSERT INTO foo (enabled) VALUES (NULL)`: map[string]interface{}{
-			`enabled`: nil,
-		},
-		`INSERT INTO foo (age, name) VALUES (7, 'ted')`: map[string]interface{}{
-			`name`: `ted`,
-			`age`:  7,
+	tests := []qv{
+		{
+			`INSERT INTO foo (id) VALUES (?)`,
+			nil,
+			map[string]interface{}{
+				`id`: 1,
+			},
+		}, {
+			`INSERT INTO foo (name) VALUES (?)`,
+			nil,
+			map[string]interface{}{
+				`name`: `Bob Johnson`,
+			},
+		}, {
+			`INSERT INTO foo (age) VALUES (?)`,
+			nil,
+			map[string]interface{}{
+				`age`: 21,
+			},
+		}, {
+			`INSERT INTO foo (enabled) VALUES (?)`,
+			nil,
+			map[string]interface{}{
+				`enabled`: true,
+			},
+		}, {
+			`INSERT INTO foo (enabled) VALUES (?)`,
+			nil,
+			map[string]interface{}{
+				`enabled`: false,
+			},
+		}, {
+			`INSERT INTO foo (enabled) VALUES (?)`,
+			nil,
+			map[string]interface{}{
+				`enabled`: nil,
+			},
+		}, {
+			`INSERT INTO foo (age, name) VALUES (?, ?)`,
+			nil,
+			map[string]interface{}{
+				`name`: `ted`,
+				`age`:  7,
+			},
 		},
 	}
 
-	for expected, input := range tests {
+	for _, expected := range tests {
 		f := filter.MakeFilter(``)
 
 		gen := NewSqlGenerator()
 		gen.Type = SqlInsertStatement
-		gen.InputData = input
+		gen.InputData = expected.input
 
 		actual, err := filter.Render(gen, `foo`, f)
 		assert.Nil(err)
-		assert.Equal(expected, string(actual[:]))
+		assert.Equal(expected.query, string(actual[:]))
+
+		keys := maputil.StringKeys(expected.input)
+		sort.Strings(keys)
+
+		vv := make([]interface{}, 0)
+
+		for _, key := range keys {
+			v, _ := expected.input[key]
+			vv = append(vv, v)
+		}
+
+		assert.Equal(vv, gen.GetValues())
 	}
 }
 
@@ -140,47 +240,42 @@ func TestSqlUpdates(t *testing.T) {
 	assert := require.New(t)
 
 	tests := map[string]updateTestData{
-		`UPDATE foo SET id = 1`: updateTestData{
+		`UPDATE foo SET id = ?`: updateTestData{
 			Input: map[string]interface{}{
 				`id`: 1,
 			},
 		},
-		`UPDATE foo SET name = 'Bob Johnson' WHERE (id = 1)`: updateTestData{
+		`UPDATE foo SET name = ? WHERE (id = ?)`: updateTestData{
 			Input: map[string]interface{}{
 				`name`: `Bob Johnson`,
 			},
 			Filter: `id/1`,
 		},
-		`UPDATE foo SET age = 21 WHERE (age < 21)`: updateTestData{
+		`UPDATE foo SET age = ? WHERE (age < ?)`: updateTestData{
 			Input: map[string]interface{}{
 				`age`: 21,
 			},
 			Filter: `age/lt:21`,
 		},
-		`UPDATE foo SET enabled = true WHERE (enabled IS NULL)`: updateTestData{
+		`UPDATE foo SET enabled = ? WHERE (enabled IS NULL)`: updateTestData{
 			Input: map[string]interface{}{
 				`enabled`: true,
 			},
 			Filter: `enabled/null`,
 		},
-		`UPDATE foo SET enabled = false`: updateTestData{
-			Input: map[string]interface{}{
-				`enabled`: false,
-			},
-		},
-		`UPDATE foo SET enabled = NULL`: updateTestData{
+		`UPDATE foo SET enabled = ?`: updateTestData{
 			Input: map[string]interface{}{
 				`enabled`: nil,
 			},
 		},
-		`UPDATE foo SET age = 7, name = 'ted' WHERE (id = 42)`: updateTestData{
+		`UPDATE foo SET age = ?, name = ? WHERE (id = ?)`: updateTestData{
 			Input: map[string]interface{}{
 				`name`: `ted`,
 				`age`:  7,
 			},
 			Filter: `id/42`,
 		},
-		`UPDATE foo SET age = 7, name = 'ted' WHERE (age < 7) AND (name <> 'ted')`: updateTestData{
+		`UPDATE foo SET age = ?, name = ? WHERE (age < ?) AND (name <> ?)`: updateTestData{
 			Input: map[string]interface{}{
 				`name`: `ted`,
 				`age`:  7,
@@ -206,26 +301,120 @@ func TestSqlUpdates(t *testing.T) {
 func TestSqlDeletes(t *testing.T) {
 	assert := require.New(t)
 
-	tests := map[string]string{
-		`all`:              `DELETE FROM foo`,
-		`id/1`:             `DELETE FROM foo WHERE (id = 1)`,
-		`id/not:1`:         `DELETE FROM foo WHERE (id <> 1)`,
-		`name/Bob Johnson`: `DELETE FROM foo WHERE (name = 'Bob Johnson')`,
-		`age/21`:           `DELETE FROM foo WHERE (age = 21)`,
-		`int:age/21`:       `DELETE FROM foo WHERE (CAST(age AS BIGINT) = 21)`,
-		`float:age/21`:     `DELETE FROM foo WHERE (CAST(age AS DECIMAL) = 21)`,
-		`enabled/true`:     `DELETE FROM foo WHERE (enabled = true)`,
-		`enabled/false`:    `DELETE FROM foo WHERE (enabled = false)`,
-		`enabled/null`:     `DELETE FROM foo WHERE (enabled IS NULL)`,
-		`enabled/not:null`: `DELETE FROM foo WHERE (enabled IS NOT NULL)`,
-		`age/lt:21`:        `DELETE FROM foo WHERE (age < 21)`,
-		`age/lte:21`:       `DELETE FROM foo WHERE (age <= 21)`,
-		`age/gt:21`:        `DELETE FROM foo WHERE (age > 21)`,
-		`age/gte:21`:       `DELETE FROM foo WHERE (age >= 21)`,
-		`name/contains:ob`: `DELETE FROM foo WHERE (name LIKE '%%ob%%')`,
-		`name/prefix:ob`:   `DELETE FROM foo WHERE (name LIKE 'ob%%')`,
-		`name/suffix:ob`:   `DELETE FROM foo WHERE (name LIKE '%%ob')`,
-		`age/7/name/ted`:   `DELETE FROM foo WHERE (age = 7) AND (name = 'ted')`,
+	tests := map[string]qv{
+		`all`: {
+			query:  `DELETE FROM foo`,
+			values: []interface{}{},
+		},
+		`id/1`: {
+			query: `DELETE FROM foo WHERE (id = ?)`,
+			values: []interface{}{
+				int64(1),
+			},
+		},
+		`id/not:1`: {
+			query: `DELETE FROM foo WHERE (id <> ?)`,
+			values: []interface{}{
+				int64(1),
+			},
+		},
+		`name/Bob Johnson`: {
+			query: `DELETE FROM foo WHERE (name = ?)`,
+			values: []interface{}{
+				`Bob Johnson`,
+			},
+		},
+		`age/21`: {
+			query: `DELETE FROM foo WHERE (age = ?)`,
+			values: []interface{}{
+				int64(21),
+			},
+		},
+		`int:age/21`: {
+			query: `DELETE FROM foo WHERE (CAST(age AS BIGINT) = ?)`,
+			values: []interface{}{
+				int64(21),
+			},
+		},
+		`float:age/21`: {
+			query: `DELETE FROM foo WHERE (CAST(age AS DECIMAL) = ?)`,
+			values: []interface{}{
+				float64(21),
+			},
+		},
+		`enabled/true`: {
+			query: `DELETE FROM foo WHERE (enabled = ?)`,
+			values: []interface{}{
+				true,
+			},
+		},
+		`enabled/false`: {
+			query: `DELETE FROM foo WHERE (enabled = ?)`,
+			values: []interface{}{
+				false,
+			},
+		},
+		`enabled/null`: {
+			query: `DELETE FROM foo WHERE (enabled IS NULL)`,
+			values: []interface{}{
+				nil,
+			},
+		},
+		`enabled/not:null`: {
+			query: `DELETE FROM foo WHERE (enabled IS NOT NULL)`,
+			values: []interface{}{
+				nil,
+			},
+		},
+		`age/lt:21`: {
+			query: `DELETE FROM foo WHERE (age < ?)`,
+			values: []interface{}{
+				int64(21),
+			},
+		},
+		`age/lte:21`: {
+			query: `DELETE FROM foo WHERE (age <= ?)`,
+			values: []interface{}{
+				int64(21),
+			},
+		},
+		`age/gt:21`: {
+			query: `DELETE FROM foo WHERE (age > ?)`,
+			values: []interface{}{
+				int64(21),
+			},
+		},
+		`age/gte:21`: {
+			query: `DELETE FROM foo WHERE (age >= ?)`,
+			values: []interface{}{
+				int64(21),
+			},
+		},
+		`name/contains:ob`: {
+			query: `DELETE FROM foo WHERE (name LIKE ?)`,
+			values: []interface{}{
+				`%%ob%%`,
+			},
+		},
+		`name/prefix:ob`: {
+			query: `DELETE FROM foo WHERE (name LIKE ?)`,
+			values: []interface{}{
+				`ob%%`,
+			},
+		},
+		`name/suffix:ob`: {
+			query: `DELETE FROM foo WHERE (name LIKE ?)`,
+			values: []interface{}{
+				`%%ob`,
+			},
+		},
+		`age/7/name/ted`: {
+			query: `DELETE FROM foo WHERE (age = ?) AND (name = ?)`,
+			values: []interface{}{
+				int64(7),
+				`ted`,
+			},
+		},
 	}
 
 	for spec, expected := range tests {
@@ -236,7 +425,8 @@ func TestSqlDeletes(t *testing.T) {
 		gen.Type = SqlDeleteStatement
 		actual, err := filter.Render(gen, `foo`, f)
 		assert.Nil(err)
-		assert.Equal(expected, string(actual[:]))
+		assert.Equal(expected.query, string(actual[:]))
+		assert.Equal(expected.values, gen.GetValues())
 	}
 }
 
@@ -248,7 +438,6 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 
 	// test defaults (MySQL/sqlite compatible)
 	gen := NewSqlGenerator()
-	gen.UsePlaceholders = true
 	actual, err := filter.Render(gen, `foo`, f)
 	assert.Nil(err)
 	assert.Equal(`SELECT * FROM foo WHERE (age = ?) AND (name = ?) AND (enabled = ?)`, string(actual[:]))
@@ -256,7 +445,6 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 
 	// test PostgreSQL compatible
 	gen = NewSqlGenerator()
-	gen.UsePlaceholders = true
 	gen.PlaceholderFormat = `$%d`
 	gen.PlaceholderArgument = `index1`
 	actual, err = filter.Render(gen, `foo`, f)
@@ -266,7 +454,6 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 
 	// test Oracle compatible
 	gen = NewSqlGenerator()
-	gen.UsePlaceholders = true
 	gen.PlaceholderFormat = `:%s`
 	gen.PlaceholderArgument = `field`
 	actual, err = filter.Render(gen, `foo`, f)
@@ -276,7 +463,6 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 
 	// test zero-indexed bracketed wacky fun placeholders
 	gen = NewSqlGenerator()
-	gen.UsePlaceholders = true
 	gen.PlaceholderFormat = `<arg%d>`
 	gen.PlaceholderArgument = `index`
 	actual, err = filter.Render(gen, `foo`, f)
@@ -293,7 +479,6 @@ func TestSqlTypeMapping(t *testing.T) {
 
 	// test default type mapping
 	gen := NewSqlGenerator()
-	gen.UsePlaceholders = true
 	actual, err := filter.Render(gen, `foo`, f)
 	assert.Nil(err)
 	assert.Equal(
@@ -308,7 +493,6 @@ func TestSqlTypeMapping(t *testing.T) {
 
 	// test null type mapping
 	gen = NewSqlGenerator()
-	gen.UsePlaceholders = true
 	gen.TypeMapping = NoTypeMapping
 	actual, err = filter.Render(gen, `foo`, f)
 	assert.Nil(err)
@@ -324,7 +508,6 @@ func TestSqlTypeMapping(t *testing.T) {
 
 	// test postgres type mapping
 	gen = NewSqlGenerator()
-	gen.UsePlaceholders = true
 	gen.TypeMapping = PostgresTypeMapping
 	actual, err = filter.Render(gen, `foo`, f)
 	assert.Nil(err)
@@ -340,7 +523,6 @@ func TestSqlTypeMapping(t *testing.T) {
 
 	// test sqlite type mapping
 	gen = NewSqlGenerator()
-	gen.UsePlaceholders = true
 	gen.TypeMapping = SqliteTypeMapping
 	actual, err = filter.Render(gen, `foo`, f)
 	assert.Nil(err)
@@ -356,7 +538,6 @@ func TestSqlTypeMapping(t *testing.T) {
 
 	// test Cassandra/CQL type mapping
 	gen = NewSqlGenerator()
-	gen.UsePlaceholders = true
 	gen.TypeMapping = CassandraTypeMapping
 	actual, err = filter.Render(gen, `foo`, f)
 	assert.Nil(err)
@@ -367,68 +548,6 @@ func TestSqlTypeMapping(t *testing.T) {
 			`AND (CAST(enabled AS TINYINT(1)) = ?) `+
 			`AND (CAST(rating AS FLOAT) = ?) `+
 			`AND (CAST(created_at AS DATETIME) < ?)`,
-		string(actual[:]),
-	)
-}
-
-func TestSqlQuoting(t *testing.T) {
-	assert := require.New(t)
-
-	f, err := filter.Parse(`name/Bob Johnson/str:num/42/num1/42`)
-	assert.Nil(err)
-
-	// test default quoting
-	gen := NewSqlGenerator()
-	gen.TypeMapping = NoTypeMapping
-	actual, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
-	assert.Equal(
-		`SELECT * FROM foo `+
-			`WHERE (name = 'Bob Johnson') `+
-			`AND (num = '42') `+
-			`AND (num1 = 42)`,
-		string(actual[:]),
-	)
-
-	// test backtick quoting
-	gen = NewSqlGenerator()
-	gen.TypeMapping = NoTypeMapping
-	gen.QuotedValueFormat = "`%s`"
-	actual, err = filter.Render(gen, `foo`, f)
-	assert.Nil(err)
-	assert.Equal(
-		`SELECT * FROM foo `+
-			"WHERE (name = `Bob Johnson`) "+
-			"AND (num = `42`) "+
-			`AND (num1 = 42)`,
-		string(actual[:]),
-	)
-
-	// test double quoting
-	gen = NewSqlGenerator()
-	gen.TypeMapping = NoTypeMapping
-	gen.QuotedValueFormat = "%q"
-	actual, err = filter.Render(gen, `foo`, f)
-	assert.Nil(err)
-	assert.Equal(
-		`SELECT * FROM foo `+
-			`WHERE (name = "Bob Johnson") `+
-			`AND (num = "42") `+
-			`AND (num1 = 42)`,
-		string(actual[:]),
-	)
-
-	// test weird treatment of unquoted values
-	gen = NewSqlGenerator()
-	gen.TypeMapping = NoTypeMapping
-	gen.UnquotedValueFormat = "<%v>"
-	actual, err = filter.Render(gen, `foo`, f)
-	assert.Nil(err)
-	assert.Equal(
-		`SELECT * FROM foo `+
-			`WHERE (name = 'Bob Johnson') `+
-			`AND (num = '42') `+
-			`AND (num1 = <42>)`,
 		string(actual[:]),
 	)
 }
@@ -446,7 +565,6 @@ func TestSqlFieldQuoting(t *testing.T) {
 	} {
 		// test default field naming
 		gen := NewSqlGenerator()
-		gen.UsePlaceholders = true
 
 		if format != `` {
 			gen.FieldNameFormat = format
@@ -464,7 +582,6 @@ func TestSqlFieldQuoting(t *testing.T) {
 
 		// test field naming for inserts
 		gen = NewSqlGenerator()
-		gen.UsePlaceholders = true
 
 		if format != `` {
 			gen.FieldNameFormat = format
@@ -488,7 +605,6 @@ func TestSqlFieldQuoting(t *testing.T) {
 
 		// test field naming for updates
 		gen = NewSqlGenerator()
-		gen.UsePlaceholders = true
 
 		if format != `` {
 			gen.FieldNameFormat = format
@@ -519,7 +635,7 @@ func TestSqlFieldQuoting(t *testing.T) {
 func TestSqlMultipleValues(t *testing.T) {
 	assert := require.New(t)
 
-	fn := func(tests map[string]string, withIn bool) {
+	fn := func(tests map[string]qv, withIn bool) {
 		for spec, expected := range tests {
 			f, err := filter.Parse(spec)
 			assert.Nil(err)
@@ -529,22 +645,75 @@ func TestSqlMultipleValues(t *testing.T) {
 
 			actual, err := filter.Render(gen, `foo`, f)
 			assert.Nil(err)
-			assert.Equal(expected, string(actual[:]))
+			assert.Equal(expected.query, string(actual[:]))
+			assert.Equal(expected.values, gen.GetValues())
 		}
 	}
 
-	fn(map[string]string{
-		`id/1`:           `SELECT * FROM foo WHERE (id = 1)`,
-		`id/1|2`:         `SELECT * FROM foo WHERE (id IN(1, 2))`,
-		`id/1|2|3`:       `SELECT * FROM foo WHERE (id IN(1, 2, 3))`,
-		`id/1|2|3/age/7`: `SELECT * FROM foo WHERE (id IN(1, 2, 3)) AND (age = 7)`,
+	fn(map[string]qv{
+		`id/1`: {
+			query: `SELECT * FROM foo WHERE (id = ?)`,
+			values: []interface{}{
+				int64(1),
+			},
+		},
+		`id/1|2`: {
+			query: `SELECT * FROM foo WHERE (id IN(?, ?))`,
+			values: []interface{}{
+				int64(1),
+				int64(2),
+			},
+		},
+		`id/1|2|3`: {
+			query: `SELECT * FROM foo WHERE (id IN(?, ?, ?))`,
+			values: []interface{}{
+				int64(1),
+				int64(2),
+				int64(3),
+			},
+		},
+		`id/1|2|3/age/7`: {
+			query: `SELECT * FROM foo WHERE (id IN(?, ?, ?)) AND (age = ?)`,
+			values: []interface{}{
+				int64(1),
+				int64(2),
+				int64(3),
+				int64(7),
+			},
+		},
 	}, true)
 
-	fn(map[string]string{
-		`id/1`:           `SELECT * FROM foo WHERE (id = 1)`,
-		`id/1|2`:         `SELECT * FROM foo WHERE (id = 1 OR id = 2)`,
-		`id/1|2|3`:       `SELECT * FROM foo WHERE (id = 1 OR id = 2 OR id = 3)`,
-		`id/1|2|3/age/7`: `SELECT * FROM foo WHERE (id = 1 OR id = 2 OR id = 3) AND (age = 7)`,
+	fn(map[string]qv{
+		`id/1`: {
+			query: `SELECT * FROM foo WHERE (id = ?)`,
+			values: []interface{}{
+				int64(1),
+			},
+		},
+		`id/1|2`: {
+			query: `SELECT * FROM foo WHERE (id = ? OR id = ?)`,
+			values: []interface{}{
+				int64(1),
+				int64(2),
+			},
+		},
+		`id/1|2|3`: {
+			query: `SELECT * FROM foo WHERE (id = ? OR id = ? OR id = ?)`,
+			values: []interface{}{
+				int64(1),
+				int64(2),
+				int64(3),
+			},
+		},
+		`id/1|2|3/age/7`: {
+			query: `SELECT * FROM foo WHERE (id = ? OR id = ? OR id = ?) AND (age = ?)`,
+			values: []interface{}{
+				int64(1),
+				int64(2),
+				int64(3),
+				int64(7),
+			},
+		},
 	}, false)
 }
 
@@ -596,40 +765,21 @@ func TestSqlSelectFull(t *testing.T) {
 
 	assert.Equal(
 		`SELECT id, age FROM foo `+
-			`WHERE (name LIKE 'ted%%') `+
-			`AND (age > 7) `+
-			`AND (city LIKE '%%berg') `+
-			`AND (state LIKE '%%new%%') `+
+			`WHERE (name LIKE ?) `+
+			`AND (age > ?) `+
+			`AND (city LIKE ?) `+
+			`AND (state LIKE ?) `+
 			`ORDER BY name ASC, age DESC `+
 			`LIMIT 4 OFFSET 12`,
 		string(sql[:]),
 	)
-}
 
-func TestSqlSelectWithNormalizer(t *testing.T) {
-	assert := require.New(t)
-
-	f, err := filter.Parse(`+name/prefix:ted/-age/gt:7/city/suffix:berg/state/contains:new`)
-	assert.Nil(err)
-	f.Limit = 4
-	f.Offset = 12
-	f.Fields = []string{`id`, `age`}
-
-	gen := NewSqlGenerator()
-	gen.StringNormalizerFormat = `LOWER(%s)`
-	sql, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
-
-	assert.Equal(
-		`SELECT id, age FROM foo `+
-			`WHERE (LOWER(name) LIKE LOWER('ted%%')) `+
-			`AND (age > 7) `+
-			`AND (LOWER(city) LIKE LOWER('%%berg')) `+
-			`AND (LOWER(state) LIKE LOWER('%%new%%')) `+
-			`ORDER BY name ASC, age DESC `+
-			`LIMIT 4 OFFSET 12`,
-		string(sql[:]),
-	)
+	assert.Equal([]interface{}{
+		`ted%%`,
+		int64(7),
+		`%%berg`,
+		`%%new%%`,
+	}, gen.GetValues())
 }
 
 func TestSqlSelectWithNormalizerAndPlaceholders(t *testing.T) {
@@ -642,26 +792,25 @@ func TestSqlSelectWithNormalizerAndPlaceholders(t *testing.T) {
 	f.Fields = []string{`id`, `age`}
 
 	gen := NewSqlGenerator()
-	gen.UsePlaceholders = true
 	gen.StringNormalizerFormat = `LOWER(%s)`
 	sql, err := filter.Render(gen, `foo`, f)
 	assert.Nil(err)
 
 	assert.Equal(
 		`SELECT id, age FROM foo `+
-			`WHERE (LOWER(name) LIKE LOWER(? + '%%')) `+
+			`WHERE (LOWER(name) LIKE LOWER(?)) `+
 			`AND (age > ?) `+
-			`AND (LOWER(city) LIKE LOWER('%%' + ?)) `+
-			`AND (LOWER(state) LIKE LOWER('%%' + ? + '%%')) `+
+			`AND (LOWER(city) LIKE LOWER(?)) `+
+			`AND (LOWER(state) LIKE LOWER(?)) `+
 			`ORDER BY name ASC, age DESC `+
 			`LIMIT 4 OFFSET 12`,
 		string(sql[:]),
 	)
 
 	assert.Equal([]interface{}{
-		`ted`,
+		`ted%%`,
 		int64(7),
-		`berg`,
-		`new`,
+		`%%berg`,
+		`%%new%%`,
 	}, gen.GetValues())
 }

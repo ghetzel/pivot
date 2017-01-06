@@ -73,11 +73,8 @@ type Sql struct {
 	filter.Generator
 	TableNameFormat        string                 // format string used to wrap table names
 	FieldNameFormat        string                 // format string used to wrap field names
-	UsePlaceholders        bool                   // whether placeholders should be substituted in for actual values in the generated query
 	PlaceholderFormat      string                 // if using placeholders, the format string used to insert them
 	PlaceholderArgument    string                 // if specified, either "index", "index1" or "field"
-	UnquotedValueFormat    string                 // format string used to wrap non-string values
-	QuotedValueFormat      string                 // format string used to wrap string values
 	StringNormalizerFormat string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
 	UseInStatement         bool                   // whether multiple values in a criterion should be tested using an IN() statement
 	TypeMapping            SqlTypeMapping         // provides mapping information between DAL types and native SQL types
@@ -95,8 +92,6 @@ func NewSqlGenerator() *Sql {
 		Generator:              filter.Generator{},
 		PlaceholderFormat:      `?`,
 		PlaceholderArgument:    ``,
-		UnquotedValueFormat:    "%v",
-		QuotedValueFormat:      "'%s'",
 		StringNormalizerFormat: "%s",
 		TableNameFormat:        "%s",
 		FieldNameFormat:        "%s",
@@ -170,7 +165,7 @@ func (self *Sql) Finalize(f filter.Filter) error {
 
 		for i, field := range maputil.StringKeys(self.InputData) {
 			v, _ := self.InputData[field]
-			values = append(values, self.ToValue(field, i, v, ``, false))
+			values = append(values, self.GetPlaceholder(field, i))
 			self.inputValues = append(self.inputValues, v)
 		}
 
@@ -196,12 +191,9 @@ func (self *Sql) Finalize(f filter.Filter) error {
 			value, _ := self.InputData[field]
 
 			// do this first because we want the unmodified field name
-			vStr := self.ToValue(field, i, value, ``, false)
 			self.inputValues = append(self.inputValues, value)
-
 			field := self.ToFieldName(field)
-
-			updatePairs = append(updatePairs, fmt.Sprintf("%s = %s", field, vStr))
+			updatePairs = append(updatePairs, fmt.Sprintf("%s = %s", field, self.GetPlaceholder(field, i)))
 
 			i += 1
 		}
@@ -265,40 +257,62 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 	// for each value being tested in this criterion
 	for _, value := range criterion.Values {
 		var typedValue interface{}
-		var convertErr error
+		var isString bool
 
-		switch criterion.Type {
-		case `str`:
-			typedValue, convertErr = stringutil.ConvertTo(stringutil.String, value)
-		case `float`:
-			typedValue, convertErr = stringutil.ConvertTo(stringutil.Float, value)
-		case `int`:
-			typedValue, convertErr = stringutil.ConvertTo(stringutil.Integer, value)
-		case `bool`:
-			typedValue, convertErr = stringutil.ConvertTo(stringutil.Boolean, value)
-		case `date`, `time`:
-			typedValue, convertErr = stringutil.ConvertTo(stringutil.Time, value)
+		switch strings.ToUpper(value) {
+		case `NULL`:
+			value = strings.ToUpper(value)
+			typedValue = nil
+
 		default:
-			typedValue = stringutil.Autotype(value)
-		}
+			var convertErr error
 
-		if convertErr != nil {
-			return convertErr
+			switch criterion.Type {
+			case `str`:
+				typedValue, convertErr = stringutil.ConvertTo(stringutil.String, value)
+				isString = true
+			case `float`:
+				typedValue, convertErr = stringutil.ConvertTo(stringutil.Float, value)
+			case `int`:
+				typedValue, convertErr = stringutil.ConvertTo(stringutil.Integer, value)
+			case `bool`:
+				typedValue, convertErr = stringutil.ConvertTo(stringutil.Boolean, value)
+			case `date`, `time`:
+				typedValue, convertErr = stringutil.ConvertTo(stringutil.Time, value)
+			default:
+				typedValue = stringutil.Autotype(value)
+			}
+
+			if convertErr != nil {
+				return convertErr
+			}
+
+			switch typedValue.(type) {
+			case string:
+				isString = true
+			}
 		}
 
 		// these operators use a LIKE statement, so we need to add in the right LIKE syntax
 		switch criterion.Operator {
 		case `prefix`:
-			typedValue = fmt.Sprintf("%v%%", typedValue)
+			typedValue = fmt.Sprintf("%v", typedValue) + `%%`
 		case `contains`:
-			typedValue = fmt.Sprintf("%%%v%%", typedValue)
+			typedValue = `%%` + fmt.Sprintf("%v", typedValue) + `%%`
 		case `suffix`:
-			typedValue = fmt.Sprintf("%%%v", typedValue)
+			typedValue = `%%` + fmt.Sprintf("%v", typedValue)
 		}
 
 		self.values = append(self.values, typedValue)
 
-		value = self.ToValue(criterion.Field, len(self.criteria), typedValue, criterion.Operator, true)
+		// get the syntax-appropriate representation of the value, wrapped in normalization functions
+		// if this field is (or should be treated as) a string.
+		switch strings.ToUpper(value) {
+		case `NULL`:
+			value = strings.ToUpper(value)
+		default:
+			value = self.GetPlaceholder(criterion.Field, len(self.criteria))
+		}
 
 		outVal := ``
 
@@ -327,38 +341,38 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 			} else {
 				// wrap the field in any string normalizing functions (the same thing
 				// will happen to the values being compared)
-				switch typedValue.(type) {
-				case string:
+				if isString {
 					outVal = self.ApplyNormalizer(outVal)
 				}
 
 				if useInStatement {
 					outVal = outVal + fmt.Sprintf("%s", value)
-				} else {
+				} else if isString {
 					outVal = outVal + fmt.Sprintf(" = %s", self.ApplyNormalizer(value))
+				} else {
+					outVal = outVal + fmt.Sprintf(" = %s", value)
 				}
 			}
 		case `not`:
 			if value == `NULL` {
 				outVal = outVal + ` IS NOT NULL`
 			} else {
-				// wrap the field in any string normalizing functions (the same thing
-				// will happen to the values being compared)
-				switch typedValue.(type) {
-				case string:
+				if isString {
 					outVal = self.ApplyNormalizer(outVal)
 				}
 
 				if useInStatement {
 					outVal = outVal + fmt.Sprintf("%s", value)
-				} else {
+				} else if isString {
 					outVal = outVal + fmt.Sprintf(" <> %s", self.ApplyNormalizer(value))
+				} else {
+					outVal = outVal + fmt.Sprintf(" <> %s", value)
 				}
 			}
 		case `contains`, `prefix`, `suffix`:
 			// wrap the field in any string normalizing functions (the same thing
 			// will happen to the values being compared)
-			outVal = self.ApplyNormalizer(outVal) + fmt.Sprintf(` LIKE %s`, value)
+			outVal = self.ApplyNormalizer(outVal) + fmt.Sprintf(` LIKE %s`, self.ApplyNormalizer(value))
 		case `gt`:
 			outVal = outVal + fmt.Sprintf(" > %s", value)
 		case `gte`:
@@ -455,66 +469,19 @@ func (self *Sql) SplitTypeLength(in string) (string, int, int) {
 	return parts[0], length, precision
 }
 
-func (self *Sql) ToValue(fieldName string, fieldIndex int, in interface{}, operator string, normalize bool) string {
-	if self.UsePlaceholders {
-		var placeholder string
-
-		// support various styles of placeholder
-		// e.g.: ?, $0, $1, :fieldname
-		//
-		switch self.PlaceholderArgument {
-		case `index`:
-			placeholder = fmt.Sprintf(self.PlaceholderFormat, fieldIndex)
-		case `index1`:
-			placeholder = fmt.Sprintf(self.PlaceholderFormat, fieldIndex+1)
-		case `field`:
-			placeholder = fmt.Sprintf(self.PlaceholderFormat, fieldName)
-		default:
-			placeholder = self.PlaceholderFormat
-		}
-
-		if normalize {
-			return self.ApplyNormalizer(placeholder)
-		} else {
-			return placeholder
-		}
-	}
-
-	// handle quoting of string values in query statements
-	switch in.(type) {
-	case nil:
-		return `NULL`
-	case string:
-		switch in.(string) {
-		case `null`:
-			return `NULL`
-		default:
-			var value string
-
-			// generate values for LIKE clauses
-			// the percents (%) are escaped twice because they will be passed
-			// through QuotedValueFormat for quoting the whole value
-			//
-			switch operator {
-			case `prefix`:
-				value = fmt.Sprintf("%s%%%%", in.(string))
-			case `contains`:
-				value = fmt.Sprintf("%%%%%s%%%%", in.(string))
-			case `suffix`:
-				value = fmt.Sprintf("%%%%%s", in.(string))
-			default:
-				value = in.(string)
-			}
-
-			// wrap the value in any string normalizing functions
-			if normalize {
-				return self.ApplyNormalizer(fmt.Sprintf(self.QuotedValueFormat, value))
-			} else {
-				return fmt.Sprintf(self.QuotedValueFormat, value)
-			}
-		}
+func (self *Sql) GetPlaceholder(fieldName string, fieldIndex int) string {
+	// support various styles of placeholder
+	// e.g.: ?, $0, $1, :fieldname
+	//
+	switch self.PlaceholderArgument {
+	case `index`:
+		return fmt.Sprintf(self.PlaceholderFormat, fieldIndex)
+	case `index1`:
+		return fmt.Sprintf(self.PlaceholderFormat, fieldIndex+1)
+	case `field`:
+		return fmt.Sprintf(self.PlaceholderFormat, fieldName)
 	default:
-		return fmt.Sprintf(self.UnquotedValueFormat, in)
+		return self.PlaceholderFormat
 	}
 }
 

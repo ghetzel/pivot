@@ -203,7 +203,6 @@ func (self *BoltBackend) GetCollection(name string) (*dal.Collection, error) {
 	err := self.db.View(func(tx *bolt.Tx) error {
 		if bucket := tx.Bucket([]byte(name[:])); bucket != nil {
 			collection.Name = name
-			collection.Properties[`FillPercent`] = bucket.FillPercent
 		} else {
 			return fmt.Errorf("No such collection %q", name)
 		}

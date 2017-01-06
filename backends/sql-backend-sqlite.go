@@ -6,6 +6,7 @@ import (
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/pathutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter/generators"
 	_ "github.com/mattn/go-sqlite3"
 	"strings"
@@ -22,9 +23,11 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	self.createPrimaryKeyStrFormat = `%s TEXT NOT NULL PRIMARY KEY`
 
 	// the bespoke method for determining table information for sqlite3
-	self.tableDetailsFunc = func(collectionName string, fieldFn sqlAddFieldFunc) error {
+	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
 		if rows, err := self.db.Query(fmt.Sprintf("PRAGMA table_info(%q)", collectionName)); err == nil {
 			defer rows.Close()
+			collection := dal.NewCollection(collectionName)
+
 			queryGen := self.makeQueryGen()
 
 			var foundPrimaryKey bool
@@ -35,56 +38,60 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 				var defaultValue sql.NullString
 
 				if err := rows.Scan(&i, &column, &columnType, &nullable, &defaultValue, &pk); err == nil {
-					details := sqlTableDetails{
-						Index:        i,
-						Name:         column,
-						NativeType:   columnType,
-						Nullable:     (nullable == 1),
-						DefaultValue: defaultValue.String,
+					// start building the dal.Field
+					field := dal.Field{
+						Name: column,
+						Properties: &dal.FieldProperties{
+							NativeType:   columnType,
+							Required:     (nullable != 1),
+							DefaultValue: stringutil.Autotype(defaultValue.String),
+						},
 					}
 
-					columnType, details.TypeLength, details.Precision = queryGen.SplitTypeLength(columnType)
+					// tease out type, length, and precision from the native type
+					// e.g: DOULBE(8,12) -> "DOUBLE", 8, 12
+					columnType, field.Length, field.Precision = queryGen.SplitTypeLength(columnType)
 
+					// map native types to DAL types
 					switch columnType {
 					case `TEXT`:
-						details.Type = `str`
+						field.Type = `str`
 
 					case `INTEGER`:
-						if details.TypeLength == 1 {
-							details.Type = `bool`
+						if field.Length == 1 {
+							field.Type = `bool`
 						} else {
-							details.Type = `int`
+							field.Type = `int`
 						}
 
 					case `REAL`:
-						details.Type = `float`
+						field.Type = `float`
 
 					default:
-						details.Type = stringutil.Underscore(columnType)
+						field.Type = stringutil.Underscore(columnType)
 
 					}
 
 					if pk == 1 {
 						if !foundPrimaryKey {
-							details.PrimaryKey = true
+							field.Properties.Identity = true
 							foundPrimaryKey = true
+							collection.IdentityField = column
 						} else {
-							details.KeyField = true
+							field.Properties.Key = true
 						}
 					}
 
-					if err := fieldFn(details); err != nil {
-						return err
-					}
-
+					// add field to the collection we're building
+					collection.Fields = append(collection.Fields, field)
 				} else {
-					return err
+					return nil, err
 				}
 			}
 
-			return rows.Err()
+			return collection, rows.Err()
 		} else {
-			return err
+			return nil, err
 		}
 	}
 

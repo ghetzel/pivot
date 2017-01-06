@@ -29,7 +29,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 				f.Offset = offset
 
 				if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
-					// log.Debugf("%s %+v; processed=%d", string(sqlString[:]), queryGen.GetValues(), processed)
+					log.Debugf("%s %+v; processed=%d", string(sqlString[:]), queryGen.GetValues(), processed)
 
 					// perform query
 					if rows, err := self.db.Query(string(sqlString[:]), queryGen.GetValues()...); err == nil {

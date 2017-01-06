@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
 	_ "github.com/go-sql-driver/mysql"
@@ -11,8 +12,6 @@ import (
 )
 
 func (self *SqlBackend) initializeMysql() (string, string, error) {
-	databaseName := strings.TrimPrefix(self.conn.Dataset(), `/`)
-
 	// tell the backend cool details about generating sqlite-compatible SQL
 	self.queryGenTypeMapping = generators.MysqlTypeMapping
 	self.queryGenPlaceholderFormat = `?`
@@ -25,9 +24,9 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 	self.createPrimaryKeyStrFormat = `%s VARCHAR(255) NOT NULL PRIMARY KEY`
 
 	// the bespoke method for determining table information for sqlite3
-	self.tableDetailsFunc = func(collectionName string, fieldFn sqlAddFieldFunc) error {
+	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
 		if f, err := filter.FromMap(map[string]interface{}{
-			`TABLE_SCHEMA`: databaseName,
+			`TABLE_SCHEMA`: datasetName,
 			`TABLE_NAME`:   collectionName,
 		}); err == nil {
 			f.Fields = []string{
@@ -44,76 +43,87 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 			// make this instance of the query generator use the table name as given because
 			// we need to reference another database (information_schema)
 			queryGen.TableNameFormat = "%s"
+			queryGen.StringNormalizerFormat = "%s"
 
 			if sqlString, err := filter.Render(queryGen, "`information_schema`.`COLUMNS`", f); err == nil {
 				if rows, err := self.db.Query(string(sqlString[:]), queryGen.GetValues()...); err == nil {
 					defer rows.Close()
 
+					collection := dal.NewCollection(collectionName)
+
+					// for each field in the schema description for this table...
 					for rows.Next() {
 						var i int
 						var column, columnType, nullable string
 						var defaultValue, keyType sql.NullString
 
+						// populate variables from column values
 						if err := rows.Scan(&i, &column, &columnType, &nullable, &defaultValue, &keyType); err == nil {
-							details := sqlTableDetails{
-								Index:        i,
-								Name:         column,
-								NativeType:   columnType,
-								Nullable:     (nullable == `YES`), // thanks, MySQL ;)
-								DefaultValue: defaultValue.String,
+							// start building the dal.Field
+							field := dal.Field{
+								Name: column,
+								Properties: &dal.FieldProperties{
+									NativeType:   columnType,
+									Required:     (nullable != `YES`),
+									DefaultValue: stringutil.Autotype(defaultValue.String),
+								},
 							}
 
-							columnType, details.TypeLength, details.Precision = queryGen.SplitTypeLength(columnType)
+							// tease out type, length, and precision from the native type
+							// e.g: DOULBE(8,12) -> "DOUBLE", 8, 12
+							columnType, field.Length, field.Precision = queryGen.SplitTypeLength(columnType)
 
+							// map native types to DAL types
 							if strings.HasSuffix(columnType, `CHAR`) || strings.HasSuffix(columnType, `TEXT`) {
-								details.Type = `str`
+								field.Type = `str`
 
 							} else if strings.HasPrefix(columnType, `BOOL`) || columnType == `BIT` {
-								details.Type = `bool`
+								field.Type = `bool`
 
 							} else if strings.HasSuffix(columnType, `INT`) {
-								if details.TypeLength == 1 {
-									details.Type = `bool`
+								if field.Length == 1 {
+									field.Type = `bool`
 								} else {
-									details.Type = `int`
+									field.Type = `int`
 								}
 
 							} else if columnType == `FLOAT` || columnType == `DOUBLE` || columnType == `DECIMAL` {
-								details.Type = `float`
+								field.Type = `float`
 
 							} else if strings.HasPrefix(columnType, `DATE`) || strings.Contains(columnType, `TIME`) {
-								details.Type = `date`
+								field.Type = `date`
 
 							} else {
-								details.Type = stringutil.Underscore(columnType)
+								field.Type = stringutil.Underscore(columnType)
 							}
 
+							// figure out keying
 							switch keyType.String {
 							case `PRI`:
-								details.PrimaryKey = true
+								field.Properties.Identity = true
+								collection.IdentityField = column
 							case `UNI`:
-								details.Unique = true
+								field.Properties.Unique = true
 							case `MUL`:
-								details.KeyField = true
+								field.Properties.Key = true
 							}
 
-							if err := fieldFn(details); err != nil {
-								return err
-							}
+							// add field to the collection we're building
+							collection.Fields = append(collection.Fields, field)
 						} else {
-							return err
+							return nil, err
 						}
 					}
 
-					return rows.Err()
+					return collection, rows.Err()
 				} else {
-					return err
+					return nil, err
 				}
 			} else {
-				return err
+				return nil, err
 			}
 		} else {
-			return err
+			return nil, err
 		}
 	}
 

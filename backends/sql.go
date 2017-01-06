@@ -27,8 +27,7 @@ type sqlTableDetails struct {
 	DefaultValue string
 }
 
-type sqlAddFieldFunc func(details sqlTableDetails) error     // {}
-type sqlTableDetailsFunc func(string, sqlAddFieldFunc) error // {}
+type sqlTableDetailsFunc func(datasetName string, collectionName string) (*dal.Collection, error)
 
 type SqlBackend struct {
 	Backend
@@ -45,8 +44,7 @@ type SqlBackend struct {
 	createPrimaryKeyIntFormat      string
 	createPrimaryKeyStrFormat      string
 	showTableDetailQuery           string
-	tableDetailsFunc               sqlTableDetailsFunc
-	tableDetailAddFieldFunc        sqlAddFieldFunc
+	refreshCollectionFunc          sqlTableDetailsFunc
 	dropTableQuery                 string
 	collectionCache                map[string]*dal.Collection
 	collectionCacheLock            sync.RWMutex
@@ -241,7 +239,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 			return nil, err
 		}
 	} else {
-		return nil, dal.CollectionNotFound
+		return nil, err
 	}
 }
 
@@ -394,12 +392,10 @@ func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
 
 	gen := self.makeQueryGen()
 
-	// disable placeholders so that .ToValue() will return actual values
-	gen.UsePlaceholders = false
-
 	query := fmt.Sprintf("CREATE TABLE %s (", gen.ToTableName(definition.Name))
 
 	fields := []string{}
+	values := make([]interface{}, 0)
 
 	if definition.IdentityField != `` {
 		switch definition.IdentityFieldType {
@@ -410,7 +406,7 @@ func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
 		}
 	}
 
-	for i, field := range definition.Fields {
+	for _, field := range definition.Fields {
 		var def string
 
 		if nativeType, err := gen.ToNativeType(field.Type, field.Length); err == nil {
@@ -429,10 +425,8 @@ func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
 			}
 
 			if v := field.Properties.DefaultValue; v != nil {
-				def += ` ` + fmt.Sprintf(
-					"DEFAULT %v",
-					gen.ToValue(field.Name, i, v, ``, false),
-				)
+				def += `DEFAULT ?`
+				values = append(values, v)
 			}
 		}
 
@@ -443,12 +437,9 @@ func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
 	query += `)`
 
 	if tx, err := self.db.Begin(); err == nil {
-		if _, err := tx.Exec(query); err == nil {
-			if err := tx.Commit(); err == nil {
-				return self.refreshAllCollections()
-			} else {
-				return err
-			}
+		if _, err := tx.Exec(query, values...); err == nil {
+			defer self.refreshAllCollections()
+			return tx.Commit()
 		} else {
 			defer tx.Rollback()
 			return err
@@ -479,15 +470,16 @@ func (self *SqlBackend) GetCollection(name string) (*dal.Collection, error) {
 	if err := self.refreshCollection(name); err == nil {
 		if collection, err := self.getCollectionFromCache(name); err == nil {
 			return collection, nil
+		} else {
+			return nil, err
 		}
+	} else {
+		return nil, err
 	}
-
-	return nil, dal.CollectionNotFound
 }
 
 func (self *SqlBackend) makeQueryGen() *generators.Sql {
 	queryGen := generators.NewSqlGenerator()
-	queryGen.UsePlaceholders = true
 	queryGen.TypeMapping = self.queryGenTypeMapping
 
 	if v := self.queryGenPlaceholderFormat; v != `` {
@@ -553,9 +545,11 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 		var id string
 		fields := make(map[string]interface{})
 
+		// for each column in the resultset
 		for i, column := range columns {
 			var value interface{}
 
+			// convert value types as needed
 			switch output[i].(type) {
 			case []uint8:
 				v := output[i].([]uint8)
@@ -564,6 +558,7 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 				value = output[i]
 			}
 
+			// set the appropriate field for the dal.Record
 			if column == collection.IdentityField {
 				id = fmt.Sprintf("%v", value)
 			} else {
@@ -586,6 +581,7 @@ func (self *SqlBackend) refreshAllCollections() error {
 		defer rows.Close()
 		knownTables := make([]string, 0)
 
+		// refresh all tables that come back from the list all tables query
 		for rows.Next() {
 			var tableName string
 
@@ -593,14 +589,14 @@ func (self *SqlBackend) refreshAllCollections() error {
 				knownTables = append(knownTables, tableName)
 
 				if err := self.refreshCollection(tableName); err != nil {
-					return err
+					log.Errorf("Error refreshing collection %s: %v", tableName, err)
 				}
 			} else {
-				return err
+				log.Errorf("Error refreshing collection %s: %v", tableName, err)
 			}
 		}
 
-		// purge tables that the list all query didn't just return
+		// purge from cache any tables that the list all query didn't return
 		self.collectionCacheLock.RLock()
 		cachedTables := maputil.StringKeys(self.collectionCache)
 		self.collectionCacheLock.RUnlock()
@@ -620,37 +616,14 @@ func (self *SqlBackend) refreshAllCollections() error {
 }
 
 func (self *SqlBackend) refreshCollection(name string) error {
-	collection := dal.NewCollection(name)
-
-	if err := self.tableDetailsFunc(name, func(details sqlTableDetails) error {
-		dalField := dal.Field{
-			Name:      details.Name,
-			Type:      details.Type,
-			Length:    details.TypeLength,
-			Precision: details.Precision,
-			Properties: &dal.FieldProperties{
-				NativeType:   details.NativeType,
-				Required:     !details.Nullable,
-				Unique:       details.Unique,
-				DefaultValue: details.DefaultValue,
-				Identity:     details.PrimaryKey,
-				Key:          details.KeyField,
-			},
-		}
-
-		if details.PrimaryKey {
-			collection.IdentityField = details.Name
-		}
-
-		collection.Fields = append(collection.Fields, dalField)
-
-		return nil
-	}); err == nil {
+	if collection, err := self.refreshCollectionFunc(
+		strings.TrimPrefix(self.conn.Dataset(), `/`),
+		name,
+	); err == nil {
 		if len(collection.Fields) > 0 {
 			self.collectionCacheLock.Lock()
 			defer self.collectionCacheLock.Unlock()
-
-			self.collectionCache[name] = collection
+			self.collectionCache[collection.Name] = collection
 		}
 
 		return nil
