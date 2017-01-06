@@ -3,6 +3,7 @@ package backends
 // this file satifies the Indexer interface for SqlBackend
 
 import (
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"reflect"
@@ -32,7 +33,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 				f.Offset = offset
 
 				if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
-					log.Debugf("%s %+v; processed=%d", string(sqlString[:]), queryGen.GetValues(), processed)
+					// log.Debugf("%s %+v; processed=%d", string(sqlString[:]), queryGen.GetValues(), processed)
 
 					// perform query
 					if rows, err := self.db.Query(string(sqlString[:]), queryGen.GetValues()...); err == nil {
@@ -140,17 +141,19 @@ func (self *SqlBackend) ListValues(collectionName string, fields []string, f fil
 					groupedByField[field] = record
 				}
 
+				var values []interface{}
+
 				if field == collection.IdentityField {
-					values := make([]interface{}, 0)
+					values = make([]interface{}, 0)
 
 					for _, result := range results.Records {
 						values = append(values, result.ID)
 					}
-
-					record.Set(`values`, values)
 				} else {
-					record.Set(`values`, results.Pluck(field))
+					values = sliceutil.Compact(results.Pluck(field))
 				}
+
+				record.Set(`values`, values)
 
 				recordset.Push(record)
 			} else {
