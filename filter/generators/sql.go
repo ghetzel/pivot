@@ -77,7 +77,7 @@ type Sql struct {
 	PlaceholderArgument    string                 // if specified, either "index", "index1" or "field"
 	StringNormalizerFormat string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
 	UseInStatement         bool                   // whether multiple values in a criterion should be tested using an IN() statement
-	Distinct bool // whether a DISTINCT clause should be used in SELECT statements
+	Distinct               bool                   // whether a DISTINCT clause should be used in SELECT statements
 	TypeMapping            SqlTypeMapping         // provides mapping information between DAL types and native SQL types
 	Type                   SqlStatementType       // what type of SQL statement is being generated
 	InputData              map[string]interface{} // key-value data for statement types that require input data (e.g.: inserts, updates)

@@ -2,9 +2,9 @@ package filter
 
 import (
 	"fmt"
+	"github.com/fatih/structs"
 	"net/url"
 	"strconv"
-	"github.com/fatih/structs"
 	"strings"
 )
 

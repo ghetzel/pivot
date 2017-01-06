@@ -127,7 +127,7 @@ func (self *SqlBackend) ListValues(collectionName string, fields []string, f fil
 		groupedByField := make(map[string]*dal.Record)
 
 		for _, field := range fields {
-			f.Fields = []string{ field }
+			f.Fields = []string{field}
 			f.Options[`Distinct`] = true
 
 			if results, err := self.Query(collectionName, f); err == nil {
@@ -148,18 +148,18 @@ func (self *SqlBackend) ListValues(collectionName string, fields []string, f fil
 					}
 
 					record.Set(`values`, values)
-				}else{
+				} else {
 					record.Set(`values`, results.Pluck(field))
 				}
 
 				recordset.Push(record)
-			}else{
+			} else {
 				return nil, err
 			}
 		}
 
 		return recordset, nil
-	}else{
+	} else {
 		return nil, err
 	}
 }
