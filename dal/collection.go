@@ -2,6 +2,7 @@ package dal
 
 import (
 	"fmt"
+	"reflect"
 )
 
 type CollectionAction int
@@ -27,6 +28,7 @@ type Collection struct {
 	IdentityField     string             `json:"identity_field,omitempty"`
 	IdentityFieldType string             `json:"identity_field_type,omitempty"`
 	Options           *CollectionOptions `json:"options,omitempty"`
+	recordType        reflect.Type
 }
 
 func NewCollection(name string) *Collection {
@@ -42,6 +44,20 @@ func (self *Collection) AddFields(fields ...Field) *Collection {
 	self.Fields = append(self.Fields, fields...)
 	return self
 }
+
+// func (self *Collection) SetRecordType(in interface{}) *Collection {
+// 	inT := reflect.TypeOf(in)
+
+// 	switch inT.Kind() {
+// 	case reflect.Struct, reflect.Map:
+// 		self.recordType = inT
+// 	default:
+// 		fallbackType := make(map[string]interface{})
+// 		self.recordType = reflect.TypeOf(fallbackType)
+// 	}
+
+// 	return self
+// }
 
 func (self *Collection) GetField(name string) (Field, bool) {
 	for _, field := range self.Fields {
