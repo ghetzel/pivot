@@ -19,6 +19,10 @@ type Field struct {
 }
 
 func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
+	if in == nil {
+		return nil, nil
+	}
+
 	var convertType stringutil.ConvertType
 
 	switch self.Type {
