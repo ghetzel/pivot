@@ -415,7 +415,7 @@ func (self *SqlBackend) ListCollections() ([]string, error) {
 	}
 }
 
-func (self *SqlBackend) CreateCollection(definition dal.Collection) error {
+func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	// -- sqlite3
 	// CREATE TABLE foo (
 	//     "id"         INTEGER PRIMARY KEY ASC,

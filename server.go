@@ -258,7 +258,7 @@ func (self *Server) setupRoutes() error {
 			var collection dal.Collection
 
 			if err := json.NewDecoder(req.Body).Decode(&collection); err == nil {
-				if err := self.backend.CreateCollection(collection); err == nil {
+				if err := self.backend.CreateCollection(&collection); err == nil {
 					self.Respond(w, http.StatusNoContent, nil, nil)
 				} else {
 					self.Respond(w, http.StatusInternalServerError, nil, err)

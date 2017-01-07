@@ -185,7 +185,7 @@ func (self *BoltBackend) ListCollections() ([]string, error) {
 	return collectionNames, err
 }
 
-func (self *BoltBackend) CreateCollection(definition dal.Collection) error {
+func (self *BoltBackend) CreateCollection(definition *dal.Collection) error {
 	return self.db.Update(func(tx *bolt.Tx) error {
 		bucketName := []byte(definition.Name[:])
 		_, err := tx.CreateBucket(bucketName)

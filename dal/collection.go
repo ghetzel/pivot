@@ -38,6 +38,11 @@ func NewCollection(name string) *Collection {
 	}
 }
 
+func (self *Collection) AddFields(fields ...Field) *Collection {
+	self.Fields = append(self.Fields, fields...)
+	return self
+}
+
 func (self *Collection) GetField(name string) (Field, bool) {
 	for _, field := range self.Fields {
 		if field.Name == name {
