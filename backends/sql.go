@@ -228,10 +228,9 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 						log.Debugf("%s %+v", string(stmt[:]), queryGen.GetValues())
 
 						// perform query
-						row := tx.QueryRow(string(stmt[:]), queryGen.GetValues()...)
-
-						if err := row.Scan(); err == nil {
-							return true
+						if rows, err := tx.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
+							defer rows.Close()
+							return rows.Next()
 						}
 					}
 				}

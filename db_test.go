@@ -111,6 +111,11 @@ func TestBasicCRUD(t *testing.T) {
 		dal.NewRecord(`2`).Set(`name`, `Second`),
 		dal.NewRecord(`3`).Set(`name`, `Third`))))
 
+	assert.True(backend.Exists(`TestBasicCRUD`, `1`))
+	assert.True(backend.Exists(`TestBasicCRUD`, 1))
+	assert.False(backend.Exists(`TestBasicCRUD`, `99`))
+	assert.False(backend.Exists(`TestBasicCRUD`, 99))
+
 	record, err = backend.Retrieve(`TestBasicCRUD`, `1`)
 	assert.Nil(err)
 	assert.NotNil(record)
