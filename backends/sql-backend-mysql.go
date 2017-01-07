@@ -18,7 +18,7 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 	self.queryGenPlaceholderArgument = ``
 	self.queryGenTableFormat = "`%s`"
 	self.queryGenFieldFormat = "`%s`"
-	self.queryGenStringNormalizerFormat = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(%v, ':', ' '), '[', ' '), ']', ' '), '*', ' '))"
+	self.queryGenNormalizerFormat = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(%v, ':', ' '), '[', ' '), ']', ' '), '*', ' '))"
 	self.listAllTablesQuery = `SHOW TABLES`
 	self.createPrimaryKeyIntFormat = `%s INT AUTO_INCREMENT NOT NULL PRIMARY KEY`
 	self.createPrimaryKeyStrFormat = `%s VARCHAR(255) NOT NULL PRIMARY KEY`
@@ -38,12 +38,11 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 				`COLUMN_KEY`,
 			}
 
-			queryGen := self.makeQueryGen()
+			queryGen := self.makeQueryGen(nil)
 
 			// make this instance of the query generator use the table name as given because
 			// we need to reference another database (information_schema)
 			queryGen.TableNameFormat = "%s"
-			queryGen.StringNormalizerFormat = "%s"
 
 			if sqlString, err := filter.Render(queryGen, "`information_schema`.`COLUMNS`", f); err == nil {
 				if rows, err := self.db.Query(string(sqlString[:]), queryGen.GetValues()...); err == nil {

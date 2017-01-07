@@ -23,7 +23,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 		}
 
 		for {
-			queryGen := self.makeQueryGen()
+			queryGen := self.makeQueryGen(collection)
 
 			if err := f.ApplyOptions(&queryGen); err != nil {
 				return nil

@@ -772,7 +772,8 @@ func TestSqlSelectWithNormalizerAndPlaceholders(t *testing.T) {
 	f.Fields = []string{`id`, `age`}
 
 	gen := NewSqlGenerator()
-	gen.StringNormalizerFormat = `LOWER(%s)`
+	gen.NormalizeFields = []string{`name`, `city`}
+	gen.NormalizerFormat = `LOWER(%s)`
 	sql, err := filter.Render(gen, `foo`, f)
 	assert.Nil(err)
 
@@ -781,7 +782,7 @@ func TestSqlSelectWithNormalizerAndPlaceholders(t *testing.T) {
 			`WHERE (LOWER(name) LIKE LOWER(?)) `+
 			`AND (age > ?) `+
 			`AND (LOWER(city) LIKE LOWER(?)) `+
-			`AND (LOWER(state) LIKE LOWER(?)) `+
+			`AND (state LIKE ?) `+
 			`ORDER BY name ASC, age DESC `+
 			`LIMIT 4 OFFSET 12`,
 		string(sql[:]),

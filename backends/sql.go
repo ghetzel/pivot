@@ -33,24 +33,24 @@ type sqlTableDetailsFunc func(datasetName string, collectionName string) (*dal.C
 type SqlBackend struct {
 	Backend
 	Indexer
-	conn                           dal.ConnectionString
-	db                             *sql.DB
-	indexer                        Indexer
-	options                        ConnectOptions
-	queryGenTypeMapping            generators.SqlTypeMapping
-	queryGenPlaceholderArgument    string
-	queryGenPlaceholderFormat      string
-	queryGenTableFormat            string
-	queryGenFieldFormat            string
-	queryGenStringNormalizerFormat string
-	listAllTablesQuery             string
-	createPrimaryKeyIntFormat      string
-	createPrimaryKeyStrFormat      string
-	showTableDetailQuery           string
-	refreshCollectionFunc          sqlTableDetailsFunc
-	dropTableQuery                 string
-	collectionCache                map[string]*dal.Collection
-	collectionCacheLock            sync.RWMutex
+	conn                        dal.ConnectionString
+	db                          *sql.DB
+	indexer                     Indexer
+	options                     ConnectOptions
+	queryGenTypeMapping         generators.SqlTypeMapping
+	queryGenPlaceholderArgument string
+	queryGenPlaceholderFormat   string
+	queryGenTableFormat         string
+	queryGenFieldFormat         string
+	queryGenNormalizerFormat    string
+	listAllTablesQuery          string
+	createPrimaryKeyIntFormat   string
+	createPrimaryKeyStrFormat   string
+	showTableDetailQuery        string
+	refreshCollectionFunc       sqlTableDetailsFunc
+	dropTableQuery              string
+	collectionCache             map[string]*dal.Collection
+	collectionCacheLock         sync.RWMutex
 }
 
 func NewSqlBackend(connection dal.ConnectionString) *SqlBackend {
@@ -152,7 +152,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 			// for each record being inserted...
 			for _, record := range recordset.Records {
 				// setup query generator
-				queryGen := self.makeQueryGen()
+				queryGen := self.makeQueryGen(collection)
 				queryGen.Type = generators.SqlInsertStatement
 
 				// add record data to query input
@@ -179,6 +179,8 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 				// render the query into the final SQL
 				if stmt, err := filter.Render(queryGen, collection.Name, filter.Null); err == nil {
+					log.Debugf("%s %+v", string(stmt[:]), queryGen.GetValues())
+
 					// execute the SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
 						defer tx.Rollback()
@@ -219,16 +221,17 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 				collection.IdentityField: id,
 			}); err == nil {
 				f.Fields = []string{collection.IdentityField}
-				queryGen := self.makeQueryGen()
+				queryGen := self.makeQueryGen(collection)
 
 				if err := queryGen.Initialize(collection.Name); err == nil {
-					if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
-						// perform query
-						row := tx.QueryRow(string(sqlString[:]), queryGen.GetValues()...)
-						var outId interface{}
+					if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
+						log.Debugf("%s %+v", string(stmt[:]), queryGen.GetValues())
 
-						if err := row.Scan(&outId); err == nil {
-							return (id == outId)
+						// perform query
+						row := tx.QueryRow(string(stmt[:]), queryGen.GetValues()...)
+
+						if err := row.Scan(); err == nil {
+							return true
 						}
 					}
 				}
@@ -245,7 +248,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 			collection.IdentityField: id,
 		}); err == nil {
 			f.Fields = fields
-			queryGen := self.makeQueryGen()
+			queryGen := self.makeQueryGen(collection)
 
 			if err := queryGen.Initialize(collection.Name); err == nil {
 				if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
@@ -295,7 +298,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 			// for each record being updated...
 			for _, record := range recordset.Records {
 				// setup query generator
-				queryGen := self.makeQueryGen()
+				queryGen := self.makeQueryGen(collection)
 				queryGen.Type = generators.SqlUpdateStatement
 
 				var recordUpdateFilter filter.Filter
@@ -330,6 +333,8 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 
 				// generate SQL
 				if stmt, err := filter.Render(queryGen, collection.Name, recordUpdateFilter); err == nil {
+					log.Debugf("%s %+v", string(stmt[:]), queryGen.GetValues())
+
 					// execute SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
 						defer tx.Rollback()
@@ -370,7 +375,7 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 		})
 
 		if tx, err := self.db.Begin(); err == nil {
-			queryGen := self.makeQueryGen()
+			queryGen := self.makeQueryGen(collection)
 			queryGen.Type = generators.SqlDeleteStatement
 
 			// generate SQL
@@ -452,7 +457,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 		definition.IdentityField = dal.DefaultIdentityField
 	}
 
-	gen := self.makeQueryGen()
+	gen := self.makeQueryGen(definition)
 
 	query := fmt.Sprintf("CREATE TABLE %s (", gen.ToTableName(definition.Name))
 
@@ -509,16 +514,20 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	}
 }
 
-func (self *SqlBackend) DeleteCollection(collection string) error {
-	gen := self.makeQueryGen()
+func (self *SqlBackend) DeleteCollection(collectionName string) error {
+	if collection, err := self.getCollectionFromCache(collectionName); err == nil {
+		gen := self.makeQueryGen(collection)
 
-	if tx, err := self.db.Begin(); err == nil {
-		query := fmt.Sprintf(self.dropTableQuery, gen.ToTableName(collection))
+		if tx, err := self.db.Begin(); err == nil {
+			query := fmt.Sprintf(self.dropTableQuery, gen.ToTableName(collectionName))
 
-		if _, err := tx.Exec(query); err == nil {
-			return tx.Commit()
+			if _, err := tx.Exec(query); err == nil {
+				return tx.Commit()
+			} else {
+				defer tx.Rollback()
+				return err
+			}
 		} else {
-			defer tx.Rollback()
 			return err
 		}
 	} else {
@@ -538,7 +547,7 @@ func (self *SqlBackend) GetCollection(name string) (*dal.Collection, error) {
 	}
 }
 
-func (self *SqlBackend) makeQueryGen() *generators.Sql {
+func (self *SqlBackend) makeQueryGen(collection *dal.Collection) *generators.Sql {
 	queryGen := generators.NewSqlGenerator()
 	queryGen.TypeMapping = self.queryGenTypeMapping
 
@@ -558,8 +567,22 @@ func (self *SqlBackend) makeQueryGen() *generators.Sql {
 		queryGen.FieldNameFormat = v
 	}
 
-	if v := self.queryGenStringNormalizerFormat; v != `` {
-		queryGen.StringNormalizerFormat = v
+	if collection != nil {
+		// perform string normalization on non-pk, non-key string fields
+		for _, field := range collection.Fields {
+			if field.Identity || field.Key {
+				continue
+			}
+
+			if field.Type == dal.StringType {
+				queryGen.NormalizeFields = append(queryGen.NormalizeFields, field.Name)
+			}
+		}
+
+		// set the format for string normalization
+		if v := self.queryGenNormalizerFormat; v != `` {
+			queryGen.NormalizerFormat = v
+		}
 	}
 
 	return queryGen

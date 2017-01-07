@@ -3,6 +3,7 @@ package generators
 import (
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -79,35 +80,37 @@ var DefaultSqlTypeMapping = MysqlTypeMapping
 
 type Sql struct {
 	filter.Generator
-	TableNameFormat        string                 // format string used to wrap table names
-	FieldNameFormat        string                 // format string used to wrap field names
-	PlaceholderFormat      string                 // if using placeholders, the format string used to insert them
-	PlaceholderArgument    string                 // if specified, either "index", "index1" or "field"
-	StringNormalizerFormat string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
-	UseInStatement         bool                   // whether multiple values in a criterion should be tested using an IN() statement
-	Distinct               bool                   // whether a DISTINCT clause should be used in SELECT statements
-	TypeMapping            SqlTypeMapping         // provides mapping information between DAL types and native SQL types
-	Type                   SqlStatementType       // what type of SQL statement is being generated
-	InputData              map[string]interface{} // key-value data for statement types that require input data (e.g.: inserts, updates)
-	collection             string
-	fields                 []string
-	criteria               []string
-	inputValues            []interface{}
-	values                 []interface{}
+	TableNameFormat     string                 // format string used to wrap table names
+	FieldNameFormat     string                 // format string used to wrap field names
+	PlaceholderFormat   string                 // if using placeholders, the format string used to insert them
+	PlaceholderArgument string                 // if specified, either "index", "index1" or "field"
+	NormalizeFields     []string               // a list of field names that should have the NormalizerFormat applied to them and their corresponding values
+	NormalizerFormat    string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
+	UseInStatement      bool                   // whether multiple values in a criterion should be tested using an IN() statement
+	Distinct            bool                   // whether a DISTINCT clause should be used in SELECT statements
+	TypeMapping         SqlTypeMapping         // provides mapping information between DAL types and native SQL types
+	Type                SqlStatementType       // what type of SQL statement is being generated
+	InputData           map[string]interface{} // key-value data for statement types that require input data (e.g.: inserts, updates)
+	collection          string
+	fields              []string
+	criteria            []string
+	inputValues         []interface{}
+	values              []interface{}
 }
 
 func NewSqlGenerator() *Sql {
 	return &Sql{
-		Generator:              filter.Generator{},
-		PlaceholderFormat:      `?`,
-		PlaceholderArgument:    ``,
-		StringNormalizerFormat: "%s",
-		TableNameFormat:        "%s",
-		FieldNameFormat:        "%s",
-		UseInStatement:         true,
-		TypeMapping:            DefaultSqlTypeMapping,
-		Type:                   SqlSelectStatement,
-		InputData:              make(map[string]interface{}),
+		Generator:           filter.Generator{},
+		PlaceholderFormat:   `?`,
+		PlaceholderArgument: ``,
+		NormalizeFields:     make([]string, 0),
+		NormalizerFormat:    "%s",
+		TableNameFormat:     "%s",
+		FieldNameFormat:     "%s",
+		UseInStatement:      true,
+		TypeMapping:         DefaultSqlTypeMapping,
+		Type:                SqlSelectStatement,
+		InputData:           make(map[string]interface{}),
 	}
 }
 
@@ -280,7 +283,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 	// for each value being tested in this criterion
 	for _, vI := range criterion.Values {
 		var typedValue interface{}
-		var isString bool
+
 		value := fmt.Sprintf("%v", vI)
 
 		if vI == nil || strings.ToUpper(value) == `NULL` {
@@ -293,7 +296,6 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 			switch criterion.Type {
 			case dal.StringType:
 				typedValue, convertErr = stringutil.ConvertTo(stringutil.String, value)
-				isString = true
 			case dal.FloatType:
 				typedValue, convertErr = stringutil.ConvertTo(stringutil.Float, value)
 			case dal.IntType:
@@ -310,11 +312,6 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 			if convertErr != nil {
 				return convertErr
-			}
-
-			switch typedValue.(type) {
-			case string:
-				isString = true
 			}
 		}
 
@@ -351,40 +348,30 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 			if value == `NULL` {
 				outVal = outVal + ` IS NULL`
 			} else {
-				// wrap the field in any string normalizing functions (the same thing
-				// will happen to the values being compared)
-				if isString {
-					outVal = self.ApplyNormalizer(outVal)
-				}
+				outVal = self.ApplyNormalizer(criterion.Field, outVal)
 
 				if useInStatement {
 					outVal = outVal + fmt.Sprintf("%s", value)
-				} else if isString {
-					outVal = outVal + fmt.Sprintf(" = %s", self.ApplyNormalizer(value))
 				} else {
-					outVal = outVal + fmt.Sprintf(" = %s", value)
+					outVal = outVal + fmt.Sprintf(" = %s", self.ApplyNormalizer(criterion.Field, value))
 				}
 			}
 		case `not`:
 			if value == `NULL` {
 				outVal = outVal + ` IS NOT NULL`
 			} else {
-				if isString {
-					outVal = self.ApplyNormalizer(outVal)
-				}
+				outVal = self.ApplyNormalizer(criterion.Field, outVal)
 
 				if useInStatement {
 					outVal = outVal + fmt.Sprintf("%s", value)
-				} else if isString {
-					outVal = outVal + fmt.Sprintf(" <> %s", self.ApplyNormalizer(value))
 				} else {
-					outVal = outVal + fmt.Sprintf(" <> %s", value)
+					outVal = outVal + fmt.Sprintf(" <> %s", self.ApplyNormalizer(criterion.Field, value))
 				}
 			}
 		case `contains`, `prefix`, `suffix`:
 			// wrap the field in any string normalizing functions (the same thing
 			// will happen to the values being compared)
-			outVal = self.ApplyNormalizer(outVal) + fmt.Sprintf(` LIKE %s`, self.ApplyNormalizer(value))
+			outVal = self.ApplyNormalizer(criterion.Field, outVal) + fmt.Sprintf(` LIKE %s`, self.ApplyNormalizer(criterion.Field, value))
 		case `gt`:
 			outVal = outVal + fmt.Sprintf(" > %s", value)
 		case `gte`:
@@ -501,8 +488,12 @@ func (self *Sql) GetPlaceholder(fieldName string, fieldIndex int) string {
 	}
 }
 
-func (self *Sql) ApplyNormalizer(in string) string {
-	return fmt.Sprintf(self.StringNormalizerFormat, in)
+func (self *Sql) ApplyNormalizer(fieldName string, in string) string {
+	if sliceutil.ContainsString(self.NormalizeFields, fieldName) {
+		return fmt.Sprintf(self.NormalizerFormat, in)
+	} else {
+		return in
+	}
 }
 
 func (self *Sql) PrepareInputValue(_ string, value interface{}) (interface{}, error) {
