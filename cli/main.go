@@ -21,8 +21,12 @@ func main() {
 		cli.StringFlag{
 			Name:   `log-level, L`,
 			Usage:  `Level of log output verbosity`,
-			Value:  `info`,
+			Value:  `debug`,
 			EnvVar: `LOGLEVEL`,
+		},
+		cli.BoolFlag{
+			Name:  `log-queries`,
+			Usage: `Whether to include queries in the logging output`,
 		},
 		cli.StringFlag{
 			Name:  `config, c`,
@@ -45,9 +49,15 @@ func main() {
 		logging.SetFormatter(logging.MustStringFormatter(`%{color}%{level:.4s}%{color:reset}[%{id:04d}] %{message}`))
 
 		if level, err := logging.LogLevel(c.String(`log-level`)); err == nil {
-			logging.SetLevel(level, `main`)
+			logging.SetLevel(level, ``)
 		} else {
 			return err
+		}
+
+		if c.Bool(`log-queries`) {
+			logging.SetLevel(logging.DEBUG, `pivot/querylog`)
+		} else {
+			logging.SetLevel(logging.CRITICAL, `pivot/querylog`)
 		}
 
 		return nil

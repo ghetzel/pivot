@@ -7,7 +7,8 @@ import (
 	"github.com/op/go-logging"
 )
 
-var log = logging.MustGetLogger(`backends`)
+var log = logging.MustGetLogger(`pivot/backends`)
+var querylog = logging.MustGetLogger(`pivot/querylog`)
 var stats, _ = statsd.New()
 
 type Backend interface {

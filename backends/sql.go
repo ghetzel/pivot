@@ -179,7 +179,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 				// render the query into the final SQL
 				if stmt, err := filter.Render(queryGen, collection.Name, filter.Null); err == nil {
-					// log.Debugf("%s %+v", string(stmt[:]), queryGen.GetValues())
+					querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
 
 					// execute the SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
@@ -225,7 +225,7 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 
 				if err := queryGen.Initialize(collection.Name); err == nil {
 					if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-						// log.Debugf("%s %+v", string(stmt[:]), queryGen.GetValues())
+						querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
 
 						// perform query
 						if rows, err := tx.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
@@ -250,9 +250,11 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 			queryGen := self.makeQueryGen(collection)
 
 			if err := queryGen.Initialize(collection.Name); err == nil {
-				if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
+				if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
+					querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
+
 					// perform query
-					if rows, err := self.db.Query(string(sqlString[:]), queryGen.GetValues()...); err == nil {
+					if rows, err := self.db.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
 						defer rows.Close()
 
 						if columns, err := rows.Columns(); err == nil {
@@ -332,7 +334,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 
 				// generate SQL
 				if stmt, err := filter.Render(queryGen, collection.Name, recordUpdateFilter); err == nil {
-					// log.Debugf("%s %+v", string(stmt[:]), queryGen.GetValues())
+					querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
 
 					// execute SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
@@ -379,6 +381,8 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 
 			// generate SQL
 			if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
+				querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
+
 				// execute SQL
 				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
 					if err := tx.Commit(); err == nil {
@@ -458,7 +462,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 
 	gen := self.makeQueryGen(definition)
 
-	query := fmt.Sprintf("CREATE TABLE %s (", gen.ToTableName(definition.Name))
+	stmt := fmt.Sprintf("CREATE TABLE %s (", gen.ToTableName(definition.Name))
 
 	fields := []string{}
 	values := make([]interface{}, 0)
@@ -497,11 +501,13 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 		fields = append(fields, def)
 	}
 
-	query += strings.Join(fields, `, `)
-	query += `)`
+	stmt += strings.Join(fields, `, `)
+	stmt += `)`
 
 	if tx, err := self.db.Begin(); err == nil {
-		if _, err := tx.Exec(query, values...); err == nil {
+		querylog.Debugf("%s %v", string(stmt[:]), values)
+
+		if _, err := tx.Exec(stmt, values...); err == nil {
 			defer self.refreshAllCollections()
 			return tx.Commit()
 		} else {
@@ -518,9 +524,10 @@ func (self *SqlBackend) DeleteCollection(collectionName string) error {
 		gen := self.makeQueryGen(collection)
 
 		if tx, err := self.db.Begin(); err == nil {
-			query := fmt.Sprintf(self.dropTableQuery, gen.ToTableName(collectionName))
+			stmt := fmt.Sprintf(self.dropTableQuery, gen.ToTableName(collectionName))
+			querylog.Debugf("%s", string(stmt[:]))
 
-			if _, err := tx.Exec(query); err == nil {
+			if _, err := tx.Exec(stmt); err == nil {
 				return tx.Commit()
 			} else {
 				defer tx.Rollback()

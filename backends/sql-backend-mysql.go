@@ -32,7 +32,7 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 			f.Fields = []string{
 				`ORDINAL_POSITION`,
 				`COLUMN_NAME`,
-				`DATA_TYPE`,
+				`COLUMN_TYPE`,
 				`IS_NULLABLE`,
 				`COLUMN_DEFAULT`,
 				`COLUMN_KEY`,
@@ -44,8 +44,10 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 			// we need to reference another database (information_schema)
 			queryGen.TableNameFormat = "%s"
 
-			if sqlString, err := filter.Render(queryGen, "`information_schema`.`COLUMNS`", f); err == nil {
-				if rows, err := self.db.Query(string(sqlString[:]), queryGen.GetValues()...); err == nil {
+			if stmt, err := filter.Render(queryGen, "`information_schema`.`COLUMNS`", f); err == nil {
+				querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
+
+				if rows, err := self.db.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
 					defer rows.Close()
 
 					collection := dal.NewCollection(collectionName)

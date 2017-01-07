@@ -24,7 +24,10 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
-		if rows, err := self.db.Query(fmt.Sprintf("PRAGMA table_info(%q)", collectionName)); err == nil {
+		stmt := fmt.Sprintf("PRAGMA table_info(%q)", collectionName)
+		querylog.Debugf("%s", string(stmt[:]))
+
+		if rows, err := self.db.Query(stmt); err == nil {
 			defer rows.Close()
 			collection := dal.NewCollection(collectionName)
 
