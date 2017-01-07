@@ -15,7 +15,7 @@ type FieldProperties struct {
 
 type Field struct {
 	Name       string           `json:"name"`
-	Type       string           `json:"type"`
+	Type       Type             `json:"type"`
 	Length     int              `json:"length,omitempty"`
 	Precision  int              `json:"precision,omitempty"`
 	Properties *FieldProperties `json:"properties,omitempty"`
@@ -25,15 +25,15 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 	var convertType stringutil.ConvertType
 
 	switch self.Type {
-	case `str`:
+	case StringType:
 		convertType = stringutil.String
-	case `bool`:
+	case BooleanType:
 		convertType = stringutil.Boolean
-	case `float`:
-		convertType = stringutil.Float
-	case `int`:
+	case IntType:
 		convertType = stringutil.Integer
-	case `date`, `time`:
+	case FloatType:
+		convertType = stringutil.Float
+	case TimeType:
 		convertType = stringutil.Time
 	default:
 		return in, nil

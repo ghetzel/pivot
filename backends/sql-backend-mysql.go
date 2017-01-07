@@ -75,26 +75,26 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 
 							// map native types to DAL types
 							if strings.HasSuffix(columnType, `CHAR`) || strings.HasSuffix(columnType, `TEXT`) {
-								field.Type = `str`
+								field.Type = dal.StringType
 
 							} else if strings.HasPrefix(columnType, `BOOL`) || columnType == `BIT` {
-								field.Type = `bool`
+								field.Type = dal.BooleanType
 
 							} else if strings.HasSuffix(columnType, `INT`) {
 								if field.Length == 1 {
-									field.Type = `bool`
+									field.Type = dal.BooleanType
 								} else {
-									field.Type = `int`
+									field.Type = dal.IntType
 								}
 
 							} else if columnType == `FLOAT` || columnType == `DOUBLE` || columnType == `DECIMAL` {
-								field.Type = `float`
+								field.Type = dal.FloatType
 
 							} else if strings.HasPrefix(columnType, `DATE`) || strings.Contains(columnType, `TIME`) {
-								field.Type = `date`
+								field.Type = dal.TimeType
 
 							} else {
-								field.Type = stringutil.Underscore(columnType)
+								field.Type = dal.RawType
 							}
 
 							// figure out keying

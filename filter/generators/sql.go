@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"sort"
 	"strings"
@@ -273,16 +274,16 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 			var convertErr error
 
 			switch criterion.Type {
-			case `str`:
+			case dal.StringType:
 				typedValue, convertErr = stringutil.ConvertTo(stringutil.String, value)
 				isString = true
-			case `float`:
+			case dal.FloatType:
 				typedValue, convertErr = stringutil.ConvertTo(stringutil.Float, value)
-			case `int`:
+			case dal.IntType:
 				typedValue, convertErr = stringutil.ConvertTo(stringutil.Integer, value)
-			case `bool`:
+			case dal.BooleanType:
 				typedValue, convertErr = stringutil.ConvertTo(stringutil.Boolean, value)
-			case `date`, `time`:
+			case dal.TimeType:
 				typedValue, convertErr = stringutil.ConvertTo(stringutil.Time, value)
 			default:
 				typedValue = stringutil.Autotype(value)
@@ -322,21 +323,8 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 		outVal := ``
 
 		if !useInStatement {
-			if criterion.Type != `` {
-				if criterionType, err := self.ToNativeType(criterion.Type, criterion.Length); err == nil {
-					if criterionType != `` {
-						outFieldName = fmt.Sprintf("CAST(%s AS %s)", self.ToFieldName(criterion.Field), criterionType)
-						outVal = outFieldName
-					}
-				} else {
-					return err
-				}
-			}
-
-			if outVal == `` {
-				outFieldName = self.ToFieldName(criterion.Field)
-				outVal = outFieldName
-			}
+			outFieldName = self.ToFieldName(criterion.Field)
+			outVal = outFieldName
 		}
 
 		switch criterion.Operator {
@@ -418,30 +406,30 @@ func (self *Sql) ToFieldName(field string) string {
 	return fmt.Sprintf(self.FieldNameFormat, field)
 }
 
-func (self *Sql) ToNativeType(in string, length int) (string, error) {
+func (self *Sql) ToNativeType(in dal.Type, length int) (string, error) {
 	out := ``
 
-	switch strings.ToLower(in) {
-	case `str`:
+	switch in {
+	case dal.StringType:
 		out = self.TypeMapping.StringType
 
 		if l := self.TypeMapping.StringTypeLength; length == 0 && l > 0 {
 			length = l
 		}
-	case `int`:
+	case dal.IntType:
 		out = self.TypeMapping.IntegerType
-	case `float`:
+	case dal.FloatType:
 		out = self.TypeMapping.FloatType
-	case `bool`:
+	case dal.BooleanType:
 		out = self.TypeMapping.BooleanType
 
 		if l := self.TypeMapping.BooleanTypeLength; length == 0 && l > 0 {
 			length = l
 		}
-	case `date`, `time`:
+	case dal.TimeType:
 		out = self.TypeMapping.DateTimeType
 	default:
-		out = in
+		out = strings.ToUpper(in.String())
 	}
 
 	if length > 0 {

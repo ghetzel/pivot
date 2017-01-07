@@ -3,6 +3,8 @@ package filter
 import (
 	"fmt"
 	"github.com/fatih/structs"
+	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/pivot/dal"
 	"net/url"
 	"strconv"
 	"strings"
@@ -16,7 +18,7 @@ var QueryUnescapeValues = false
 var AllValue = `all`
 
 type Criterion struct {
-	Type     string        `json:"type,omitempty"`
+	Type     dal.Type      `json:"type,omitempty"`
 	Length   int           `json:"length,omitempty"`
 	Field    string        `json:"field"`
 	Operator string        `json:"operator,omitempty"`
@@ -33,9 +35,9 @@ func (self *Criterion) String() string {
 
 	if self.Type != `` {
 		if self.Length > 0 {
-			rv += self.Type + fmt.Sprintf("#%d", self.Length) + ModifierDelimiter
+			rv += fmt.Sprintf("%v#%d%s", self.Type, self.Length, ModifierDelimiter)
 		} else {
-			rv += self.Type + ModifierDelimiter
+			rv += fmt.Sprintf("%v%s", self.Type, ModifierDelimiter)
 		}
 	}
 
@@ -166,19 +168,20 @@ func Parse(spec string) (Filter, error) {
 				if len(parts) == 1 {
 					criterion = Criterion{
 						Field: parts[0],
+						Type:  dal.AutoType,
 					}
 				} else {
 					typeLengthPair := strings.SplitN(parts[0], `#`, 2)
 
 					if len(typeLengthPair) == 1 {
 						criterion = Criterion{
-							Type:  parts[0],
+							Type:  sliceutil.Or(dal.Type(parts[0]), dal.StringType).(dal.Type),
 							Field: parts[1],
 						}
 					} else {
 						if v, err := strconv.ParseUint(typeLengthPair[1], 10, 32); err == nil {
 							criterion = Criterion{
-								Type:   typeLengthPair[0],
+								Type:   sliceutil.Or(dal.Type(typeLengthPair[0]), dal.StringType).(dal.Type),
 								Length: int(v),
 								Field:  parts[1],
 							}
@@ -225,7 +228,7 @@ func Parse(spec string) (Filter, error) {
 			}
 		}
 	default:
-		return rv, fmt.Errorf("Invalid filter spec %q", spec)
+		return rv, fmt.Errorf("Invalid filter spec: %s", spec)
 	}
 
 	return rv, nil

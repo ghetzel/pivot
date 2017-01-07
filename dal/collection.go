@@ -16,7 +16,7 @@ const (
 )
 
 var DefaultIdentityField = `id`
-var DefaultIdentityFieldType = `int`
+var DefaultIdentityFieldType = IntType
 
 type CollectionOptions struct {
 	FieldsUnordered bool `json:"fields_unordered,omitempty"`

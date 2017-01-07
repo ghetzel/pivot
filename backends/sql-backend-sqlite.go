@@ -55,20 +55,20 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 					// map native types to DAL types
 					switch columnType {
 					case `TEXT`:
-						field.Type = `str`
+						field.Type = dal.StringType
 
 					case `INTEGER`:
 						if field.Length == 1 {
-							field.Type = `bool`
+							field.Type = dal.BooleanType
 						} else {
-							field.Type = `int`
+							field.Type = dal.IntType
 						}
 
 					case `REAL`:
-						field.Type = `float`
+						field.Type = dal.FloatType
 
 					default:
-						field.Type = stringutil.Underscore(columnType)
+						field.Type = dal.RawType
 
 					}
 

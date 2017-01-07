@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"github.com/ghetzel/pivot/dal"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -12,22 +13,22 @@ func TestFilterParse(t *testing.T) {
 	FieldTermSeparator = `/`
 
 	tests := map[string]func(Filter, error){
-		`all`: func(f Filter, err error) {
+		AllValue: func(f Filter, err error) {
 			assert.Nil(err)
 			assert.True(f.MatchAll)
-			assert.Equal(f.Spec, `all`)
+			assert.Equal(f.Spec, AllValue)
 			assert.Equal(0, len(f.Criteria))
 		},
 		`k1/contains:v1/int:k2/lt:v2a|v2b`: func(f Filter, err error) {
 			assert.Nil(err)
 			assert.Equal(2, len(f.Criteria))
 
-			assert.Equal(``, f.Criteria[0].Type)
+			assert.True(dal.AutoType == f.Criteria[0].Type)
 			assert.Equal(`k1`, f.Criteria[0].Field)
 			assert.Equal(`contains`, f.Criteria[0].Operator)
 			assert.Equal([]interface{}{`v1`}, f.Criteria[0].Values)
 
-			assert.Equal(`int`, f.Criteria[1].Type)
+			assert.True(dal.IntType == f.Criteria[1].Type)
 			assert.Equal(`k2`, f.Criteria[1].Field)
 			assert.Equal(`lt`, f.Criteria[1].Operator)
 			assert.Equal([]interface{}{`v2a`, `v2b`}, f.Criteria[1].Values)
@@ -47,7 +48,7 @@ func TestFilterIdentity(t *testing.T) {
 	filter, err := Parse(spec)
 	assert.Nil(err)
 	assert.Equal(1, len(filter.Criteria))
-	assert.Equal(`str`, filter.Criteria[0].Type)
+	assert.Equal(dal.StringType, filter.Criteria[0].Type)
 	assert.Equal(16, filter.Criteria[0].Length)
 	assert.Equal(`name`, filter.Criteria[0].Field)
 	assert.Equal(`prefix`, filter.Criteria[0].Operator)
@@ -75,22 +76,22 @@ func TestFilterParseAltDelimiters(t *testing.T) {
 	FieldTermSeparator = `=`
 
 	tests := map[string]func(Filter, error){
-		`all`: func(f Filter, err error) {
+		AllValue: func(f Filter, err error) {
 			assert.Nil(err)
 			assert.True(f.MatchAll)
-			assert.Equal(f.Spec, `all`)
+			assert.Equal(f.Spec, AllValue)
 			assert.Equal(0, len(f.Criteria))
 		},
 		`k1=contains:v1 int:k2=lt:v2a|v2b`: func(f Filter, err error) {
 			assert.Nil(err)
 			assert.Equal(2, len(f.Criteria))
 
-			assert.Equal(``, f.Criteria[0].Type)
+			assert.True(dal.AutoType == f.Criteria[0].Type)
 			assert.Equal(`k1`, f.Criteria[0].Field)
 			assert.Equal(`contains`, f.Criteria[0].Operator)
 			assert.Equal([]interface{}{`v1`}, f.Criteria[0].Values)
 
-			assert.Equal(`int`, f.Criteria[1].Type)
+			assert.True(dal.IntType == f.Criteria[1].Type)
 			assert.Equal(`k2`, f.Criteria[1].Field)
 			assert.Equal(`lt`, f.Criteria[1].Operator)
 			assert.Equal([]interface{}{`v2a`, `v2b`}, f.Criteria[1].Values)
@@ -124,11 +125,11 @@ func TestFilterFromMap(t *testing.T) {
 			assert.Equal([]interface{}{`v1`}, criterion.Values)
 
 		case `f2`:
-			assert.Equal(`int`, criterion.Type)
+			assert.True(dal.IntType == criterion.Type)
 			assert.Equal([]interface{}{`2`}, criterion.Values)
 
 		case `f3`:
-			assert.Equal(`float`, criterion.Type)
+			assert.True(dal.FloatType == criterion.Type)
 			assert.Equal(`gte`, criterion.Operator)
 			assert.Equal([]interface{}{`3`}, criterion.Values)
 		default:

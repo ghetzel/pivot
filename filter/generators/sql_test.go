@@ -82,14 +82,6 @@ func TestSqlSelects(t *testing.T) {
 				query:  `SELECT ` + field + ` FROM foo WHERE (age = ?)`,
 				values: []interface{}{int64(21)},
 			},
-			`int:age/21`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (CAST(age AS BIGINT) = ?)`,
-				values: []interface{}{int64(21)},
-			},
-			`float:age/21`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (CAST(age AS DECIMAL) = ?)`,
-				values: []interface{}{float64(21)},
-			},
 			`enabled/true`: {
 				query:  `SELECT ` + field + ` FROM foo WHERE (enabled = ?)`,
 				values: []interface{}{true},
@@ -330,18 +322,6 @@ func TestSqlDeletes(t *testing.T) {
 				int64(21),
 			},
 		},
-		`int:age/21`: {
-			query: `DELETE FROM foo WHERE (CAST(age AS BIGINT) = ?)`,
-			values: []interface{}{
-				int64(21),
-			},
-		},
-		`float:age/21`: {
-			query: `DELETE FROM foo WHERE (CAST(age AS DECIMAL) = ?)`,
-			values: []interface{}{
-				float64(21),
-			},
-		},
 		`enabled/true`: {
 			query: `DELETE FROM foo WHERE (enabled = ?)`,
 			values: []interface{}{
@@ -483,11 +463,11 @@ func TestSqlTypeMapping(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(
 		`SELECT * FROM foo `+
-			`WHERE (CAST(age AS BIGINT) = ?) `+
-			`AND (CAST(name AS VARCHAR(255)) = ?) `+
-			`AND (CAST(enabled AS BOOL) = ?) `+
-			`AND (CAST(rating AS DECIMAL) = ?) `+
-			`AND (CAST(created_at AS DATETIME) < ?)`,
+			`WHERE (age = ?) `+
+			`AND (name = ?) `+
+			`AND (enabled = ?) `+
+			`AND (rating = ?) `+
+			`AND (created_at < ?)`,
 		string(actual[:]),
 	)
 
@@ -513,11 +493,11 @@ func TestSqlTypeMapping(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(
 		`SELECT * FROM foo `+
-			`WHERE (CAST(age AS BIGINT) = ?) `+
-			`AND (CAST(name AS TEXT) = ?) `+
-			`AND (CAST(enabled AS BOOLEAN) = ?) `+
-			`AND (CAST(rating AS NUMERIC) = ?) `+
-			`AND (CAST(created_at AS TIMESTAMP) < ?)`,
+			`WHERE (age = ?) `+
+			`AND (name = ?) `+
+			`AND (enabled = ?) `+
+			`AND (rating = ?) `+
+			`AND (created_at < ?)`,
 		string(actual[:]),
 	)
 
@@ -528,11 +508,11 @@ func TestSqlTypeMapping(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(
 		`SELECT * FROM foo `+
-			`WHERE (CAST(age AS INTEGER) = ?) `+
-			`AND (CAST(name AS TEXT) = ?) `+
-			`AND (CAST(enabled AS INTEGER(1)) = ?) `+
-			`AND (CAST(rating AS REAL) = ?) `+
-			`AND (CAST(created_at AS INTEGER) < ?)`,
+			`WHERE (age = ?) `+
+			`AND (name = ?) `+
+			`AND (enabled = ?) `+
+			`AND (rating = ?) `+
+			`AND (created_at < ?)`,
 		string(actual[:]),
 	)
 
@@ -543,11 +523,11 @@ func TestSqlTypeMapping(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(
 		`SELECT * FROM foo `+
-			`WHERE (CAST(age AS INT) = ?) `+
-			`AND (CAST(name AS VARCHAR) = ?) `+
-			`AND (CAST(enabled AS TINYINT(1)) = ?) `+
-			`AND (CAST(rating AS FLOAT) = ?) `+
-			`AND (CAST(created_at AS DATETIME) < ?)`,
+			`WHERE (age = ?) `+
+			`AND (name = ?) `+
+			`AND (enabled = ?) `+
+			`AND (rating = ?) `+
+			`AND (created_at < ?)`,
 		string(actual[:]),
 	)
 }
