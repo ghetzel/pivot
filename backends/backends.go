@@ -30,8 +30,6 @@ func MakeBackend(connection dal.ConnectionString) (Backend, error) {
 	log.Debugf("Creating backend for connection string %q", connection.String())
 
 	switch connection.Backend() {
-	case `boltdb`:
-		return NewBoltBackend(connection), nil
 	case `sqlite`, `mysql`:
 		return NewSqlBackend(connection), nil
 	default:

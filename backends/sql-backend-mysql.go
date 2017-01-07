@@ -61,12 +61,10 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 						if err := rows.Scan(&i, &column, &columnType, &nullable, &defaultValue, &keyType); err == nil {
 							// start building the dal.Field
 							field := dal.Field{
-								Name: column,
-								Properties: &dal.FieldProperties{
-									NativeType:   columnType,
-									Required:     (nullable != `YES`),
-									DefaultValue: stringutil.Autotype(defaultValue.String),
-								},
+								Name:         column,
+								NativeType:   columnType,
+								Required:     (nullable != `YES`),
+								DefaultValue: stringutil.Autotype(defaultValue.String),
 							}
 
 							// tease out type, length, and precision from the native type
@@ -100,12 +98,12 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 							// figure out keying
 							switch keyType.String {
 							case `PRI`:
-								field.Properties.Identity = true
+								field.Identity = true
 								collection.IdentityField = column
 							case `UNI`:
-								field.Properties.Unique = true
+								field.Unique = true
 							case `MUL`:
-								field.Properties.Key = true
+								field.Key = true
 							}
 
 							// add field to the collection we're building

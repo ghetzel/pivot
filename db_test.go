@@ -35,19 +35,6 @@ func setupTestMysql() {
 	}
 }
 
-func setupTestBoltDB() {
-	os.RemoveAll(`./tmp/db_test`)
-	os.MkdirAll(`./tmp/db_test`, 0755)
-	backends.BleveBatchFlushCount = 1
-
-	if b, err := makeBackend(`boltdb:///./tmp/db_test`); err == nil {
-		backend = b
-	} else {
-		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
-		os.Exit(1)
-	}
-}
-
 func TestMain(m *testing.M) {
 	var i int
 
@@ -63,9 +50,6 @@ func TestMain(m *testing.M) {
 	run()
 
 	setupTestSqlite()
-	run()
-
-	setupTestBoltDB()
 	run()
 }
 
@@ -110,7 +94,7 @@ func TestBasicCRUD(t *testing.T) {
 		dal.NewCollection(`TestBasicCRUD`).
 			AddFields(dal.Field{
 				Name: `name`,
-				Type: `str`,
+				Type: dal.StringType,
 			}))
 
 	defer func() {
@@ -130,20 +114,20 @@ func TestBasicCRUD(t *testing.T) {
 	record, err = backend.Retrieve(`TestBasicCRUD`, `1`)
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(string(`1`), record.ID)
+	assert.Equal(int64(1), record.ID)
 	assert.Equal(`First`, record.Get(`name`))
 	assert.Empty(record.Data)
 
 	record, err = backend.Retrieve(`TestBasicCRUD`, `2`)
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(string(`2`), record.ID)
+	assert.Equal(int64(2), record.ID)
 	assert.Equal(`Second`, record.Get(`name`))
 
 	record, err = backend.Retrieve(`TestBasicCRUD`, `3`)
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(string(`3`), record.ID)
+	assert.Equal(int64(3), record.ID)
 	assert.Equal(`Third`, record.Get(`name`))
 
 	// make sure we can json encode the record, too
@@ -158,14 +142,14 @@ func TestBasicCRUD(t *testing.T) {
 	record, err = backend.Retrieve(`TestBasicCRUD`, `3`)
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(string(`3`), record.ID)
+	assert.Equal(int64(3), record.ID)
 	assert.Equal(`Threeve`, record.Get(`name`))
 
 	// Retrieve-Delete-Verify
 	// --------------------------------------------------------------------------------------------
 	record, err = backend.Retrieve(`TestBasicCRUD`, `2`)
 	assert.Nil(err)
-	assert.Equal(string(`2`), record.ID)
+	assert.Equal(int64(2), record.ID)
 
 	f, err := filter.Parse(fmt.Sprintf("id/2"))
 	assert.Nil(err)
@@ -180,7 +164,7 @@ func TestSearchQuery(t *testing.T) {
 			dal.NewCollection(`TestSearchQuery`).
 				AddFields(dal.Field{
 					Name: `name`,
-					Type: `str`,
+					Type: dal.StringType,
 				}))
 
 		defer func() {
@@ -233,7 +217,7 @@ func TestSearchQuery(t *testing.T) {
 			record, ok = recordset.GetRecord(0)
 			assert.True(ok)
 			assert.NotNil(record)
-			assert.Equal(string(`1`), record.ID)
+			assert.Equal(int64(1), record.ID)
 			assert.Equal(`First`, record.Get(`name`))
 		}
 
@@ -298,7 +282,7 @@ func TestSearchQueryLimit(t *testing.T) {
 
 	if search := backend.WithSearch(); search != nil {
 		c := dal.NewCollection(`TestSearchQueryLimit`)
-		c.IdentityFieldType = `str`
+		c.IdentityFieldType = dal.StringType
 		err := backend.CreateCollection(c)
 
 		defer func() {
@@ -344,7 +328,7 @@ func TestSearchQueryOffset(t *testing.T) {
 
 	if search := backend.WithSearch(); search != nil {
 		c := dal.NewCollection(`TestSearchQueryOffset`)
-		c.IdentityFieldType = `str`
+		c.IdentityFieldType = dal.StringType
 		err := backend.CreateCollection(c)
 
 		defer func() {
@@ -395,7 +379,7 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 		}()
 
 		c := dal.NewCollection(`TestSearchQueryOffsetLimit`)
-		c.IdentityFieldType = `str`
+		c.IdentityFieldType = dal.StringType
 		err := backend.CreateCollection(c)
 
 		defer func() {
@@ -443,10 +427,10 @@ func TestListValues(t *testing.T) {
 			dal.NewCollection(`TestListValues`).
 				AddFields(dal.Field{
 					Name: `name`,
-					Type: `str`,
+					Type: dal.StringType,
 				}, dal.Field{
 					Name: `group`,
-					Type: `str`,
+					Type: dal.StringType,
 				}))
 
 		defer func() {
@@ -485,13 +469,13 @@ func TestListValues(t *testing.T) {
 		assert.Nil(err)
 		assert.NotNil(recordset)
 		assert.Equal(int64(1), recordset.ResultCount)
-		assert.Equal([]interface{}{`1`, `2`, `3`}, recordset.Records[0].Get(`values`))
+		assert.Equal([]interface{}{int64(1), int64(2), int64(3)}, recordset.Records[0].Get(`values`))
 
 		recordset, err = search.ListValues(`TestListValues`, []string{`id`, `group`}, filter.All)
 		assert.Nil(err)
 		assert.NotNil(recordset)
 		assert.Equal(int64(2), recordset.ResultCount)
-		assert.Equal([]interface{}{`1`, `2`, `3`}, recordset.Records[0].Get(`values`))
+		assert.Equal([]interface{}{int64(1), int64(2), int64(3)}, recordset.Records[0].Get(`values`))
 		assert.Equal([]interface{}{`reds`, `blues`}, recordset.Records[1].Get(`values`))
 	}
 }
@@ -504,10 +488,10 @@ func TestSearchAnalysis(t *testing.T) {
 			dal.NewCollection(`TestSearchAnalysis`).
 				AddFields(dal.Field{
 					Name: `single`,
-					Type: `str`,
+					Type: dal.StringType,
 				}, dal.Field{
 					Name: `char_filter_test`,
-					Type: `str`,
+					Type: dal.StringType,
 				}))
 
 		defer func() {
@@ -545,4 +529,46 @@ func TestSearchAnalysis(t *testing.T) {
 			assert.Equal(int64(3), recordset.ResultCount)
 		}
 	}
+}
+
+func TestObjectType(t *testing.T) {
+	assert := require.New(t)
+
+	err := backend.CreateCollection(
+		dal.NewCollection(`TestObjectType`).
+			AddFields(dal.Field{
+				Name: `properties`,
+				Type: `object`,
+			}))
+
+	defer func() {
+		assert.Nil(backend.DeleteCollection(`TestObjectType`))
+	}()
+
+	assert.Nil(err)
+	var record *dal.Record
+
+	// Insert and Retrieve
+	// --------------------------------------------------------------------------------------------
+	assert.Nil(backend.Insert(`TestObjectType`, dal.NewRecordSet(
+		dal.NewRecord(1).Set(`properties`, map[string]interface{}{
+			`name`:  `First`,
+			`count`: 1,
+		}),
+		dal.NewRecord(2).Set(`properties`, map[string]interface{}{
+			`name`:    `Second`,
+			`count`:   0,
+			`enabled`: false,
+		}),
+		dal.NewRecord(3).Set(`properties`, map[string]interface{}{
+			`name`:  `Third`,
+			`count`: 3,
+		}))))
+
+	record, err = backend.Retrieve(`TestObjectType`, 1)
+	assert.Nil(err)
+	assert.NotNil(record)
+	assert.Equal(int64(1), record.ID)
+	assert.Equal(`First`, record.Get(`properties.name`))
+	assert.Equal(int(1), record.Get(`properties.count`))
 }

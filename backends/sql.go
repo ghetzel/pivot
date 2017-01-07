@@ -8,6 +8,7 @@ import (
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
+	"gopkg.in/mgo.v2/bson"
 	"reflect"
 	"strings"
 	"sync"
@@ -119,7 +120,6 @@ func (self *SqlBackend) Initialize() error {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
 					self.indexer = indexer
-					log.Debugf("Search indexing enabled for %T backend at %q", self, self.indexer.IndexConnectionString())
 				} else {
 					return err
 				}
@@ -461,7 +461,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 
 	if definition.IdentityField != `` {
 		switch definition.IdentityFieldType {
-		case `str`:
+		case dal.StringType:
 			fields = append(fields, fmt.Sprintf(self.createPrimaryKeyStrFormat, gen.ToFieldName(definition.IdentityField)))
 		default:
 			fields = append(fields, fmt.Sprintf(self.createPrimaryKeyIntFormat, gen.ToFieldName(definition.IdentityField)))
@@ -477,19 +477,17 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 			return err
 		}
 
-		if field.Properties != nil {
-			if field.Properties.Required {
-				def += ` NOT NULL`
-			}
+		if field.Required {
+			def += ` NOT NULL`
+		}
 
-			if field.Properties.Unique {
-				def += ` UNIQUE`
-			}
+		if field.Unique {
+			def += ` UNIQUE`
+		}
 
-			if v := field.Properties.DefaultValue; v != nil {
-				def += `DEFAULT ?`
-				values = append(values, v)
-			}
+		if v := field.DefaultValue; v != nil {
+			def += `DEFAULT ?`
+			values = append(values, v)
 		}
 
 		fields = append(fields, def)
@@ -572,10 +570,21 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 		return nil, fmt.Errorf("Can only accept a function value")
 	}
 
-	output := make([]interface{}, len(columns))
 	// sql.Row.Scan is strict about how we call it (e.g.: won't return results as a map),
 	// so we hack...
 	//
+	output := make([]interface{}, len(columns))
+
+	// put a zero-value instance of each column's type in the result array, which will
+	// serve as a hint to the sql.Scan function as to how to convert the data
+	for i, column := range columns {
+		if field, ok := collection.GetField(column); ok {
+			output[i] = field.GetTypeInstance()
+		} else {
+			return nil, fmt.Errorf("Collection '%s' does not have a field called '%s'", collection.Name, column)
+		}
+	}
+
 	rRowArgs := make([]reflect.Value, len(output))
 
 	// each argument in the call to scan will be the address of the corresponding
@@ -604,27 +613,54 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 
 	// this is the actual error returned from calling Scan()
 	if err == nil {
-		var id string
+		var id interface{}
 		fields := make(map[string]interface{})
 
 		// for each column in the resultset
 		for i, column := range columns {
+			// skip the ok check because we already validated this above
+			field, _ := collection.GetField(column)
+
 			var value interface{}
 
 			// convert value types as needed
 			switch output[i].(type) {
+			// raw byte arrays will either be strings, blobs, or binary-encoded objects
+			// we need to figure out which
 			case []uint8:
 				v := output[i].([]uint8)
-				value = string(v[:])
+
+				switch field.Type {
+				// if this field is a raw type, then it's not a string, which
+				// leaves raw or object
+				case dal.RawType:
+					dest := make(map[string]interface{})
+
+					// blindly attempt to load the data as an object, and fallback to
+					// raw byte array
+					//
+					if err := bson.Unmarshal([]byte(v[:]), &dest); err == nil {
+						value = dest
+					} else {
+						value = []byte(v[:])
+					}
+
+				default:
+					value = string(v[:])
+				}
 			default:
 				value = output[i]
 			}
 
 			// set the appropriate field for the dal.Record
-			if column == collection.IdentityField {
-				id = fmt.Sprintf("%v", value)
+			if v, err := field.ConvertValue(value); err == nil {
+				if column == collection.IdentityField {
+					id = v
+				} else {
+					fields[column] = v
+				}
 			} else {
-				fields[column] = value
+				return nil, err
 			}
 		}
 

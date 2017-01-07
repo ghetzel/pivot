@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"github.com/ghetzel/cli"
 	"github.com/ghetzel/pivot"
-	"github.com/ghetzel/pivot/filter"
-	"github.com/ghetzel/pivot/filter/generators"
 	"github.com/ghetzel/pivot/util"
 	"github.com/op/go-logging"
 	"os"
@@ -27,6 +24,21 @@ func main() {
 			Value:  `info`,
 			EnvVar: `LOGLEVEL`,
 		},
+		cli.StringFlag{
+			Name:  `config, c`,
+			Usage: `Path to the configuration file to load.`,
+			Value: `/etc/pivot.yml`,
+		},
+		cli.StringFlag{
+			Name:  `address, a`,
+			Usage: `The local address the server should listen on.`,
+			Value: pivot.DEFAULT_SERVER_ADDRESS,
+		},
+		cli.IntFlag{
+			Name:  `port, p`,
+			Usage: `The port the server should listen on.`,
+			Value: pivot.DEFAULT_SERVER_PORT,
+		},
 	}
 
 	app.Before = func(c *cli.Context) error {
@@ -41,73 +53,15 @@ func main() {
 		return nil
 	}
 
-	app.Commands = []cli.Command{
-		{
-			Name:  `serve`,
-			Usage: `Start the HTTP data proxy service.`,
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  `config, c`,
-					Usage: `Path to the configuration file to load.`,
-					Value: `/etc/pivot.yml`,
-				},
-				cli.StringFlag{
-					Name:  `address, a`,
-					Usage: `The local address the server should listen on.`,
-					Value: pivot.DEFAULT_SERVER_ADDRESS,
-				},
-				cli.IntFlag{
-					Name:  `port, p`,
-					Usage: `The port the server should listen on.`,
-					Value: pivot.DEFAULT_SERVER_PORT,
-				},
-			},
-			Action: func(c *cli.Context) {
-				server := pivot.NewServer(c.Args().First())
-				server.Address = c.String(`address`)
-				server.Port = c.Int(`port`)
+	app.Action = func(c *cli.Context) {
+		server := pivot.NewServer(c.Args().First())
+		server.Address = c.String(`address`)
+		server.Port = c.Int(`port`)
 
-				if err := server.ListenAndServe(); err != nil {
-					log.Fatalf("Failed to start server: %v", err)
-					os.Exit(3)
-				}
-			},
-		},
-		{
-			Name:      `filter`,
-			ArgsUsage: `TYPE COLLECTION SPEC`,
-			Usage:     `Parse a filter specificiation and generate type-specific query syntax.`,
-			Action: func(c *cli.Context) {
-				if len(c.Args()) > 2 {
-					generatorType := c.Args()[0]
-					collection := c.Args()[1]
-					spec := c.Args()[2]
-
-					var generator filter.IGenerator
-
-					switch generatorType {
-					case `sql`:
-						generator = generators.NewSqlGenerator()
-					case `elasticsearch`:
-						generator = generators.NewElasticsearchGenerator()
-					default:
-						log.Fatalf("Unknown generator type '%s'", generatorType)
-					}
-
-					if f, err := filter.Parse(spec); err == nil {
-						if payload, err := filter.Render(generator, collection, f); err == nil {
-							fmt.Printf("%s\n", payload)
-						} else {
-							log.Fatalf("Failed to render: %v", err)
-						}
-					} else {
-						log.Fatalf("Failed to parse query: %v", err)
-					}
-				} else {
-					log.Fatalf("Not enough arguments")
-				}
-			},
-		},
+		if err := server.ListenAndServe(); err != nil {
+			log.Fatalf("Failed to start server: %v", err)
+			os.Exit(3)
+		}
 	}
 
 	app.Run(os.Args)

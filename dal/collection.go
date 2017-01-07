@@ -16,7 +16,7 @@ const (
 )
 
 var DefaultIdentityField = `id`
-var DefaultIdentityFieldType = IntType
+var DefaultIdentityFieldType Type = IntType
 
 type CollectionOptions struct {
 	FieldsUnordered bool `json:"fields_unordered,omitempty"`
@@ -26,7 +26,7 @@ type Collection struct {
 	Name              string             `json:"name"`
 	Fields            []Field            `json:"fields"`
 	IdentityField     string             `json:"identity_field,omitempty"`
-	IdentityFieldType string             `json:"identity_field_type,omitempty"`
+	IdentityFieldType Type               `json:"identity_field_type,omitempty"`
 	Options           *CollectionOptions `json:"options,omitempty"`
 	recordType        reflect.Type
 }

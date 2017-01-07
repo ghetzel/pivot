@@ -40,12 +40,10 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 				if err := rows.Scan(&i, &column, &columnType, &nullable, &defaultValue, &pk); err == nil {
 					// start building the dal.Field
 					field := dal.Field{
-						Name: column,
-						Properties: &dal.FieldProperties{
-							NativeType:   columnType,
-							Required:     (nullable != 1),
-							DefaultValue: stringutil.Autotype(defaultValue.String),
-						},
+						Name:         column,
+						NativeType:   columnType,
+						Required:     (nullable != 1),
+						DefaultValue: stringutil.Autotype(defaultValue.String),
 					}
 
 					// tease out type, length, and precision from the native type
@@ -74,11 +72,11 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 
 					if pk == 1 {
 						if !foundPrimaryKey {
-							field.Properties.Identity = true
+							field.Identity = true
 							foundPrimaryKey = true
 							collection.IdentityField = column
 						} else {
-							field.Properties.Key = true
+							field.Key = true
 						}
 					}
 

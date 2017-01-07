@@ -6,6 +6,8 @@ import (
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
+	"gopkg.in/mgo.v2/bson"
+	"reflect"
 	"sort"
 	"strings"
 )
@@ -29,6 +31,7 @@ type SqlTypeMapping struct {
 	BooleanType       string
 	BooleanTypeLength int
 	DateTimeType      string
+	RawType           string
 }
 
 var NoTypeMapping = SqlTypeMapping{}
@@ -40,6 +43,7 @@ var CassandraTypeMapping = SqlTypeMapping{
 	BooleanType:       `TINYINT`,
 	BooleanTypeLength: 1,
 	DateTimeType:      `DATETIME`,
+	RawType:           `BLOB`,
 }
 
 var MysqlTypeMapping = SqlTypeMapping{
@@ -49,6 +53,7 @@ var MysqlTypeMapping = SqlTypeMapping{
 	FloatType:        `DECIMAL`,
 	BooleanType:      `BOOL`,
 	DateTimeType:     `DATETIME`,
+	RawType:          `BLOB`,
 }
 
 var PostgresTypeMapping = SqlTypeMapping{
@@ -57,6 +62,7 @@ var PostgresTypeMapping = SqlTypeMapping{
 	FloatType:    `NUMERIC`,
 	BooleanType:  `BOOLEAN`,
 	DateTimeType: `TIMESTAMP`,
+	RawType:      `BLOB`,
 }
 
 var SqliteTypeMapping = SqlTypeMapping{
@@ -66,6 +72,7 @@ var SqliteTypeMapping = SqlTypeMapping{
 	BooleanType:       `INTEGER`,
 	BooleanTypeLength: 1,
 	DateTimeType:      `INTEGER`,
+	RawType:           `BLOB`,
 }
 
 var DefaultSqlTypeMapping = MysqlTypeMapping
@@ -172,7 +179,12 @@ func (self *Sql) Finalize(f filter.Filter) error {
 		for i, field := range maputil.StringKeys(self.InputData) {
 			v, _ := self.InputData[field]
 			values = append(values, self.GetPlaceholder(field, i))
-			self.inputValues = append(self.inputValues, v)
+
+			if vv, err := self.PrepareInputValue(field, v); err == nil {
+				self.inputValues = append(self.inputValues, vv)
+			} else {
+				return err
+			}
 		}
 
 		self.Push([]byte(strings.Join(values, `, `)))
@@ -197,7 +209,12 @@ func (self *Sql) Finalize(f filter.Filter) error {
 			value, _ := self.InputData[field]
 
 			// do this first because we want the unmodified field name
-			self.inputValues = append(self.inputValues, value)
+			if vv, err := self.PrepareInputValue(field, value); err == nil {
+				self.inputValues = append(self.inputValues, vv)
+			} else {
+				return err
+			}
+
 			field := self.ToFieldName(field)
 			updatePairs = append(updatePairs, fmt.Sprintf("%s = %s", field, self.GetPlaceholder(field, i)))
 
@@ -285,6 +302,8 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 				typedValue, convertErr = stringutil.ConvertTo(stringutil.Boolean, value)
 			case dal.TimeType:
 				typedValue, convertErr = stringutil.ConvertTo(stringutil.Time, value)
+			case dal.ObjectType:
+				typedValue, convertErr = bson.Marshal(value)
 			default:
 				typedValue = stringutil.Autotype(value)
 			}
@@ -428,6 +447,10 @@ func (self *Sql) ToNativeType(in dal.Type, length int) (string, error) {
 		}
 	case dal.TimeType:
 		out = self.TypeMapping.DateTimeType
+
+	case dal.ObjectType, dal.RawType:
+		out = self.TypeMapping.RawType
+
 	default:
 		out = strings.ToUpper(in.String())
 	}
@@ -480,6 +503,15 @@ func (self *Sql) GetPlaceholder(fieldName string, fieldIndex int) string {
 
 func (self *Sql) ApplyNormalizer(in string) string {
 	return fmt.Sprintf(self.StringNormalizerFormat, in)
+}
+
+func (self *Sql) PrepareInputValue(_ string, value interface{}) (interface{}, error) {
+	switch reflect.ValueOf(value).Kind() {
+	case reflect.Struct, reflect.Map, reflect.Ptr, reflect.Array, reflect.Slice:
+		return bson.Marshal(value)
+	default:
+		return value, nil
+	}
 }
 
 func (self *Sql) populateWhereClause() {
