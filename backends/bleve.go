@@ -9,6 +9,7 @@ import (
 	"github.com/blevesearch/bleve/analysis/tokenizer/single"
 	"github.com/blevesearch/bleve/mapping"
 	"github.com/blevesearch/bleve/search/query"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -30,7 +31,7 @@ type deferredBatch struct {
 
 type BleveIndexer struct {
 	Indexer
-	conn               dal.ConnectionString
+	conn               *dal.ConnectionString
 	parent             Backend
 	indexCache         map[string]bleve.Index
 	indexDeferredBatch map[string]*deferredBatch
@@ -39,10 +40,14 @@ type BleveIndexer struct {
 
 func NewBleveIndexer(connection dal.ConnectionString) *BleveIndexer {
 	return &BleveIndexer{
-		conn:               connection,
+		conn:               &connection,
 		indexCache:         make(map[string]bleve.Index),
 		indexDeferredBatch: make(map[string]*deferredBatch),
 	}
+}
+
+func (self *BleveIndexer) IndexConnectionString() *dal.ConnectionString {
+	return self.conn
 }
 
 func (self *BleveIndexer) IndexInitialize(parent Backend) error {
@@ -51,11 +56,11 @@ func (self *BleveIndexer) IndexInitialize(parent Backend) error {
 	return nil
 }
 
-func (self *BleveIndexer) IndexRetrieve(collection string, id string) (*dal.Record, error) {
+func (self *BleveIndexer) IndexRetrieve(collection string, id interface{}) (*dal.Record, error) {
 	defer stats.NewTiming().Send(`pivot.backends.bleve.retrieve_time`)
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
-		request := bleve.NewSearchRequest(bleve.NewDocIDQuery([]string{id}))
+		request := bleve.NewSearchRequest(bleve.NewDocIDQuery([]string{fmt.Sprintf("%v", id)}))
 
 		if results, err := index.Search(request); err == nil {
 			if results.Total == 1 {
@@ -71,7 +76,7 @@ func (self *BleveIndexer) IndexRetrieve(collection string, id string) (*dal.Reco
 	}
 }
 
-func (self *BleveIndexer) IndexExists(collection string, id string) bool {
+func (self *BleveIndexer) IndexExists(collection string, id interface{}) bool {
 	if _, err := self.IndexRetrieve(collection, id); err == nil {
 		return true
 	}
@@ -255,12 +260,12 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter) (*dal.Record
 	return recordset, nil
 }
 
-func (self *BleveIndexer) IndexRemove(collection string, ids []string) error {
+func (self *BleveIndexer) IndexRemove(collection string, ids []interface{}) error {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		batch := index.NewBatch()
 
 		for _, id := range ids {
-			batch.Delete(string(id))
+			batch.Delete(fmt.Sprintf("%v", id))
 		}
 
 		return index.Batch(batch)
@@ -410,7 +415,8 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 				disjunction = bleve.NewDisjunctionQuery()
 			}
 
-			for _, value := range criterion.Values {
+			for _, vI := range criterion.Values {
+				value := fmt.Sprintf("%v", vI)
 				var analyzedValue string
 
 				if az := mapping.AnalyzerNamed(analyzerName); az != nil {
@@ -426,7 +432,7 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 				switch criterion.Operator {
 				case `is`, ``:
 					if criterion.Field == f.IdentityField {
-						conjunction.AddQuery(bleve.NewDocIDQuery(criterion.Values))
+						conjunction.AddQuery(bleve.NewDocIDQuery(sliceutil.Stringify(criterion.Values)))
 						skipNext = true
 						break
 					} else {

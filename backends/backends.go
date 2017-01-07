@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/alexcesaro/statsd"
 	"github.com/ghetzel/pivot/dal"
-	"github.com/ghetzel/pivot/filter"
 	"github.com/op/go-logging"
 )
 
@@ -13,12 +12,13 @@ var stats, _ = statsd.New()
 
 type Backend interface {
 	Initialize() error
+	SetOptions(ConnectOptions)
 	GetConnectionString() *dal.ConnectionString
-	Exists(collection string, id string) bool
+	Exists(collection string, id interface{}) bool
 	Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error)
 	Insert(collection string, records *dal.RecordSet) error
 	Update(collection string, records *dal.RecordSet, target ...string) error
-	Delete(collection string, f filter.Filter) error
+	Delete(collection string, ids ...interface{}) error
 	CreateCollection(definition dal.Collection) error
 	DeleteCollection(collection string) error
 	ListCollections() ([]string, error)

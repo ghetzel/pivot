@@ -17,9 +17,6 @@ const (
 var DefaultIdentityField = `id`
 var DefaultIdentityFieldType = `int`
 
-// errors
-var CollectionNotFound = fmt.Errorf("Collection not found")
-
 type CollectionOptions struct {
 	FieldsUnordered bool `json:"fields_unordered,omitempty"`
 }

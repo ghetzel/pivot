@@ -260,16 +260,16 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 	outFieldName := criterion.Field
 
 	// for each value being tested in this criterion
-	for _, value := range criterion.Values {
+	for _, vI := range criterion.Values {
 		var typedValue interface{}
 		var isString bool
+		value := fmt.Sprintf("%v", vI)
 
-		switch strings.ToUpper(value) {
-		case `NULL`:
+		if vI == nil || strings.ToUpper(value) == `NULL` {
 			value = strings.ToUpper(value)
 			typedValue = nil
 
-		default:
+		} else {
 			var convertErr error
 
 			switch criterion.Type {

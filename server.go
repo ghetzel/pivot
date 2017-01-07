@@ -128,16 +128,10 @@ func (self *Server) setupRoutes() error {
 
 	self.router.DELETE(`/records/:collection/:id/`,
 		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			if f, err := filter.FromMap(map[string]interface{}{
-				`id`: params.ByName(`id`),
-			}); err == nil {
-				if err := self.backend.Delete(params.ByName(`collection`), f); err == nil {
-					self.Respond(w, http.StatusNoContent, nil, nil)
-				} else {
-					self.Respond(w, http.StatusInternalServerError, nil, err)
-				}
+			if err := self.backend.Delete(params.ByName(`collection`), params.ByName(`id`)); err == nil {
+				self.Respond(w, http.StatusNoContent, nil, nil)
 			} else {
-				self.Respond(w, http.StatusBadRequest, nil, err)
+				self.Respond(w, http.StatusInternalServerError, nil, err)
 			}
 		})
 

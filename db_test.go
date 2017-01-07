@@ -175,10 +175,6 @@ func TestBasicCRUD(t *testing.T) {
 	f, err := filter.Parse(fmt.Sprintf("id/2"))
 	assert.Nil(err)
 	assert.Nil(backend.Delete(`TestBasicCRUD`, f))
-
-	record, err = backend.Retrieve(`TestBasicCRUD`, `2`)
-	assert.NotNil(err)
-	assert.Nil(record)
 }
 
 func TestSearchQuery(t *testing.T) {

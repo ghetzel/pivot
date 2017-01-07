@@ -16,11 +16,11 @@ var QueryUnescapeValues = false
 var AllValue = `all`
 
 type Criterion struct {
-	Type     string   `json:"type,omitempty"`
-	Length   int      `json:"length,omitempty"`
-	Field    string   `json:"field"`
-	Operator string   `json:"operator,omitempty"`
-	Values   []string `json:"values"`
+	Type     string        `json:"type,omitempty"`
+	Length   int           `json:"length,omitempty"`
+	Field    string        `json:"field"`
+	Operator string        `json:"operator,omitempty"`
+	Values   []interface{} `json:"values"`
 }
 
 type SortBy struct {
@@ -48,10 +48,12 @@ func (self *Criterion) String() string {
 	values := make([]string, 0)
 
 	for _, value := range self.Values {
+		vStr := fmt.Sprintf("%v", value)
+
 		if QueryUnescapeValues {
-			values = append(values, url.QueryEscape(value))
+			values = append(values, url.QueryEscape(vStr))
 		} else {
-			values = append(values, value)
+			values = append(values, vStr)
 		}
 	}
 
@@ -72,7 +74,13 @@ type Filter struct {
 	IdentityField string
 }
 
-func MakeFilter(spec string) Filter {
+func MakeFilter(specs ...string) Filter {
+	var spec string
+
+	if len(specs) > 0 {
+		spec = specs[0]
+	}
+
 	f := Filter{
 		Spec:     spec,
 		Criteria: make([]Criterion, 0),
@@ -189,17 +197,23 @@ func Parse(spec string) (Filter, error) {
 				}
 			} else {
 				parts := strings.SplitN(token, ModifierDelimiter, 2)
+				criterion.Values = make([]interface{}, 0)
 
 				if len(parts) == 1 {
-					criterion.Values = strings.Split(parts[0], ValueSeparator)
+					for _, v := range strings.Split(parts[0], ValueSeparator) {
+						criterion.Values = append(criterion.Values, v)
+					}
 				} else {
 					criterion.Operator = parts[0]
-					criterion.Values = strings.Split(parts[1], ValueSeparator)
+
+					for _, v := range strings.Split(parts[1], ValueSeparator) {
+						criterion.Values = append(criterion.Values, v)
+					}
 				}
 
 				if QueryUnescapeValues {
 					for i, value := range criterion.Values {
-						if v, err := url.QueryUnescape(value); err == nil {
+						if v, err := url.QueryUnescape(fmt.Sprintf("%v", value)); err == nil {
 							criterion.Values[i] = v
 						} else {
 							return rv, err
@@ -215,6 +229,11 @@ func Parse(spec string) (Filter, error) {
 	}
 
 	return rv, nil
+}
+
+func (self *Filter) AddCriteria(criteria ...Criterion) *Filter {
+	self.Criteria = append(self.Criteria, criteria...)
+	return self
 }
 
 func (self *Filter) CriteriaFields() []string {

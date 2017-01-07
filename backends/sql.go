@@ -34,6 +34,8 @@ type SqlBackend struct {
 	Indexer
 	conn                           dal.ConnectionString
 	db                             *sql.DB
+	indexer                        Indexer
+	options                        ConnectOptions
 	queryGenTypeMapping            generators.SqlTypeMapping
 	queryGenPlaceholderArgument    string
 	queryGenPlaceholderFormat      string
@@ -62,6 +64,10 @@ func NewSqlBackend(connection dal.ConnectionString) *SqlBackend {
 
 func (self *SqlBackend) GetConnectionString() *dal.ConnectionString {
 	return &self.conn
+}
+
+func (self *SqlBackend) SetOptions(options ConnectOptions) {
+	self.options = options
 }
 
 func (self *SqlBackend) Initialize() error {
@@ -105,6 +111,26 @@ func (self *SqlBackend) Initialize() error {
 	// refresh schema cache
 	if err := self.refreshAllCollections(); err != nil {
 		return err
+	}
+
+	// setup indexer (if not using ourself as the default)
+	if indexConnString := self.options.Indexer; indexConnString != `` {
+		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
+			if indexer, err := MakeIndexer(ics); err == nil {
+				if err := indexer.IndexInitialize(self); err == nil {
+					self.indexer = indexer
+					log.Debugf("Search indexing enabled for %T backend at %q", self, self.indexer.IndexConnectionString())
+				} else {
+					return err
+				}
+			} else {
+				return err
+			}
+		} else {
+			return err
+		}
+	} else {
+		self.indexer = self
 	}
 
 	return nil
@@ -165,7 +191,17 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 			}
 
 			// commit transaction
-			return tx.Commit()
+			if err := tx.Commit(); err == nil {
+				if search := self.WithSearch(); search != nil {
+					if err := search.Index(collection.Name, recordset); err != nil {
+						return err
+					}
+				}
+
+				return nil
+			} else {
+				return err
+			}
 		} else {
 			return err
 		}
@@ -174,7 +210,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 	}
 }
 
-func (self *SqlBackend) Exists(name string, id string) bool {
+func (self *SqlBackend) Exists(name string, id interface{}) bool {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
 		if tx, err := self.db.Begin(); err == nil {
 			defer tx.Commit()
@@ -189,7 +225,7 @@ func (self *SqlBackend) Exists(name string, id string) bool {
 					if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
 						// perform query
 						row := tx.QueryRow(string(sqlString[:]), queryGen.GetValues()...)
-						var outId string
+						var outId interface{}
 
 						if err := row.Scan(&outId); err == nil {
 							return (id == outId)
@@ -305,7 +341,17 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 				}
 			}
 
-			return tx.Commit()
+			if err := tx.Commit(); err == nil {
+				if search := self.WithSearch(); search != nil {
+					if err := search.Index(collection.Name, recordset); err != nil {
+						return err
+					}
+				}
+
+				return nil
+			} else {
+				return err
+			}
 		} else {
 			return err
 		}
@@ -314,8 +360,15 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 	}
 }
 
-func (self *SqlBackend) Delete(name string, f filter.Filter) error {
+func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
+		f := filter.MakeFilter()
+
+		f.AddCriteria(filter.Criterion{
+			Field:  collection.IdentityField,
+			Values: ids,
+		})
+
 		if tx, err := self.db.Begin(); err == nil {
 			queryGen := self.makeQueryGen()
 			queryGen.Type = generators.SqlDeleteStatement
@@ -324,7 +377,16 @@ func (self *SqlBackend) Delete(name string, f filter.Filter) error {
 			if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
 				// execute SQL
 				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
-					return tx.Commit()
+					if err := tx.Commit(); err == nil {
+						if search := self.WithSearch(); search != nil {
+							// remove documents from index
+							return search.IndexRemove(collection.Name, ids)
+						} else {
+							return nil
+						}
+					} else {
+						return err
+					}
 				} else {
 					defer tx.Rollback()
 					return err
@@ -342,7 +404,7 @@ func (self *SqlBackend) Delete(name string, f filter.Filter) error {
 }
 
 func (self *SqlBackend) WithSearch() Indexer {
-	return self
+	return self.indexer
 }
 
 func (self *SqlBackend) ListCollections() ([]string, error) {

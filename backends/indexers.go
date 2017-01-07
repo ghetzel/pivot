@@ -21,14 +21,16 @@ type IndexPage struct {
 type IndexResultFunc func(record *dal.Record, page IndexPage) error // {}
 
 type Indexer interface {
+	IndexConnectionString() *dal.ConnectionString
 	IndexInitialize(Backend) error
-	IndexExists(collection string, id string) bool
-	IndexRetrieve(collection string, id string) (*dal.Record, error)
-	IndexRemove(collection string, ids []string) error
+	IndexExists(collection string, id interface{}) bool
+	IndexRetrieve(collection string, id interface{}) (*dal.Record, error)
+	IndexRemove(collection string, ids []interface{}) error
 	Index(collection string, records *dal.RecordSet) error
 	QueryFunc(collection string, filter filter.Filter, resultFn IndexResultFunc) error
 	Query(collection string, filter filter.Filter) (*dal.RecordSet, error)
 	ListValues(collection string, fields []string, filter filter.Filter) (*dal.RecordSet, error)
+	DeleteQuery(collection string, f filter.Filter) error
 }
 
 func MakeIndexer(connection dal.ConnectionString) (Indexer, error) {

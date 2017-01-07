@@ -167,15 +167,19 @@ func (self *SqlBackend) ListValues(collectionName string, fields []string, f fil
 	}
 }
 
+func (self *SqlBackend) IndexConnectionString() *dal.ConnectionString {
+	return self.GetConnectionString()
+}
+
 func (self *SqlBackend) IndexInitialize(parent Backend) error {
 	return nil
 }
 
-func (self *SqlBackend) IndexExists(collection string, id string) bool {
+func (self *SqlBackend) IndexExists(collection string, id interface{}) bool {
 	return self.Exists(collection, id)
 }
 
-func (self *SqlBackend) IndexRetrieve(collection string, id string) (*dal.Record, error) {
+func (self *SqlBackend) IndexRetrieve(collection string, id interface{}) (*dal.Record, error) {
 	return self.Retrieve(collection, id)
 }
 
@@ -185,6 +189,6 @@ func (self *SqlBackend) Index(collection string, records *dal.RecordSet) error {
 }
 
 // IndexRemove is a no-op, this should be handled by SqlBackend's Delete() function
-func (self *SqlBackend) IndexRemove(collection string, ids []string) error {
+func (self *SqlBackend) IndexRemove(collection string, ids []interface{}) error {
 	return nil
 }

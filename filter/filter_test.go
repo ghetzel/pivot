@@ -25,12 +25,12 @@ func TestFilterParse(t *testing.T) {
 			assert.Equal(``, f.Criteria[0].Type)
 			assert.Equal(`k1`, f.Criteria[0].Field)
 			assert.Equal(`contains`, f.Criteria[0].Operator)
-			assert.Equal([]string{`v1`}, f.Criteria[0].Values)
+			assert.Equal([]interface{}{`v1`}, f.Criteria[0].Values)
 
 			assert.Equal(`int`, f.Criteria[1].Type)
 			assert.Equal(`k2`, f.Criteria[1].Field)
 			assert.Equal(`lt`, f.Criteria[1].Operator)
-			assert.Equal([]string{`v2a`, `v2b`}, f.Criteria[1].Values)
+			assert.Equal([]interface{}{`v2a`, `v2b`}, f.Criteria[1].Values)
 		},
 	}
 
@@ -51,7 +51,7 @@ func TestFilterIdentity(t *testing.T) {
 	assert.Equal(16, filter.Criteria[0].Length)
 	assert.Equal(`name`, filter.Criteria[0].Field)
 	assert.Equal(`prefix`, filter.Criteria[0].Operator)
-	assert.Equal([]string{`foo`}, filter.Criteria[0].Values)
+	assert.Equal([]interface{}{`foo`}, filter.Criteria[0].Values)
 
 	assert.Equal(spec, filter.String())
 }
@@ -88,12 +88,12 @@ func TestFilterParseAltDelimiters(t *testing.T) {
 			assert.Equal(``, f.Criteria[0].Type)
 			assert.Equal(`k1`, f.Criteria[0].Field)
 			assert.Equal(`contains`, f.Criteria[0].Operator)
-			assert.Equal([]string{`v1`}, f.Criteria[0].Values)
+			assert.Equal([]interface{}{`v1`}, f.Criteria[0].Values)
 
 			assert.Equal(`int`, f.Criteria[1].Type)
 			assert.Equal(`k2`, f.Criteria[1].Field)
 			assert.Equal(`lt`, f.Criteria[1].Operator)
-			assert.Equal([]string{`v2a`, `v2b`}, f.Criteria[1].Values)
+			assert.Equal([]interface{}{`v2a`, `v2b`}, f.Criteria[1].Values)
 		},
 	}
 
@@ -121,16 +121,16 @@ func TestFilterFromMap(t *testing.T) {
 	for _, criterion := range f.Criteria {
 		switch criterion.Field {
 		case `f1`:
-			assert.Equal([]string{`v1`}, criterion.Values)
+			assert.Equal([]interface{}{`v1`}, criterion.Values)
 
 		case `f2`:
 			assert.Equal(`int`, criterion.Type)
-			assert.Equal([]string{`2`}, criterion.Values)
+			assert.Equal([]interface{}{`2`}, criterion.Values)
 
 		case `f3`:
 			assert.Equal(`float`, criterion.Type)
 			assert.Equal(`gte`, criterion.Operator)
-			assert.Equal([]string{`3`}, criterion.Values)
+			assert.Equal([]interface{}{`3`}, criterion.Values)
 		default:
 			t.Errorf("Unknown field %q", criterion.Field)
 		}

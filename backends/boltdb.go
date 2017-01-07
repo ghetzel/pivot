@@ -3,8 +3,8 @@ package backends
 import (
 	"fmt"
 	"github.com/boltdb/bolt"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/dal"
-	"github.com/ghetzel/pivot/filter"
 	"gopkg.in/mgo.v2/bson"
 	"os"
 	"path"
@@ -19,10 +19,10 @@ var BoltDatabaseIndexSubdirectory = `indexes`
 //
 type BoltBackend struct {
 	Backend
-	conn        dal.ConnectionString
-	db          *bolt.DB
-	indexerConn dal.ConnectionString
-	indexer     Indexer
+	conn    dal.ConnectionString
+	db      *bolt.DB
+	indexer Indexer
+	options ConnectOptions
 }
 
 func NewBoltBackend(connection dal.ConnectionString) *BoltBackend {
@@ -35,6 +35,10 @@ func (self *BoltBackend) GetConnectionString() *dal.ConnectionString {
 	return &self.conn
 }
 
+func (self *BoltBackend) SetOptions(options ConnectOptions) {
+	self.options = options
+}
+
 func (self *BoltBackend) Initialize() error {
 	dbBaseDir := self.conn.Dataset()
 	dbFileName := `data.boltdb`
@@ -45,8 +49,11 @@ func (self *BoltBackend) Initialize() error {
 		return err
 	}
 
-	if ixConn := self.conn.OptString(`indexer`, BoltDefaultSearchIndexer); ixConn != `` {
-		if ics, err := dal.ParseConnectionString(ixConn); err == nil {
+	if indexConnString := sliceutil.OrString(
+		self.options.Indexer,
+		BoltDefaultSearchIndexer,
+	); indexConnString != `` {
+		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
 			// an empty path denotes using the same parent directory as the DB we're indexing
 			if ics.Dataset() == `/` {
 				ics.URI.Path = path.Join(dbBaseDir, BoltDatabaseIndexSubdirectory)
@@ -54,9 +61,8 @@ func (self *BoltBackend) Initialize() error {
 
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
-					self.indexerConn = ics
 					self.indexer = indexer
-					log.Debugf("Search indexing enabled for %T backend at %q", self, self.indexerConn.String())
+					log.Debugf("Search indexing enabled for %T backend at %q", self, self.indexer.IndexConnectionString())
 				} else {
 					return err
 				}
@@ -75,12 +81,14 @@ func (self *BoltBackend) Insert(collection string, recordset *dal.RecordSet) err
 	return self.upsertRecords(collection, recordset, true)
 }
 
-func (self *BoltBackend) Exists(collection string, id string) bool {
+func (self *BoltBackend) Exists(collection string, id interface{}) bool {
 	exists := false
 
 	self.db.View(func(tx *bolt.Tx) error {
 		if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
-			if data := bucket.Get([]byte(id[:])); data != nil {
+			idS := fmt.Sprintf("%v", id)
+
+			if data := bucket.Get([]byte(idS[:])); data != nil {
 				exists = true
 			}
 		}
@@ -125,8 +133,8 @@ func (self *BoltBackend) Update(collection string, recordset *dal.RecordSet, tar
 	return self.upsertRecords(collection, recordset, false)
 }
 
-func (self *BoltBackend) Delete(collection string, f filter.Filter) error {
-	switch len(f.Criteria) {
+func (self *BoltBackend) Delete(collection string, ids ...interface{}) error {
+	switch len(ids) {
 	case 0:
 		// TODO: implementent delete `all`
 		return fmt.Errorf("Delete requires at least one criterion")
@@ -134,16 +142,11 @@ func (self *BoltBackend) Delete(collection string, f filter.Filter) error {
 	case 1:
 		return self.db.Update(func(tx *bolt.Tx) error {
 			if bucket := tx.Bucket([]byte(collection[:])); bucket != nil {
-				ids := make([]string, len(f.Criteria[0].Values))
-
-				// stringify all ID values
-				for i, v := range f.Criteria[0].Values {
-					ids[i] = fmt.Sprintf("%v", v)
-				}
-
 				// perform deletes
 				for _, id := range ids {
-					if err := bucket.Delete([]byte(id[:])); err != nil {
+					idStr := fmt.Sprintf("%v", id)
+
+					if err := bucket.Delete([]byte(idStr[:])); err != nil {
 						return err
 					}
 				}
