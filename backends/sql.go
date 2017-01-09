@@ -85,6 +85,8 @@ func (self *SqlBackend) Initialize() error {
 		name, dsn, err = self.initializeSqlite()
 	case `mysql`:
 		name, dsn, err = self.initializeMysql()
+	case `postgres`:
+		name, dsn, err = self.initializePostgres()
 	default:
 		return fmt.Errorf("Unsupported backend %q", backend)
 	}

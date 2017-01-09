@@ -8,8 +8,7 @@ import (
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/util"
-	"github.com/julienschmidt/httprouter"
-	"github.com/rs/cors"
+	"github.com/husobee/vestigo"
 	"github.com/urfave/negroni"
 	"net/http"
 	"strings"
@@ -26,8 +25,7 @@ type Server struct {
 	Port             int
 	ConnectionString string
 	backend          backends.Backend
-	corsHandler      *cors.Cors
-	router           *httprouter.Router
+	router           *vestigo.Router
 	server           *negroni.Negroni
 	endpoints        []util.Endpoint
 	routeMap         map[string]util.EndpointResponseFunc
@@ -61,18 +59,18 @@ func (self *Server) ListenAndServe() error {
 	}
 
 	self.server = negroni.New()
-	self.router = httprouter.New()
+	self.router = vestigo.NewRouter()
 
-	self.corsHandler = cors.New(cors.Options{
-		AllowedOrigins:   []string{`*`},
-		AllowedMethods:   []string{`GET`, `POST`},
-		AllowedHeaders:   []string{`*`},
+	self.router.SetGlobalCors(&vestigo.CorsAccessControl{
+		AllowOrigin:      []string{"*"},
 		AllowCredentials: true,
+		AllowMethods:     []string{`GET`, `POST`, `PUT`, `DELETE`},
+		MaxAge:           3600 * time.Second,
+		AllowHeaders:     []string{"*"},
 	})
 
 	self.server.Use(negroni.NewRecovery())
 	self.server.Use(negroni.NewStatic(http.Dir(`public`)))
-	self.server.Use(self.corsHandler)
 	self.server.UseHandler(self.router)
 
 	if err := self.setupRoutes(); err != nil {
@@ -108,65 +106,22 @@ func (self *Server) Respond(w http.ResponseWriter, code int, payload interface{}
 }
 
 func (self *Server) setupRoutes() error {
-	self.router.GET(`/records/:collection`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			if collection, err := self.backend.GetCollection(params.ByName(`collection`)); err == nil {
+	self.router.Get(`/collections/:collection`,
+		func(w http.ResponseWriter, req *http.Request) {
+			name := vestigo.Param(req, `collection`)
+
+			if collection, err := self.backend.GetCollection(name); err == nil {
 				self.Respond(w, http.StatusOK, collection, nil)
 			} else {
 				self.Respond(w, http.StatusNotFound, nil, err)
 			}
 		})
 
-	self.router.GET(`/records/:collection/:id/`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			if record, err := self.backend.Retrieve(params.ByName(`collection`), params.ByName(`id`)); err == nil {
-				self.Respond(w, http.StatusOK, record, nil)
-			} else {
-				self.Respond(w, http.StatusInternalServerError, nil, err)
-			}
-		})
+	self.router.Get(`/collections/:collection/where/*urlquery`,
+		func(w http.ResponseWriter, req *http.Request) {
+			name := vestigo.Param(req, `collection`)
+			query := vestigo.Param(req, `_name`)
 
-	self.router.DELETE(`/records/:collection/:id/`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			if err := self.backend.Delete(params.ByName(`collection`), params.ByName(`id`)); err == nil {
-				self.Respond(w, http.StatusNoContent, nil, nil)
-			} else {
-				self.Respond(w, http.StatusInternalServerError, nil, err)
-			}
-		})
-
-	self.router.POST(`/records/:collection/`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			var recordset dal.RecordSet
-
-			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
-				if err := self.backend.Insert(params.ByName(`collection`), &recordset); err == nil {
-					self.Respond(w, http.StatusNoContent, nil, nil)
-				} else {
-					self.Respond(w, http.StatusInternalServerError, nil, err)
-				}
-			} else {
-				self.Respond(w, http.StatusBadRequest, nil, err)
-			}
-		})
-
-	self.router.PUT(`/records/:collection/`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			var recordset dal.RecordSet
-
-			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
-				if err := self.backend.Update(params.ByName(`collection`), &recordset); err == nil {
-					self.Respond(w, http.StatusNoContent, nil, nil)
-				} else {
-					self.Respond(w, http.StatusInternalServerError, nil, err)
-				}
-			} else {
-				self.Respond(w, http.StatusBadRequest, nil, err)
-			}
-		})
-
-	self.router.GET(`/query/:collection/where/*urlquery`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
 			limit := 0
 			offset := 0
 
@@ -188,12 +143,12 @@ func (self *Server) setupRoutes() error {
 				return
 			}
 
-			if f, err := filter.Parse(params.ByName(`urlquery`)); err == nil {
+			if f, err := filter.Parse(query); err == nil {
 				f.Limit = limit
 				f.Offset = offset
 
 				if search := self.backend.WithSearch(); search != nil {
-					if recordset, err := search.Query(params.ByName(`collection`), f); err == nil {
+					if recordset, err := search.Query(name, f); err == nil {
 						self.Respond(w, http.StatusOK, recordset, nil)
 					} else {
 						self.Respond(w, http.StatusInternalServerError, nil, err)
@@ -206,8 +161,11 @@ func (self *Server) setupRoutes() error {
 			}
 		})
 
-	self.router.GET(`/query/:collection/list/*fields`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	self.router.Get(`/collections/:collection/list/*fields`,
+		func(w http.ResponseWriter, req *http.Request) {
+			name := vestigo.Param(req, `collection`)
+			fieldNames := vestigo.Param(req, `_name`)
+
 			f := filter.All
 
 			if v := req.URL.Query().Get(`q`); v != `` {
@@ -219,9 +177,9 @@ func (self *Server) setupRoutes() error {
 			}
 
 			if search := self.backend.WithSearch(); search != nil {
-				fields := strings.TrimPrefix(params.ByName(`fields`), `/`)
+				fields := strings.TrimPrefix(fieldNames, `/`)
 
-				if recordset, err := search.ListValues(params.ByName(`collection`), strings.Split(fields, `/`), f); err == nil {
+				if recordset, err := search.ListValues(name, strings.Split(fields, `/`), f); err == nil {
 					self.Respond(w, http.StatusOK, recordset, nil)
 				} else {
 					self.Respond(w, http.StatusInternalServerError, nil, err)
@@ -231,10 +189,13 @@ func (self *Server) setupRoutes() error {
 			}
 		})
 
-	self.router.DELETE(`/query/:collection/where/*urlquery`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			if f, err := filter.Parse(params.ByName(`urlquery`)); err == nil {
-				if err := self.backend.Delete(params.ByName(`collection`), f); err == nil {
+	self.router.Delete(`/collections/:collection/where/*urlquery`,
+		func(w http.ResponseWriter, req *http.Request) {
+			name := vestigo.Param(req, `collection`)
+			query := vestigo.Param(req, `_name`)
+
+			if f, err := filter.Parse(query); err == nil {
+				if err := self.backend.Delete(name, f); err == nil {
 					self.Respond(w, http.StatusNoContent, nil, nil)
 				} else {
 					self.Respond(w, http.StatusBadRequest, nil, err)
@@ -244,8 +205,64 @@ func (self *Server) setupRoutes() error {
 			}
 		})
 
-	self.router.GET(`/schema`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	self.router.Get(`/collections/:collection/:id`,
+		func(w http.ResponseWriter, req *http.Request) {
+			name := vestigo.Param(req, `collection`)
+			id := vestigo.Param(req, `id`)
+
+			if record, err := self.backend.Retrieve(name, id); err == nil {
+				self.Respond(w, http.StatusOK, record, nil)
+			} else {
+				self.Respond(w, http.StatusInternalServerError, nil, err)
+			}
+		})
+
+	self.router.Delete(`/collections/:collection/:id`,
+		func(w http.ResponseWriter, req *http.Request) {
+			name := vestigo.Param(req, `collection`)
+			id := vestigo.Param(req, `id`)
+
+			if err := self.backend.Delete(name, id); err == nil {
+				self.Respond(w, http.StatusNoContent, nil, nil)
+			} else {
+				self.Respond(w, http.StatusInternalServerError, nil, err)
+			}
+		})
+
+	self.router.Post(`/collections/:collection`,
+		func(w http.ResponseWriter, req *http.Request) {
+			var recordset dal.RecordSet
+			name := vestigo.Param(req, `collection`)
+
+			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
+				if err := self.backend.Insert(name, &recordset); err == nil {
+					self.Respond(w, http.StatusNoContent, nil, nil)
+				} else {
+					self.Respond(w, http.StatusInternalServerError, nil, err)
+				}
+			} else {
+				self.Respond(w, http.StatusBadRequest, nil, err)
+			}
+		})
+
+	self.router.Put(`/collections/:collection`,
+		func(w http.ResponseWriter, req *http.Request) {
+			var recordset dal.RecordSet
+			name := vestigo.Param(req, `collection`)
+
+			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
+				if err := self.backend.Update(name, &recordset); err == nil {
+					self.Respond(w, http.StatusNoContent, nil, nil)
+				} else {
+					self.Respond(w, http.StatusInternalServerError, nil, err)
+				}
+			} else {
+				self.Respond(w, http.StatusBadRequest, nil, err)
+			}
+		})
+
+	self.router.Get(`/schema`,
+		func(w http.ResponseWriter, req *http.Request) {
 			if names, err := self.backend.ListCollections(); err == nil {
 				self.Respond(w, http.StatusOK, names, nil)
 			} else {
@@ -253,8 +270,8 @@ func (self *Server) setupRoutes() error {
 			}
 		})
 
-	self.router.POST(`/schema`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	self.router.Post(`/schema`,
+		func(w http.ResponseWriter, req *http.Request) {
 			var collection dal.Collection
 
 			if err := json.NewDecoder(req.Body).Decode(&collection); err == nil {
@@ -268,9 +285,11 @@ func (self *Server) setupRoutes() error {
 			}
 		})
 
-	self.router.GET(`/schema/:collection`,
-		func(w http.ResponseWriter, req *http.Request, params httprouter.Params) {
-			if collection, err := self.backend.GetCollection(params.ByName(`collection`)); err == nil {
+	self.router.Get(`/schema/:collection`,
+		func(w http.ResponseWriter, req *http.Request) {
+			name := vestigo.Param(req, `collection`)
+
+			if collection, err := self.backend.GetCollection(name); err == nil {
 				self.Respond(w, http.StatusOK, collection, nil)
 			} else {
 				self.Respond(w, http.StatusBadRequest, nil, err)

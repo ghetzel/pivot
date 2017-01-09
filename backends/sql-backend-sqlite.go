@@ -13,7 +13,7 @@ import (
 )
 
 func (self *SqlBackend) initializeSqlite() (string, string, error) {
-	// tell the backend cool details about generating sqlite-compatible SQL
+	// tell the backend cool details about generating compatible SQL
 	self.queryGenTypeMapping = generators.SqliteTypeMapping
 	self.queryGenTableFormat = "%q"
 	self.queryGenFieldFormat = "%q"
@@ -43,10 +43,14 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 				if err := rows.Scan(&i, &column, &columnType, &nullable, &defaultValue, &pk); err == nil {
 					// start building the dal.Field
 					field := dal.Field{
-						Name:         column,
-						NativeType:   columnType,
-						Required:     (nullable != 1),
-						DefaultValue: stringutil.Autotype(defaultValue.String),
+						Name:       column,
+						NativeType: columnType,
+						Required:   (nullable != 1),
+					}
+
+					// set default value if it's not NULL
+					if defaultValue.Valid {
+						field.DefaultValue = stringutil.Autotype(defaultValue.String)
 					}
 
 					// tease out type, length, and precision from the native type

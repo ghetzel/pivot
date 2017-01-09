@@ -12,7 +12,7 @@ import (
 )
 
 func (self *SqlBackend) initializeMysql() (string, string, error) {
-	// tell the backend cool details about generating sqlite-compatible SQL
+	// tell the backend cool details about generating compatible SQL
 	self.queryGenTypeMapping = generators.MysqlTypeMapping
 	self.queryGenPlaceholderFormat = `?`
 	self.queryGenPlaceholderArgument = ``
@@ -62,10 +62,14 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 						if err := rows.Scan(&i, &column, &columnType, &nullable, &defaultValue, &keyType); err == nil {
 							// start building the dal.Field
 							field := dal.Field{
-								Name:         column,
-								NativeType:   columnType,
-								Required:     (nullable != `YES`),
-								DefaultValue: stringutil.Autotype(defaultValue.String),
+								Name:       column,
+								NativeType: columnType,
+								Required:   (nullable != `YES`),
+							}
+
+							// set default value if it's not NULL
+							if defaultValue.Valid {
+								field.DefaultValue = stringutil.Autotype(defaultValue.String)
 							}
 
 							// tease out type, length, and precision from the native type
