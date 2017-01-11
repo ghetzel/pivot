@@ -2,6 +2,7 @@ package dal
 
 import (
 	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/fatih/structs"
 	"reflect"
 	"strings"
 )
@@ -73,6 +74,45 @@ func (self *Record) Append(key string, value ...interface{}) *Record {
 
 func (self *Record) AppendNested(key string, value ...interface{}) *Record {
 	return self.SetNested(key, self.appendValue(key, value...))
+}
+
+func (self *Record) Populate(instance interface{}) error {
+	if err := validatePtrToStructType(instance); err != nil {
+		return err
+	}
+
+	instanceStruct := structs.New(instance)
+
+	if idField, err := GetIdentityFieldName(instance); err == nil {
+		if idField, ok := instanceStruct.FieldOk(idField); ok {
+			idField.Set(self.ID)
+		}
+
+		if fields, err := getFieldsForStruct(instanceStruct); err == nil {
+			for key, value := range self.Fields {
+				if field, ok := fields[key]; ok {
+					// skip the identity field
+					if field.Identity {
+						continue
+					}
+
+					// skip values that are that type's zero value if OmitEmpty is set
+					if field.OmitEmpty && value == reflect.Zero(reflect.TypeOf(value)) {
+						continue
+					}
+
+					// set the value
+					field.Field.Set(value)
+				}
+			}
+		}else{
+			return err
+		}
+	}else{
+		return err
+	}
+
+	return nil
 }
 
 func (self *Record) appendValue(key string, value ...interface{}) []interface{} {

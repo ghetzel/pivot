@@ -72,3 +72,36 @@ func TestRecordAppendNested(t *testing.T) {
 	record.AppendNested(`t.fourth`, `10`)
 	assert.Equal([]interface{}{`6`, `7`, 8, 9, `10`}, record.Get(`t.fourth`))
 }
+
+func TestRecordPopulateStruct(t *testing.T) {
+	assert := require.New(t)
+
+	type testThing struct {
+		ID int
+		Name string `pivot:"name"`
+		Group string `pivot:"Group,omitempty"`
+		Size int
+	}
+
+	thing := testThing{}
+	record := NewRecord(1).Set(`name`, `test-name`).Set(`Size`, 42)
+
+	err := record.Populate(&thing)
+	assert.Nil(err)
+	assert.Equal(`test-name`, thing.Name)
+	assert.Zero(thing.Group)
+	assert.Equal(42, thing.Size)
+
+
+	thing = testThing{
+		Group: `tests`,
+	}
+
+	record = NewRecord(1).Set(`name`, `test-name`).Set(`Size`, 42)
+
+	err = record.Populate(&thing)
+	assert.Nil(err)
+	assert.Equal(`test-name`, thing.Name)
+	assert.Equal(`tests`, thing.Group)
+	assert.Equal(42, thing.Size)
+}
