@@ -14,24 +14,24 @@ import (
 var backend backends.Backend
 var TestData = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 
-func setupTestSqlite() {
+func setupTestSqlite(run func()) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
 	if b, err := makeBackend(`sqlite:///./tmp/db_test/test.db`); err == nil {
 		backend = b
+		run()
 	} else {
 		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
-		os.Exit(1)
 	}
 }
 
-func setupTestMysql() {
+func setupTestMysql(run func()) {
 	if b, err := makeBackend(`mysql://test:test@db/test`); err == nil {
 		backend = b
+		run()
 	} else {
 		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
-		os.Exit(1)
 	}
 }
 
@@ -46,11 +46,8 @@ func TestMain(m *testing.M) {
 		}
 	}
 
-	setupTestMysql()
-	run()
-
-	setupTestSqlite()
-	run()
+	setupTestMysql(run)
+	setupTestSqlite(run)
 }
 
 func makeBackend(conn string) (backends.Backend, error) {
@@ -458,30 +455,38 @@ func TestListValues(t *testing.T) {
 				`group`: `blues`,
 			}))))
 
-		recordset, err := search.ListValues(`TestListValues`, []string{`name`}, filter.All)
+		keyValues, err := search.ListValues(`TestListValues`, []string{`name`}, filter.All)
 		assert.Nil(err)
-		assert.NotNil(recordset)
-		assert.Equal(int64(1), recordset.ResultCount)
-		assert.Equal([]interface{}{`first`, `second`, `third`}, recordset.Records[0].Get(`values`))
+		assert.Equal(1, len(keyValues))
+		v, ok := keyValues[`name`]
+		assert.True(ok)
+		assert.Equal([]interface{}{`first`, `second`, `third`}, v)
 
-		recordset, err = search.ListValues(`TestListValues`, []string{`group`}, filter.All)
+		keyValues, err = search.ListValues(`TestListValues`, []string{`group`}, filter.All)
 		assert.Nil(err)
-		assert.NotNil(recordset)
-		assert.Equal(int64(1), recordset.ResultCount)
-		assert.Equal([]interface{}{`reds`, `blues`}, recordset.Records[0].Get(`values`))
+		assert.Equal(1, len(keyValues))
+		v, ok = keyValues[`group`]
+		assert.True(ok)
+		assert.Equal([]interface{}{`reds`, `blues`}, v)
 
-		recordset, err = search.ListValues(`TestListValues`, []string{`id`}, filter.All)
+		keyValues, err = search.ListValues(`TestListValues`, []string{`id`}, filter.All)
 		assert.Nil(err)
-		assert.NotNil(recordset)
-		assert.Equal(int64(1), recordset.ResultCount)
-		assert.Equal([]interface{}{int64(1), int64(2), int64(3)}, recordset.Records[0].Get(`values`))
+		assert.Equal(1, len(keyValues))
+		v, ok = keyValues[`id`]
+		assert.True(ok)
+		assert.Equal([]interface{}{int64(1), int64(2), int64(3)}, v)
 
-		recordset, err = search.ListValues(`TestListValues`, []string{`id`, `group`}, filter.All)
+		keyValues, err = search.ListValues(`TestListValues`, []string{`id`, `group`}, filter.All)
 		assert.Nil(err)
-		assert.NotNil(recordset)
-		assert.Equal(int64(2), recordset.ResultCount)
-		assert.Equal([]interface{}{int64(1), int64(2), int64(3)}, recordset.Records[0].Get(`values`))
-		assert.Equal([]interface{}{`reds`, `blues`}, recordset.Records[1].Get(`values`))
+		assert.Equal(2, len(keyValues))
+
+		v, ok = keyValues[`id`]
+		assert.True(ok)
+		assert.Equal([]interface{}{int64(1), int64(2), int64(3)}, v)
+
+		v, ok = keyValues[`group`]
+		assert.True(ok)
+		assert.Equal([]interface{}{`reds`, `blues`}, v)
 	}
 }
 

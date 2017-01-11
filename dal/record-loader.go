@@ -9,8 +9,8 @@ import (
 )
 
 type fieldDescription struct {
-	Field *structs.Field
-	Identity bool
+	Field     *structs.Field
+	Identity  bool
 	OmitEmpty bool
 }
 
@@ -44,7 +44,7 @@ func GetCollectionAndIdentity(instance interface{}) (string, interface{}, error)
 		if field, ok := s.FieldOk(idFieldName); ok {
 			id = field.Value()
 		}
-	}else{
+	} else {
 		return ``, nil, err
 	}
 
@@ -81,9 +81,9 @@ func validatePtrToStructType(instance interface{}) error {
 		if reflect.ValueOf(instance).Elem().Kind() == reflect.Struct {
 			return nil
 		}
- 	}
+	}
 
- 	return fmt.Errorf("Can only operate on pointer to struct, got %T", instance)
+	return fmt.Errorf("Can only operate on pointer to struct, got %T", instance)
 }
 
 func getFieldsForStruct(instance *structs.Struct) (map[string]fieldDescription, error) {
@@ -108,8 +108,8 @@ func getFieldsForStruct(instance *structs.Struct) (map[string]fieldDescription, 
 		}
 
 		fields[name] = fieldDescription{
-			Field: field,
-			Identity: identity,
+			Field:     field,
+			Identity:  identity,
 			OmitEmpty: omitEmpty,
 		}
 	}

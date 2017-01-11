@@ -116,7 +116,7 @@ func (self *SqlBackend) Query(collection string, f filter.Filter) (*dal.RecordSe
 
 	return recordset, nil
 }
-func (self *SqlBackend) ListValues(collectionName string, fields []string, f filter.Filter) (*dal.RecordSet, error) {
+func (self *SqlBackend) ListValues(collectionName string, fields []string, f filter.Filter) (map[string][]interface{}, error) {
 	if collection, err := self.getCollectionFromCache(collectionName); err == nil {
 		for i, f := range fields {
 			if f == `id` {
@@ -124,28 +124,22 @@ func (self *SqlBackend) ListValues(collectionName string, fields []string, f fil
 			}
 		}
 
-		recordset := dal.NewRecordSet()
-		groupedByField := make(map[string]*dal.Record)
+		output := make(map[string][]interface{})
 
 		for _, field := range fields {
 			f.Fields = []string{field}
 			f.Options[`Distinct`] = true
 
 			if results, err := self.Query(collectionName, f); err == nil {
-				var record *dal.Record
-
-				if r, ok := groupedByField[field]; ok {
-					record = r
-				} else {
-					record = dal.NewRecord(field)
-					groupedByField[field] = record
-				}
-
 				var values []interface{}
 
-				if field == collection.IdentityField {
+				if v, ok := output[field]; ok {
+					values = v
+				} else {
 					values = make([]interface{}, 0)
+				}
 
+				if field == collection.IdentityField {
 					for _, result := range results.Records {
 						values = append(values, result.ID)
 					}
@@ -153,15 +147,13 @@ func (self *SqlBackend) ListValues(collectionName string, fields []string, f fil
 					values = sliceutil.Compact(results.Pluck(field))
 				}
 
-				record.Set(`values`, values)
-
-				recordset.Push(record)
+				output[field] = values
 			} else {
 				return nil, err
 			}
 		}
 
-		return recordset, nil
+		return output, nil
 	} else {
 		return nil, err
 	}

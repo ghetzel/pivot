@@ -29,7 +29,7 @@ type Indexer interface {
 	Index(collection string, records *dal.RecordSet) error
 	QueryFunc(collection string, filter filter.Filter, resultFn IndexResultFunc) error
 	Query(collection string, filter filter.Filter) (*dal.RecordSet, error)
-	ListValues(collection string, fields []string, filter filter.Filter) (*dal.RecordSet, error)
+	ListValues(collection string, fields []string, filter filter.Filter) (map[string][]interface{}, error)
 	DeleteQuery(collection string, f filter.Filter) error
 }
 

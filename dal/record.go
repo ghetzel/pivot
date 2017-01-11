@@ -1,8 +1,8 @@
 package dal
 
 import (
-	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/fatih/structs"
+	"github.com/ghetzel/go-stockutil/maputil"
 	"reflect"
 	"strings"
 )
@@ -105,10 +105,10 @@ func (self *Record) Populate(instance interface{}) error {
 					field.Field.Set(value)
 				}
 			}
-		}else{
+		} else {
 			return err
 		}
-	}else{
+	} else {
 		return err
 	}
 

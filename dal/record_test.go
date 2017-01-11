@@ -77,10 +77,10 @@ func TestRecordPopulateStruct(t *testing.T) {
 	assert := require.New(t)
 
 	type testThing struct {
-		ID int
-		Name string `pivot:"name"`
+		ID    int
+		Name  string `pivot:"name"`
 		Group string `pivot:"Group,omitempty"`
-		Size int
+		Size  int
 	}
 
 	thing := testThing{}
@@ -91,7 +91,6 @@ func TestRecordPopulateStruct(t *testing.T) {
 	assert.Equal(`test-name`, thing.Name)
 	assert.Zero(thing.Group)
 	assert.Equal(42, thing.Size)
-
 
 	thing = testThing{
 		Group: `tests`,

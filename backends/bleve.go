@@ -274,7 +274,7 @@ func (self *BleveIndexer) IndexRemove(collection string, ids []interface{}) erro
 	}
 }
 
-func (self *BleveIndexer) ListValues(collection string, fields []string, f filter.Filter) (*dal.RecordSet, error) {
+func (self *BleveIndexer) ListValues(collection string, fields []string, f filter.Filter) (map[string][]interface{}, error) {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		if bq, err := self.filterToBleveQuery(index, f); err == nil {
 			request := bleve.NewSearchRequestOptions(bq, 0, 0, false)
@@ -296,48 +296,38 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 			}
 
 			if results, err := index.Search(request); err == nil {
-				recordset := dal.NewRecordSet()
-				groupedByField := make(map[string]*dal.Record)
-
-				for name, facet := range results.Facets {
-					for _, term := range facet.Terms {
-						var record *dal.Record
-
-						if r, ok := groupedByField[name]; ok {
-							record = r
-						} else {
-							record = dal.NewRecord(name)
-							groupedByField[name] = record
-						}
-
-						record.Append(`values`, term.Term)
-					}
-				}
+				output := make(map[string][]interface{})
+				var values []interface{}
 
 				if idQuery {
 					for _, hit := range results.Hits {
-						var record *dal.Record
-
-						if r, ok := groupedByField[`id`]; ok {
-							record = r
+						if v, ok := output[`id`]; ok {
+							values = v
 						} else {
-							record = dal.NewRecord(`id`)
-							groupedByField[`id`] = record
+							values = make([]interface{}, 0)
 						}
 
-						record.Append(`values`, hit.ID)
+						values = append(values, hit.ID)
+					}
+
+					output[`id`] = values
+				} else {
+					for name, facet := range results.Facets {
+						for _, term := range facet.Terms {
+							if v, ok := output[name]; ok {
+								values = v
+							} else {
+								values = make([]interface{}, 0)
+							}
+
+							values = append(values, term.Term)
+						}
+
+						output[name] = values
 					}
 				}
 
-				for _, field := range fields {
-					if record, ok := groupedByField[field]; ok {
-						recordset.Push(record)
-					} else {
-						return nil, fmt.Errorf("Field %q missing from result set", field)
-					}
-				}
-
-				return recordset, nil
+				return output, nil
 			} else {
 				return nil, err
 			}
