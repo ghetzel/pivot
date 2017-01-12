@@ -263,7 +263,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 							if rows.Next() {
 								return self.scanFnValueToRecord(collection, columns, reflect.ValueOf(rows.Scan))
 							} else {
-								return nil, fmt.Errorf("Record %s does not exist", id)
+								return nil, fmt.Errorf("Record %v does not exist", id)
 							}
 						} else {
 							return nil, err
