@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"fmt"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"time"
 )
@@ -29,6 +30,12 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 	case StringType:
 		convertType = stringutil.String
 	case BooleanType:
+		if fmt.Sprintf("%v", in) == `1` {
+			return true, nil
+		} else if fmt.Sprintf("%v", in) == `0` {
+			return false, nil
+		}
+
 		convertType = stringutil.Boolean
 	case IntType:
 		convertType = stringutil.Integer

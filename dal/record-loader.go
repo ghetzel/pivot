@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var RecordStructTag = `pivot`
+
 type fieldDescription struct {
 	Field     *structs.Field
 	Identity  bool
@@ -30,7 +32,7 @@ func GetCollectionAndIdentity(instance interface{}) (string, interface{}, error)
 
 	// get the collection name or use the struct's type name
 	if field, ok := s.FieldOk(`Model`); ok {
-		v := strings.Split(field.Tag(`pivot`), `,`)
+		v := strings.Split(field.Tag(RecordStructTag), `,`)
 		collection = v[0]
 	}
 
@@ -60,7 +62,7 @@ func GetIdentityFieldName(instance interface{}) (string, error) {
 
 	// find a field with an ",identity" tag and get its value
 	for _, field := range s.Fields() {
-		if tag := field.Tag(`pivot`); tag != `` {
+		if tag := field.Tag(RecordStructTag); tag != `` {
 			v := strings.Split(tag, `,`)
 
 			if sliceutil.ContainsString(v[1:], `identity`) {
@@ -88,13 +90,14 @@ func validatePtrToStructType(instance interface{}) error {
 
 func getFieldsForStruct(instance *structs.Struct) (map[string]fieldDescription, error) {
 	fields := make(map[string]fieldDescription)
+	identitySet := false
 
 	for _, field := range instance.Fields() {
 		var identity, omitEmpty bool
 
 		name := field.Name()
 
-		if tag := field.Tag(`pivot`); tag != `` {
+		if tag := field.Tag(RecordStructTag); tag != `` {
 			v := strings.Split(tag, `,`)
 
 			if v[0] != `` {
@@ -105,6 +108,10 @@ func getFieldsForStruct(instance *structs.Struct) (map[string]fieldDescription, 
 				identity = sliceutil.ContainsString(v[1:], `identity`)
 				omitEmpty = sliceutil.ContainsString(v[1:], `omitempty`)
 			}
+		}
+
+		if !identitySet && identity {
+			identitySet = true
 		}
 
 		fields[name] = fieldDescription{

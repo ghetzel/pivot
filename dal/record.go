@@ -83,26 +83,61 @@ func (self *Record) Populate(instance interface{}) error {
 
 	instanceStruct := structs.New(instance)
 
-	if idField, err := GetIdentityFieldName(instance); err == nil {
-		if idField, ok := instanceStruct.FieldOk(idField); ok {
-			idField.Set(self.ID)
+	// get the name of the identity field from the given struct
+	if idFieldName, err := GetIdentityFieldName(instance); err == nil {
+		// get the underlying field from the struct we're outputting to
+		if idField, ok := instanceStruct.FieldOk(idFieldName); ok {
+			id := self.ID
+			fType := reflect.TypeOf(idField.Value())
+			vValue := reflect.ValueOf(id)
+
+			// convert the value to the field's type if necessary
+			if !vValue.Type().AssignableTo(fType) {
+				if vValue.Type().ConvertibleTo(fType) {
+					id = vValue.Convert(fType).Interface()
+				}
+			}
+
+			// get the ID value
+			if err := idField.Set(id); err != nil {
+				return err
+			}
 		}
 
+		// get field descriptors for the output struct
 		if fields, err := getFieldsForStruct(instanceStruct); err == nil {
+			// for each value in the record's fields map...
 			for key, value := range self.Fields {
+				// only operate on fields that exist in the output struct
 				if field, ok := fields[key]; ok {
-					// skip the identity field
-					if field.Identity {
-						continue
-					}
+					// only operate on exported output struct fields
+					if field.Field.IsExported() {
+						// skip the identity field, we already took care of this
+						if field.Identity || field.Field.Name() == idFieldName {
+							continue
+						}
 
-					// skip values that are that type's zero value if OmitEmpty is set
-					if field.OmitEmpty && value == reflect.Zero(reflect.TypeOf(value)) {
-						continue
-					}
+						// skip values that are that type's zero value if OmitEmpty is set
+						if field.OmitEmpty && value == reflect.Zero(reflect.TypeOf(value)).Interface() {
+							continue
+						}
 
-					// set the value
-					field.Field.Set(value)
+						// get the underling type of the field
+						fType := reflect.TypeOf(field.Field.Value())
+						vValue := reflect.ValueOf(value)
+
+						// convert the value to the field's type if necessary
+						if !vValue.Type().AssignableTo(fType) {
+							if vValue.Type().ConvertibleTo(fType) {
+								value = vValue.Convert(fType).Interface()
+							}
+						}
+
+						// set the value
+						if err := field.Field.Set(value); err != nil {
+							return err
+						}
+					}
 				}
 			}
 		} else {

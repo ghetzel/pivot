@@ -2,6 +2,8 @@ package dal
 
 import (
 	"fmt"
+	"github.com/fatih/structs"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"reflect"
 )
 
@@ -74,5 +76,66 @@ func (self *Collection) ConvertValue(name string, value interface{}) (interface{
 		return field.ConvertValue(value)
 	} else {
 		return nil, fmt.Errorf("Unknown field '%s'", name)
+	}
+}
+
+func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
+	if err := validatePtrToStructType(in); err != nil {
+		return nil, err
+	}
+
+	// create the record we're going to populate
+	record := NewRecord(nil)
+	s := structs.New(in)
+
+	// get a string slice of the field names that are valid for this collection
+	actualFieldNames := make([]string, 0)
+
+	for _, field := range self.Fields {
+		actualFieldNames = append(actualFieldNames, field.Name)
+	}
+
+	// get details for the fields present on the given input struct
+	if fields, err := getFieldsForStruct(s); err == nil {
+		// for each field descriptor...
+		for tagName, fieldDescr := range fields {
+			value := fieldDescr.Field.Value()
+
+			// if we're supposed to skip empty values, and this value is indeed empty, skip
+			if fieldDescr.OmitEmpty && value == reflect.Zero(reflect.TypeOf(value)).Interface() {
+				continue
+			}
+
+			// set the ID field if this field is explicitly marked as the identity
+			if fieldDescr.Identity {
+				record.ID = value
+			} else if sliceutil.ContainsString(actualFieldNames, tagName) {
+				record.Set(tagName, value)
+			}
+		}
+
+		// an identity column was not explicitly specified, so try to find the column that matches
+		// our identity field name
+		if record.ID == nil {
+			for tagName, fieldDescr := range fields {
+				if tagName == self.IdentityField {
+					record.ID = fieldDescr.Field.Value()
+					delete(record.Fields, tagName)
+					break
+				}
+			}
+		}
+
+		// an ID still wasn't found, so try the field called "ID"
+		if record.ID == nil {
+			if field, ok := s.FieldOk(`ID`); ok {
+				record.ID = field.Value()
+				delete(record.Fields, `ID`)
+			}
+		}
+
+		return record, nil
+	} else {
+		return nil, err
 	}
 }
