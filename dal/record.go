@@ -118,8 +118,10 @@ func (self *Record) Populate(instance interface{}) error {
 						}
 
 						// skip values that are that type's zero value if OmitEmpty is set
-						if field.OmitEmpty && value == reflect.Zero(reflect.TypeOf(value)).Interface() {
-							continue
+						if field.OmitEmpty {
+							if value == nil || value == reflect.Zero(reflect.TypeOf(value)).Interface() {
+								continue
+							}
 						}
 
 						// get the underling type of the field

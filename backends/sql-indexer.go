@@ -32,11 +32,12 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 			if err := queryGen.Initialize(collection.Name); err == nil {
 				f.Offset = offset
 
-				if sqlString, err := filter.Render(queryGen, collection.Name, f); err == nil {
-					// log.Debugf("%s %+v; processed=%d", string(sqlString[:]), queryGen.GetValues(), processed)
+				if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
+					values := queryGen.GetValues()
+					querylog.Debugf("%s %v", string(stmt[:]), values)
 
 					// perform query
-					if rows, err := self.db.Query(string(sqlString[:]), queryGen.GetValues()...); err == nil {
+					if rows, err := self.db.Query(string(stmt[:]), values...); err == nil {
 						defer rows.Close()
 
 						if columns, err := rows.Columns(); err == nil {

@@ -79,10 +79,18 @@ func GetIdentityFieldName(instance interface{}) (string, error) {
 }
 
 func validatePtrToStructType(instance interface{}) error {
-	if reflect.TypeOf(instance).Kind() == reflect.Ptr {
-		if reflect.ValueOf(instance).Elem().Kind() == reflect.Struct {
+	vInstance := reflect.ValueOf(instance)
+
+	if vInstance.IsValid() {
+		if vInstance.Kind() == reflect.Ptr {
+			vInstance = vInstance.Elem()
+		}
+
+		if vInstance.Kind() == reflect.Struct {
 			return nil
 		}
+	} else {
+		return fmt.Errorf("invalid value %T", instance)
 	}
 
 	return fmt.Errorf("Can only operate on pointer to struct, got %T", instance)

@@ -72,31 +72,75 @@ func (self *Model) Delete(ids ...interface{}) error {
 
 func (self *Model) Find(f filter.Filter, into interface{}) error {
 	if search := self.db.WithSearch(); search != nil {
+		vOriginal := reflect.ValueOf(into)
 		vInto := reflect.ValueOf(into)
 
-		switch vInto.Type().Kind() {
-		case reflect.Array, reflect.Slice:
-			intoElemType := vInto.Type().Elem()
+		// get value pointed to if we were given a pointer
+		if vInto.Kind() == reflect.Ptr {
+			vInto = vInto.Elem()
+		} else {
+			return fmt.Errorf("Output argument must be a pointer")
+		}
 
-			if recordset, err := search.Query(self.collection.Name, f); err == nil {
+		// perform query
+		if recordset, err := search.Query(self.collection.Name, f); err == nil {
+			// we're going to fill arrays or slices
+			switch vInto.Type().Kind() {
+			case reflect.Array, reflect.Slice:
+				indirectResult := true
+
+				// get the type of the underlying slice element
+				sliceType := vInto.Type().Elem()
+
+				// get the type pointed to
+				if sliceType.Kind() == reflect.Ptr {
+					sliceType = sliceType.Elem()
+					indirectResult = false
+				}
+
+				// for each resulting record...
 				for _, record := range recordset.Records {
-					item := reflect.New(intoElemType).Interface()
+					// make a new zero-valued instance of the slice type
+					elem := reflect.New(sliceType)
 
-					if err := record.Populate(item); err == nil {
-						vInto.Set(reflect.Append(vInto, reflect.ValueOf(item)))
+					// populate that type with data from this record
+					if err := record.Populate(elem.Interface()); err == nil {
+						// if the slice elements are pointers, we can append the pointer we just created as-is
+						// otherwise, we need to indirect the value and append a copy
+
+						if indirectResult {
+							vInto.Set(reflect.Append(vInto, reflect.Indirect(elem)))
+						} else {
+							vInto.Set(reflect.Append(vInto, elem))
+						}
 					} else {
 						return err
 					}
 				}
 
 				return nil
-			} else {
-				return err
+			case reflect.Struct:
+				// if _, ok := into.(*dal.RecordSet); ok {
+				// 	var rs interface{}
+				// 	rs = recordset
+				// 	vRs := reflect.ValueOf(rs)
+
+				// 	vOriginal.Set(vRs)
+				// 	return nil
+				// }
+
+				fallthrough
+			default:
+				return fmt.Errorf("model can only populate results into slice or array, got %T", self)
 			}
-		default:
-			return fmt.Errorf("model can only populate results into slice or array, got %T", self, into)
+		} else {
+			return err
 		}
 	} else {
 		return fmt.Errorf("backend %T does not support searching", self.db)
 	}
+}
+
+func (self *Model) All(into interface{}) error {
+	return self.Find(filter.All, into)
 }
