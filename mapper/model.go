@@ -72,7 +72,6 @@ func (self *Model) Delete(ids ...interface{}) error {
 
 func (self *Model) Find(f filter.Filter, into interface{}) error {
 	if search := self.db.WithSearch(); search != nil {
-		vOriginal := reflect.ValueOf(into)
 		vInto := reflect.ValueOf(into)
 
 		// get value pointed to if we were given a pointer
