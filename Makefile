@@ -19,6 +19,7 @@ test:
 	go test ./dal/
 	go test ./filter/
 	go test ./filter/*/*
+	go test ./mapper/
 
 bundle: clean-bundle
 	@echo "Bundling static resources under ./public/"
