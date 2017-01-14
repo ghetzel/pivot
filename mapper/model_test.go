@@ -12,7 +12,7 @@ import (
 func TestModelCRUD(t *testing.T) {
 	assert := require.New(t)
 
-	tmpfile, err := ioutil.TempFile("", "example")
+	tmpfile, err := ioutil.TempFile("", "byteflood-TestModelCRUD")
 	assert.Nil(err)
 	defer os.Remove(tmpfile.Name())
 
@@ -73,4 +73,71 @@ func TestModelCRUD(t *testing.T) {
 
 	assert.Nil(model1.Delete(1))
 	assert.Error(model1.Get(1, nil))
+}
+
+func TestModelFind(t *testing.T) {
+	assert := require.New(t)
+
+	tmpfile, err := ioutil.TempFile("", "byteflood-TestModelFind")
+	assert.Nil(err)
+	defer os.Remove(tmpfile.Name())
+
+	db, err := pivot.NewDatabase(`sqlite://` + tmpfile.Name())
+	assert.Nil(err)
+
+	type ModelTwo struct {
+		ID      int
+		Name    string `pivot:"name"`
+		Enabled bool   `pivot:"enabled,omitempty"`
+		Size    int    `pivot:"size,omitempty"`
+	}
+
+	model := NewModel(db, dal.Collection{
+		Name: `model_one`,
+		Fields: []dal.Field{
+			{
+				Name: `name`,
+				Type: dal.StringType,
+			}, {
+				Name: `enabled`,
+				Type: dal.BooleanType,
+			}, {
+				Name: `size`,
+				Type: dal.IntType,
+			},
+		},
+	})
+
+	assert.Nil(model.Migrate())
+	assert.Nil(model.Create(&ModelTwo{
+		ID:      1,
+		Name:    `test-one`,
+		Enabled: true,
+		Size:    12345,
+	}))
+
+	assert.Nil(model.Create(&ModelTwo{
+		ID:      2,
+		Name:    `test-two`,
+		Enabled: false,
+		Size:    98765,
+	}))
+
+	assert.Nil(model.Create(&ModelTwo{
+		ID:      3,
+		Name:    `test-three`,
+		Enabled: true,
+	}))
+
+	var resultsStruct []ModelTwo
+	assert.Error(model.All(resultsStruct))
+
+	assert.Nil(model.All(&resultsStruct))
+	assert.Equal(3, len(resultsStruct))
+
+	var recordset dal.RecordSet
+
+	assert.Error(model.All(recordset))
+	assert.Nil(model.All(&recordset))
+	assert.Equal(int64(3), recordset.ResultCount)
 }

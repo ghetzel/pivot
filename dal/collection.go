@@ -84,6 +84,11 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 		return nil, err
 	}
 
+	// if the argument is already a record, return it as-is
+	if record, ok := in.(*Record); ok {
+		return record, nil
+	}
+
 	// create the record we're going to populate
 	record := NewRecord(nil)
 	s := structs.New(in)
@@ -99,18 +104,20 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 	if fields, err := getFieldsForStruct(s); err == nil {
 		// for each field descriptor...
 		for tagName, fieldDescr := range fields {
-			value := fieldDescr.Field.Value()
+			if fieldDescr.Field.IsExported() {
+				value := fieldDescr.Field.Value()
 
-			// if we're supposed to skip empty values, and this value is indeed empty, skip
-			if fieldDescr.OmitEmpty && value == reflect.Zero(reflect.TypeOf(value)).Interface() {
-				continue
-			}
+				// if we're supposed to skip empty values, and this value is indeed empty, skip
+				if fieldDescr.OmitEmpty && value == reflect.Zero(reflect.TypeOf(value)).Interface() {
+					continue
+				}
 
-			// set the ID field if this field is explicitly marked as the identity
-			if fieldDescr.Identity {
-				record.ID = value
-			} else if sliceutil.ContainsString(actualFieldNames, tagName) {
-				record.Set(tagName, value)
+				// set the ID field if this field is explicitly marked as the identity
+				if fieldDescr.Identity {
+					record.ID = value
+				} else if sliceutil.ContainsString(actualFieldNames, tagName) {
+					record.Set(tagName, value)
+				}
 			}
 		}
 

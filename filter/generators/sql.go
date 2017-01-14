@@ -88,6 +88,7 @@ type Sql struct {
 	NormalizerFormat    string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
 	UseInStatement      bool                   // whether multiple values in a criterion should be tested using an IN() statement
 	Distinct            bool                   // whether a DISTINCT clause should be used in SELECT statements
+	Count               bool                   // whether this query is being used to count rows, which means that SELECT fields are discarded in favor of COUNT(1)
 	TypeMapping         SqlTypeMapping         // provides mapping information between DAL types and native SQL types
 	Type                SqlStatementType       // what type of SQL statement is being generated
 	InputData           map[string]interface{} // key-value data for statement types that require input data (e.g.: inserts, updates)
@@ -131,20 +132,24 @@ func (self *Sql) Finalize(f filter.Filter) error {
 	case SqlSelectStatement:
 		self.Push([]byte(`SELECT `))
 
-		if self.Distinct {
-			self.Push([]byte(`DISTINCT `))
-		}
-
-		if len(self.fields) == 0 {
-			self.Push([]byte(`*`))
+		if self.Count {
+			self.Push([]byte(`COUNT(1) `))
 		} else {
-			fieldNames := make([]string, len(self.fields))
-
-			for i, f := range self.fields {
-				fieldNames[i] = self.ToFieldName(f)
+			if self.Distinct {
+				self.Push([]byte(`DISTINCT `))
 			}
 
-			self.Push([]byte(strings.Join(fieldNames, `, `)))
+			if len(self.fields) == 0 {
+				self.Push([]byte(`*`))
+			} else {
+				fieldNames := make([]string, len(self.fields))
+
+				for i, f := range self.fields {
+					fieldNames[i] = self.ToFieldName(f)
+				}
+
+				self.Push([]byte(strings.Join(fieldNames, `, `)))
+			}
 		}
 
 		self.Push([]byte(` FROM `))
@@ -152,9 +157,10 @@ func (self *Sql) Finalize(f filter.Filter) error {
 
 		self.populateWhereClause()
 
-		self.populateOrderBy(f)
-
-		self.populateLimitOffset(f)
+		if !self.Count {
+			self.populateOrderBy(f)
+			self.populateLimitOffset(f)
+		}
 
 	case SqlInsertStatement:
 		if self.InputData == nil || len(self.InputData) == 0 {

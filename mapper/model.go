@@ -8,7 +8,18 @@ import (
 	"reflect"
 )
 
+type Mapper interface {
+	Migrate() error
+	Create(from interface{}) error
+	Get(id interface{}, into interface{}) error
+	Update(from interface{}) error
+	Delete(ids ...interface{}) error
+	Find(f filter.Filter, into interface{}) error
+	All(into interface{}) error
+}
+
 type Model struct {
+	Mapper
 	db         backends.Backend
 	collection *dal.Collection
 }
@@ -58,11 +69,23 @@ func (self *Model) Get(id interface{}, into interface{}) error {
 	}
 }
 
+func (self *Model) Exists(id interface{}) bool {
+	return self.db.Exists(self.collection.Name, id)
+}
+
 func (self *Model) Update(from interface{}) error {
 	if record, err := self.collection.MakeRecord(from); err == nil {
 		return self.db.Update(self.collection.Name, dal.NewRecordSet(record))
 	} else {
 		return err
+	}
+}
+
+func (self *Model) CreateOrUpdate(id interface{}, from interface{}) error {
+	if id == nil || !self.Exists(id) {
+		return self.Create(from)
+	} else {
+		return self.Update(from)
 	}
 }
 
@@ -119,18 +142,14 @@ func (self *Model) Find(f filter.Filter, into interface{}) error {
 
 				return nil
 			case reflect.Struct:
-				// if _, ok := into.(*dal.RecordSet); ok {
-				// 	var rs interface{}
-				// 	rs = recordset
-				// 	vRs := reflect.ValueOf(rs)
-
-				// 	vOriginal.Set(vRs)
-				// 	return nil
-				// }
+				if rs, ok := into.(*dal.RecordSet); ok {
+					*rs = *recordset
+					return nil
+				}
 
 				fallthrough
 			default:
-				return fmt.Errorf("model can only populate results into slice or array, got %T", self)
+				return fmt.Errorf("model can only populate results into slice or array, got %T", into)
 			}
 		} else {
 			return err

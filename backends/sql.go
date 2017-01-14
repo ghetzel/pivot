@@ -121,6 +121,7 @@ func (self *SqlBackend) Initialize() error {
 		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
+					log.Debugf("Indexer: %v", indexConnString)
 					self.indexer = indexer
 				} else {
 					return err

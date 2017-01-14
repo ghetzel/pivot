@@ -6,6 +6,7 @@ import (
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
+	"math"
 	"reflect"
 )
 
@@ -32,6 +33,50 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 			if err := queryGen.Initialize(collection.Name); err == nil {
 				f.Offset = offset
 
+				var totalPages int
+				var totalResults int64
+
+				// if we are paginating, then we need to do a preliminary query to get the
+				// total number of records that match this query
+				if f.Paginate {
+					prequeryGen := self.makeQueryGen(collection)
+					prequeryGen.Count = true
+
+					if err := prequeryGen.Initialize(collection.Name); err == nil {
+						// render the count query
+						if stmt, err := filter.Render(prequeryGen, collection.Name, f); err == nil {
+							values := prequeryGen.GetValues()
+							querylog.Debugf("%s %v", string(stmt[:]), values)
+
+							// perform the count query
+							if rows, err := self.db.Query(string(stmt[:]), values...); err == nil {
+								defer rows.Close()
+
+								if rows.Next() {
+									var count int64
+
+									if err := rows.Scan(&count); err == nil {
+										totalResults = count
+									} else {
+										return err
+									}
+								}
+
+								rows.Close()
+							} else {
+								return err
+							}
+						} else {
+							return err
+						}
+					} else {
+						return err
+					}
+
+					// totalPages = ceil(result count / page size)
+					totalPages = int(math.Ceil(float64(totalResults) / float64(f.Limit)))
+				}
+
 				if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
 					values := queryGen.GetValues()
 					querylog.Debugf("%s %v", string(stmt[:]), values)
@@ -50,12 +95,16 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 									processed += 1
 									processedThisQuery += 1
 
+									if totalResults == 0 {
+										totalResults = int64(processed)
+									}
+
 									if err := resultFn(record, IndexPage{
 										Page:         page,
-										TotalPages:   0,
+										TotalPages:   totalPages,
 										Limit:        f.Limit,
 										Offset:       offset,
-										TotalResults: int64(processed),
+										TotalResults: totalResults,
 									}); err != nil {
 										return err
 									}

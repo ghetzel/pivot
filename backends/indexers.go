@@ -50,7 +50,7 @@ func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f filter.Filter, pag
 
 	if page.TotalPages > 0 {
 		recordset.TotalPages = page.TotalPages
-	} else if recordset.ResultCount >= 0 {
+	} else if recordset.ResultCount >= 0 && f.Limit > 0 {
 		// total pages = ceil(result count / page size)
 		recordset.TotalPages = int(math.Ceil(float64(recordset.ResultCount) / float64(f.Limit)))
 	}
@@ -60,5 +60,7 @@ func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f filter.Filter, pag
 	}
 
 	// page is the last page number set
-	recordset.Page = int(math.Ceil(float64(f.Offset+1) / float64(page.Limit)))
+	if page.Limit > 0 {
+		recordset.Page = int(math.Ceil(float64(f.Offset+1) / float64(page.Limit)))
+	}
 }

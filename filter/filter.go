@@ -73,6 +73,7 @@ type Filter struct {
 	Sort          []string
 	Fields        []string
 	Options       map[string]interface{}
+	Paginate      bool
 	IdentityField string
 }
 
@@ -89,6 +90,7 @@ func MakeFilter(specs ...string) Filter {
 		Sort:     make([]string, 0),
 		Fields:   make([]string, 0),
 		Options:  make(map[string]interface{}),
+		Paginate: true,
 	}
 
 	if spec == AllValue {
@@ -96,6 +98,10 @@ func MakeFilter(specs ...string) Filter {
 	}
 
 	return f
+}
+
+func Copy(other *Filter) Filter {
+	return *other
 }
 
 func FromMap(in map[string]interface{}) (Filter, error) {

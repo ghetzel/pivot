@@ -154,3 +154,49 @@ func TestFilterGetSort(t *testing.T) {
 	assert.Equal(`group`, sortBy[1].Field)
 	assert.False(sortBy[1].Descending)
 }
+
+func TestFilterCopy(t *testing.T) {
+	assert := require.New(t)
+
+	f1, err := Parse(`id/42`)
+	assert.Nil(err)
+
+	f2 := Copy(&f1)
+
+	// so far, these should be equivalent
+	assert.Equal(f1, f2)
+
+	assert.Equal([]Criterion{
+		{
+			Type:   dal.AutoType,
+			Field:  `id`,
+			Values: []interface{}{`42`},
+		},
+	}, f1.Criteria)
+
+	f2.AddCriteria(Criterion{
+		Type:   dal.StringType,
+		Field:  `name`,
+		Values: []interface{}{`test`},
+	})
+
+	assert.Equal([]Criterion{
+		{
+			Type:   dal.AutoType,
+			Field:  `id`,
+			Values: []interface{}{`42`},
+		},
+	}, f1.Criteria)
+
+	assert.Equal([]Criterion{
+		{
+			Type:   dal.AutoType,
+			Field:  `id`,
+			Values: []interface{}{`42`},
+		}, {
+			Type:   dal.StringType,
+			Field:  `name`,
+			Values: []interface{}{`test`},
+		},
+	}, f2.Criteria)
+}
