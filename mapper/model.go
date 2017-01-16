@@ -10,9 +10,11 @@ import (
 
 type Mapper interface {
 	Migrate() error
+	Exists(id interface{}) bool
 	Create(from interface{}) error
 	Get(id interface{}, into interface{}) error
 	Update(from interface{}) error
+	CreateOrUpdate(id interface{}, from interface{}) error
 	Delete(ids ...interface{}) error
 	Find(f filter.Filter, into interface{}) error
 	All(into interface{}) error
