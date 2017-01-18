@@ -8,6 +8,7 @@ import (
 
 type Field struct {
 	Name         string      `json:"name"`
+	Description  string      `json:"description,omitempty"`
 	Type         Type        `json:"type"`
 	Length       int         `json:"length,omitempty"`
 	Precision    int         `json:"precision,omitempty"`

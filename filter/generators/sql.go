@@ -418,6 +418,27 @@ func (self *Sql) ToFieldName(field string) string {
 	return fmt.Sprintf(self.FieldNameFormat, field)
 }
 
+func (self *Sql) ToNativeValue(t dal.Type, in interface{}) string {
+	switch t {
+	case dal.StringType:
+		return fmt.Sprintf("'%v'", in)
+	case dal.BooleanType:
+		if v, ok := in.(bool); ok {
+			if v {
+				return `TRUE`
+			}
+		}
+
+		return `FALSE`
+
+	// case dal.TimeType:
+	// handle now/current_timestamp junk
+
+	default:
+		return fmt.Sprintf("%v", in)
+	}
+}
+
 func (self *Sql) ToNativeType(in dal.Type, length int) (string, error) {
 	out := ``
 

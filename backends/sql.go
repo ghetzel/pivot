@@ -497,8 +497,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 		}
 
 		if v := field.DefaultValue; v != nil {
-			def += ` DEFAULT ?`
-			values = append(values, v)
+			def += fmt.Sprintf(" DEFAULT %v", gen.ToNativeValue(field.Type, v))
 		}
 
 		fields = append(fields, def)
