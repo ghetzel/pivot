@@ -104,13 +104,17 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 
 			case `Type`:
 				if theirField, ok := theirs.FieldOk(myField.Name()); ok {
-					if myV, ok := myField.Value().(Type); ok {
-						if theirV, ok := theirField.Value().(Type); ok {
-							if myV != theirV {
-								// the one exception to Type equivalence is that ObjectType fields can be stored
-								// as a RawType on backends without a native object type, so we treat raw fields
-								// as object fields
-								if myV == ObjectType {
+					if myT, ok := myField.Value().(Type); ok {
+						if theirT, ok := theirField.Value().(Type); ok {
+							if myT != theirT {
+								// ObjectType fields can be stored as a RawType on backends without
+								// a native object type, so we treat raw fields as object fields
+								if myT == ObjectType && theirT == RawType {
+									continue
+								}
+
+								// some backends store times as integers, so allow that too
+								if myT == TimeType && theirT == IntType {
 									continue
 								}
 							}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/pathutil"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter/generators"
@@ -24,6 +25,14 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
+		var uniqueConstraints []string
+
+		if c, err := self.sqliteGetTableConstraints(`unique`, collectionName); err == nil {
+			uniqueConstraints = c
+		} else {
+			return nil, err
+		}
+
 		stmt := fmt.Sprintf("PRAGMA table_info(%q)", collectionName)
 		querylog.Debugf("%s", string(stmt[:]))
 
@@ -46,6 +55,7 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 						Name:       column,
 						NativeType: columnType,
 						Required:   (required == 1),
+						Unique:     sliceutil.ContainsString(uniqueConstraints, column),
 					}
 
 					// set default value if it's not NULL
@@ -137,5 +147,56 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 		}
 
 		return `sqlite3`, dsn, nil
+	}
+}
+
+func (self *SqlBackend) sqliteGetTableConstraints(constraintType string, collectionName string) ([]string, error) {
+	columns := make([]string, 0)
+
+	stmt := fmt.Sprintf("PRAGMA index_list(%q)", collectionName)
+	querylog.Debugf("%s", string(stmt[:]))
+
+	if rows, err := self.db.Query(stmt); err == nil {
+		defer rows.Close()
+
+		for rows.Next() {
+			var i, isUnique, isPartial int
+			var indexName, createdBy string
+
+			if err := rows.Scan(&i, &indexName, &isUnique, &createdBy, &isPartial); err == nil {
+				switch constraintType {
+				case `unique`:
+					if isUnique != 1 {
+						continue
+					}
+				}
+
+				stmt := fmt.Sprintf("PRAGMA index_info(%q)", indexName)
+				querylog.Debugf("%s", string(stmt[:]))
+
+				if indexInfo, err := self.db.Query(stmt); err == nil {
+					defer indexInfo.Close()
+
+					for indexInfo.Next() {
+						var j, columnIndex int
+						var columnName string
+
+						if err := indexInfo.Scan(&j, &columnIndex, &columnName); err == nil {
+							columns = append(columns, columnName)
+						} else {
+							return nil, err
+						}
+					}
+				} else {
+					return nil, err
+				}
+			} else {
+				return nil, err
+			}
+		}
+
+		return columns, nil
+	} else {
+		return nil, err
 	}
 }
