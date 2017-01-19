@@ -78,45 +78,52 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 
 	for _, myField := range mine.Fields() {
 		if myField.IsExported() {
+			theirField, _ := theirs.FieldOk(myField.Name())
+
 			switch myField.Name() {
+			// skip parameters:
+			//
+			// 	NativeType:
+			//		this is generally expected to be an output value from the database and not specified in schema definitions
+			//  Description:
+			//		this is largely for the use of the client application and won't always have a backend-persistent counterpart
+			//  DefaultValue:
+			//		this is a value that is interpreted by the backend and may not be retrievable after definition
+			//
 			case `NativeType`, `Description`, `DefaultValue`:
 				continue
 			case `Length`:
-				if theirField, ok := theirs.FieldOk(myField.Name()); ok {
-					if myV, ok := myField.Value().(int); ok {
-						if theirV, ok := theirField.Value().(int); ok {
-							// It is okay for lengths to exceed, but not be less than, our desired length
-							if theirV < myV {
-								diff = append(diff, SchemaDelta{
-									Type:      FieldDelta,
-									Message:   `length is shorter than desired`,
-									Name:      self.Name,
-									Parameter: `Length`,
-									Desired:   myV,
-									Actual:    theirV,
-								})
-							}
+				if myV, ok := myField.Value().(int); ok {
+					if theirV, ok := theirField.Value().(int); ok {
+						// It is okay for lengths to exceed, but not be less than, our desired length
+						if theirV < myV {
+							diff = append(diff, SchemaDelta{
+								Type:      FieldDelta,
+								Message:   `length is shorter than desired`,
+								Name:      self.Name,
+								Parameter: `Length`,
+								Desired:   myV,
+								Actual:    theirV,
+							})
 						}
 					}
-
-					continue
 				}
 
-			case `Type`:
-				if theirField, ok := theirs.FieldOk(myField.Name()); ok {
-					if myT, ok := myField.Value().(Type); ok {
-						if theirT, ok := theirField.Value().(Type); ok {
-							if myT != theirT {
-								// ObjectType fields can be stored as a RawType on backends without
-								// a native object type, so we treat raw fields as object fields
-								if myT == ObjectType && theirT == RawType {
-									continue
-								}
+				continue
 
-								// some backends store times as integers, so allow that too
-								if myT == TimeType && theirT == IntType {
-									continue
-								}
+			case `Type`:
+				if myT, ok := myField.Value().(Type); ok {
+					if theirT, ok := theirField.Value().(Type); ok {
+						if myT != theirT {
+							// ObjectType fields can be stored as a RawType on backends without
+							// a native object type, so we treat raw fields as object fields
+							if myT == ObjectType && theirT == RawType {
+								continue
+							}
+
+							// some backends store times as integers, so allow that too
+							if myT == TimeType && theirT == IntType {
+								continue
 							}
 						}
 					}
@@ -124,26 +131,17 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 
 				fallthrough
 			default:
-				if theirField, ok := theirs.FieldOk(myField.Name()); ok {
-					myV := myField.Value()
-					theirV := theirField.Value()
+				myV := myField.Value()
+				theirV := theirField.Value()
 
-					if myV != theirV {
-						diff = append(diff, SchemaDelta{
-							Type:      FieldDelta,
-							Message:   `values do not match`,
-							Name:      self.Name,
-							Parameter: theirField.Name(),
-							Desired:   myV,
-							Actual:    theirV,
-						})
-					}
-				} else {
+				if myV != theirV {
 					diff = append(diff, SchemaDelta{
 						Type:      FieldDelta,
-						Message:   `parameter is missing`,
+						Message:   `values do not match`,
 						Name:      self.Name,
 						Parameter: theirField.Name(),
+						Desired:   myV,
+						Actual:    theirV,
 					})
 				}
 			}
