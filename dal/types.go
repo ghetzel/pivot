@@ -1,8 +1,8 @@
 package dal
 
 import (
-    "fmt"
-    "strings"
+	"fmt"
+	"strings"
 )
 
 type Type string
@@ -39,20 +39,20 @@ type SchemaDelta struct {
 }
 
 func (self SchemaDelta) String() string {
-    msg := fmt.Sprintf("%s '%s'", strings.Title(string(self.Type)), self.Name)
+	msg := fmt.Sprintf("%s '%s'", strings.Title(string(self.Type)), self.Name)
 
-    if self.Parameter != `` {
-        msg += fmt.Sprintf(", parameter '%s'", self.Parameter)
-    }
+	if self.Parameter != `` {
+		msg += fmt.Sprintf(", parameter '%s'", self.Parameter)
+	}
 
-    msg += fmt.Sprintf(": %s", self.Message)
+	msg += fmt.Sprintf(": %s", self.Message)
 
-    dV := fmt.Sprintf("%v", self.Desired)
-    aV := fmt.Sprintf("%v", self.Actual)
+	dV := fmt.Sprintf("%v", self.Desired)
+	aV := fmt.Sprintf("%v", self.Actual)
 
-    if len(dV) <= 12 && len(aV) <= 12 {
-        msg += fmt.Sprintf(" (desired: %v, actual: %v)", dV, aV)
-    }
+	if len(dV) <= 12 && len(aV) <= 12 {
+		msg += fmt.Sprintf(" (desired: %v, actual: %v)", dV, aV)
+	}
 
-    return msg
+	return msg
 }

@@ -43,6 +43,7 @@ func TestModelCRUD(t *testing.T) {
 	})
 
 	assert.Nil(model1.Migrate())
+
 	assert.Nil(model1.Create(&ModelOne{
 		ID:      1,
 		Name:    `test-1`,
@@ -73,6 +74,7 @@ func TestModelCRUD(t *testing.T) {
 
 	assert.Nil(model1.Delete(1))
 	assert.Error(model1.Get(1, nil))
+	assert.Nil(model1.Drop())
 }
 
 func TestModelFind(t *testing.T) {
@@ -109,6 +111,7 @@ func TestModelFind(t *testing.T) {
 	})
 
 	assert.Nil(model.Migrate())
+
 	assert.Nil(model.Create(&ModelTwo{
 		ID:      1,
 		Name:    `test-one`,
@@ -140,4 +143,5 @@ func TestModelFind(t *testing.T) {
 	assert.Error(model.All(recordset))
 	assert.Nil(model.All(&recordset))
 	assert.Equal(int64(3), recordset.ResultCount)
+	assert.Nil(model.Drop())
 }

@@ -36,16 +36,16 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 			var foundPrimaryKey bool
 
 			for rows.Next() {
-				var i, nullable, pk int
+				var i, required, pk int
 				var column, columnType string
 				var defaultValue sql.NullString
 
-				if err := rows.Scan(&i, &column, &columnType, &nullable, &defaultValue, &pk); err == nil {
+				if err := rows.Scan(&i, &column, &columnType, &required, &defaultValue, &pk); err == nil {
 					// start building the dal.Field
 					field := dal.Field{
 						Name:       column,
 						NativeType: columnType,
-						Required:   (nullable != 1),
+						Required:   (required == 1),
 					}
 
 					// set default value if it's not NULL

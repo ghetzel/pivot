@@ -10,6 +10,7 @@ import (
 
 type Mapper interface {
 	Migrate() error
+	Drop() error
 	Exists(id interface{}) bool
 	Create(from interface{}) error
 	Get(id interface{}, into interface{}) error
@@ -73,6 +74,10 @@ func (self *Model) Migrate() error {
 	}
 
 	return nil
+}
+
+func (self *Model) Drop() error {
+	return self.db.DeleteCollection(self.collection.Name)
 }
 
 func (self *Model) Create(from interface{}) error {
