@@ -3,7 +3,6 @@ package dal
 import (
 	"fmt"
 	"github.com/fatih/structs"
-	"github.com/ghetzel/go-stockutil/sliceutil"
 	"reflect"
 )
 
@@ -81,33 +80,29 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 
 	// if the argument is already a record, return it as-is
 	if record, ok := in.(*Record); ok {
+		// we're returning the record we were given, but first we need to validate and format it
+		for key, value := range record.Fields {
+			if field, ok := self.GetField(key); ok {
+				if err := field.Validate(value); err == nil {
+					if v, err := field.Format(value, PersistOperation); err == nil {
+						record.Fields[key] = v
+					} else {
+						return nil, err
+					}
+				} else {
+					return nil, err
+				}
+			} else {
+				delete(record.Fields, key)
+			}
+		}
+
 		return record, nil
 	}
 
 	// create the record we're going to populate
 	record := NewRecord(nil)
 	s := structs.New(in)
-
-	// a string slice of the field names that are valid for this collection
-	actualFieldNames := make([]string, 0)
-
-	// map field names to field formatters
-	fieldFormatters := make(map[string]FieldFormatterFunc)
-
-	// map field names to validators
-	fieldValidators := make(map[string]FieldValidatorFunc)
-
-	for _, field := range self.Fields {
-		actualFieldNames = append(actualFieldNames, field.Name)
-
-		if field.Formatter != nil {
-			fieldFormatters[field.Name] = field.Formatter
-		}
-
-		if field.Validator != nil {
-			fieldValidators[field.Name] = field.Validator
-		}
-	}
 
 	// get details for the fields present on the given input struct
 	if fields, err := getFieldsForStruct(s); err == nil {
@@ -116,32 +111,30 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 			if fieldDescr.Field.IsExported() {
 				value := fieldDescr.Field.Value()
 
-				// if a formatter is specified for this field, apply it now
-				if formatter, ok := fieldFormatters[tagName]; ok {
-					if v, err := formatter(value, PersistOperation); err == nil {
-						value = v
-					} else {
-						return nil, err
-					}
-				}
-
-				// if a validator is specified for this field, validate now
-				if validator, ok := fieldValidators[tagName]; ok {
-					if err := validator(value); err != nil {
-						return nil, err
-					}
-				}
-
-				// if we're supposed to skip empty values, and this value is indeed empty, skip
-				if fieldDescr.OmitEmpty && value == reflect.Zero(reflect.TypeOf(value)).Interface() {
-					continue
-				}
-
 				// set the ID field if this field is explicitly marked as the identity
 				if fieldDescr.Identity {
 					record.ID = value
-				} else if sliceutil.ContainsString(actualFieldNames, tagName) {
-					record.Set(tagName, value)
+				} else {
+					if collectionField, ok := self.GetField(tagName); ok {
+						// validate and format value according to the collection field's rules
+						if err := collectionField.Validate(value); err == nil {
+							if v, err := collectionField.Format(value, PersistOperation); err == nil {
+								value = v
+							} else {
+								return nil, err
+							}
+						} else {
+							return nil, err
+						}
+
+						// if we're supposed to skip empty values, and this value is indeed empty, skip
+						if fieldDescr.OmitEmpty && value == reflect.Zero(reflect.TypeOf(value)).Interface() {
+							continue
+						}
+
+						// set the value in the output record
+						record.Set(tagName, value)
+					}
 				}
 			}
 		}

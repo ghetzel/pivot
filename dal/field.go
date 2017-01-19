@@ -81,6 +81,14 @@ func (self *Field) Validate(value interface{}) error {
 	}
 }
 
+func (self *Field) Format(value interface{}, op FieldOperation) (interface{}, error) {
+	if self.Formatter == nil {
+		return value, nil
+	} else {
+		return self.Formatter(value, op)
+	}
+}
+
 func (self *Field) Diff(other *Field) []SchemaDelta {
 	diff := make([]SchemaDelta, 0)
 	mine := structs.New(self)

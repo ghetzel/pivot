@@ -31,14 +31,21 @@ func NewModel(db backends.Backend, collection dal.Collection) *Model {
 	model := new(Model)
 
 	model.db = db
-	model.collection = dal.NewCollection(collection.Name)
-	model.collection.Fields = collection.Fields
+	model.collection = &collection
 
-	if v := collection.IdentityField; v != `` {
+	if model.collection.Fields == nil {
+		model.collection.Fields = make([]dal.Field, 0)
+	}
+
+	if v := collection.IdentityField; v == `` {
+		model.collection.IdentityField = dal.DefaultIdentityField
+	} else {
 		model.collection.IdentityField = v
 	}
 
-	if v := collection.IdentityFieldType; v != `` {
+	if v := collection.IdentityFieldType; v == `` {
+		model.collection.IdentityFieldType = dal.DefaultIdentityFieldType
+	} else {
 		model.collection.IdentityFieldType = v
 	}
 
