@@ -88,11 +88,25 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 	record := NewRecord(nil)
 	s := structs.New(in)
 
-	// get a string slice of the field names that are valid for this collection
+	// a string slice of the field names that are valid for this collection
 	actualFieldNames := make([]string, 0)
+
+	// map field names to field formatters
+	fieldFormatters := make(map[string]FieldFormatterFunc)
+
+	// map field names to validators
+	fieldValidators := make(map[string]FieldValidatorFunc)
 
 	for _, field := range self.Fields {
 		actualFieldNames = append(actualFieldNames, field.Name)
+
+		if field.Formatter != nil {
+			fieldFormatters[field.Name] = field.Formatter
+		}
+
+		if field.Validator != nil {
+			fieldValidators[field.Name] = field.Validator
+		}
 	}
 
 	// get details for the fields present on the given input struct
@@ -101,6 +115,22 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 		for tagName, fieldDescr := range fields {
 			if fieldDescr.Field.IsExported() {
 				value := fieldDescr.Field.Value()
+
+				// if a formatter is specified for this field, apply it now
+				if formatter, ok := fieldFormatters[tagName]; ok {
+					if v, err := formatter(value, PersistOperation); err == nil {
+						value = v
+					} else {
+						return nil, err
+					}
+				}
+
+				// if a validator is specified for this field, validate now
+				if validator, ok := fieldValidators[tagName]; ok {
+					if err := validator(value); err != nil {
+						return nil, err
+					}
+				}
 
 				// if we're supposed to skip empty values, and this value is indeed empty, skip
 				if fieldDescr.OmitEmpty && value == reflect.Zero(reflect.TypeOf(value)).Interface() {

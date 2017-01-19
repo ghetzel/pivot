@@ -80,6 +80,8 @@ func (self *Model) Drop() error {
 	return self.db.DeleteCollection(self.collection.Name)
 }
 
+// Creates and saves a new instance of the model from the given struct or dal.Record.
+//
 func (self *Model) Create(from interface{}) error {
 	if record, err := self.collection.MakeRecord(from); err == nil {
 		return self.db.Insert(self.collection.Name, dal.NewRecordSet(record))
@@ -88,18 +90,25 @@ func (self *Model) Create(from interface{}) error {
 	}
 }
 
+// Retrieves an instance of the model identified by the given ID and populates the value pointed to
+// by the into parameter.  Structs and dal.Record instances can be populated.
+//
 func (self *Model) Get(id interface{}, into interface{}) error {
 	if record, err := self.db.Retrieve(self.collection.Name, id); err == nil {
-		return record.Populate(into)
+		return record.Populate(into, self.collection)
 	} else {
 		return err
 	}
 }
 
+// Tests whether a record exists for the given ID.
+//
 func (self *Model) Exists(id interface{}) bool {
 	return self.db.Exists(self.collection.Name, id)
 }
 
+// Updates and saves an existing instance of the model from the given struct or dal.Record.
+//
 func (self *Model) Update(from interface{}) error {
 	if record, err := self.collection.MakeRecord(from); err == nil {
 		return self.db.Update(self.collection.Name, dal.NewRecordSet(record))
@@ -108,6 +117,8 @@ func (self *Model) Update(from interface{}) error {
 	}
 }
 
+// Creates or updates an instance of the model depending on whether it exists or not.
+//
 func (self *Model) CreateOrUpdate(id interface{}, from interface{}) error {
 	if id == nil || !self.Exists(id) {
 		return self.Create(from)
@@ -116,10 +127,17 @@ func (self *Model) CreateOrUpdate(id interface{}, from interface{}) error {
 	}
 }
 
+// Delete instances of the model identified by the given IDs
+//
 func (self *Model) Delete(ids ...interface{}) error {
 	return self.db.Delete(self.collection.Name, ids...)
 }
 
+// Perform a query for instances of the model that match the given filter.Filter.
+// Results will be returned in the slice or array pointed to by the into parameter, or
+// if into points to a dal.RecordSet, the RecordSet resulting from the query will be returned
+// as-is.
+//
 func (self *Model) Find(f filter.Filter, into interface{}) error {
 	if search := self.db.WithSearch(); search != nil {
 		vInto := reflect.ValueOf(into)
@@ -153,7 +171,7 @@ func (self *Model) Find(f filter.Filter, into interface{}) error {
 					elem := reflect.New(sliceType)
 
 					// populate that type with data from this record
-					if err := record.Populate(elem.Interface()); err == nil {
+					if err := record.Populate(elem.Interface(), self.collection); err == nil {
 						// if the slice elements are pointers, we can append the pointer we just created as-is
 						// otherwise, we need to indirect the value and append a copy
 

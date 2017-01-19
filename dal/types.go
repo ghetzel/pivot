@@ -22,6 +22,16 @@ func (self Type) String() string {
 	return string(self)
 }
 
+type FieldOperation int
+
+const (
+	PersistOperation FieldOperation = iota
+	RetrieveOperation
+)
+
+type FieldValidatorFunc func(interface{}) error
+type FieldFormatterFunc func(interface{}, FieldOperation) (interface{}, error)
+
 type DeltaType string
 
 const (

@@ -9,6 +9,7 @@ import (
 )
 
 var RecordStructTag = `pivot`
+var DefaultStructIdentityFieldName = `ID`
 
 type fieldDescription struct {
 	Field     *structs.Field
@@ -18,42 +19,7 @@ type fieldDescription struct {
 
 type Model interface{}
 
-// Extract the collection name and ID value from a given struct.
-//
-func GetCollectionAndIdentity(instance interface{}) (string, interface{}, error) {
-	var collection string
-	var id interface{}
-
-	if err := validatePtrToStructType(instance); err != nil {
-		return ``, nil, err
-	}
-
-	s := structs.New(instance)
-
-	// get the collection name or use the struct's type name
-	if field, ok := s.FieldOk(`Model`); ok {
-		v := strings.Split(field.Tag(RecordStructTag), `,`)
-		collection = v[0]
-	}
-
-	if collection == `` {
-		v := strings.Split(fmt.Sprintf("%T", instance), `.`)
-		collection = v[len(v)-1]
-	}
-
-	// get the value from the identity field
-	if idFieldName, err := GetIdentityFieldName(instance); err == nil {
-		if field, ok := s.FieldOk(idFieldName); ok {
-			id = field.Value()
-		}
-	} else {
-		return ``, nil, err
-	}
-
-	return collection, id, nil
-}
-
-func GetIdentityFieldName(instance interface{}) (string, error) {
+func GetIdentityFieldName(instance interface{}, fallbackIdentityFieldName string) (string, error) {
 	if err := validatePtrToStructType(instance); err != nil {
 		return ``, err
 	}
@@ -71,8 +37,14 @@ func GetIdentityFieldName(instance interface{}) (string, error) {
 		}
 	}
 
-	if _, ok := s.FieldOk(`ID`); ok {
-		return `ID`, nil
+	if fallbackIdentityFieldName == `` {
+		fallbackIdentityFieldName = DefaultStructIdentityFieldName
+	}
+
+	if _, ok := s.FieldOk(fallbackIdentityFieldName); ok {
+		return fallbackIdentityFieldName, nil
+	} else if _, ok := s.FieldOk(DefaultStructIdentityFieldName); ok {
+		return DefaultStructIdentityFieldName, nil
 	}
 
 	return ``, fmt.Errorf("No identity field could be found for type %T", instance)
@@ -105,13 +77,16 @@ func getFieldsForStruct(instance *structs.Struct) (map[string]fieldDescription, 
 
 		name := field.Name()
 
+		// read struct tags to determine how values are mapped to struct fields
 		if tag := field.Tag(RecordStructTag); tag != `` {
 			v := strings.Split(tag, `,`)
 
+			// if the first value isn't an empty string, that's what we're calling the field
 			if v[0] != `` {
 				name = v[0]
 			}
 
+			// set additional flags from tag options
 			if len(v) > 1 {
 				identity = sliceutil.ContainsString(v[1:], `identity`)
 				omitEmpty = sliceutil.ContainsString(v[1:], `omitempty`)

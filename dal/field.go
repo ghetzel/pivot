@@ -8,17 +8,19 @@ import (
 )
 
 type Field struct {
-	Name         string      `json:"name"`
-	Description  string      `json:"description,omitempty"`
-	Type         Type        `json:"type"`
-	Length       int         `json:"length,omitempty"`
-	Precision    int         `json:"precision,omitempty"`
-	Identity     bool        `json:"identity,omitempty"`
-	Key          bool        `json:"key,omitempty"`
-	Required     bool        `json:"required,omitempty"`
-	Unique       bool        `json:"unique,omitempty"`
-	DefaultValue interface{} `json:"default,omitempty"`
-	NativeType   string      `json:"native_type,omitempty"`
+	Name         string             `json:"name"`
+	Description  string             `json:"description,omitempty"`
+	Type         Type               `json:"type"`
+	Length       int                `json:"length,omitempty"`
+	Precision    int                `json:"precision,omitempty"`
+	Identity     bool               `json:"identity,omitempty"`
+	Key          bool               `json:"key,omitempty"`
+	Required     bool               `json:"required,omitempty"`
+	Unique       bool               `json:"unique,omitempty"`
+	DefaultValue interface{}        `json:"default,omitempty"`
+	NativeType   string             `json:"native_type,omitempty"`
+	Validator    FieldValidatorFunc `json:"-"`
+	Formatter    FieldFormatterFunc `json:"-"`
 }
 
 func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
@@ -71,6 +73,14 @@ func (self *Field) GetTypeInstance() interface{} {
 	}
 }
 
+func (self *Field) Validate(value interface{}) error {
+	if self.Validator == nil {
+		return nil
+	} else {
+		return self.Validator(value)
+	}
+}
+
 func (self *Field) Diff(other *Field) []SchemaDelta {
 	diff := make([]SchemaDelta, 0)
 	mine := structs.New(self)
@@ -90,7 +100,7 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 			//  DefaultValue:
 			//		this is a value that is interpreted by the backend and may not be retrievable after definition
 			//
-			case `NativeType`, `Description`, `DefaultValue`:
+			case `NativeType`, `Description`, `DefaultValue`, `Validator`, `Formatter`:
 				continue
 			case `Length`:
 				if myV, ok := myField.Value().(int); ok {

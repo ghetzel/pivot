@@ -1,6 +1,8 @@
 package dal
 
 import (
+	"fmt"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -86,7 +88,7 @@ func TestRecordPopulateStruct(t *testing.T) {
 	thing := testThing{}
 	record := NewRecord(1).Set(`name`, `test-name`).Set(`Size`, 42)
 
-	err := record.Populate(&thing)
+	err := record.Populate(&thing, nil)
 	assert.Nil(err)
 	assert.Equal(`test-name`, thing.Name)
 	assert.Zero(thing.Group)
@@ -98,9 +100,57 @@ func TestRecordPopulateStruct(t *testing.T) {
 
 	record = NewRecord(1).Set(`name`, `test-name`).Set(`Size`, 42)
 
-	err = record.Populate(&thing)
+	err = record.Populate(&thing, nil)
 	assert.Nil(err)
 	assert.Equal(`test-name`, thing.Name)
 	assert.Equal(`tests`, thing.Group)
 	assert.Equal(42, thing.Size)
+}
+
+func TestRecordPopulateStructWithFormatter(t *testing.T) {
+	assert := require.New(t)
+
+	collection := &Collection{
+		Name: `TestRecordPopulateStructWithFormatter`,
+		Fields: []Field{
+			{
+				Name: `name`,
+				Type: StringType,
+				Formatter: func(v interface{}, op FieldOperation) (interface{}, error) {
+					return stringutil.Underscore(fmt.Sprintf("%v", v)), nil
+				},
+			},
+		},
+	}
+
+	type testThing struct {
+		ID    int
+		Name  string `pivot:"name"`
+		Group string `pivot:"Group,omitempty"`
+		Size  int
+	}
+
+	thing := testThing{}
+	record := NewRecord(1).Set(`name`, `TestName`).Set(`Size`, 42)
+
+	err := record.Populate(&thing, collection)
+	assert.Nil(err)
+	assert.Equal(`test_name`, thing.Name)
+	assert.Zero(thing.Group)
+	assert.Zero(thing.Size)
+
+	thing = testThing{
+		Name:  `Booberry`,
+		Group: `tests`,
+	}
+
+	record = NewRecord(1).Set(`name`, `test-name`).Set(`Size`, 42)
+
+	err = record.Populate(&thing, collection)
+	assert.Nil(err)
+	assert.Equal(`test_name`, thing.Name)
+
+	// this remains untouched because this field isn't in the collection
+	assert.Equal(`tests`, thing.Group)
+	assert.Zero(thing.Size)
 }

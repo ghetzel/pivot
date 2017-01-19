@@ -20,30 +20,31 @@ type TestRecordThree struct {
 	UUID string
 }
 
-func TestGetCollectionAndIdentity(t *testing.T) {
+func TestGetIdentityFieldName(t *testing.T) {
 	assert := require.New(t)
 
 	f := TestRecord{
 		ID: 1234,
 	}
 
-	c, id, err := GetCollectionAndIdentity(&f)
+	id, err := GetIdentityFieldName(&f, ``)
 	assert.Nil(err)
-	assert.Equal(`test_records`, c)
-	assert.Equal(1234, id)
+	assert.Equal(`ID`, id)
 
 	f = TestRecord{}
-	c, id, err = GetCollectionAndIdentity(&f)
+	id, err = GetIdentityFieldName(&f, `Size`)
 	assert.Nil(err)
-	assert.Zero(id)
+	assert.Equal(`Size`, id)
 
 	f2 := TestRecordTwo{`42`}
-	c, id, err = GetCollectionAndIdentity(&f2)
-	assert.Nil(err)
-	assert.Equal(`TestRecordTwo`, c)
-	assert.Equal(`42`, id)
+	id, err = GetIdentityFieldName(&f2, ``)
+	assert.Equal(`UUID`, id)
 
 	f3 := TestRecordThree{}
-	c, id, err = GetCollectionAndIdentity(&f3)
+	id, err = GetIdentityFieldName(&f3, ``)
 	assert.Error(err)
+
+	f4 := TestRecordThree{}
+	id, err = GetIdentityFieldName(&f4, `UUID`)
+	assert.Equal(`UUID`, id)
 }
