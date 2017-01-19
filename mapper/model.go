@@ -45,11 +45,31 @@ func NewModel(db backends.Backend, collection dal.Collection) *Model {
 }
 
 func (self *Model) Migrate() error {
+	var actualCollection *dal.Collection
+
 	// create the collection if it doesn't exist
-	if _, err := self.db.GetCollection(self.collection.Name); dal.IsCollectionNotFoundErr(err) {
-		if err := self.db.CreateCollection(self.collection); err != nil {
+	if c, err := self.db.GetCollection(self.collection.Name); dal.IsCollectionNotFoundErr(err) {
+		if err := self.db.CreateCollection(self.collection); err == nil {
+			if c, err := self.db.GetCollection(self.collection.Name); err == nil {
+				actualCollection = c
+			} else {
+				return err
+			}
+		} else {
 			return err
 		}
+	} else {
+		actualCollection = c
+	}
+
+	if diffs := self.collection.Diff(actualCollection); diffs != nil {
+		msg := fmt.Sprintf("Actual schema for collection '%s' differs from desired schema:\n", self.collection.Name)
+
+		for _, err := range diffs {
+			msg += fmt.Sprintf("  %v\n", err)
+		}
+
+		return fmt.Errorf(msg)
 	}
 
 	return nil

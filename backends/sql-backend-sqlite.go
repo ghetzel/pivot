@@ -82,6 +82,7 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 							field.Identity = true
 							foundPrimaryKey = true
 							collection.IdentityField = column
+							collection.IdentityFieldType = field.Type
 						} else {
 							field.Key = true
 						}

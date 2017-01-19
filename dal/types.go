@@ -1,5 +1,10 @@
 package dal
 
+import (
+    "fmt"
+    "strings"
+)
+
 type Type string
 
 const (
@@ -15,4 +20,39 @@ const (
 
 func (self Type) String() string {
 	return string(self)
+}
+
+type DeltaType string
+
+const (
+	CollectionDelta DeltaType = `collection`
+	FieldDelta                = `field`
+)
+
+type SchemaDelta struct {
+	Type      DeltaType
+	Message   string
+	Name      string
+	Parameter string
+	Desired   interface{}
+	Actual    interface{}
+}
+
+func (self SchemaDelta) String() string {
+    msg := fmt.Sprintf("%s '%s'", strings.Title(string(self.Type)), self.Name)
+
+    if self.Parameter != `` {
+        msg += fmt.Sprintf(", parameter '%s'", self.Parameter)
+    }
+
+    msg += fmt.Sprintf(": %s", self.Message)
+
+    dV := fmt.Sprintf("%v", self.Desired)
+    aV := fmt.Sprintf("%v", self.Actual)
+
+    if len(dV) <= 12 && len(aV) <= 12 {
+        msg += fmt.Sprintf(" (desired: %v, actual: %v)", dV, aV)
+    }
+
+    return msg
 }

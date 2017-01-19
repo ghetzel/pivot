@@ -105,6 +105,7 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 							case `PRI`:
 								field.Identity = true
 								collection.IdentityField = column
+								collection.IdentityFieldType = field.Type
 							case `UNI`:
 								field.Unique = true
 							case `MUL`:

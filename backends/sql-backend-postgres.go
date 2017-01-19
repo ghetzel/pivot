@@ -149,6 +149,7 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 							if v, ok := primaryKeys[column]; ok && v {
 								field.Identity = true
 								collection.IdentityField = column
+								collection.IdentityFieldType = field.Type
 							} else if v, ok := foreignKeys[column]; ok && v {
 								field.Key = true
 							}

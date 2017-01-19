@@ -20,16 +20,11 @@ const (
 var DefaultIdentityField = `id`
 var DefaultIdentityFieldType Type = IntType
 
-type CollectionOptions struct {
-	FieldsUnordered bool `json:"fields_unordered,omitempty"`
-}
-
 type Collection struct {
-	Name              string             `json:"name"`
-	Fields            []Field            `json:"fields"`
-	IdentityField     string             `json:"identity_field,omitempty"`
-	IdentityFieldType Type               `json:"identity_field_type,omitempty"`
-	Options           *CollectionOptions `json:"options,omitempty"`
+	Name              string  `json:"name"`
+	Fields            []Field `json:"fields"`
+	IdentityField     string  `json:"identity_field,omitempty"`
+	IdentityFieldType Type    `json:"identity_field_type,omitempty"`
 	recordType        reflect.Type
 }
 
@@ -145,4 +140,64 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 	} else {
 		return nil, err
 	}
+}
+
+func (self *Collection) Diff(actual *Collection) []SchemaDelta {
+	differences := make([]SchemaDelta, 0)
+
+	if self.Name != actual.Name {
+		differences = append(differences, SchemaDelta{
+			Type:    CollectionDelta,
+			Message: `names do not match`,
+			Name:    self.Name,
+			Desired: self.Name,
+			Actual:  actual.Name,
+		})
+	}
+
+	if self.IdentityField != actual.IdentityField {
+		differences = append(
+			differences,
+			SchemaDelta{
+				Type:      CollectionDelta,
+				Message:   `does not match`,
+				Name:      self.Name,
+				Parameter: `IdentityField`,
+				Desired:   self.IdentityField,
+				Actual:    actual.IdentityField,
+			},
+		)
+	}
+
+	if self.IdentityFieldType != actual.IdentityFieldType {
+		differences = append(differences, SchemaDelta{
+			Type:      CollectionDelta,
+			Message:   `does not match`,
+			Name:      self.Name,
+			Parameter: `IdentityFieldType`,
+			Desired:   self.IdentityFieldType,
+			Actual:    actual.IdentityFieldType,
+		},
+		)
+	}
+
+	for _, myField := range self.Fields {
+		if theirField, ok := actual.GetField(myField.Name); ok {
+			if diff := myField.Diff(&theirField); diff != nil {
+				differences = append(differences, diff...)
+			}
+		} else {
+			differences = append(differences, SchemaDelta{
+				Type:    FieldDelta,
+				Message: `is missing`,
+				Name:    myField.Name,
+			})
+		}
+	}
+
+	if len(differences) == 0 {
+		return nil
+	}
+
+	return differences
 }
