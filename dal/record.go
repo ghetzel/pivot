@@ -139,12 +139,15 @@ func (self *Record) Populate(instance interface{}, collection *Collection) error
 						// to format the value first
 						if collection != nil {
 							if collectionField, ok := collection.GetField(key); ok {
-								if collectionField.Formatter != nil {
-									if v, err := collectionField.Formatter(value, RetrieveOperation); err == nil {
-										value = v
-									} else {
-										return err
-									}
+								if v, err := collectionField.Format(value, RetrieveOperation); err == nil {
+									value = v
+								} else {
+									return err
+								}
+
+								// validate the value
+								if err := collectionField.Validate(value); err != nil {
+									return err
 								}
 							} else {
 								// because we were given a collection, we know whether we should actually

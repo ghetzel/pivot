@@ -107,6 +107,54 @@ func TestRecordPopulateStruct(t *testing.T) {
 	assert.Equal(42, thing.Size)
 }
 
+func TestRecordPopulateStructWithValidator(t *testing.T) {
+	assert := require.New(t)
+
+	collection := &Collection{
+		Name: `TestRecordPopulateStructWithValidator`,
+		Fields: []Field{
+			{
+				Name: `name`,
+				Type: StringType,
+				Validator: func(v interface{}) error {
+					if fmt.Sprintf("%v", v) == `test` {
+						return fmt.Errorf("Shouldn't be test")
+					}
+
+					return nil
+				},
+			},
+		},
+	}
+
+	type testThing struct {
+		ID    int
+		Name  string `pivot:"name"`
+		Group string `pivot:"Group,omitempty"`
+		Size  int
+	}
+
+	thing := testThing{}
+	record := NewRecord(1).Set(`name`, `test`).Set(`Size`, 42)
+
+	assert.Error(record.Populate(&thing, collection))
+
+	thing = testThing{
+		Name:  `Booberry`,
+		Group: `tests`,
+	}
+
+	record = NewRecord(1).Set(`name`, `test-name`).Set(`Size`, 42)
+
+	err := record.Populate(&thing, collection)
+	assert.Nil(err)
+	assert.Equal(`test-name`, thing.Name)
+
+	// this remains untouched because this field isn't in the collection
+	assert.Equal(`tests`, thing.Group)
+	assert.Zero(thing.Size)
+}
+
 func TestRecordPopulateStructWithFormatter(t *testing.T) {
 	assert := require.New(t)
 
@@ -153,4 +201,42 @@ func TestRecordPopulateStructWithFormatter(t *testing.T) {
 	// this remains untouched because this field isn't in the collection
 	assert.Equal(`tests`, thing.Group)
 	assert.Zero(thing.Size)
+}
+
+func TestRecordPopulateStructWithFormatterValidator(t *testing.T) {
+	assert := require.New(t)
+
+	collection := &Collection{
+		Name: `TestRecordPopulateStructWithFormatterValidator`,
+		Fields: []Field{
+			{
+				Name: `name`,
+				Type: StringType,
+				Validator: func(v interface{}) error {
+					if fmt.Sprintf("%v", v) == `TestValue` {
+						return fmt.Errorf("Shouldn't be TestValue")
+					}
+
+					return nil
+				},
+				Formatter: func(v interface{}, op FieldOperation) (interface{}, error) {
+					return stringutil.Underscore(fmt.Sprintf("%v", v)), nil
+				},
+			},
+		},
+	}
+
+	type testThing struct {
+		ID    int
+		Name  string `pivot:"name"`
+		Group string `pivot:"Group,omitempty"`
+		Size  int
+	}
+
+	thing := testThing{}
+	record := NewRecord(1).Set(`name`, `TestValue`).Set(`Size`, 42)
+
+	err := record.Populate(&thing, collection)
+	assert.Nil(err)
+	assert.Equal(`test_value`, thing.Name)
 }
