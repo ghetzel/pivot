@@ -112,7 +112,7 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 				value := fieldDescr.Field.Value()
 
 				// set the ID field if this field is explicitly marked as the identity
-				if fieldDescr.Identity {
+				if fieldDescr.Identity && !fieldDescr.Field.IsZero() {
 					record.ID = value
 				} else {
 					if collectionField, ok := self.GetField(tagName); ok {
@@ -144,9 +144,14 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 		if record.ID == nil {
 			for tagName, fieldDescr := range fields {
 				if tagName == self.IdentityField {
-					record.ID = fieldDescr.Field.Value()
-					delete(record.Fields, tagName)
-					break
+					if fieldDescr.Field.IsExported() {
+						// skip fields containing a zero value
+						if !fieldDescr.Field.IsZero() {
+							record.ID = fieldDescr.Field.Value()
+							delete(record.Fields, tagName)
+							break
+						}
+					}
 				}
 			}
 		}
@@ -154,8 +159,10 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 		// an ID still wasn't found, so try the field called "ID"
 		if record.ID == nil {
 			if field, ok := s.FieldOk(`ID`); ok {
-				record.ID = field.Value()
-				delete(record.Fields, `ID`)
+				if !field.IsZero() {
+					record.ID = field.Value()
+					delete(record.Fields, `ID`)
+				}
 			}
 		}
 
