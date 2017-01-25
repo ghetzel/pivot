@@ -106,13 +106,16 @@ func (self *Record) Populate(instance interface{}, collection *Collection) error
 		// get the underlying field from the struct we're outputting to
 		if idField, ok := instanceStruct.FieldOk(idFieldName); ok {
 			id := self.ID
+
 			fType := reflect.TypeOf(idField.Value())
 			vValue := reflect.ValueOf(id)
 
-			// convert the value to the field's type if necessary
-			if !vValue.Type().AssignableTo(fType) {
-				if vValue.Type().ConvertibleTo(fType) {
-					id = vValue.Convert(fType).Interface()
+			if fType != nil {
+				// convert the value to the field's type if necessary
+				if !vValue.Type().AssignableTo(fType) {
+					if vValue.Type().ConvertibleTo(fType) {
+						id = vValue.Convert(fType).Interface()
+					}
 				}
 			}
 
@@ -168,9 +171,11 @@ func (self *Record) Populate(instance interface{}, collection *Collection) error
 						vValue := reflect.ValueOf(value)
 
 						// convert the value to the field's type if necessary
-						if !vValue.Type().AssignableTo(fType) {
-							if vValue.Type().ConvertibleTo(fType) {
-								value = vValue.Convert(fType).Interface()
+						if fType != nil {
+							if !vValue.Type().AssignableTo(fType) {
+								if vValue.Type().ConvertibleTo(fType) {
+									value = vValue.Convert(fType).Interface()
+								}
 							}
 						}
 
