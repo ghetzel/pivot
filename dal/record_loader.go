@@ -12,9 +12,10 @@ var RecordStructTag = `pivot`
 var DefaultStructIdentityFieldName = `ID`
 
 type fieldDescription struct {
-	Field     *structs.Field
-	Identity  bool
-	OmitEmpty bool
+	Field        *structs.Field
+	ReflectField reflect.Value
+	Identity     bool
+	OmitEmpty    bool
 }
 
 type Model interface{}
@@ -68,11 +69,19 @@ func validatePtrToStructType(instance interface{}) error {
 	return fmt.Errorf("Can only operate on pointer to struct, got %T", instance)
 }
 
-func getFieldsForStruct(instance *structs.Struct) (map[string]fieldDescription, error) {
+func getFieldsForStruct(instance interface{}) (map[string]fieldDescription, error) {
 	fields := make(map[string]fieldDescription)
 	identitySet := false
 
-	for _, field := range instance.Fields() {
+	reflectStruct := reflect.ValueOf(instance)
+
+	if reflectStruct.Kind() == reflect.Ptr {
+		reflectStruct = reflectStruct.Elem()
+	}
+
+	instanceStruct := structs.New(instance)
+
+	for _, field := range instanceStruct.Fields() {
 		var identity, omitEmpty bool
 
 		name := field.Name()
@@ -98,9 +107,10 @@ func getFieldsForStruct(instance *structs.Struct) (map[string]fieldDescription, 
 		}
 
 		fields[name] = fieldDescription{
-			Field:     field,
-			Identity:  identity,
-			OmitEmpty: omitEmpty,
+			Field:        field,
+			ReflectField: reflectStruct.FieldByName(field.Name()),
+			Identity:     identity,
+			OmitEmpty:    omitEmpty,
 		}
 	}
 

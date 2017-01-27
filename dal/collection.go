@@ -2,7 +2,6 @@ package dal
 
 import (
 	"fmt"
-	"github.com/fatih/structs"
 	"reflect"
 )
 
@@ -102,10 +101,9 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 
 	// create the record we're going to populate
 	record := NewRecord(nil)
-	s := structs.New(in)
 
 	// get details for the fields present on the given input struct
-	if fields, err := getFieldsForStruct(s); err == nil {
+	if fields, err := getFieldsForStruct(in); err == nil {
 		// for each field descriptor...
 		for tagName, fieldDescr := range fields {
 			if fieldDescr.Field.IsExported() {
@@ -158,9 +156,9 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 
 		// an ID still wasn't found, so try the field called "ID"
 		if record.ID == nil {
-			if field, ok := s.FieldOk(`ID`); ok {
-				if !field.IsZero() {
-					record.ID = field.Value()
+			if f, ok := fields[`ID`]; ok {
+				if !f.Field.IsZero() {
+					record.ID = f.Field.Value()
 					delete(record.Fields, `ID`)
 				}
 			}

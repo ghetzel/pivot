@@ -579,6 +579,6 @@ func TestObjectType(t *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(record)
 	assert.Equal(int64(1), record.ID)
-	assert.Equal(`First`, record.Get(`properties.name`))
-	assert.Equal(int(1), record.Get(`properties.count`))
+	assert.Equal(`First`, record.GetNested(`properties.name`))
+	assert.Equal(uint64(1), record.GetNested(`properties.count`))
 }

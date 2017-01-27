@@ -8,7 +8,6 @@ import (
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
-	"gopkg.in/mgo.v2/bson"
 	"reflect"
 	"strings"
 	"sync"
@@ -629,7 +628,7 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 
 	var err error
 
-	// the function should only return one value, an error
+	// the function should only return one value of type error
 	if len(rRowResult) == 1 {
 		v := rRowResult[0].Interface()
 
@@ -665,12 +664,12 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 				// if this field is a raw type, then it's not a string, which
 				// leaves raw or object
 				case dal.RawType:
-					dest := make(map[string]interface{})
+					var dest map[string]interface{}
 
-					// blindly attempt to load the data as an object, and fallback to
-					// raw byte array
+					// blindly attempt to load the data as if it were a BSON object, then
+					// fallback to using the raw byte array
 					//
-					if err := bson.Unmarshal([]byte(v[:]), &dest); err == nil {
+					if err := generators.SqlObjectTypeDecode([]byte(v[:]), &dest); err == nil {
 						value = dest
 					} else {
 						value = []byte(v[:])

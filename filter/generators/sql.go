@@ -1,17 +1,28 @@
 package generators
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"gopkg.in/mgo.v2/bson"
+	"gopkg.in/vmihailenco/msgpack.v2"
 	"reflect"
 	"sort"
 	"strings"
 )
+
+var SqlObjectTypeEncode = func(in interface{}) ([]byte, error) {
+	var buf bytes.Buffer
+	err := msgpack.NewEncoder(&buf).Encode(in)
+	return buf.Bytes(), err
+}
+
+var SqlObjectTypeDecode = func(in []byte, out interface{}) error {
+	return msgpack.NewDecoder(bytes.NewReader(in)).Decode(out)
+}
 
 // SQL Generator
 
@@ -292,6 +303,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 		value := fmt.Sprintf("%v", vI)
 
+		// convert the value string into the appropriate language-native type
 		if vI == nil || strings.ToUpper(value) == `NULL` {
 			value = strings.ToUpper(value)
 			typedValue = nil
@@ -311,7 +323,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 			case dal.TimeType:
 				typedValue, convertErr = stringutil.ConvertTo(stringutil.Time, value)
 			case dal.ObjectType:
-				typedValue, convertErr = bson.Marshal(value)
+				typedValue, convertErr = SqlObjectTypeEncode(value)
 			default:
 				typedValue = stringutil.Autotype(value)
 			}
@@ -523,10 +535,10 @@ func (self *Sql) ApplyNormalizer(fieldName string, in string) string {
 	}
 }
 
-func (self *Sql) PrepareInputValue(_ string, value interface{}) (interface{}, error) {
+func (self *Sql) PrepareInputValue(f string, value interface{}) (interface{}, error) {
 	switch reflect.ValueOf(value).Kind() {
 	case reflect.Struct, reflect.Map, reflect.Ptr, reflect.Array, reflect.Slice:
-		return bson.Marshal(value)
+		return SqlObjectTypeEncode(value)
 	default:
 		return value, nil
 	}

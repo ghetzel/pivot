@@ -107,6 +107,10 @@ func (self *Record) Populate(instance interface{}, collection *Collection) error
 		if idField, ok := instanceStruct.FieldOk(idFieldName); ok {
 			id := self.ID
 
+			// we need to use reflect directly because structs Field.Set() involves
+			// a type check that's too restrictive for us here
+			reflectField := reflect.ValueOf(instance).Elem().FieldByName(idFieldName)
+
 			fType := reflect.TypeOf(idField.Value())
 			vValue := reflect.ValueOf(id)
 
@@ -114,19 +118,21 @@ func (self *Record) Populate(instance interface{}, collection *Collection) error
 				// convert the value to the field's type if necessary
 				if !vValue.Type().AssignableTo(fType) {
 					if vValue.Type().ConvertibleTo(fType) {
-						id = vValue.Convert(fType).Interface()
+						vValue = vValue.Convert(fType)
 					}
 				}
 			}
 
-			// get the ID value
-			if err := idField.Set(id); err != nil {
-				return err
+			// set (via reflect) is we can
+			if vValue.Type().AssignableTo(reflectField.Type()) {
+				reflectField.Set(vValue)
+			} else {
+				return fmt.Errorf("Field '%s' is not settable", idFieldName)
 			}
 		}
 
 		// get field descriptors for the output struct
-		if fields, err := getFieldsForStruct(instanceStruct); err == nil {
+		if fields, err := getFieldsForStruct(instance); err == nil {
 			// for each value in the record's fields map...
 			for key, value := range self.Fields {
 				// only operate on fields that exist in the output struct
@@ -174,14 +180,16 @@ func (self *Record) Populate(instance interface{}, collection *Collection) error
 						if fType != nil {
 							if !vValue.Type().AssignableTo(fType) {
 								if vValue.Type().ConvertibleTo(fType) {
-									value = vValue.Convert(fType).Interface()
+									vValue = vValue.Convert(fType)
 								}
 							}
 						}
 
-						// set the value
-						if err := field.Field.Set(value); err != nil {
-							return err
+						// set (via reflect) if we can
+						if vValue.Type().AssignableTo(field.ReflectField.Type()) {
+							field.ReflectField.Set(vValue)
+						} else {
+							return fmt.Errorf("Field '%s' is not settable", field.Field.Name())
 						}
 					}
 				}

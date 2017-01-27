@@ -105,6 +105,19 @@ func TestRecordPopulateStruct(t *testing.T) {
 	assert.Equal(`test-name`, thing.Name)
 	assert.Equal(`tests`, thing.Group)
 	assert.Equal(42, thing.Size)
+
+	type KV struct {
+		Key   string      `pivot:"key,identity"`
+		Value interface{} `pivot:"value,omitempty"`
+	}
+
+	record = NewRecord(`this.is.an.id`).Set(`value`, 42)
+	kv := new(KV)
+
+	err = record.Populate(kv, nil)
+	assert.Nil(err)
+	assert.Equal(`this.is.an.id`, kv.Key)
+	assert.Equal(42, kv.Value)
 }
 
 func TestRecordPopulateStructWithValidator(t *testing.T) {
