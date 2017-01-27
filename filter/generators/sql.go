@@ -2,13 +2,13 @@ package generators
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"gopkg.in/vmihailenco/msgpack.v2"
 	"reflect"
 	"sort"
 	"strings"
@@ -16,12 +16,12 @@ import (
 
 var SqlObjectTypeEncode = func(in interface{}) ([]byte, error) {
 	var buf bytes.Buffer
-	err := msgpack.NewEncoder(&buf).Encode(in)
+	err := json.NewEncoder(&buf).Encode(in)
 	return buf.Bytes(), err
 }
 
 var SqlObjectTypeDecode = func(in []byte, out interface{}) error {
-	return msgpack.NewDecoder(bytes.NewReader(in)).Decode(out)
+	return json.NewDecoder(bytes.NewReader(in)).Decode(out)
 }
 
 // SQL Generator

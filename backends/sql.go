@@ -666,7 +666,7 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 				case dal.RawType:
 					var dest map[string]interface{}
 
-					// blindly attempt to load the data as if it were a BSON object, then
+					// blindly attempt to load the data as if it were an object, then
 					// fallback to using the raw byte array
 					//
 					if err := generators.SqlObjectTypeDecode([]byte(v[:]), &dest); err == nil {

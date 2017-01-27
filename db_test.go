@@ -580,5 +580,5 @@ func TestObjectType(t *testing.T) {
 	assert.NotNil(record)
 	assert.Equal(int64(1), record.ID)
 	assert.Equal(`First`, record.GetNested(`properties.name`))
-	assert.Equal(uint64(1), record.GetNested(`properties.count`))
+	assert.Equal(float64(1), record.GetNested(`properties.count`))
 }
