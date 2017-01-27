@@ -13,6 +13,8 @@ import (
 	"sync"
 )
 
+var objectFieldHintLength = 131071
+
 type sqlTableDetails struct {
 	Index        int
 	Name         string
@@ -140,7 +142,6 @@ func (self *SqlBackend) Initialize() error {
 
 func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
-
 		if tx, err := self.db.Begin(); err == nil {
 			switch self.conn.Backend() {
 			case `mysql`:
@@ -481,6 +482,20 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	for _, field := range definition.Fields {
 		var def string
 
+		// This is weird...
+		//
+		// So Raw fields and Object fields are stored using the same datatype (BLOB), which
+		// means that when we read back the schema definition, we don't have a decisive way of
+		// knowing whether that field should be treated as Raw or Object.  So we create Object fields
+		// with a specific length.  This serves as a hint to us that we should treat this field as an object field.
+		//
+		// We could also do this with comments, but not all SQL servers necessarily support comments on
+		// table schemata, so this feels more reliable in practical usage.
+		//
+		if field.Type == dal.ObjectType {
+			field.Length = objectFieldHintLength
+		}
+
 		if nativeType, err := gen.ToNativeType(field.Type, field.Length); err == nil {
 			def = fmt.Sprintf("%s %s", gen.ToFieldName(field.Name), nativeType)
 		} else {
@@ -660,12 +675,20 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 			case []uint8:
 				v := output[i].([]uint8)
 
+				var dest map[string]interface{}
+
 				switch field.Type {
+				case dal.ObjectType:
+					if err := generators.SqlObjectTypeDecode([]byte(v[:]), &dest); err == nil {
+						value = dest
+					} else {
+						value = string(v[:])
+					}
+
 				// if this field is a raw type, then it's not a string, which
 				// leaves raw or object
+				//
 				case dal.RawType:
-					var dest map[string]interface{}
-
 					// blindly attempt to load the data as if it were an object, then
 					// fallback to using the raw byte array
 					//

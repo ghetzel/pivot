@@ -181,15 +181,22 @@ func (self *Record) Populate(instance interface{}, collection *Collection) error
 							if !vValue.Type().AssignableTo(fType) {
 								if vValue.Type().ConvertibleTo(fType) {
 									vValue = vValue.Convert(fType)
+									value = vValue.Interface()
 								}
 							}
 						}
 
 						// set (via reflect) if we can
-						if vValue.Type().AssignableTo(field.ReflectField.Type()) {
-							field.ReflectField.Set(vValue)
+						if vValue.IsValid() {
+							if vValue.Type().AssignableTo(field.ReflectField.Type()) {
+								field.ReflectField.Set(vValue)
+							} else {
+								return fmt.Errorf("Field '%s' is not settable", field.Field.Name())
+							}
 						} else {
-							return fmt.Errorf("Field '%s' is not settable", field.Field.Name())
+							if err := field.Field.Set(value); err != nil {
+								return err
+							}
 						}
 					}
 				}

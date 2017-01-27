@@ -142,7 +142,11 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 								field.Type = dal.TimeType
 
 							} else {
-								field.Type = dal.RawType
+								if field.Length == objectFieldHintLength {
+									field.Type = dal.ObjectType
+								} else {
+									field.Type = dal.RawType
+								}
 							}
 
 							// figure out keying
