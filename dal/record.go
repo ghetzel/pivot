@@ -154,9 +154,11 @@ func (self *Record) Populate(instance interface{}, collection *Collection) error
 									return err
 								}
 
-								// validate the value
-								if err := collectionField.Validate(value); err != nil {
-									return err
+								if collectionField.ValidateOnPopulate {
+									// validate the value
+									if err := collectionField.Validate(value); err != nil {
+										return err
+									}
 								}
 							} else {
 								// because we were given a collection, we know whether we should actually

@@ -43,6 +43,7 @@ type SqlTypeMapping struct {
 	BooleanType       string
 	BooleanTypeLength int
 	DateTimeType      string
+	ObjectType        string
 	RawType           string
 }
 
@@ -55,6 +56,7 @@ var CassandraTypeMapping = SqlTypeMapping{
 	BooleanType:       `TINYINT`,
 	BooleanTypeLength: 1,
 	DateTimeType:      `DATETIME`,
+	ObjectType:        `BLOB`,
 	RawType:           `BLOB`,
 }
 
@@ -65,6 +67,7 @@ var MysqlTypeMapping = SqlTypeMapping{
 	FloatType:        `DECIMAL`,
 	BooleanType:      `BOOL`,
 	DateTimeType:     `DATETIME`,
+	ObjectType:       `BLOB`,
 	RawType:          `BLOB`,
 }
 
@@ -74,7 +77,19 @@ var PostgresTypeMapping = SqlTypeMapping{
 	FloatType:    `NUMERIC`,
 	BooleanType:  `BOOLEAN`,
 	DateTimeType: `TIMESTAMP`,
+	ObjectType:   `BLOB`,
 	RawType:      `BLOB`,
+}
+
+var PostgresJsonTypeMapping = SqlTypeMapping{
+	StringType:   `TEXT`,
+	IntegerType:  `BIGINT`,
+	FloatType:    `NUMERIC`,
+	BooleanType:  `BOOLEAN`,
+	DateTimeType: `TIMESTAMP`,
+	// ObjectType:   `JSONB`, // TODO: implement the JSONB functionality in PostgreSQL 9.2+
+	ObjectType: `BLOB`,
+	RawType:    `BLOB`,
 }
 
 var SqliteTypeMapping = SqlTypeMapping{
@@ -84,6 +99,7 @@ var SqliteTypeMapping = SqlTypeMapping{
 	BooleanType:       `INTEGER`,
 	BooleanTypeLength: 1,
 	DateTimeType:      `INTEGER`,
+	ObjectType:        `BLOB`,
 	RawType:           `BLOB`,
 }
 
@@ -474,7 +490,10 @@ func (self *Sql) ToNativeType(in dal.Type, length int) (string, error) {
 	case dal.TimeType:
 		out = self.TypeMapping.DateTimeType
 
-	case dal.ObjectType, dal.RawType:
+	case dal.ObjectType:
+		out = self.TypeMapping.ObjectType
+
+	case dal.RawType:
 		out = self.TypeMapping.RawType
 
 	default:

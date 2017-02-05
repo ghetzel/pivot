@@ -8,19 +8,20 @@ import (
 )
 
 type Field struct {
-	Name         string             `json:"name"`
-	Description  string             `json:"description,omitempty"`
-	Type         Type               `json:"type"`
-	Length       int                `json:"length,omitempty"`
-	Precision    int                `json:"precision,omitempty"`
-	Identity     bool               `json:"identity,omitempty"`
-	Key          bool               `json:"key,omitempty"`
-	Required     bool               `json:"required,omitempty"`
-	Unique       bool               `json:"unique,omitempty"`
-	DefaultValue interface{}        `json:"default,omitempty"`
-	NativeType   string             `json:"native_type,omitempty"`
-	Validator    FieldValidatorFunc `json:"-"`
-	Formatter    FieldFormatterFunc `json:"-"`
+	Name               string             `json:"name"`
+	Description        string             `json:"description,omitempty"`
+	Type               Type               `json:"type"`
+	Length             int                `json:"length,omitempty"`
+	Precision          int                `json:"precision,omitempty"`
+	Identity           bool               `json:"identity,omitempty"`
+	Key                bool               `json:"key,omitempty"`
+	Required           bool               `json:"required,omitempty"`
+	Unique             bool               `json:"unique,omitempty"`
+	DefaultValue       interface{}        `json:"default,omitempty"`
+	NativeType         string             `json:"native_type,omitempty"`
+	ValidateOnPopulate bool               `json:"validate_on_populate"`
+	Validator          FieldValidatorFunc `json:"-"`
+	Formatter          FieldFormatterFunc `json:"-"`
 }
 
 func (self *Field) ConvertValue(in interface{}) (interface{}, error) {

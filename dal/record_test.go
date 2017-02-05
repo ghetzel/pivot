@@ -136,6 +136,7 @@ func TestRecordPopulateStructWithValidator(t *testing.T) {
 
 					return nil
 				},
+				ValidateOnPopulate: true,
 			},
 		},
 	}
@@ -151,6 +152,11 @@ func TestRecordPopulateStructWithValidator(t *testing.T) {
 	record := NewRecord(1).Set(`name`, `test`).Set(`Size`, 42)
 
 	assert.Error(record.Populate(&thing, collection))
+
+	// make sure populate will succeed if we're not validating on populate
+	collection.Fields[0].ValidateOnPopulate = false
+	assert.Nil(record.Populate(&thing, collection))
+	collection.Fields[0].ValidateOnPopulate = true
 
 	thing = testThing{
 		Name:  `Booberry`,
