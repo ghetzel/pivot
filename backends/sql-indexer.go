@@ -46,7 +46,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 						// render the count query
 						if stmt, err := filter.Render(prequeryGen, collection.Name, f); err == nil {
 							values := prequeryGen.GetValues()
-							querylog.Debugf("%s %v", string(stmt[:]), values)
+							querylog.Debugf("[%T] %s %v", self, string(stmt[:]), values)
 
 							// perform the count query
 							if rows, err := self.db.Query(string(stmt[:]), values...); err == nil {
@@ -79,7 +79,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 
 				if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
 					values := queryGen.GetValues()
-					querylog.Debugf("%s %v", string(stmt[:]), values)
+					querylog.Debugf("[%T] %s %v", self, string(stmt[:]), values)
 
 					// perform query
 					if rows, err := self.db.Query(string(stmt[:]), values...); err == nil {
@@ -144,7 +144,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 	}
 }
 
-func (self *SqlBackend) Query(collection string, f filter.Filter) (*dal.RecordSet, error) {
+func (self *SqlBackend) Query(collection string, f filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
 
 	// TODO: figure out a smart way to get row counts so that we can offer bounded/paginated resultsets
@@ -153,13 +153,23 @@ func (self *SqlBackend) Query(collection string, f filter.Filter) (*dal.RecordSe
 	if err := self.QueryFunc(collection, f, func(record *dal.Record, page IndexPage) error {
 		PopulateRecordSetPageDetails(recordset, f, page)
 
-		if f.IdOnly() {
-			recordset.Records = append(recordset.Records, dal.NewRecord(record.ID))
-		} else {
-			recordset.Records = append(recordset.Records, record)
-		}
+		if len(resultFns) > 0 {
+			resultFn := resultFns[0]
 
-		return nil
+			if f.IdOnly() {
+				return resultFn(dal.NewRecord(record.ID), page)
+			} else {
+				return resultFn(record, page)
+			}
+		} else {
+			if f.IdOnly() {
+				recordset.Records = append(recordset.Records, dal.NewRecord(record.ID))
+			} else {
+				recordset.Records = append(recordset.Records, record)
+			}
+
+			return nil
+		}
 	}); err != nil {
 		return nil, err
 	}

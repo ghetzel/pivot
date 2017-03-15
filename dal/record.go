@@ -180,11 +180,15 @@ func (self *Record) Populate(instance interface{}, collection *Collection) error
 
 						// convert the value to the field's type if necessary
 						if fType != nil {
-							if !vValue.Type().AssignableTo(fType) {
-								if vValue.Type().ConvertibleTo(fType) {
-									vValue = vValue.Convert(fType)
-									value = vValue.Interface()
+							if vValue.IsValid() {
+								if !vValue.Type().AssignableTo(fType) {
+									if vValue.Type().ConvertibleTo(fType) {
+										vValue = vValue.Convert(fType)
+										value = vValue.Interface()
+									}
 								}
+							} else {
+								value = reflect.Zero(fType).Interface()
 							}
 						}
 

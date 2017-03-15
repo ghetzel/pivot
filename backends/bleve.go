@@ -1,6 +1,7 @@
 package backends
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/analysis/analyzer/custom"
@@ -20,7 +21,7 @@ import (
 	"time"
 )
 
-var BleveBatchFlushCount = 250
+var BleveBatchFlushCount = 1
 var BleveBatchFlushInterval = 10 * time.Second
 var BleveIdentityField = `_id`
 
@@ -107,6 +108,8 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 		}
 
 		for _, record := range records.Records {
+			querylog.Debugf("[%T] Adding %v to batch", self, record)
+
 			if err := batch.Index(fmt.Sprintf("%v", record.ID), record.Fields); err != nil {
 				return err
 			}
@@ -139,7 +142,7 @@ func (self *BleveIndexer) checkAndFlushBatches() {
 				defer stats.NewTiming().Send(`pivot.backends.bleve.deferred_batch_flush`)
 
 				if index, err := self.getIndexForCollection(collection); err == nil {
-					// log.Debugf("[%T] Indexing %d records to %s", self, deferred.batch.Size(), collection)
+					querylog.Debugf("[%T] Indexing %d records to %s", self, deferred.batch.Size(), collection)
 
 					if err := index.Batch(deferred.batch); err == nil {
 						deferred.batch = index.NewBatch()
@@ -187,6 +190,8 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 
 				// perform search
 				if results, err := index.Search(request); err == nil {
+					querylog.Debugf("[%T] %+v", self, results)
+
 					if len(results.Hits) == 0 {
 						return nil
 					}
@@ -210,6 +215,7 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 
 						// if we have a limit set and we're at or beyond it
 						if f.Limit > 0 && processed >= f.Limit {
+							querylog.Debugf("[%T] %d at or beyond limit %d, returning results", self, processed, f.Limit)
 							return nil
 						}
 					}
@@ -220,6 +226,7 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 
 					// if the offset is now beyond the total results count
 					if uint64(processed) >= results.Total {
+						querylog.Debugf("[%T] %d at or beyond total %d, returning results", self, processed, results.Total)
 						return nil
 					}
 				} else {
@@ -234,7 +241,7 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 	}
 }
 
-func (self *BleveIndexer) Query(collection string, f filter.Filter) (*dal.RecordSet, error) {
+func (self *BleveIndexer) Query(collection string, f filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
 
 	if f.IdentityField == `` {
@@ -244,15 +251,29 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter) (*dal.Record
 	if err := self.QueryFunc(collection, f, func(indexRecord *dal.Record, page IndexPage) error {
 		PopulateRecordSetPageDetails(recordset, f, page)
 
-		if f.IdOnly() {
-			recordset.Records = append(recordset.Records, dal.NewRecord(indexRecord.ID))
-		} else {
-			if record, err := self.parent.Retrieve(collection, indexRecord.ID); err == nil {
-				recordset.Records = append(recordset.Records, record)
-			}
-		}
+		if len(resultFns) > 0 {
+			resultFn := resultFns[0]
 
-		return nil
+			if f.IdOnly() {
+				return resultFn(dal.NewRecord(indexRecord.ID), page)
+			} else {
+				if record, err := self.parent.Retrieve(collection, indexRecord.ID); err == nil {
+					return resultFn(record, page)
+				} else {
+					return err
+				}
+			}
+		} else {
+			if f.IdOnly() {
+				recordset.Records = append(recordset.Records, dal.NewRecord(indexRecord.ID))
+			} else {
+				if record, err := self.parent.Retrieve(collection, indexRecord.ID); err == nil {
+					recordset.Records = append(recordset.Records, record)
+				}
+			}
+
+			return nil
+		}
 	}); err != nil {
 		return nil, err
 	}
@@ -426,9 +447,14 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 						skipNext = true
 						break
 					} else {
-						if analyzedValue == `null` {
+						switch analyzedValue {
+						case `null`:
 							currentQuery = bleve.NewTermQuery(``)
-						} else {
+						case `true`:
+							currentQuery = bleve.NewBoolFieldQuery(true)
+						case `false`:
+							currentQuery = bleve.NewBoolFieldQuery(false)
+						default:
 							currentQuery = bleve.NewTermQuery(analyzedValue)
 						}
 					}
@@ -504,6 +530,9 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 		}
 
 		if len(conjunction.Conjuncts) > 0 {
+			data, _ := json.MarshalIndent(conjunction, ``, `  `)
+			querylog.Debugf("[%T] Query: %v", self, string(data[:]))
+
 			return conjunction, nil
 		} else {
 			return nil, fmt.Errorf("Filter did not produce a valid query")

@@ -34,7 +34,7 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 		}
 
 		stmt := fmt.Sprintf("PRAGMA table_info(%q)", collectionName)
-		querylog.Debugf("%s", string(stmt[:]))
+		querylog.Debugf("[%T] %s", self, string(stmt[:]))
 
 		if rows, err := self.db.Query(stmt); err == nil {
 			defer rows.Close()
@@ -158,7 +158,7 @@ func (self *SqlBackend) sqliteGetTableConstraints(constraintType string, collect
 	columns := make([]string, 0)
 
 	stmt := fmt.Sprintf("PRAGMA index_list(%q)", collectionName)
-	querylog.Debugf("%s", string(stmt[:]))
+	querylog.Debugf("[%T] %s", self, string(stmt[:]))
 
 	if rows, err := self.db.Query(stmt); err == nil {
 		defer rows.Close()
@@ -176,7 +176,7 @@ func (self *SqlBackend) sqliteGetTableConstraints(constraintType string, collect
 				}
 
 				stmt := fmt.Sprintf("PRAGMA index_info(%q)", indexName)
-				querylog.Debugf("%s", string(stmt[:]))
+				querylog.Debugf("[%T] %s", self, string(stmt[:]))
 
 				if indexInfo, err := self.db.Query(stmt); err == nil {
 					defer indexInfo.Close()

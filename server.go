@@ -147,7 +147,7 @@ func (self *Server) setupRoutes() error {
 				f.Limit = limit
 				f.Offset = offset
 
-				if search := self.backend.WithSearch(); search != nil {
+				if search := self.backend.WithSearch(name); search != nil {
 					if recordset, err := search.Query(name, f); err == nil {
 						self.Respond(w, http.StatusOK, recordset, nil)
 					} else {
@@ -176,7 +176,7 @@ func (self *Server) setupRoutes() error {
 				}
 			}
 
-			if search := self.backend.WithSearch(); search != nil {
+			if search := self.backend.WithSearch(name); search != nil {
 				fields := strings.TrimPrefix(fieldNames, `/`)
 
 				if recordset, err := search.ListValues(name, strings.Split(fields, `/`), f); err == nil {

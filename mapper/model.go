@@ -8,6 +8,8 @@ import (
 	"reflect"
 )
 
+type ResultFunc func(into interface{}) // {}
+
 type Mapper interface {
 	Migrate() error
 	Drop() error
@@ -18,6 +20,7 @@ type Mapper interface {
 	CreateOrUpdate(id interface{}, from interface{}) error
 	Delete(ids ...interface{}) error
 	Find(f filter.Filter, into interface{}) error
+	// FindFunc(f filter.Filter, resultFn ResultFunc) (*dal.RecordSet, error)
 	All(into interface{}) error
 }
 
@@ -146,7 +149,7 @@ func (self *Model) Delete(ids ...interface{}) error {
 // as-is.
 //
 func (self *Model) Find(f filter.Filter, into interface{}) error {
-	if search := self.db.WithSearch(); search != nil {
+	if search := self.db.WithSearch(self.collection.Name); search != nil {
 		vInto := reflect.ValueOf(into)
 
 		// get value pointed to if we were given a pointer
@@ -210,6 +213,14 @@ func (self *Model) Find(f filter.Filter, into interface{}) error {
 		return fmt.Errorf("backend %T does not support searching", self.db)
 	}
 }
+
+// // Perform a query for instances of the model that match the given filter.Filter.
+// // The given callback function will be called once per result.
+// //
+// func (self *Model) FindFunc(f filter.Filter, resultFn ResultFunc) (*db.RecordSet, error) {
+// 	// if recordset, err := search.Query(self.collection.Name, f, func(record *dal.Record, page backends.IndexPage){
+
+// }
 
 func (self *Model) All(into interface{}) error {
 	return self.Find(filter.All, into)

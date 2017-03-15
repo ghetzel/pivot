@@ -24,7 +24,7 @@ type Backend interface {
 	DeleteCollection(collection string) error
 	ListCollections() ([]string, error)
 	GetCollection(collection string) (*dal.Collection, error)
-	WithSearch() Indexer
+	WithSearch(collection string) Indexer
 }
 
 func MakeBackend(connection dal.ConnectionString) (Backend, error) {

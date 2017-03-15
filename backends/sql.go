@@ -36,7 +36,7 @@ type SqlBackend struct {
 	Indexer
 	conn                        dal.ConnectionString
 	db                          *sql.DB
-	indexer                     Indexer
+	indexer                     map[string]Indexer
 	options                     ConnectOptions
 	queryGenTypeMapping         generators.SqlTypeMapping
 	queryGenPlaceholderArgument string
@@ -61,6 +61,7 @@ func NewSqlBackend(connection dal.ConnectionString) *SqlBackend {
 		queryGenPlaceholderFormat: `?`,
 		collectionCache:           make(map[string]*dal.Collection),
 		dropTableQuery:            `DROP TABLE %s`,
+		indexer:                   make(map[string]Indexer),
 	}
 }
 
@@ -123,7 +124,7 @@ func (self *SqlBackend) Initialize() error {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
 					log.Debugf("Indexer: %v", indexConnString)
-					self.indexer = indexer
+					self.indexer[``] = indexer
 				} else {
 					return err
 				}
@@ -134,7 +135,24 @@ func (self *SqlBackend) Initialize() error {
 			return err
 		}
 	} else {
-		self.indexer = self
+		self.indexer[``] = self
+	}
+
+	for name, addlIndexerConnString := range self.options.AdditionalIndexers {
+		if ics, err := dal.ParseConnectionString(addlIndexerConnString); err == nil {
+			if indexer, err := MakeIndexer(ics); err == nil {
+				if err := indexer.IndexInitialize(self); err == nil {
+					log.Debugf("Additional Indexer %s: %v", name, addlIndexerConnString)
+					self.indexer[name] = indexer
+				} else {
+					return err
+				}
+			} else {
+				return err
+			}
+		} else {
+			return err
+		}
 	}
 
 	return nil
@@ -182,7 +200,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 				// render the query into the final SQL
 				if stmt, err := filter.Render(queryGen, collection.Name, filter.Null); err == nil {
-					querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
+					querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 					// execute the SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
@@ -197,7 +215,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 			// commit transaction
 			if err := tx.Commit(); err == nil {
-				if search := self.WithSearch(); search != nil {
+				if search := self.WithSearch(collection.Name); search != nil {
 					if err := search.Index(collection.Name, recordset); err != nil {
 						return err
 					}
@@ -228,7 +246,7 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 
 				if err := queryGen.Initialize(collection.Name); err == nil {
 					if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-						querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
+						querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 						// perform query
 						if rows, err := tx.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
@@ -254,7 +272,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 
 			if err := queryGen.Initialize(collection.Name); err == nil {
 				if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-					querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
+					querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 					// perform query
 					if rows, err := self.db.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
@@ -337,7 +355,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 
 				// generate SQL
 				if stmt, err := filter.Render(queryGen, collection.Name, recordUpdateFilter); err == nil {
-					querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
+					querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 					// execute SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
@@ -351,7 +369,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 			}
 
 			if err := tx.Commit(); err == nil {
-				if search := self.WithSearch(); search != nil {
+				if search := self.WithSearch(collection.Name); search != nil {
 					if err := search.Index(collection.Name, recordset); err != nil {
 						return err
 					}
@@ -384,12 +402,12 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 
 			// generate SQL
 			if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-				querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
+				querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 				// execute SQL
 				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
 					if err := tx.Commit(); err == nil {
-						if search := self.WithSearch(); search != nil {
+						if search := self.WithSearch(collection.Name); search != nil {
 							// remove documents from index
 							return search.IndexRemove(collection.Name, ids)
 						} else {
@@ -414,8 +432,14 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 	}
 }
 
-func (self *SqlBackend) WithSearch() Indexer {
-	return self.indexer
+func (self *SqlBackend) WithSearch(collectionName string) Indexer {
+	if indexer, ok := self.indexer[collectionName]; ok {
+		return indexer
+	}
+
+	defaultIndexer, _ := self.indexer[``]
+
+	return defaultIndexer
 }
 
 func (self *SqlBackend) ListCollections() ([]string, error) {
@@ -521,7 +545,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	stmt += `)`
 
 	if tx, err := self.db.Begin(); err == nil {
-		querylog.Debugf("%s %v", string(stmt[:]), values)
+		querylog.Debugf("[%T] %s %v", self, string(stmt[:]), values)
 
 		if _, err := tx.Exec(stmt, values...); err == nil {
 			defer self.refreshAllCollections()
@@ -541,7 +565,7 @@ func (self *SqlBackend) DeleteCollection(collectionName string) error {
 
 		if tx, err := self.db.Begin(); err == nil {
 			stmt := fmt.Sprintf(self.dropTableQuery, gen.ToTableName(collectionName))
-			querylog.Debugf("%s", string(stmt[:]))
+			querylog.Debugf("[%T] %s", self, string(stmt[:]))
 
 			if _, err := tx.Exec(stmt); err == nil {
 				return tx.Commit()

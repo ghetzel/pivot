@@ -45,7 +45,7 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 			queryGen.TableNameFormat = "%s"
 
 			if stmt, err := filter.Render(queryGen, "`information_schema`.`COLUMNS`", f); err == nil {
-				querylog.Debugf("%s %v", string(stmt[:]), queryGen.GetValues())
+				querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 				if rows, err := self.db.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
 					defer rows.Close()

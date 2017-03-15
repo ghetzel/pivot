@@ -161,7 +161,7 @@ func TestBasicCRUD(t *testing.T) {
 func TestSearchQuery(t *testing.T) {
 	assert := require.New(t)
 
-	if search := backend.WithSearch(); search != nil {
+	if search := backend.WithSearch(`TestSearchQuery`); search != nil {
 		err := backend.CreateCollection(
 			dal.NewCollection(`TestSearchQuery`).
 				AddFields(dal.Field{
@@ -245,7 +245,7 @@ func TestSearchQueryPaginated(t *testing.T) {
 	// set the global page size at the package level for this test
 	backends.IndexerPageSize = 5
 
-	if search := backend.WithSearch(); search != nil {
+	if search := backend.WithSearch(`TestSearchQueryPaginated`); search != nil {
 		err := backend.CreateCollection(dal.NewCollection(`TestSearchQueryPaginated`))
 
 		defer func() {
@@ -282,7 +282,7 @@ func TestSearchQueryLimit(t *testing.T) {
 	assert := require.New(t)
 	backends.IndexerPageSize = 100
 
-	if search := backend.WithSearch(); search != nil {
+	if search := backend.WithSearch(`TestSearchQueryLimit`); search != nil {
 		c := dal.NewCollection(`TestSearchQueryLimit`)
 		c.IdentityFieldType = dal.StringType
 		err := backend.CreateCollection(c)
@@ -328,7 +328,7 @@ func TestSearchQueryOffset(t *testing.T) {
 	assert := require.New(t)
 	backends.IndexerPageSize = 100
 
-	if search := backend.WithSearch(); search != nil {
+	if search := backend.WithSearch(`TestSearchQueryOffset`); search != nil {
 		c := dal.NewCollection(`TestSearchQueryOffset`)
 		c.IdentityFieldType = dal.StringType
 		err := backend.CreateCollection(c)
@@ -372,7 +372,7 @@ func TestSearchQueryOffset(t *testing.T) {
 func TestSearchQueryOffsetLimit(t *testing.T) {
 	assert := require.New(t)
 
-	if search := backend.WithSearch(); search != nil {
+	if search := backend.WithSearch(`TestSearchQueryOffsetLimit`); search != nil {
 		old := backends.IndexerPageSize
 		backends.IndexerPageSize = 3
 
@@ -424,7 +424,7 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 func TestListValues(t *testing.T) {
 	assert := require.New(t)
 
-	if search := backend.WithSearch(); search != nil {
+	if search := backend.WithSearch(`TestListValues`); search != nil {
 		err := backend.CreateCollection(
 			dal.NewCollection(`TestListValues`).
 				AddFields(dal.Field{
@@ -493,7 +493,7 @@ func TestListValues(t *testing.T) {
 func TestSearchAnalysis(t *testing.T) {
 	assert := require.New(t)
 
-	if search := backend.WithSearch(); search != nil {
+	if search := backend.WithSearch(`TestSearchAnalysis`); search != nil {
 		err := backend.CreateCollection(
 			dal.NewCollection(`TestSearchAnalysis`).
 				AddFields(dal.Field{
