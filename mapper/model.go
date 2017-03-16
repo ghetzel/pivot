@@ -22,6 +22,8 @@ type Mapper interface {
 	Find(f filter.Filter, into interface{}) error
 	// FindFunc(f filter.Filter, resultFn ResultFunc) (*dal.RecordSet, error)
 	All(into interface{}) error
+	List(fields []string) (map[string][]interface{}, error)
+	ListWithFilter(fields []string, f filter.Filter) (map[string][]interface{}, error)
 }
 
 type Model struct {
@@ -224,4 +226,16 @@ func (self *Model) Find(f filter.Filter, into interface{}) error {
 
 func (self *Model) All(into interface{}) error {
 	return self.Find(filter.All, into)
+}
+
+func (self *Model) List(fields []string) (map[string][]interface{}, error) {
+	return self.ListWithFilter(fields, filter.All)
+}
+
+func (self *Model) ListWithFilter(fields []string, f filter.Filter) (map[string][]interface{}, error) {
+	if search := self.db.WithSearch(self.collection.Name); search != nil {
+		return search.ListValues(self.collection.Name, fields, f)
+	} else {
+		return nil, fmt.Errorf("backend %T does not support searching", self.db)
+	}
 }

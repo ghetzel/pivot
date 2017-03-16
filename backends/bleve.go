@@ -317,30 +317,23 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 			}
 
 			if results, err := index.Search(request); err == nil {
+				querylog.Debugf("[%T] %+v", self, results)
+
 				output := make(map[string][]interface{})
-				var values []interface{}
 
 				if idQuery {
-					for _, hit := range results.Hits {
-						if v, ok := output[`id`]; ok {
-							values = v
-						} else {
-							values = make([]interface{}, 0)
-						}
+					values := make([]interface{}, 0)
 
+					for _, hit := range results.Hits {
 						values = append(values, hit.ID)
 					}
 
 					output[`id`] = values
 				} else {
 					for name, facet := range results.Facets {
-						for _, term := range facet.Terms {
-							if v, ok := output[name]; ok {
-								values = v
-							} else {
-								values = make([]interface{}, 0)
-							}
+						values := make([]interface{}, 0)
 
+						for _, term := range facet.Terms {
 							values = append(values, term.Term)
 						}
 

@@ -12,7 +12,7 @@ import (
 func TestModelCRUD(t *testing.T) {
 	assert := require.New(t)
 
-	tmpfile, err := ioutil.TempFile("", "byteflood-TestModelCRUD")
+	tmpfile, err := ioutil.TempFile("", "TestModelCRUD")
 	assert.Nil(err)
 	defer os.Remove(tmpfile.Name())
 
@@ -80,7 +80,7 @@ func TestModelCRUD(t *testing.T) {
 func TestModelFind(t *testing.T) {
 	assert := require.New(t)
 
-	tmpfile, err := ioutil.TempFile("", "byteflood-TestModelFind")
+	tmpfile, err := ioutil.TempFile("", "TestModelFind")
 	assert.Nil(err)
 	defer os.Remove(tmpfile.Name())
 
@@ -144,4 +144,84 @@ func TestModelFind(t *testing.T) {
 	assert.Nil(model.All(&recordset))
 	assert.Equal(int64(3), recordset.ResultCount)
 	assert.Nil(model.Drop())
+}
+
+func TestModelList(t *testing.T) {
+	assert := require.New(t)
+
+	tmpfile, err := ioutil.TempFile("", "TestModelList")
+	assert.Nil(err)
+	defer os.Remove(tmpfile.Name())
+
+	db, err := pivot.NewDatabase(`sqlite://` + tmpfile.Name())
+	assert.Nil(err)
+
+	type ModelTwo struct {
+		ID      int
+		Name    string `pivot:"name"`
+		Enabled bool   `pivot:"enabled,omitempty"`
+		Size    int    `pivot:"size,omitempty"`
+	}
+
+	model := NewModel(db, dal.Collection{
+		Name: `model_one`,
+		Fields: []dal.Field{
+			{
+				Name: `name`,
+				Type: dal.StringType,
+			}, {
+				Name: `enabled`,
+				Type: dal.BooleanType,
+			}, {
+				Name: `size`,
+				Type: dal.IntType,
+			},
+		},
+	})
+
+	assert.Nil(model.Migrate())
+
+	assert.Nil(model.Create(&ModelTwo{
+		ID:      1,
+		Name:    `test-one`,
+		Enabled: true,
+		Size:    12345,
+	}))
+
+	assert.Nil(model.Create(&ModelTwo{
+		ID:      2,
+		Name:    `test-two`,
+		Enabled: false,
+		Size:    98765,
+	}))
+
+	assert.Nil(model.Create(&ModelTwo{
+		ID:      3,
+		Name:    `test-three`,
+		Enabled: true,
+	}))
+
+	values, err := model.List([]string{`name`})
+	assert.Nil(err)
+	assert.Equal(map[string][]interface{}{
+		`name`: []interface{}{
+			`test-one`,
+			`test-two`,
+			`test-three`,
+		},
+	}, values)
+
+	values, err = model.List([]string{`name`, `size`})
+	assert.Nil(err)
+	assert.Equal(map[string][]interface{}{
+		`name`: []interface{}{
+			`test-one`,
+			`test-two`,
+			`test-three`,
+		},
+		`size`: []interface{}{
+			int64(12345),
+			int64(98765),
+		},
+	}, values)
 }
