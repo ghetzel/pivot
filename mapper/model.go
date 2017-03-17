@@ -168,7 +168,7 @@ func (self *Model) Find(f filter.Filter, into interface{}) error {
 // The given callback function will be called once per result.
 //
 func (self *Model) FindFunc(f filter.Filter, destZeroValue interface{}, resultFn ResultFunc) error {
-	f.Limit = -1
+	f.Limit = 0
 
 	if search := self.db.WithSearch(self.collection.Name); search != nil {
 		_, err := search.Query(self.collection.Name, f, func(record *dal.Record, _ backends.IndexPage) error {
