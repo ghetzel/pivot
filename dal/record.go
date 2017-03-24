@@ -77,12 +77,14 @@ func (self *Record) AppendNested(key string, value ...interface{}) *Record {
 	return self.SetNested(key, self.appendValue(key, value...))
 }
 
-func (self *Record) Populate(instance interface{}, collection *Collection) error {
-	if err := validatePtrToStructType(instance); err != nil {
+// Populates a given struct with with the values in this record.
+//
+func (self *Record) Populate(into interface{}, collection *Collection) error {
+	if err := validatePtrToStructType(into); err != nil {
 		return err
 	}
 
-	instanceStruct := structs.New(instance)
+	instanceStruct := structs.New(into)
 	var idFieldName string
 	var fallbackIdFieldName string
 
@@ -96,7 +98,7 @@ func (self *Record) Populate(instance interface{}, collection *Collection) error
 	}
 
 	// get the name of the identity field from the given struct
-	if id, err := GetIdentityFieldName(instance, fallbackIdFieldName); err == nil {
+	if id, err := GetIdentityFieldName(into, fallbackIdFieldName); err == nil {
 		idFieldName = id
 	} else {
 		return err
@@ -105,34 +107,42 @@ func (self *Record) Populate(instance interface{}, collection *Collection) error
 	if idFieldName != `` {
 		// get the underlying field from the struct we're outputting to
 		if idField, ok := instanceStruct.FieldOk(idFieldName); ok {
-			id := self.ID
+			if self.ID != nil {
+				id := self.ID
 
-			// we need to use reflect directly because structs Field.Set() involves
-			// a type check that's too restrictive for us here
-			reflectField := reflect.ValueOf(instance).Elem().FieldByName(idFieldName)
+				// we need to use reflect directly because structs Field.Set() involves
+				// a type check that's too restrictive for us here
+				reflectField := reflect.ValueOf(into)
 
-			fType := reflect.TypeOf(idField.Value())
-			vValue := reflect.ValueOf(id)
+				if reflectField.Kind() == reflect.Ptr {
+					reflectField = reflectField.Elem()
+				}
 
-			if fType != nil {
-				// convert the value to the field's type if necessary
-				if !vValue.Type().AssignableTo(fType) {
-					if vValue.Type().ConvertibleTo(fType) {
-						vValue = vValue.Convert(fType)
+				reflectField = reflectField.FieldByName(idFieldName)
+
+				fType := reflect.TypeOf(idField.Value())
+				vValue := reflect.ValueOf(id)
+
+				if fType != nil {
+					// convert the value to the field's type if necessary
+					if !vValue.Type().AssignableTo(fType) {
+						if vValue.Type().ConvertibleTo(fType) {
+							vValue = vValue.Convert(fType)
+						}
 					}
 				}
-			}
 
-			// set (via reflect) is we can
-			if vValue.Type().AssignableTo(reflectField.Type()) {
-				reflectField.Set(vValue)
-			} else {
-				return fmt.Errorf("Field '%s' is not settable", idFieldName)
+				// set (via reflect) is we can
+				if vValue.Type().AssignableTo(reflectField.Type()) {
+					reflectField.Set(vValue)
+				} else {
+					return fmt.Errorf("Field '%s' is not settable", idFieldName)
+				}
 			}
 		}
 
 		// get field descriptors for the output struct
-		if fields, err := getFieldsForStruct(instance); err == nil {
+		if fields, err := getFieldsForStruct(into); err == nil {
 			// for each value in the record's fields map...
 			for key, value := range self.Fields {
 				// only operate on fields that exist in the output struct

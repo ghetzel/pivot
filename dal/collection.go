@@ -154,6 +154,16 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 			}
 		}
 
+		// an ID still wasn't found, so try the field called "id"
+		if record.ID == nil {
+			if f, ok := fields[`id`]; ok {
+				if !f.Field.IsZero() {
+					record.ID = f.Field.Value()
+					delete(record.Fields, `id`)
+				}
+			}
+		}
+
 		// an ID still wasn't found, so try the field called "ID"
 		if record.ID == nil {
 			if f, ok := fields[`ID`]; ok {
