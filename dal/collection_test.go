@@ -2,6 +2,7 @@ package dal
 
 import (
 	"github.com/stretchr/testify/require"
+	"reflect"
 	"testing"
 )
 
@@ -66,4 +67,45 @@ func TestCollectionMakeRecord(t *testing.T) {
 	assert.Equal(11, record.ID)
 	assert.Equal(`tester`, record.Get(`name`))
 	assert.Equal(0, record.Get(`age`))
+}
+
+func TestCollectionNewInstance(t *testing.T) {
+	assert := require.New(t)
+
+	collection := NewCollection(`TestCollectionNewInstance`)
+	collection.AddFields([]Field{
+		{
+			Name:         `name`,
+			Type:         StringType,
+			DefaultValue: `Bob`,
+		}, {
+			Name:         `enabled`,
+			Type:         BooleanType,
+			DefaultValue: true,
+		}, {
+			Name:         `age`,
+			Type:         IntType,
+			DefaultValue: []string{`WRONG TYPE`},
+		},
+	}...)
+
+	type TestRecord struct {
+		Name    string `pivot:"name"`
+		Enabled bool   `pivot:"enabled,omitempty"`
+		Age     int    `pivot:"age"`
+	}
+
+	collection.SetRecordType(TestRecord{})
+	assert.True(reflect.DeepEqual(
+		collection.recordType,
+		reflect.TypeOf(TestRecord{}),
+	))
+
+	instanceI := collection.NewInstance()
+	instance, ok := instanceI.(*TestRecord)
+	assert.True(ok)
+
+	assert.Equal(`Bob`, instance.Name)
+	assert.True(instance.Enabled)
+	assert.Zero(instance.Age)
 }

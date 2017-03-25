@@ -40,19 +40,98 @@ func (self *Collection) AddFields(fields ...Field) *Collection {
 	return self
 }
 
-// func (self *Collection) SetRecordType(in interface{}) *Collection {
-// 	inT := reflect.TypeOf(in)
+func (self *Collection) SetRecordType(in interface{}) *Collection {
+	inV := reflect.ValueOf(in)
 
-// 	switch inT.Kind() {
-// 	case reflect.Struct, reflect.Map:
-// 		self.recordType = inT
-// 	default:
-// 		fallbackType := make(map[string]interface{})
-// 		self.recordType = reflect.TypeOf(fallbackType)
-// 	}
+	if inV.Kind() == reflect.Ptr {
+		inV = inV.Elem()
+	}
 
-// 	return self
-// }
+	inT := inV.Type()
+
+	switch inT.Kind() {
+	case reflect.Struct, reflect.Map:
+		self.recordType = inT
+
+	default:
+		fallbackType := make(map[string]interface{})
+		self.recordType = reflect.TypeOf(fallbackType)
+	}
+
+	return self
+}
+
+func (self *Collection) NewInstance() interface{} {
+	if self.recordType == nil {
+		fallback := make(map[string]interface{})
+		self.SetRecordType(fallback)
+	}
+
+	instance := reflect.New(self.recordType).Interface()
+	instanceV := reflect.ValueOf(instance).Elem()
+	structFields, _ := getFieldsForStruct(instance)
+
+	for _, field := range self.Fields {
+		var zeroValue interface{}
+
+		if field.DefaultValue == nil {
+			zeroValue = field.GetTypeInstance()
+		} else {
+			zeroValue = field.DefaultValue
+		}
+
+		zeroV := reflect.ValueOf(zeroValue)
+
+		if zeroV.IsValid() {
+			switch instanceV.Kind() {
+			case reflect.Map:
+				mapKeyT := instanceV.Type().Key()
+				mapValueT := instanceV.Type().Elem()
+
+				keyV := reflect.ValueOf(field.Name)
+
+				if keyV.IsValid() {
+					if !keyV.Type().AssignableTo(mapKeyT) {
+						if keyV.Type().ConvertibleTo(mapKeyT) {
+							keyV = keyV.Convert(mapKeyT)
+						} else {
+							continue
+						}
+					}
+
+					if !zeroV.Type().AssignableTo(mapValueT) {
+						if zeroV.Type().ConvertibleTo(mapValueT) {
+							zeroV = zeroV.Convert(mapValueT)
+						} else {
+							continue
+						}
+					}
+
+					instanceV.SetMapIndex(keyV, zeroV)
+				}
+
+			case reflect.Struct:
+				if structFields != nil {
+					if fieldDescr, ok := structFields[field.Name]; ok {
+						fieldT := fieldDescr.ReflectField.Type()
+
+						if !zeroV.Type().AssignableTo(fieldT) {
+							if zeroV.Type().ConvertibleTo(fieldT) {
+								zeroV = zeroV.Convert(fieldT)
+							} else {
+								continue
+							}
+						}
+
+						fieldDescr.Field.Set(zeroV.Interface())
+					}
+				}
+			}
+		}
+	}
+
+	return instance
+}
 
 func (self *Collection) GetField(name string) (Field, bool) {
 	for _, field := range self.Fields {

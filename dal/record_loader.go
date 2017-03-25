@@ -79,6 +79,10 @@ func getFieldsForStruct(instance interface{}) (map[string]fieldDescription, erro
 		reflectStruct = reflectStruct.Elem()
 	}
 
+	if reflectStruct.Kind() != reflect.Struct {
+		return nil, fmt.Errorf("value must be a struct")
+	}
+
 	instanceStruct := structs.New(instance)
 
 	for _, field := range instanceStruct.Fields() {
