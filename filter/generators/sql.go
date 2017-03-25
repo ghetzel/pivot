@@ -190,7 +190,7 @@ func (self *Sql) Finalize(f filter.Filter) error {
 		}
 
 	case SqlInsertStatement:
-		if self.InputData == nil || len(self.InputData) == 0 {
+		if len(self.InputData) == 0 {
 			return fmt.Errorf("INSERT statements must specify input data")
 		}
 
@@ -227,7 +227,7 @@ func (self *Sql) Finalize(f filter.Filter) error {
 		self.Push([]byte(`)`))
 
 	case SqlUpdateStatement:
-		if self.InputData == nil || len(self.InputData) == 0 {
+		if len(self.InputData) == 0 {
 			return fmt.Errorf("UPDATE statements must specify input data")
 		}
 
