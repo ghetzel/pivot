@@ -26,7 +26,7 @@ func TestModelCRUD(t *testing.T) {
 		Size    int    `pivot:"size,omitempty"`
 	}
 
-	model1 := NewModel(db, dal.Collection{
+	model1 := NewModel(db, &dal.Collection{
 		Name: `model_one`,
 		Fields: []dal.Field{
 			{
@@ -94,7 +94,7 @@ func TestModelFind(t *testing.T) {
 		Size    int    `pivot:"size,omitempty"`
 	}
 
-	model := NewModel(db, dal.Collection{
+	model := NewModel(db, &dal.Collection{
 		Name: `model_one`,
 		Fields: []dal.Field{
 			{
@@ -163,7 +163,7 @@ func TestModelList(t *testing.T) {
 		Size    int    `pivot:"size,omitempty"`
 	}
 
-	model := NewModel(db, dal.Collection{
+	model := NewModel(db, &dal.Collection{
 		Name: `model_one`,
 		Fields: []dal.Field{
 			{

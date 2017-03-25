@@ -337,7 +337,7 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 							values = append(values, term.Term)
 						}
 
-						output[name] = values
+						output[name] = sliceutil.Compact(values)
 					}
 				}
 

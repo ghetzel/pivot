@@ -18,12 +18,21 @@ const (
 var DefaultIdentityField = `id`
 var DefaultIdentityFieldType Type = IntType
 
+// Used by consumers Collection.NewInstance that wish to modify the instance
+// before returning it
+type InitializerFunc func(interface{}) interface{} // {}
+
+type Instantiator interface {
+	Constructor() interface{}
+}
+
 type Collection struct {
-	Name              string  `json:"name"`
-	Fields            []Field `json:"fields"`
-	IdentityField     string  `json:"identity_field,omitempty"`
-	IdentityFieldType Type    `json:"identity_field_type,omitempty"`
-	recordType        reflect.Type
+	Name                string  `json:"name"`
+	Fields              []Field `json:"fields"`
+	IdentityField       string  `json:"identity_field,omitempty"`
+	IdentityFieldType   Type    `json:"identity_field_type,omitempty"`
+	recordType          reflect.Type
+	instanceInitializer InitializerFunc
 }
 
 func NewCollection(name string) *Collection {
@@ -52,23 +61,40 @@ func (self *Collection) SetRecordType(in interface{}) *Collection {
 	switch inT.Kind() {
 	case reflect.Struct, reflect.Map:
 		self.recordType = inT
-
-	default:
-		fallbackType := make(map[string]interface{})
-		self.recordType = reflect.TypeOf(fallbackType)
 	}
 
 	return self
 }
 
-func (self *Collection) NewInstance() interface{} {
-	if self.recordType == nil {
-		fallback := make(map[string]interface{})
-		self.SetRecordType(fallback)
+func (self *Collection) HasRecordType() bool {
+	if self.recordType != nil {
+		return true
 	}
 
-	instance := reflect.New(self.recordType).Interface()
-	instanceV := reflect.ValueOf(instance).Elem()
+	return false
+}
+
+func (self *Collection) SetInitializer(init InitializerFunc) {
+	self.instanceInitializer = init
+}
+
+func (self *Collection) NewInstance(initializers ...InitializerFunc) interface{} {
+	if self.recordType == nil {
+		panic("Cannot create instance without a registered type")
+	}
+
+	var instance interface{}
+	var instanceV reflect.Value
+
+	switch self.recordType.Kind() {
+	case reflect.Map:
+		instanceV = reflect.MakeMap(self.recordType)
+		instance = instanceV.Interface()
+	default:
+		instance = reflect.New(self.recordType).Interface()
+		instanceV = reflect.ValueOf(instance).Elem()
+	}
+
 	structFields, _ := getFieldsForStruct(instance)
 
 	for _, field := range self.Fields {
@@ -128,6 +154,21 @@ func (self *Collection) NewInstance() interface{} {
 				}
 			}
 		}
+	}
+
+	// apply schema-wide initializer if specified
+	if self.instanceInitializer != nil {
+		instance = self.instanceInitializer(instance)
+	}
+
+	// apply any call-time initializers
+	for _, init := range initializers {
+		instance = init(instance)
+	}
+
+	// apply the instance-specific initializer (if implemented)
+	if init, ok := instance.(Instantiator); ok {
+		instance = init.Constructor()
 	}
 
 	return instance

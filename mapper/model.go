@@ -11,6 +11,7 @@ import (
 type ResultFunc func(ptrToInstance interface{}) // {}
 
 type Mapper interface {
+	NewInstance(inits ...dal.InitializerFunc) interface{}
 	Migrate() error
 	Drop() error
 	Exists(id interface{}) bool
@@ -33,11 +34,11 @@ type Model struct {
 	collection *dal.Collection
 }
 
-func NewModel(db backends.Backend, collection dal.Collection) *Model {
+func NewModel(db backends.Backend, collection *dal.Collection) *Model {
 	model := new(Model)
 
 	model.db = db
-	model.collection = &collection
+	model.collection = collection
 
 	if model.collection.Fields == nil {
 		model.collection.Fields = make([]dal.Field, 0)
@@ -56,6 +57,14 @@ func NewModel(db backends.Backend, collection dal.Collection) *Model {
 	}
 
 	return model
+}
+
+func (self *Model) NewInstance(inits ...dal.InitializerFunc) interface{} {
+	if self.collection == nil {
+		panic("Collection-aware instance creation is not supported on anonymous Models")
+	}
+
+	return self.collection.NewInstance(inits...)
 }
 
 func (self *Model) Migrate() error {
@@ -244,6 +253,11 @@ func (self *Model) populateOutputParameter(recordset *dal.RecordSet, into interf
 		for _, record := range recordset.Records {
 			// make a new zero-valued instance of the slice type
 			elem := reflect.New(sliceType)
+
+			// if we have a registered collection, use its
+			if self.collection != nil && self.collection.HasRecordType() {
+				elem = reflect.ValueOf(self.collection.NewInstance())
+			}
 
 			// populate that type with data from this record
 			if err := record.Populate(elem.Interface(), self.collection); err == nil {
