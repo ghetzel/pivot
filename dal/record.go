@@ -5,6 +5,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"reflect"
 	"strings"
 	"time"
@@ -84,6 +85,14 @@ func (self *Record) AppendNested(key string, value ...interface{}) *Record {
 func (self *Record) Populate(into interface{}, collection *Collection) error {
 	if err := validatePtrToStructType(into); err != nil {
 		return err
+	}
+
+	// if the struct we got is a zero value, and we've been given a collection,
+	// use it with NewInstance
+	if collection != nil {
+		if typeutil.IsZero(into) {
+			into = collection.NewInstance()
+		}
 	}
 
 	instanceStruct := structs.New(into)
