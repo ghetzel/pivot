@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"reflect"
 	"strings"
+	"time"
 )
 
 var FieldNestingSeparator string = `.`
@@ -207,7 +209,19 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 							if vValue.Type().AssignableTo(field.ReflectField.Type()) {
 								field.ReflectField.Set(vValue)
 							} else {
-								return fmt.Errorf("Field '%s' is not settable", field.Field.Name())
+								// last-ditch effort to handle weird edge cases
+								switch field.ReflectField.Type().String() {
+								case `time.Time`:
+									if v, err := stringutil.ConvertToTime(value); err == nil {
+										field.ReflectField.Set(reflect.ValueOf(v))
+									} else if v, err := stringutil.ConvertToInteger(value); err == nil {
+										field.ReflectField.Set(reflect.ValueOf(time.Unix(0, v)))
+									} else {
+										return err
+									}
+								default:
+									return fmt.Errorf("Field '%s' cannot be set to %v", field.Field.Name(), value)
+								}
 							}
 						} else {
 							if err := field.Field.Set(value); err != nil {
