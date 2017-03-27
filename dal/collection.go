@@ -202,8 +202,8 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 		// we're returning the record we were given, but first we need to validate and format it
 		for key, value := range record.Fields {
 			if field, ok := self.GetField(key); ok {
-				if err := field.Validate(value); err == nil {
-					if v, err := field.Format(value, PersistOperation); err == nil {
+				if v, err := field.Format(value, PersistOperation); err == nil {
+					if err := field.Validate(v); err == nil {
 						record.Fields[key] = v
 					} else {
 						return nil, err
