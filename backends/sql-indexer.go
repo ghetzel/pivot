@@ -91,7 +91,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 							for rows.Next() {
 								// log.Debugf("  row: %d", processed)
 
-								if record, err := self.scanFnValueToRecord(collection, columns, reflect.ValueOf(rows.Scan)); err == nil {
+								if record, err := self.scanFnValueToRecord(collection, columns, reflect.ValueOf(rows.Scan), f.Fields); err == nil {
 									processed += 1
 									processedThisQuery += 1
 

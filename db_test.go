@@ -257,7 +257,9 @@ func TestSearchQueryPaginated(t *testing.T) {
 		rsSave := dal.NewRecordSet()
 
 		for i := 0; i < 21; i++ {
-			rsSave.Push(dal.NewRecord(fmt.Sprintf("%d", i)))
+			rsSave.Push(
+				dal.NewRecord(fmt.Sprintf("%d", i+1)),
+			)
 		}
 
 		assert.Nil(backend.Insert(`TestSearchQueryPaginated`, rsSave))

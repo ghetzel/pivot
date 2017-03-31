@@ -257,7 +257,7 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter, resultFns ..
 			if f.IdOnly() {
 				return resultFn(dal.NewRecord(indexRecord.ID), page)
 			} else {
-				if record, err := self.parent.Retrieve(collection, indexRecord.ID); err == nil {
+				if record, err := self.parent.Retrieve(collection, indexRecord.ID, f.Fields...); err == nil {
 					return resultFn(record, page)
 				} else {
 					return err
@@ -267,7 +267,7 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter, resultFns ..
 			if f.IdOnly() {
 				recordset.Records = append(recordset.Records, dal.NewRecord(indexRecord.ID))
 			} else {
-				if record, err := self.parent.Retrieve(collection, indexRecord.ID); err == nil {
+				if record, err := self.parent.Retrieve(collection, indexRecord.ID, f.Fields...); err == nil {
 					recordset.Records = append(recordset.Records, record)
 				}
 			}

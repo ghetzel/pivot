@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
@@ -188,7 +189,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 				}
 
 				// set the primary key
-				if record.ID != `` {
+				if !typeutil.IsZero(record.ID) && fmt.Sprintf("%v", record.ID) != `0` {
 					// convert incoming ID to it's destination field type
 					if v, err := collection.ConvertValue(collection.IdentityField, record.ID); err == nil {
 						queryGen.InputData[collection.IdentityField] = v
@@ -280,7 +281,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 
 						if columns, err := rows.Columns(); err == nil {
 							if rows.Next() {
-								return self.scanFnValueToRecord(collection, columns, reflect.ValueOf(rows.Scan))
+								return self.scanFnValueToRecord(collection, columns, reflect.ValueOf(rows.Scan), fields)
 							} else {
 								return nil, fmt.Errorf("Record %v does not exist", id)
 							}
@@ -634,7 +635,7 @@ func (self *SqlBackend) makeQueryGen(collection *dal.Collection) *generators.Sql
 	return queryGen
 }
 
-func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns []string, scanFn reflect.Value) (*dal.Record, error) {
+func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns []string, scanFn reflect.Value, wantedFields []string) (*dal.Record, error) {
 	if scanFn.Kind() != reflect.Func {
 		return nil, fmt.Errorf("Can only accept a function value")
 	}
@@ -686,6 +687,8 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 		fields := make(map[string]interface{})
 
 		// for each column in the resultset
+
+	ColumnLoop:
 		for i, column := range columns {
 			// skip the ok check because we already validated this above
 			field, _ := collection.GetField(column)
@@ -733,15 +736,31 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 			if v, err := field.ConvertValue(value); err == nil {
 				if column == collection.IdentityField {
 					id = v
-				} else {
-					fields[column] = v
+				} else if len(wantedFields) > 0 {
+					shouldSkip := true
+
+					for _, wantedField := range wantedFields {
+						parts := strings.Split(wantedField, `.`)
+
+						if parts[0] == column {
+							shouldSkip = false
+							break
+						}
+					}
+
+					if shouldSkip {
+						continue ColumnLoop
+					}
 				}
+
+				fields[column] = v
 			} else {
 				return nil, err
 			}
 		}
 
-		return dal.NewRecord(id).SetFields(fields), nil
+		record := dal.NewRecord(id).SetFields(fields)
+		return record, nil
 	} else {
 		return nil, err
 	}

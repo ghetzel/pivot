@@ -2,6 +2,7 @@ package mapper
 
 import (
 	"fmt"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -164,7 +165,7 @@ func (self *Model) Find(f filter.Filter, into interface{}) error {
 	if search := self.db.WithSearch(self.collection.Name); search != nil {
 		// perform query
 		if recordset, err := search.Query(self.collection.Name, f); err == nil {
-			return self.populateOutputParameter(recordset, into)
+			return self.populateOutputParameter(f, recordset, into)
 		} else {
 			return err
 		}
@@ -225,7 +226,7 @@ func (self *Model) ListWithFilter(fields []string, f filter.Filter) (map[string]
 	}
 }
 
-func (self *Model) populateOutputParameter(recordset *dal.RecordSet, into interface{}) error {
+func (self *Model) populateOutputParameter(f filter.Filter, recordset *dal.RecordSet, into interface{}) error {
 	vInto := reflect.ValueOf(into)
 
 	// get value pointed to if we were given a pointer
@@ -251,6 +252,14 @@ func (self *Model) populateOutputParameter(recordset *dal.RecordSet, into interf
 
 		// for each resulting record...
 		for _, record := range recordset.Records {
+			if len(f.Fields) > 0 {
+				for k, _ := range record.Fields {
+					if !sliceutil.ContainsString(f.Fields, k) {
+						delete(record.Fields, k)
+					}
+				}
+			}
+
 			// make a new zero-valued instance of the slice type
 			elem := reflect.New(sliceType)
 
