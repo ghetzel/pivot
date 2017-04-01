@@ -25,6 +25,7 @@ type Backend interface {
 	ListCollections() ([]string, error)
 	GetCollection(collection string) (*dal.Collection, error)
 	WithSearch(collection string) Indexer
+	WithAggregator(collection string) Aggregator
 }
 
 func MakeBackend(connection dal.ConnectionString) (Backend, error) {

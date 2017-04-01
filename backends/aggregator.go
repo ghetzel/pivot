@@ -1,0 +1,16 @@
+package backends
+
+import (
+	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
+)
+
+type Aggregator interface {
+	AggregatorConnectionString() *dal.ConnectionString
+	AggregatorInitialize(Backend) error
+	Sum(collection string, field string, f filter.Filter) (float64, error)
+	Count(collection string, f filter.Filter) (uint64, error)
+	Min(collection string, field string, f filter.Filter) (float64, error)
+	Max(collection string, field string, f filter.Filter) (float64, error)
+	Average(collection string, field string, f filter.Filter) (float64, error)
+}

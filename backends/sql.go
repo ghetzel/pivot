@@ -35,9 +35,11 @@ type sqlTableDetailsFunc func(datasetName string, collectionName string) (*dal.C
 type SqlBackend struct {
 	Backend
 	Indexer
+	Aggregator
 	conn                        dal.ConnectionString
 	db                          *sql.DB
 	indexer                     map[string]Indexer
+	aggregator                  map[string]Aggregator
 	options                     ConnectOptions
 	queryGenTypeMapping         generators.SqlTypeMapping
 	queryGenPlaceholderArgument string
@@ -63,6 +65,7 @@ func NewSqlBackend(connection dal.ConnectionString) *SqlBackend {
 		collectionCache:           make(map[string]*dal.Collection),
 		dropTableQuery:            `DROP TABLE %s`,
 		indexer:                   make(map[string]Indexer),
+		aggregator:                make(map[string]Aggregator),
 	}
 }
 
@@ -155,6 +158,9 @@ func (self *SqlBackend) Initialize() error {
 			return err
 		}
 	}
+
+	// setup aggregators (currently this is just the SQL implementation)
+	self.aggregator[``] = self
 
 	return nil
 }
@@ -441,6 +447,16 @@ func (self *SqlBackend) WithSearch(collectionName string) Indexer {
 	defaultIndexer, _ := self.indexer[``]
 
 	return defaultIndexer
+}
+
+func (self *SqlBackend) WithAggregator(collectionName string) Aggregator {
+	if aggregator, ok := self.aggregator[collectionName]; ok {
+		return aggregator
+	}
+
+	defaultAggregator, _ := self.aggregator[``]
+
+	return defaultAggregator
 }
 
 func (self *SqlBackend) ListCollections() ([]string, error) {

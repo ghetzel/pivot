@@ -3,6 +3,7 @@ package pivot
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -578,9 +579,73 @@ func TestObjectType(t *testing.T) {
 		}))))
 
 	record, err = backend.Retrieve(`TestObjectType`, 1)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(record)
 	assert.Equal(int64(1), record.ID)
 	assert.Equal(`First`, record.GetNested(`properties.name`))
 	assert.Equal(float64(1), record.GetNested(`properties.count`))
+}
+
+func TestAggregators(t *testing.T) {
+	assert := require.New(t)
+
+	err := backend.CreateCollection(
+		dal.NewCollection(`TestAggregators`).
+			AddFields(dal.Field{
+				Name: `color`,
+				Type: dal.StringType,
+			}, dal.Field{
+				Name: `inventory`,
+				Type: dal.IntType,
+			}, dal.Field{
+				Name: `factor`,
+				Type: dal.FloatType,
+			}, dal.Field{
+				Name: `created_at`,
+				Type: dal.TimeType,
+			}))
+
+	defer func() {
+		assert.NoError(backend.DeleteCollection(`TestAggregators`))
+	}()
+
+	assert.NoError(err)
+
+	// Insert and Retrieve
+	// --------------------------------------------------------------------------------------------
+	assert.NoError(backend.Insert(`TestAggregators`, dal.NewRecordSet(
+		dal.NewRecord(nil).Set(`color`, `red`).Set(`inventory`, 34).Set(`factor`, float64(2.7)).Set(`created_at`, time.Now()),
+		dal.NewRecord(nil).Set(`color`, `green`).Set(`inventory`, 92).Set(`factor`, float64(9.8)).Set(`created_at`, time.Now()),
+		dal.NewRecord(nil).Set(`color`, `blue`).Set(`inventory`, 0).Set(`factor`, float64(5.6)).Set(`created_at`, time.Now()),
+		dal.NewRecord(nil).Set(`color`, `orange`).Set(`inventory`, 54).Set(`factor`, float64(0)).Set(`created_at`, time.Now()),
+		dal.NewRecord(nil).Set(`color`, `yellow`).Set(`inventory`, 123).Set(`factor`, float64(3.14)).Set(`created_at`, time.Now()),
+		dal.NewRecord(nil).Set(`color`, `gold`).Set(`inventory`, 19).Set(`factor`, float64(4.67)).Set(`created_at`, time.Now()),
+	)))
+
+	agg := backend.WithAggregator(`TestAggregators`)
+	assert.NotNil(agg)
+
+	vui, err := agg.Count(`TestAggregators`, filter.All)
+	assert.NoError(err)
+	assert.Equal(uint64(6), vui)
+
+	vf, err := agg.Sum(`TestAggregators`, `inventory`, filter.All)
+	assert.NoError(err)
+	assert.Equal(float64(322), vf)
+
+	vf, err = agg.Min(`TestAggregators`, `inventory`, filter.All)
+	assert.NoError(err)
+	assert.Equal(float64(0), vf)
+
+	vf, err = agg.Min(`TestAggregators`, `factor`, filter.All)
+	assert.NoError(err)
+	assert.Equal(float64(0), vf)
+
+	vf, err = agg.Max(`TestAggregators`, `inventory`, filter.All)
+	assert.NoError(err)
+	assert.Equal(float64(123), vf)
+
+	vf, err = agg.Max(`TestAggregators`, `factor`, filter.All)
+	assert.NoError(err)
+	assert.Equal(float64(9.8), vf)
 }

@@ -40,6 +40,8 @@ type SqlTypeMapping struct {
 	StringTypeLength  int
 	IntegerType       string
 	FloatType         string
+	FloatTypeLength         int
+	FloatTypePrecision         int
 	BooleanType       string
 	BooleanTypeLength int
 	DateTimeType      string
@@ -65,6 +67,8 @@ var MysqlTypeMapping = SqlTypeMapping{
 	StringTypeLength: 255,
 	IntegerType:      `BIGINT`,
 	FloatType:        `DECIMAL`,
+	FloatTypeLength: 10,
+	FloatTypePrecision: 8,
 	BooleanType:      `BOOL`,
 	DateTimeType:     `DATETIME`,
 	ObjectType:       `BLOB`,
@@ -109,6 +113,7 @@ type Sql struct {
 	filter.Generator
 	TableNameFormat     string                 // format string used to wrap table names
 	FieldNameFormat     string                 // format string used to wrap field names
+	FieldWrappers       map[string]string      // map of field name-format strings to wrap specific fields in after FieldNameFormat is applied
 	PlaceholderFormat   string                 // if using placeholders, the format string used to insert them
 	PlaceholderArgument string                 // if specified, either "index", "index1" or "field"
 	NormalizeFields     []string               // a list of field names that should have the NormalizerFormat applied to them and their corresponding values
@@ -135,6 +140,7 @@ func NewSqlGenerator() *Sql {
 		NormalizerFormat:    "%s",
 		TableNameFormat:     "%s",
 		FieldNameFormat:     "%s",
+		FieldWrappers:       make(map[string]string),
 		UseInStatement:      true,
 		TypeMapping:         DefaultSqlTypeMapping,
 		Type:                SqlSelectStatement,
@@ -443,7 +449,17 @@ func (self *Sql) ToTableName(table string) string {
 }
 
 func (self *Sql) ToFieldName(field string) string {
-	return fmt.Sprintf(self.FieldNameFormat, field)
+	var formattedField string
+
+	if field != `` {
+		formattedField = fmt.Sprintf(self.FieldNameFormat, field)
+	}
+
+	if wrapper, ok := self.FieldWrappers[field]; ok {
+		formattedField = fmt.Sprintf(wrapper, formattedField)
+	}
+
+	return formattedField
 }
 
 func (self *Sql) ToNativeValue(t dal.Type, in interface{}) string {
@@ -469,6 +485,7 @@ func (self *Sql) ToNativeValue(t dal.Type, in interface{}) string {
 
 func (self *Sql) ToNativeType(in dal.Type, length int) (string, error) {
 	out := ``
+	precision := 0
 
 	switch in {
 	case dal.StringType:
@@ -481,6 +498,14 @@ func (self *Sql) ToNativeType(in dal.Type, length int) (string, error) {
 		out = self.TypeMapping.IntegerType
 	case dal.FloatType:
 		out = self.TypeMapping.FloatType
+
+		if l := self.TypeMapping.FloatTypeLength; length == 0 && l > 0 {
+			length = l
+		}
+
+		if p := self.TypeMapping.FloatTypePrecision; p > 0 {
+			precision = p
+		}
 	case dal.BooleanType:
 		out = self.TypeMapping.BooleanType
 
@@ -501,7 +526,11 @@ func (self *Sql) ToNativeType(in dal.Type, length int) (string, error) {
 	}
 
 	if length > 0 {
-		out = out + fmt.Sprintf("(%d)", length)
+		if precision > 0 {
+			out = out + fmt.Sprintf("(%d,%d)", length, precision)
+		}else{
+			out = out + fmt.Sprintf("(%d)", length)
+		}
 	}
 
 	return strings.ToUpper(out), nil

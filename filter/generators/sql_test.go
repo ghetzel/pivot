@@ -114,6 +114,22 @@ func TestSqlSelects(t *testing.T) {
 				query:  `SELECT ` + field + ` FROM foo WHERE (age >= ?)`,
 				values: []interface{}{int64(21)},
 			},
+			`factor/lt:3.141597`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (factor < ?)`,
+				values: []interface{}{float64(3.141597)},
+			},
+			`factor/lte:3.141597`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (factor <= ?)`,
+				values: []interface{}{float64(3.141597)},
+			},
+			`factor/gt:3.141597`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (factor > ?)`,
+				values: []interface{}{float64(3.141597)},
+			},
+			`factor/gte:3.141597`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (factor >= ?)`,
+				values: []interface{}{float64(3.141597)},
+			},
 			`name/contains:ob`: {
 				query:  `SELECT ` + field + ` FROM foo WHERE (name LIKE ?)`,
 				values: []interface{}{`%%ob%%`},
@@ -369,6 +385,22 @@ func TestSqlDeletes(t *testing.T) {
 			values: []interface{}{
 				int64(21),
 			},
+		},
+		`factor/lt:3.141597`: {
+			query:  `DELETE FROM foo WHERE (factor < ?)`,
+			values: []interface{}{float64(3.141597)},
+		},
+		`factor/lte:3.141597`: {
+			query:  `DELETE FROM foo WHERE (factor <= ?)`,
+			values: []interface{}{float64(3.141597)},
+		},
+		`factor/gt:3.141597`: {
+			query:  `DELETE FROM foo WHERE (factor > ?)`,
+			values: []interface{}{float64(3.141597)},
+		},
+		`factor/gte:3.141597`: {
+			query:  `DELETE FROM foo WHERE (factor >= ?)`,
+			values: []interface{}{float64(3.141597)},
 		},
 		`name/contains:ob`: {
 			query: `DELETE FROM foo WHERE (name LIKE ?)`,
@@ -791,6 +823,40 @@ func TestSqlSelectWithNormalizerAndPlaceholders(t *testing.T) {
 	assert.Equal([]interface{}{
 		`ted%%`,
 		int64(7),
+		`%%berg`,
+		`%%new%%`,
+	}, gen.GetValues())
+}
+
+func TestSqlSelectAggregateFunctions(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := filter.Parse(`+name/prefix:ted/city/suffix:berg/state/contains:new`)
+	assert.Nil(err)
+	f.Limit = 4
+	f.Offset = 12
+	f.Fields = []string{`age`}
+
+	gen := NewSqlGenerator()
+	gen.FieldWrappers = map[string]string{
+		`age`: "SUM(%s)",
+	}
+
+	sql, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+
+	assert.Equal(
+		`SELECT SUM(age) FROM foo `+
+			`WHERE (name LIKE ?) `+
+			`AND (city LIKE ?) `+
+			`AND (state LIKE ?) `+
+			`ORDER BY name ASC `+
+			`LIMIT 4 OFFSET 12`,
+		string(sql[:]),
+	)
+
+	assert.Equal([]interface{}{
+		`ted%%`,
 		`%%berg`,
 		`%%new%%`,
 	}, gen.GetValues())
