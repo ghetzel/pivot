@@ -3,13 +3,13 @@ package pivot
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
+	"time"
 )
 
 var backend backends.Backend
@@ -633,19 +633,19 @@ func TestAggregators(t *testing.T) {
 	assert.NoError(err)
 	assert.Equal(float64(322), vf)
 
-	vf, err = agg.Min(`TestAggregators`, `inventory`, filter.All)
+	vf, err = agg.Minimum(`TestAggregators`, `inventory`, filter.All)
 	assert.NoError(err)
 	assert.Equal(float64(0), vf)
 
-	vf, err = agg.Min(`TestAggregators`, `factor`, filter.All)
+	vf, err = agg.Minimum(`TestAggregators`, `factor`, filter.All)
 	assert.NoError(err)
 	assert.Equal(float64(0), vf)
 
-	vf, err = agg.Max(`TestAggregators`, `inventory`, filter.All)
+	vf, err = agg.Maximum(`TestAggregators`, `inventory`, filter.All)
 	assert.NoError(err)
 	assert.Equal(float64(123), vf)
 
-	vf, err = agg.Max(`TestAggregators`, `factor`, filter.All)
+	vf, err = agg.Maximum(`TestAggregators`, `factor`, filter.All)
 	assert.NoError(err)
 	assert.Equal(float64(9.8), vf)
 }

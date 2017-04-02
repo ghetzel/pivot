@@ -27,6 +27,11 @@ type Mapper interface {
 	Each(destZeroValue interface{}, resultFn ResultFunc) error
 	List(fields []string) (map[string][]interface{}, error)
 	ListWithFilter(fields []string, f filter.Filter) (map[string][]interface{}, error)
+	Sum(field string, f filter.Filter) (float64, error)
+	Count(f filter.Filter) (uint64, error)
+	Minimum(field string, f filter.Filter) (float64, error)
+	Maximum(field string, f filter.Filter) (float64, error)
+	Average(field string, f filter.Filter) (float64, error)
 }
 
 type Model struct {
@@ -223,6 +228,46 @@ func (self *Model) ListWithFilter(fields []string, f filter.Filter) (map[string]
 		return search.ListValues(self.collection.Name, fields, f)
 	} else {
 		return nil, fmt.Errorf("backend %T does not support searching", self.db)
+	}
+}
+
+func (self *Model) Sum(field string, f filter.Filter) (float64, error) {
+	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
+		return agg.Sum(self.collection.Name, field, f)
+	} else {
+		return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+	}
+}
+
+func (self *Model) Count(f filter.Filter) (uint64, error) {
+	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
+		return agg.Count(self.collection.Name, f)
+	} else {
+		return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+	}
+}
+
+func (self *Model) Minimum(field string, f filter.Filter) (float64, error) {
+	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
+		return agg.Minimum(self.collection.Name, field, f)
+	} else {
+		return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+	}
+}
+
+func (self *Model) Maximum(field string, f filter.Filter) (float64, error) {
+	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
+		return agg.Maximum(self.collection.Name, field, f)
+	} else {
+		return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+	}
+}
+
+func (self *Model) Average(field string, f filter.Filter) (float64, error) {
+	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
+		return agg.Average(self.collection.Name, field, f)
+	} else {
+		return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
 	}
 }
 

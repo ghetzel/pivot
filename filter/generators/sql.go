@@ -36,17 +36,17 @@ const (
 )
 
 type SqlTypeMapping struct {
-	StringType        string
-	StringTypeLength  int
-	IntegerType       string
-	FloatType         string
-	FloatTypeLength         int
-	FloatTypePrecision         int
-	BooleanType       string
-	BooleanTypeLength int
-	DateTimeType      string
-	ObjectType        string
-	RawType           string
+	StringType         string
+	StringTypeLength   int
+	IntegerType        string
+	FloatType          string
+	FloatTypeLength    int
+	FloatTypePrecision int
+	BooleanType        string
+	BooleanTypeLength  int
+	DateTimeType       string
+	ObjectType         string
+	RawType            string
 }
 
 var NoTypeMapping = SqlTypeMapping{}
@@ -63,16 +63,16 @@ var CassandraTypeMapping = SqlTypeMapping{
 }
 
 var MysqlTypeMapping = SqlTypeMapping{
-	StringType:       `VARCHAR`,
-	StringTypeLength: 255,
-	IntegerType:      `BIGINT`,
-	FloatType:        `DECIMAL`,
-	FloatTypeLength: 10,
+	StringType:         `VARCHAR`,
+	StringTypeLength:   255,
+	IntegerType:        `BIGINT`,
+	FloatType:          `DECIMAL`,
+	FloatTypeLength:    10,
 	FloatTypePrecision: 8,
-	BooleanType:      `BOOL`,
-	DateTimeType:     `DATETIME`,
-	ObjectType:       `BLOB`,
-	RawType:          `BLOB`,
+	BooleanType:        `BOOL`,
+	DateTimeType:       `DATETIME`,
+	ObjectType:         `BLOB`,
+	RawType:            `BLOB`,
 }
 
 var PostgresTypeMapping = SqlTypeMapping{
@@ -528,7 +528,7 @@ func (self *Sql) ToNativeType(in dal.Type, length int) (string, error) {
 	if length > 0 {
 		if precision > 0 {
 			out = out + fmt.Sprintf("(%d,%d)", length, precision)
-		}else{
+		} else {
 			out = out + fmt.Sprintf("(%d)", length)
 		}
 	}

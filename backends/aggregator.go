@@ -10,7 +10,7 @@ type Aggregator interface {
 	AggregatorInitialize(Backend) error
 	Sum(collection string, field string, f filter.Filter) (float64, error)
 	Count(collection string, f filter.Filter) (uint64, error)
-	Min(collection string, field string, f filter.Filter) (float64, error)
-	Max(collection string, field string, f filter.Filter) (float64, error)
+	Minimum(collection string, field string, f filter.Filter) (float64, error)
+	Maximum(collection string, field string, f filter.Filter) (float64, error)
 	Average(collection string, field string, f filter.Filter) (float64, error)
 }

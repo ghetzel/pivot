@@ -16,11 +16,11 @@ func (self *SqlBackend) Count(name string, f filter.Filter) (uint64, error) {
 	return uint64(v), err
 }
 
-func (self *SqlBackend) Min(name string, field string, f filter.Filter) (float64, error) {
+func (self *SqlBackend) Minimum(name string, field string, f filter.Filter) (float64, error) {
 	return self.aggregate(name, field, f, "MIN(%s)")
 }
 
-func (self *SqlBackend) Max(name string, field string, f filter.Filter) (float64, error) {
+func (self *SqlBackend) Maximum(name string, field string, f filter.Filter) (float64, error) {
 	return self.aggregate(name, field, f, "MAX(%s)")
 }
 
