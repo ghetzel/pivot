@@ -12,10 +12,13 @@ import (
 
 var CriteriaSeparator = `/`
 var FieldTermSeparator = `/`
+var FieldLengthDelimiter = `#`
 var ModifierDelimiter = `:`
 var ValueSeparator = `|`
 var QueryUnescapeValues = false
 var AllValue = `all`
+var SortAscending = `+`
+var SortDescending = `-`
 
 type Criterion struct {
 	Type     dal.Type      `json:"type,omitempty"`
@@ -35,7 +38,7 @@ func (self *Criterion) String() string {
 
 	if self.Type != `` {
 		if self.Length > 0 {
-			rv += fmt.Sprintf("%v#%d%s", self.Type, self.Length, ModifierDelimiter)
+			rv += fmt.Sprintf("%v%s%d%s", self.Type, FieldLengthDelimiter, self.Length, ModifierDelimiter)
 		} else {
 			rv += fmt.Sprintf("%v%s", self.Type, ModifierDelimiter)
 		}
@@ -78,11 +81,7 @@ type Filter struct {
 }
 
 func MakeFilter(specs ...string) Filter {
-	var spec string
-
-	if len(specs) > 0 {
-		spec = specs[0]
-	}
+	spec := strings.Join(specs, CriteriaSeparator)
 
 	f := Filter{
 		Spec:     spec,
@@ -157,17 +156,17 @@ func Parse(spec string) (Filter, error) {
 			if (i % 2) == 0 {
 				var addSortAsc *bool
 
-				if strings.HasPrefix(token, `+`) {
+				if strings.HasPrefix(token, SortAscending) {
 					v := true
 					addSortAsc = &v
-				} else if strings.HasPrefix(token, `-`) {
+				} else if strings.HasPrefix(token, SortDescending) {
 					v := false
 					addSortAsc = &v
 				}
 
 				// remove sort prefixes
-				token = strings.TrimPrefix(token, `-`)
-				token = strings.TrimPrefix(token, `+`)
+				token = strings.TrimPrefix(token, SortDescending)
+				token = strings.TrimPrefix(token, SortAscending)
 
 				parts := strings.SplitN(token, ModifierDelimiter, 2)
 
@@ -177,7 +176,7 @@ func Parse(spec string) (Filter, error) {
 						Type:  dal.AutoType,
 					}
 				} else {
-					typeLengthPair := strings.SplitN(parts[0], `#`, 2)
+					typeLengthPair := strings.SplitN(parts[0], FieldLengthDelimiter, 2)
 
 					if len(typeLengthPair) == 1 {
 						criterion = Criterion{
@@ -201,7 +200,7 @@ func Parse(spec string) (Filter, error) {
 					if *addSortAsc == true {
 						rv.Sort = append(rv.Sort, criterion.Field)
 					} else {
-						rv.Sort = append(rv.Sort, `-`+criterion.Field)
+						rv.Sort = append(rv.Sort, SortDescending+criterion.Field)
 					}
 				}
 			} else {
@@ -281,9 +280,9 @@ func (self *Filter) GetSort() []SortBy {
 	sortBy := make([]SortBy, len(self.Sort))
 
 	for i, s := range self.Sort {
-		desc := strings.HasPrefix(s, `-`)
-		s = strings.TrimPrefix(s, `-`)
-		s = strings.TrimPrefix(s, `+`)
+		desc := strings.HasPrefix(s, SortDescending)
+		s = strings.TrimPrefix(s, SortDescending)
+		s = strings.TrimPrefix(s, SortAscending)
 
 		sortBy[i] = SortBy{
 			Field:      s,
@@ -308,4 +307,30 @@ func (self *Filter) ApplyOptions(in interface{}) error {
 	}
 
 	return nil
+}
+
+func (self *Filter) NewFromMap(in map[string]interface{}) (Filter, error) {
+	criteria := make([]string, 0)
+
+	for _, criterion := range self.Criteria {
+		criteria = append(criteria, criterion.String())
+	}
+
+	for typeField, opValue := range in {
+		criteria = append(criteria, fmt.Sprintf("%s%s%v", typeField, FieldTermSeparator, opValue))
+	}
+
+	return Parse(strings.Join(criteria, CriteriaSeparator))
+}
+
+func (self *Filter) NewFromSpec(specs ...string) (Filter, error) {
+	criteria := make([]string, 0)
+
+	for _, criterion := range self.Criteria {
+		criteria = append(criteria, criterion.String())
+	}
+
+	criteria = append(criteria, specs...)
+
+	return Parse(strings.Join(criteria, CriteriaSeparator))
 }
