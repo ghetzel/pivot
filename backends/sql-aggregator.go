@@ -3,6 +3,7 @@ package backends
 // this file satifies the Aggregator interface for SqlBackend
 
 import (
+	"database/sql"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 )
@@ -52,10 +53,10 @@ func (self *SqlBackend) aggregate(name string, field string, f filter.Filter, fo
 					defer rows.Close()
 
 					if rows.Next() {
-						var rv float64
+						var rv sql.NullFloat64
 
 						if err := rows.Scan(&rv); err == nil {
-							return rv, nil
+							return rv.Float64, nil
 						} else {
 							return 0, err
 						}
