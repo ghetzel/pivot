@@ -18,7 +18,7 @@ type IndexPage struct {
 	TotalResults int64
 }
 
-type IndexResultFunc func(record *dal.Record, page IndexPage) error // {}
+type IndexResultFunc func(record *dal.Record, err error, page IndexPage) error // {}
 
 type Indexer interface {
 	IndexConnectionString() *dal.ConnectionString

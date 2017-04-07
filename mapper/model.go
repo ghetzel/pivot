@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-type ResultFunc func(ptrToInstance interface{}) // {}
+type ResultFunc func(ptrToInstance interface{}, err error) // {}
 
 type Mapper interface {
 	NewInstance(inits ...dal.InitializerFunc) interface{}
@@ -186,20 +186,24 @@ func (self *Model) FindFunc(f filter.Filter, destZeroValue interface{}, resultFn
 	f.Limit = 0
 
 	if search := self.db.WithSearch(self.collection.Name); search != nil {
-		_, err := search.Query(self.collection.Name, f, func(record *dal.Record, _ backends.IndexPage) error {
-			if _, ok := destZeroValue.(*dal.Record); ok {
-				resultFn(record)
-			} else if _, ok := destZeroValue.(dal.Record); ok {
-				resultFn(*record)
-			} else {
-				into := reflect.New(reflect.TypeOf(destZeroValue)).Interface()
-
-				// populate that type with data from this record
-				if err := record.Populate(into, self.collection); err == nil {
-					resultFn(into)
+		_, err := search.Query(self.collection.Name, f, func(record *dal.Record, err error, _ backends.IndexPage) error {
+			if err == nil {
+				if _, ok := destZeroValue.(*dal.Record); ok {
+					resultFn(record, nil)
+				} else if _, ok := destZeroValue.(dal.Record); ok {
+					resultFn(*record, nil)
 				} else {
-					return err
+					into := reflect.New(reflect.TypeOf(destZeroValue)).Interface()
+
+					// populate that type with data from this record
+					if err := record.Populate(into, self.collection); err == nil {
+						resultFn(into, nil)
+					} else {
+						return err
+					}
 				}
+			} else {
+				resultFn(nil, err)
 			}
 
 			return nil

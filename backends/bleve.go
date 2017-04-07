@@ -201,7 +201,7 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 
 					// call the resultFn for each hit on this page
 					for _, hit := range results.Hits {
-						if err := resultFn(dal.NewRecord(hit.ID).SetFields(hit.Fields), IndexPage{
+						if err := resultFn(dal.NewRecord(hit.ID).SetFields(hit.Fields), nil, IndexPage{
 							Page:         page,
 							TotalPages:   totalPages,
 							Limit:        f.Limit,
@@ -248,17 +248,17 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter, resultFns ..
 		f.IdentityField = BleveIdentityField
 	}
 
-	if err := self.QueryFunc(collection, f, func(indexRecord *dal.Record, page IndexPage) error {
+	if err := self.QueryFunc(collection, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
 		PopulateRecordSetPageDetails(recordset, f, page)
 
 		if len(resultFns) > 0 {
 			resultFn := resultFns[0]
 
 			if f.IdOnly() {
-				return resultFn(dal.NewRecord(indexRecord.ID), page)
+				return resultFn(dal.NewRecord(indexRecord.ID), err, page)
 			} else {
 				if record, err := self.parent.Retrieve(collection, indexRecord.ID, f.Fields...); err == nil {
-					return resultFn(record, page)
+					return resultFn(record, err, page)
 				} else {
 					return err
 				}

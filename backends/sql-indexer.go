@@ -99,7 +99,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 										totalResults = int64(processed)
 									}
 
-									if err := resultFn(record, IndexPage{
+									if err := resultFn(record, nil, IndexPage{
 										Page:         page,
 										TotalPages:   totalPages,
 										Limit:        f.Limit,
@@ -109,7 +109,12 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 										return err
 									}
 								} else {
-									return err
+									if err := resultFn(nil, err, IndexPage{}); err != nil {
+										return err
+									}
+
+									// if the resultFn didn't stop us, move on to the next row
+									continue
 								}
 							}
 
@@ -129,7 +134,9 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 							return err
 						}
 					} else {
-						return err
+						if err := resultFn(nil, err, IndexPage{}); err != nil {
+							return err
+						}
 					}
 
 				} else {
@@ -150,16 +157,16 @@ func (self *SqlBackend) Query(collection string, f filter.Filter, resultFns ...I
 	// TODO: figure out a smart way to get row counts so that we can offer bounded/paginated resultsets
 	recordset.Unbounded = true
 
-	if err := self.QueryFunc(collection, f, func(record *dal.Record, page IndexPage) error {
+	if err := self.QueryFunc(collection, f, func(record *dal.Record, err error, page IndexPage) error {
 		PopulateRecordSetPageDetails(recordset, f, page)
 
 		if len(resultFns) > 0 {
 			resultFn := resultFns[0]
 
 			if f.IdOnly() {
-				return resultFn(dal.NewRecord(record.ID), page)
+				return resultFn(dal.NewRecord(record.ID), err, page)
 			} else {
-				return resultFn(record, page)
+				return resultFn(record, err, page)
 			}
 		} else {
 			if f.IdOnly() {
