@@ -260,7 +260,7 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter, resultFns ..
 				if record, err := self.parent.Retrieve(collection, indexRecord.ID, f.Fields...); err == nil {
 					return resultFn(record, err, page)
 				} else {
-					return err
+					return resultFn(nil, err, page)
 				}
 			}
 		} else {
@@ -353,6 +353,10 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 	}
 }
 
+func (self *BleveIndexer) DeleteQuery(name string, f filter.Filter) error {
+	return fmt.Errorf("not implemented")
+}
+
 func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index, error) {
 	defer stats.NewTiming().Send(`pivot.backends.bleve.retrieve_index`)
 
@@ -422,6 +426,7 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 			for _, vI := range criterion.Values {
 				value := fmt.Sprintf("%v", vI)
 				var analyzedValue string
+				var invertQuery bool
 
 				if az := mapping.AnalyzerNamed(analyzerName); az != nil {
 					for _, token := range az.Analyze([]byte(value[:])) {
@@ -434,9 +439,22 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 				var currentQuery query.FieldableQuery
 
 				switch criterion.Operator {
-				case `is`, ``:
+				case `is`, ``, `not`:
+					if criterion.Operator == `not` {
+						invertQuery = true
+					}
+
 					if criterion.Field == f.IdentityField {
-						conjunction.AddQuery(bleve.NewDocIDQuery(sliceutil.Stringify(criterion.Values)))
+						q := bleve.NewDocIDQuery(sliceutil.Stringify(criterion.Values))
+
+						if invertQuery {
+							bq := bleve.NewBooleanQuery()
+							bq.AddMustNot(q)
+							conjunction.AddQuery(bq)
+						} else {
+							conjunction.AddQuery(q)
+						}
+
 						skipNext = true
 						break
 					} else {
@@ -451,6 +469,7 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 							currentQuery = bleve.NewTermQuery(analyzedValue)
 						}
 					}
+
 				case `prefix`:
 					currentQuery = bleve.NewWildcardQuery(analyzedValue + `*`)
 				case `suffix`:
@@ -505,10 +524,21 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 				if currentQuery != nil {
 					currentQuery.SetField(criterion.Field)
 
-					if disjunction != nil {
-						disjunction.AddQuery(currentQuery)
+					if invertQuery {
+						inversionQuery := bleve.NewBooleanQuery()
+						inversionQuery.AddMustNot(currentQuery)
+
+						if disjunction != nil {
+							disjunction.AddQuery(inversionQuery)
+						} else {
+							conjunction.AddQuery(inversionQuery)
+						}
 					} else {
-						conjunction.AddQuery(currentQuery)
+						if disjunction != nil {
+							disjunction.AddQuery(currentQuery)
+						} else {
+							conjunction.AddQuery(currentQuery)
+						}
 					}
 				}
 			}

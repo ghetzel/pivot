@@ -6,6 +6,7 @@ import (
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
+	"github.com/ghetzel/pivot/filter/generators"
 	"math"
 	"reflect"
 )
@@ -183,6 +184,7 @@ func (self *SqlBackend) Query(collection string, f filter.Filter, resultFns ...I
 
 	return recordset, nil
 }
+
 func (self *SqlBackend) ListValues(collectionName string, fields []string, f filter.Filter) (map[string][]interface{}, error) {
 	if collection, err := self.getCollectionFromCache(collectionName); err == nil {
 		for i, f := range fields {
@@ -250,4 +252,38 @@ func (self *SqlBackend) Index(collection string, records *dal.RecordSet) error {
 // IndexRemove is a no-op, this should be handled by SqlBackend's Delete() function
 func (self *SqlBackend) IndexRemove(collection string, ids []interface{}) error {
 	return nil
+}
+
+// DeleteQuery removes records using a filter
+func (self *SqlBackend) DeleteQuery(name string, f filter.Filter) error {
+	if collection, err := self.getCollectionFromCache(name); err == nil {
+		if tx, err := self.db.Begin(); err == nil {
+			queryGen := self.makeQueryGen(collection)
+			queryGen.Type = generators.SqlDeleteStatement
+
+			// generate SQL
+			if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
+				querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
+
+				// execute SQL
+				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
+					if err := tx.Commit(); err == nil {
+						return nil
+					} else {
+						return err
+					}
+				} else {
+					defer tx.Rollback()
+					return err
+				}
+			} else {
+				defer tx.Rollback()
+				return err
+			}
+		} else {
+			return err
+		}
+	} else {
+		return err
+	}
 }
