@@ -729,6 +729,60 @@ func TestSqlMultipleValues(t *testing.T) {
 	}, false)
 }
 
+func TestSqlMultipleValuesWithNormalizer(t *testing.T) {
+	assert := require.New(t)
+
+	fn := func(tests map[string]qv, withIn bool) {
+		for spec, expected := range tests {
+			f, err := filter.Parse(spec)
+			assert.Nil(err)
+
+			gen := NewSqlGenerator()
+			gen.UseInStatement = withIn
+			gen.NormalizeFields = []string{`id`}
+			gen.NormalizerFormat = `LOWER(%v)`
+
+			actual, err := filter.Render(gen, `foo`, f)
+			assert.Nil(err)
+			assert.Equal(expected.query, string(actual[:]))
+			assert.Equal(expected.values, gen.GetValues())
+		}
+	}
+
+	fn(map[string]qv{
+		`id/1`: {
+			query: `SELECT * FROM foo WHERE (LOWER(id) = LOWER(?))`,
+			values: []interface{}{
+				int64(1),
+			},
+		},
+		`id/1|2`: {
+			query: `SELECT * FROM foo WHERE (LOWER(id) IN(LOWER(?), LOWER(?)))`,
+			values: []interface{}{
+				int64(1),
+				int64(2),
+			},
+		},
+		`id/1|2|3`: {
+			query: `SELECT * FROM foo WHERE (LOWER(id) IN(LOWER(?), LOWER(?), LOWER(?)))`,
+			values: []interface{}{
+				int64(1),
+				int64(2),
+				int64(3),
+			},
+		},
+		`id/1|2|3/age/7`: {
+			query: `SELECT * FROM foo WHERE (LOWER(id) IN(LOWER(?), LOWER(?), LOWER(?))) AND (age = ?)`,
+			values: []interface{}{
+				int64(1),
+				int64(2),
+				int64(3),
+				int64(7),
+			},
+		},
+	}, true)
+}
+
 func TestSqlSorting(t *testing.T) {
 	assert := require.New(t)
 
@@ -859,5 +913,55 @@ func TestSqlSelectAggregateFunctions(t *testing.T) {
 		`ted%%`,
 		`%%berg`,
 		`%%new%%`,
+	}, gen.GetValues())
+}
+
+func TestSqlBulkDelete(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := filter.Parse(`name/not:Bob|Frank|Steve`)
+	assert.Nil(err)
+
+	gen := NewSqlGenerator()
+	gen.Type = SqlDeleteStatement
+
+	sql, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+
+	assert.Equal(
+		`DELETE FROM foo WHERE (name NOT IN(?, ?, ?))`,
+		string(sql[:]),
+	)
+
+	assert.Equal([]interface{}{
+		`Bob`,
+		`Frank`,
+		`Steve`,
+	}, gen.GetValues())
+}
+
+func TestSqlBulkDeleteWithNormalizers(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := filter.Parse(`name/not:Bob|Frank|Steve`)
+	assert.Nil(err)
+
+	gen := NewSqlGenerator()
+	gen.Type = SqlDeleteStatement
+	gen.NormalizeFields = []string{`name`}
+	gen.NormalizerFormat = `LOWER(%s)`
+
+	sql, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+
+	assert.Equal(
+		`DELETE FROM foo WHERE (LOWER(name) NOT IN(LOWER(?), LOWER(?), LOWER(?)))`,
+		string(sql[:]),
+	)
+
+	assert.Equal([]interface{}{
+		`Bob`,
+		`Frank`,
+		`Steve`,
 	}, gen.GetValues())
 }

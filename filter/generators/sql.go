@@ -319,6 +319,11 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 	outFieldName := criterion.Field
 
+	// for multi-valued IN-statements, we need to wrap the field name in the normalizer here
+	if useInStatement {
+		outFieldName = self.ApplyNormalizer(criterion.Field, outFieldName)
+	}
+
 	// for each value being tested in this criterion
 	for _, vI := range criterion.Values {
 		var typedValue interface{}
@@ -333,6 +338,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 		} else {
 			var convertErr error
 
+			// type conversion/normalization for values extracted from the criterion
 			switch criterion.Type {
 			case dal.StringType:
 				typedValue, convertErr = stringutil.ConvertTo(stringutil.String, value)
@@ -388,11 +394,11 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 			if value == `NULL` {
 				outVal = outVal + ` IS NULL`
 			} else {
-				outVal = self.ApplyNormalizer(criterion.Field, outVal)
 
 				if useInStatement {
-					outVal = outVal + fmt.Sprintf("%s", value)
+					outVal = outVal + self.ApplyNormalizer(criterion.Field, fmt.Sprintf("%s", value))
 				} else {
+					outVal = self.ApplyNormalizer(criterion.Field, outVal)
 					outVal = outVal + fmt.Sprintf(" = %s", self.ApplyNormalizer(criterion.Field, value))
 				}
 			}
@@ -400,11 +406,11 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 			if value == `NULL` {
 				outVal = outVal + ` IS NOT NULL`
 			} else {
-				outVal = self.ApplyNormalizer(criterion.Field, outVal)
 
 				if useInStatement {
-					outVal = outVal + fmt.Sprintf("%s", value)
+					outVal = outVal + self.ApplyNormalizer(criterion.Field, fmt.Sprintf("%s", value))
 				} else {
+					outVal = self.ApplyNormalizer(criterion.Field, outVal)
 					outVal = outVal + fmt.Sprintf(" <> %s", self.ApplyNormalizer(criterion.Field, value))
 				}
 			}
