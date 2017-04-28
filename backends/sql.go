@@ -103,8 +103,6 @@ func (self *SqlBackend) Initialize() error {
 		internalBackend = name
 	}
 
-	log.Debugf("SQL: driver=%s, dsn=%s", internalBackend, dsn)
-
 	// setup the database driver for use
 	if db, err := sql.Open(internalBackend, dsn); err == nil {
 		self.db = db
@@ -127,7 +125,6 @@ func (self *SqlBackend) Initialize() error {
 		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
-					log.Debugf("Indexer: %v", indexConnString)
 					self.indexer[``] = indexer
 				} else {
 					return err
@@ -146,7 +143,6 @@ func (self *SqlBackend) Initialize() error {
 		if ics, err := dal.ParseConnectionString(addlIndexerConnString); err == nil {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
-					log.Debugf("Additional Indexer %s: %v", name, addlIndexerConnString)
 					self.indexer[name] = indexer
 				} else {
 					return err
