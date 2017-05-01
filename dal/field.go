@@ -11,6 +11,8 @@ type Field struct {
 	Name               string             `json:"name"`
 	Description        string             `json:"description,omitempty"`
 	Type               Type               `json:"type"`
+	KeyType            Type               `json:"keytype,omitempty"`
+	Subtype            Type               `json:"subtype,omitempty"`
 	Length             int                `json:"length,omitempty"`
 	Precision          int                `json:"precision,omitempty"`
 	Identity           bool               `json:"identity,omitempty"`

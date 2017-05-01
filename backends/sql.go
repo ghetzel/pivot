@@ -533,7 +533,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 			field.Length = objectFieldHintLength
 		}
 
-		if nativeType, err := gen.ToNativeType(field.Type, field.Length); err == nil {
+		if nativeType, err := gen.ToNativeType(field.Type, []dal.Type{field.Subtype}, field.Length); err == nil {
 			def = fmt.Sprintf("%s %s", gen.ToFieldName(field.Name), nativeType)
 		} else {
 			return err
@@ -548,7 +548,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 		}
 
 		if v := field.DefaultValue; v != nil {
-			def += fmt.Sprintf(" DEFAULT %v", gen.ToNativeValue(field.Type, v))
+			def += fmt.Sprintf(" DEFAULT %v", gen.ToNativeValue(field.Type, []dal.Type{field.Subtype}, v))
 		}
 
 		fields = append(fields, def)

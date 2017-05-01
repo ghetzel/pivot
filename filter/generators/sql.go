@@ -47,19 +47,23 @@ type SqlTypeMapping struct {
 	DateTimeType       string
 	ObjectType         string
 	RawType            string
+	SubtypeFormat      string
+	MultiSubtypeFormat string
 }
 
 var NoTypeMapping = SqlTypeMapping{}
 
 var CassandraTypeMapping = SqlTypeMapping{
-	StringType:        `VARCHAR`,
-	IntegerType:       `INT`,
-	FloatType:         `FLOAT`,
-	BooleanType:       `TINYINT`,
-	BooleanTypeLength: 1,
-	DateTimeType:      `DATETIME`,
-	ObjectType:        `BLOB`,
-	RawType:           `BLOB`,
+	StringType:         `VARCHAR`,
+	IntegerType:        `INT`,
+	FloatType:          `FLOAT`,
+	BooleanType:        `TINYINT`,
+	BooleanTypeLength:  1,
+	DateTimeType:       `DATETIME`,
+	ObjectType:         `MAP`,
+	RawType:            `BLOB`,
+	SubtypeFormat:      `%s<%v>`,
+	MultiSubtypeFormat: `%s<%v,%v>`,
 }
 
 var MysqlTypeMapping = SqlTypeMapping{
@@ -468,7 +472,7 @@ func (self *Sql) ToFieldName(field string) string {
 	return formattedField
 }
 
-func (self *Sql) ToNativeValue(t dal.Type, in interface{}) string {
+func (self *Sql) ToNativeValue(t dal.Type, subtypes []dal.Type, in interface{}) string {
 	switch t {
 	case dal.StringType:
 		return fmt.Sprintf("'%v'", in)
@@ -489,7 +493,7 @@ func (self *Sql) ToNativeValue(t dal.Type, in interface{}) string {
 	}
 }
 
-func (self *Sql) ToNativeType(in dal.Type, length int) (string, error) {
+func (self *Sql) ToNativeType(in dal.Type, subtypes []dal.Type, length int) (string, error) {
 	out := ``
 	precision := 0
 
@@ -522,7 +526,16 @@ func (self *Sql) ToNativeType(in dal.Type, length int) (string, error) {
 		out = self.TypeMapping.DateTimeType
 
 	case dal.ObjectType:
-		out = self.TypeMapping.ObjectType
+		if f := self.TypeMapping.MultiSubtypeFormat; f == `` {
+			out = self.TypeMapping.ObjectType
+		} else if len(subtypes) == 2 {
+			out = fmt.Sprintf(
+				self.TypeMapping.MultiSubtypeFormat,
+				self.TypeMapping.ObjectType,
+				subtypes[1],
+				subtypes[2],
+			)
+		}
 
 	case dal.RawType:
 		out = self.TypeMapping.RawType
