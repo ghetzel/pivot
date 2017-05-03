@@ -77,6 +77,11 @@ func (self *Field) GetTypeInstance() interface{} {
 }
 
 func (self *Field) Validate(value interface{}) error {
+	// automatically validate that required fields aren't being given a nil value
+	if self.Required && value == nil {
+		return fmt.Errorf("field %q is required", self.Name)
+	}
+
 	if self.Validator == nil {
 		return nil
 	} else if err := self.Validator(value); err != nil {
