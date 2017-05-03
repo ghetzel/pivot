@@ -79,8 +79,10 @@ func (self *Field) GetTypeInstance() interface{} {
 func (self *Field) Validate(value interface{}) error {
 	if self.Validator == nil {
 		return nil
+	} else if err := self.Validator(value); err != nil {
+		return fmt.Errorf("validation error: %v", err)
 	} else {
-		return self.Validator(value)
+		return nil
 	}
 }
 
@@ -88,7 +90,11 @@ func (self *Field) Format(value interface{}, op FieldOperation) (interface{}, er
 	if self.Formatter == nil {
 		return value, nil
 	} else {
-		return self.Formatter(value, op)
+		if v, err := self.Formatter(value, op); err == nil {
+			return v, nil
+		} else {
+			return v, fmt.Errorf("formatter error: %v", err)
+		}
 	}
 }
 
