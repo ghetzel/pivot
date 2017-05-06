@@ -21,7 +21,7 @@ type Field struct {
 	Unique             bool               `json:"unique,omitempty"`
 	DefaultValue       interface{}        `json:"default,omitempty"`
 	NativeType         string             `json:"native_type,omitempty"`
-	ValidateOnPopulate bool               `json:"validate_on_populate"`
+	ValidateOnPopulate bool               `json:"validate_on_populate,omitempty"`
 	Validator          FieldValidatorFunc `json:"-"`
 	Formatter          FieldFormatterFunc `json:"-"`
 }
