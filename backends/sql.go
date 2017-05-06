@@ -778,6 +778,38 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 	}
 }
 
+// func (self *SqlBackend) Migrate(diff []dal.SchemaDelta) error {
+// 	for _, delta := range diff {
+// 		switch delta.Issue {
+// 		case dal.CollectionKeyNameIssue, dal.CollectionKeyTypeIssue:
+// 			return fmt.Errorf("Cannot alter key name or type for %T", self)
+
+// 		case dal.FieldMissingIssue:
+// 			// ALTER TABLE ADD COLUMN ...
+// 			if collection, err := self.getCollectionFromCache(delta.Collection); err == nil {
+// 				if field, ok := collection.GetField(delta.Name); ok {
+
+// 				} else {
+// 					return fmt.Errorf("Cannot add field %q: not in collection %q", delta.Name, delta.Collection)
+// 				}
+// 			} else {
+// 				return fmt.Errorf("Cannot add field %q: %v", delta.Name, err)
+// 			}
+
+// 		case dal.FieldNameIssue:
+// 			// ALTER TABLE ADD COLUMN ...
+// 		case dal.FieldLengthIssue:
+// 			// ALTER TABLE  ...
+// 		case dal.FieldTypeIssue:
+// 			// ALTER TABLE  ...
+// 		case dal.FieldPropertyIssue:
+// 			// ...
+// 		}
+// 	}
+
+// 	return fmt.Errorf("Not Implemented")
+// }
+
 func (self *SqlBackend) refreshAllCollections() error {
 	if rows, err := self.db.Query(self.listAllTablesQuery); err == nil {
 		defer rows.Close()

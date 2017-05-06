@@ -305,11 +305,12 @@ func (self *Collection) Diff(actual *Collection) []SchemaDelta {
 
 	if self.Name != actual.Name {
 		differences = append(differences, SchemaDelta{
-			Type:    CollectionDelta,
-			Message: `names do not match`,
-			Name:    self.Name,
-			Desired: self.Name,
-			Actual:  actual.Name,
+			Type:       CollectionDelta,
+			Issue:      CollectionNameIssue,
+			Message:    `names do not match`,
+			Collection: self.Name,
+			Desired:    self.Name,
+			Actual:     actual.Name,
 		})
 	}
 
@@ -317,38 +318,45 @@ func (self *Collection) Diff(actual *Collection) []SchemaDelta {
 		differences = append(
 			differences,
 			SchemaDelta{
-				Type:      CollectionDelta,
-				Message:   `does not match`,
-				Name:      self.Name,
-				Parameter: `IdentityField`,
-				Desired:   self.IdentityField,
-				Actual:    actual.IdentityField,
+				Type:       CollectionDelta,
+				Issue:      CollectionKeyNameIssue,
+				Message:    `does not match`,
+				Collection: self.Name,
+				Parameter:  `IdentityField`,
+				Desired:    self.IdentityField,
+				Actual:     actual.IdentityField,
 			},
 		)
 	}
 
 	if self.IdentityFieldType != actual.IdentityFieldType {
 		differences = append(differences, SchemaDelta{
-			Type:      CollectionDelta,
-			Message:   `does not match`,
-			Name:      self.Name,
-			Parameter: `IdentityFieldType`,
-			Desired:   self.IdentityFieldType,
-			Actual:    actual.IdentityFieldType,
-		},
-		)
+			Type:       CollectionDelta,
+			Issue:      CollectionKeyTypeIssue,
+			Message:    `does not match`,
+			Collection: self.Name,
+			Parameter:  `IdentityFieldType`,
+			Desired:    self.IdentityFieldType,
+			Actual:     actual.IdentityFieldType,
+		})
 	}
 
 	for _, myField := range self.Fields {
 		if theirField, ok := actual.GetField(myField.Name); ok {
 			if diff := myField.Diff(&theirField); diff != nil {
+				for i, _ := range diff {
+					diff[i].Collection = self.Name
+				}
+
 				differences = append(differences, diff...)
 			}
 		} else {
 			differences = append(differences, SchemaDelta{
-				Type:    FieldDelta,
-				Message: `is missing`,
-				Name:    myField.Name,
+				Type:       FieldDelta,
+				Issue:      FieldMissingIssue,
+				Message:    `is missing`,
+				Collection: self.Name,
+				Name:       myField.Name,
 			})
 		}
 	}

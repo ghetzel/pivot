@@ -111,6 +111,7 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 	for _, myField := range mine.Fields() {
 		if myField.IsExported() {
 			theirField, _ := theirs.FieldOk(myField.Name())
+			deltaIssue := UnknownIssue
 
 			switch myField.Name() {
 			// skip parameters:
@@ -131,6 +132,7 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 						if theirV < myV {
 							diff = append(diff, SchemaDelta{
 								Type:      FieldDelta,
+								Issue:     FieldLengthIssue,
 								Message:   `length is shorter than desired`,
 								Name:      self.Name,
 								Parameter: `Length`,
@@ -161,14 +163,21 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 					}
 				}
 
+				deltaIssue = FieldTypeIssue
+
 				fallthrough
 			default:
 				myV := myField.Value()
 				theirV := theirField.Value()
 
+				if deltaIssue == UnknownIssue {
+					deltaIssue = FieldPropertyIssue
+				}
+
 				if myV != theirV {
 					diff = append(diff, SchemaDelta{
 						Type:      FieldDelta,
+						Issue:     deltaIssue,
 						Message:   `values do not match`,
 						Name:      self.Name,
 						Parameter: theirField.Name(),

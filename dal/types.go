@@ -39,13 +39,29 @@ const (
 	FieldDelta                = `field`
 )
 
+type DeltaIssue int
+
+const (
+	UnknownIssue DeltaIssue = iota
+	CollectionNameIssue
+	CollectionKeyNameIssue
+	CollectionKeyTypeIssue
+	FieldMissingIssue
+	FieldNameIssue
+	FieldLengthIssue
+	FieldTypeIssue
+	FieldPropertyIssue
+)
+
 type SchemaDelta struct {
-	Type      DeltaType
-	Message   string
-	Name      string
-	Parameter string
-	Desired   interface{}
-	Actual    interface{}
+	Type       DeltaType
+	Issue      DeltaIssue
+	Message    string
+	Collection string
+	Name       string
+	Parameter  string
+	Desired    interface{}
+	Actual     interface{}
 }
 
 func (self SchemaDelta) String() string {
