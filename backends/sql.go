@@ -661,7 +661,28 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 	// serve as a hint to the sql.Scan function as to how to convert the data
 	for i, column := range columns {
 		if field, ok := collection.GetField(column); ok {
-			output[i] = field.GetTypeInstance()
+			if field.DefaultValue != nil {
+				output[i] = field.GetDefaultValue()
+			} else if field.Required {
+				output[i] = field.GetTypeInstance()
+			} else {
+				switch field.Type {
+				case dal.StringType, dal.TimeType, dal.ObjectType:
+					output[i] = sql.NullString{}
+
+				case dal.BooleanType:
+					output[i] = sql.NullBool{}
+
+				case dal.IntType:
+					output[i] = sql.NullInt64{}
+
+				case dal.FloatType:
+					output[i] = sql.NullFloat64{}
+
+				default:
+					output[i] = make([]byte, 0)
+				}
+			}
 		} else {
 			return nil, fmt.Errorf("Collection '%s' does not have a field called '%s'", collection.Name, column)
 		}
@@ -739,6 +760,41 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 
 				default:
 					value = string(v[:])
+				}
+			case sql.NullString:
+				v := output[i].(sql.NullString)
+
+				if v.Valid {
+					value = v.String
+				} else {
+					value = nil
+				}
+
+			case sql.NullBool:
+				v := output[i].(sql.NullBool)
+
+				if v.Valid {
+					value = v.Bool
+				} else {
+					value = nil
+				}
+
+			case sql.NullInt64:
+				v := output[i].(sql.NullInt64)
+
+				if v.Valid {
+					value = v.Int64
+				} else {
+					value = nil
+				}
+
+			case sql.NullFloat64:
+				v := output[i].(sql.NullFloat64)
+
+				if v.Valid {
+					value = v.Float64
+				} else {
+					value = nil
 				}
 			default:
 				value = output[i]

@@ -595,11 +595,13 @@ func TestAggregators(t *testing.T) {
 				Name: `color`,
 				Type: dal.StringType,
 			}, dal.Field{
-				Name: `inventory`,
-				Type: dal.IntType,
+				Name:     `inventory`,
+				Type:     dal.IntType,
+				Required: true,
 			}, dal.Field{
-				Name: `factor`,
-				Type: dal.FloatType,
+				Name:     `factor`,
+				Type:     dal.FloatType,
+				Required: true,
 			}, dal.Field{
 				Name: `created_at`,
 				Type: dal.TimeType,

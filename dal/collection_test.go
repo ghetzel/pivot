@@ -4,6 +4,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestCollectionMakeRecord(t *testing.T) {
@@ -72,6 +73,10 @@ func TestCollectionMakeRecord(t *testing.T) {
 func TestCollectionNewInstance(t *testing.T) {
 	assert := require.New(t)
 
+	constantTimeFn := func() time.Time {
+		return time.Date(2006, 1, 2, 15, 4, 5, 0, time.UTC)
+	}
+
 	collection := NewCollection(`TestCollectionNewInstance`)
 	collection.AddFields([]Field{
 		{
@@ -86,13 +91,18 @@ func TestCollectionNewInstance(t *testing.T) {
 			Name:         `age`,
 			Type:         IntType,
 			DefaultValue: []string{`WRONG TYPE`},
+		}, {
+			Name:         `created_at`,
+			Type:         TimeType,
+			DefaultValue: constantTimeFn,
 		},
 	}...)
 
 	type TestRecord struct {
-		Name    string `pivot:"name"`
-		Enabled bool   `pivot:"enabled,omitempty"`
-		Age     int    `pivot:"age"`
+		Name      string    `pivot:"name"`
+		Enabled   bool      `pivot:"enabled,omitempty"`
+		Age       int       `pivot:"age"`
+		CreatedAt time.Time `pivot:"created_at"`
 	}
 
 	collection.SetRecordType(TestRecord{})
@@ -108,4 +118,5 @@ func TestCollectionNewInstance(t *testing.T) {
 	assert.Equal(`Bob`, instance.Name)
 	assert.True(instance.Enabled)
 	assert.Zero(instance.Age)
+	assert.Equal(constantTimeFn(), instance.CreatedAt)
 }

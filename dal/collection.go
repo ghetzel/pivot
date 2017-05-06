@@ -2,6 +2,7 @@ package dal
 
 import (
 	"fmt"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"reflect"
 )
 
@@ -103,7 +104,7 @@ func (self *Collection) NewInstance(initializers ...InitializerFunc) interface{}
 		if field.DefaultValue == nil {
 			zeroValue = field.GetTypeInstance()
 		} else {
-			zeroValue = field.DefaultValue
+			zeroValue = field.GetDefaultValue()
 		}
 
 		zeroV := reflect.ValueOf(zeroValue)
@@ -192,6 +193,7 @@ func (self *Collection) ConvertValue(name string, value interface{}) (interface{
 	}
 }
 
+// Generates a Record instance from the given value based on this collection's schema.
 func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 	if err := validatePtrToStructType(in); err != nil {
 		return nil, err
@@ -235,8 +237,8 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 				} else {
 					if collectionField, ok := self.GetField(tagName); ok {
 						// validate and format value according to the collection field's rules
-						if err := collectionField.Validate(value); err == nil {
-							if v, err := collectionField.Format(value, PersistOperation); err == nil {
+						if v, err := collectionField.Format(value, PersistOperation); err == nil {
+							if err := collectionField.Validate(v); err == nil {
 								value = v
 							} else {
 								return nil, err
@@ -246,7 +248,7 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 						}
 
 						// if we're supposed to skip empty values, and this value is indeed empty, skip
-						if fieldDescr.OmitEmpty && value == reflect.Zero(reflect.TypeOf(value)).Interface() {
+						if fieldDescr.OmitEmpty && typeutil.IsZero(value) {
 							continue
 						}
 

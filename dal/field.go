@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
+	"reflect"
 	"time"
 )
 
@@ -27,8 +29,13 @@ type Field struct {
 }
 
 func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
-	if in == nil {
-		return nil, nil
+	if typeutil.IsZero(in) {
+		// non-required zero valued inputs are nilable, so return nil
+		if self.Required {
+			return self.GetTypeInstance(), nil
+		} else {
+			return nil, nil
+		}
 	}
 
 	var convertType stringutil.ConvertType
@@ -55,6 +62,18 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 	}
 
 	return stringutil.ConvertTo(convertType, in)
+}
+
+func (self *Field) GetDefaultValue() interface{} {
+	if self.DefaultValue == nil {
+		return nil
+	} else if typeutil.IsFunctionArity(self.DefaultValue, 0, 1) {
+		if values := reflect.ValueOf(self.DefaultValue).Call(make([]reflect.Value, 0)); len(values) == 1 {
+			return values[0].Interface()
+		}
+	}
+
+	return self.DefaultValue
 }
 
 func (self *Field) GetTypeInstance() interface{} {
