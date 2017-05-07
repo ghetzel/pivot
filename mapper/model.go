@@ -97,8 +97,6 @@ func (self *Model) Migrate() error {
 		actualCollection = c
 	}
 
-	fmt.Printf("actualCollection: %+v", actualCollection)
-
 	if diffs := self.collection.Diff(actualCollection); diffs != nil {
 		msg := fmt.Sprintf("Actual schema for collection '%s' differs from desired schema:\n", self.collection.Name)
 
