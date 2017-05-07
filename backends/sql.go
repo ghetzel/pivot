@@ -193,8 +193,6 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 				for k, v := range record.Fields {
 					// convert incoming values to their destination field types
 					if cV, err := collection.ConvertValue(k, v); err == nil {
-						log.Debugf("[%v] Record %v: %T(%v) -> %T(%v)", collection.Name, k, v, v, cV, cV)
-
 						queryGen.InputData[k] = cV
 					} else {
 						defer tx.Rollback()
@@ -818,8 +816,6 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 
 			// set the appropriate field for the dal.Record
 			if v, err := field.ConvertValue(value); err == nil {
-				log.Debugf("[%v] SELECT %v(%v): received %T(%v) -> %T(%v) -> %T(%v)", collection.Name, field.Type, field.Name, output[i], output[i], value, value, v, v)
-
 				if column == collection.IdentityField {
 					id = v
 				} else if len(wantedFields) > 0 {
