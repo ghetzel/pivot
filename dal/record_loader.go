@@ -2,10 +2,11 @@ package dal
 
 import (
 	"fmt"
-	"github.com/fatih/structs"
-	"github.com/ghetzel/go-stockutil/sliceutil"
 	"reflect"
 	"strings"
+
+	"github.com/fatih/structs"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 )
 
 var RecordStructTag = `pivot`

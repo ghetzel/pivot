@@ -1,12 +1,13 @@
 package generators
 
 import (
-	"github.com/ghetzel/go-stockutil/maputil"
-	"github.com/ghetzel/pivot/filter"
-	"github.com/stretchr/testify/require"
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/ghetzel/pivot/filter"
+	"github.com/stretchr/testify/require"
 )
 
 type qv struct {

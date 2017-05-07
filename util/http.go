@@ -1,8 +1,9 @@
 package util
 
 import (
-	"github.com/op/go-logging"
 	"net/http"
+
+	"github.com/op/go-logging"
 )
 
 var log = logging.MustGetLogger(`pivot`)

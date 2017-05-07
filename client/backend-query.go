@@ -2,6 +2,7 @@ package pivot
 
 import (
 	"fmt"
+
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 )

@@ -2,9 +2,10 @@ package dal
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestRecordGet(t *testing.T) {

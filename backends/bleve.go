@@ -3,6 +3,12 @@ package backends
 import (
 	"encoding/json"
 	"fmt"
+	"math"
+	"path"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/analysis/analyzer/custom"
 	"github.com/blevesearch/bleve/analysis/char/regexp"
@@ -14,11 +20,6 @@ import (
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"math"
-	"path"
-	"strings"
-	"sync"
-	"time"
 )
 
 var BleveBatchFlushCount = 1

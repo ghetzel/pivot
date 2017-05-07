@@ -2,6 +2,7 @@ package backends
 
 import (
 	"fmt"
+
 	"github.com/alexcesaro/statsd"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/op/go-logging"
@@ -14,6 +15,7 @@ var stats, _ = statsd.New()
 type Backend interface {
 	SetOptions(ConnectOptions)
 	Initialize() error
+	RegisterCollection(*dal.Collection)
 	GetConnectionString() *dal.ConnectionString
 	Exists(collection string, id interface{}) bool
 	Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error)

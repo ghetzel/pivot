@@ -3,13 +3,14 @@ package pivot
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"testing"
+	"time"
+
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/stretchr/testify/require"
-	"os"
-	"testing"
-	"time"
 )
 
 var backend backends.Backend
@@ -93,6 +94,10 @@ func TestBasicCRUD(t *testing.T) {
 			AddFields(dal.Field{
 				Name: `name`,
 				Type: dal.StringType,
+			}, dal.Field{
+				Name:         `created_at`,
+				Type:         dal.TimeType,
+				DefaultValue: time.Now,
 			}))
 
 	defer func() {
@@ -120,6 +125,11 @@ func TestBasicCRUD(t *testing.T) {
 	assert.Equal(int64(1), record.ID)
 	assert.Equal(`First`, record.Get(`name`))
 	assert.Empty(record.Data)
+	v := record.Get(`created_at`)
+	assert.NotNil(v)
+	vTime, ok := v.(time.Time)
+	assert.True(ok)
+	assert.False(vTime.IsZero())
 
 	record, err = backend.Retrieve(`TestBasicCRUD`, `2`)
 	assert.Nil(err)

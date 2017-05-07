@@ -3,6 +3,7 @@
 all: fmt deps build bundle
 
 deps:
+	@go list golang.org/x/tools/cmd/goimports || go get golang.org/x/tools/cmd/goimports
 	go get .
 
 clean-bundle:
@@ -12,7 +13,7 @@ clean:
 	-rm -rf bin
 
 fmt:
-	gofmt -w .
+	goimports -w .
 
 test:
 	go test .

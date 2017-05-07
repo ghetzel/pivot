@@ -2,13 +2,14 @@ package dal
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
+	"time"
+
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
-	"reflect"
-	"strings"
-	"time"
 )
 
 var FieldNestingSeparator string = `.`

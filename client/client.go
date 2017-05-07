@@ -2,11 +2,12 @@ package pivot
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/ghetzel/bee-hotel"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/pivot/util"
 	"github.com/op/go-logging"
-	"time"
 )
 
 var log = logging.MustGetLogger(`pivot`)

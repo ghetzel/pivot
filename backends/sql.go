@@ -3,15 +3,16 @@ package backends
 import (
 	"database/sql"
 	"fmt"
+	"reflect"
+	"strings"
+	"sync"
+
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
-	"reflect"
-	"strings"
-	"sync"
 )
 
 var objectFieldHintLength = 131071
@@ -53,6 +54,7 @@ type SqlBackend struct {
 	showTableDetailQuery        string
 	refreshCollectionFunc       sqlTableDetailsFunc
 	dropTableQuery              string
+	registeredCollections       map[string]*dal.Collection
 	collectionCache             map[string]*dal.Collection
 	collectionCacheLock         sync.RWMutex
 }
@@ -62,6 +64,7 @@ func NewSqlBackend(connection dal.ConnectionString) *SqlBackend {
 		conn:                      connection,
 		queryGenTypeMapping:       generators.DefaultSqlTypeMapping,
 		queryGenPlaceholderFormat: `?`,
+		registeredCollections:     make(map[string]*dal.Collection),
 		collectionCache:           make(map[string]*dal.Collection),
 		dropTableQuery:            `DROP TABLE %s`,
 		indexer:                   make(map[string]Indexer),
@@ -71,6 +74,10 @@ func NewSqlBackend(connection dal.ConnectionString) *SqlBackend {
 
 func (self *SqlBackend) GetConnectionString() *dal.ConnectionString {
 	return &self.conn
+}
+
+func (self *SqlBackend) RegisterCollection(collection *dal.Collection) {
+	self.registeredCollections[collection.Name] = collection
 }
 
 func (self *SqlBackend) SetOptions(options ConnectOptions) {
@@ -179,10 +186,15 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 				queryGen := self.makeQueryGen(collection)
 				queryGen.Type = generators.SqlInsertStatement
 
+				// ensure the the default values for all of this record's fields are filled in
+				collection.FillDefaults(record)
+
 				// add record data to query input
 				for k, v := range record.Fields {
 					// convert incoming values to their destination field types
 					if cV, err := collection.ConvertValue(k, v); err == nil {
+						log.Debugf("[%v] Record %v: %T(%v) -> %T(%v)", collection.Name, k, v, v, cV, cV)
+
 						queryGen.InputData[k] = cV
 					} else {
 						defer tx.Rollback()
@@ -547,7 +559,8 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 			def += ` UNIQUE`
 		}
 
-		if v := field.DefaultValue; v != nil {
+		// if the default value is neither nil nor a function
+		if v := field.DefaultValue; v != nil && !typeutil.IsFunction(field.DefaultValue) {
 			def += fmt.Sprintf(" DEFAULT %v", gen.ToNativeValue(field.Type, []dal.Type{field.Subtype}, v))
 		}
 
@@ -561,7 +574,10 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 		querylog.Debugf("[%T] %s %v", self, string(stmt[:]), values)
 
 		if _, err := tx.Exec(stmt, values...); err == nil {
-			defer self.refreshAllCollections()
+			defer func() {
+				self.RegisterCollection(definition)
+				self.refreshAllCollections()
+			}()
 			return tx.Commit()
 		} else {
 			defer tx.Rollback()
@@ -595,7 +611,7 @@ func (self *SqlBackend) DeleteCollection(collectionName string) error {
 }
 
 func (self *SqlBackend) GetCollection(name string) (*dal.Collection, error) {
-	if err := self.refreshCollection(name); err == nil {
+	if err := self.refreshCollection(name, nil); err == nil {
 		if collection, err := self.getCollectionFromCache(name); err == nil {
 			return collection, nil
 		} else {
@@ -802,6 +818,8 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 
 			// set the appropriate field for the dal.Record
 			if v, err := field.ConvertValue(value); err == nil {
+				log.Debugf("[%v] SELECT %v(%v): received %T(%v) -> %T(%v) -> %T(%v)", collection.Name, field.Type, field.Name, output[i], output[i], value, value, v, v)
+
 				if column == collection.IdentityField {
 					id = v
 				} else if len(wantedFields) > 0 {
@@ -876,10 +894,15 @@ func (self *SqlBackend) refreshAllCollections() error {
 			var tableName string
 
 			if err := rows.Scan(&tableName); err == nil {
-				knownTables = append(knownTables, tableName)
+				if definition, ok := self.registeredCollections[tableName]; ok {
+					knownTables = append(knownTables, definition.Name)
 
-				if err := self.refreshCollection(tableName); err != nil {
-					log.Errorf("Error refreshing collection %s: %v", tableName, err)
+					if err := self.refreshCollection(definition.Name, definition); err != nil {
+						log.Errorf("Error refreshing collection %s: %v", definition.Name, err)
+					}
+				} else {
+					// skip unregistered tables
+					continue
 				}
 			} else {
 				log.Errorf("Error refreshing collection %s: %v", tableName, err)
@@ -905,12 +928,17 @@ func (self *SqlBackend) refreshAllCollections() error {
 	}
 }
 
-func (self *SqlBackend) refreshCollection(name string) error {
+func (self *SqlBackend) refreshCollection(name string, definition *dal.Collection) error {
 	if collection, err := self.refreshCollectionFunc(
 		strings.TrimPrefix(self.conn.Dataset(), `/`),
 		name,
 	); err == nil {
 		if len(collection.Fields) > 0 {
+			// we've read the collection back from the database, but in the process we've lost
+			// some local values that only existed on the definition itself.  we need to copy those into
+			// the collection that just came back
+			collection.ApplyDefinition(definition)
+
 			self.collectionCacheLock.Lock()
 			defer self.collectionCacheLock.Unlock()
 			self.collectionCache[collection.Name] = collection

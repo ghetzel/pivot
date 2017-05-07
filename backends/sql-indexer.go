@@ -3,12 +3,13 @@ package backends
 // this file satifies the Indexer interface for SqlBackend
 
 import (
+	"math"
+	"reflect"
+
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
-	"math"
-	"reflect"
 )
 
 func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, resultFn IndexResultFunc) error {

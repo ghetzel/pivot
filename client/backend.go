@@ -2,10 +2,11 @@ package pivot
 
 import (
 	"fmt"
-	"github.com/ghetzel/go-stockutil/maputil"
-	"github.com/ghetzel/pivot/backends"
 	"strings"
 	"time"
+
+	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/ghetzel/pivot/backends"
 )
 
 type Backend struct {

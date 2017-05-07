@@ -1,13 +1,14 @@
 package dal
 
 import (
-	"github.com/ghetzel/go-stockutil/stringutil"
 	"net/url"
 	"os"
 	"os/user"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/ghetzel/go-stockutil/stringutil"
 )
 
 type ConnectionString struct {

@@ -2,11 +2,12 @@ package dal
 
 import (
 	"fmt"
+	"reflect"
+	"time"
+
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
-	"reflect"
-	"time"
 )
 
 type Field struct {
@@ -56,6 +57,15 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 	case FloatType:
 		convertType = stringutil.Float
 	case TimeType:
+		// parse incoming int64s as epoch or epoch milliseconds
+		if inInt64, ok := in.(int64); ok {
+			if inInt64 < 4294967296 {
+				return time.Unix(inInt64, 0), nil
+			} else {
+				return time.Unix(0, inInt64), nil
+			}
+		}
+
 		convertType = stringutil.Time
 	default:
 		return in, nil
@@ -87,7 +97,7 @@ func (self *Field) GetTypeInstance() interface{} {
 	case FloatType:
 		return float64(0.0)
 	case TimeType:
-		return time.Time{}
+		return &time.Time{}
 	case ObjectType:
 		return make(map[string]interface{})
 	default:

@@ -3,6 +3,8 @@ package backends
 import (
 	"database/sql"
 	"fmt"
+	"strings"
+
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/pathutil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
@@ -10,7 +12,6 @@ import (
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter/generators"
 	_ "github.com/mattn/go-sqlite3"
-	"strings"
 )
 
 func (self *SqlBackend) initializeSqlite() (string, string, error) {

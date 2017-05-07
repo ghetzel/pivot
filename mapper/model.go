@@ -2,11 +2,12 @@ package mapper
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"reflect"
 )
 
 type ResultFunc func(ptrToInstance interface{}, err error) // {}
@@ -96,6 +97,8 @@ func (self *Model) Migrate() error {
 		actualCollection = c
 	}
 
+	fmt.Printf("actualCollection: %+v", actualCollection)
+
 	if diffs := self.collection.Diff(actualCollection); diffs != nil {
 		msg := fmt.Sprintf("Actual schema for collection '%s' differs from desired schema:\n", self.collection.Name)
 
@@ -105,6 +108,9 @@ func (self *Model) Migrate() error {
 
 		return fmt.Errorf(msg)
 	}
+
+	// overlay the definition onto whatever the backend came back with
+	actualCollection.ApplyDefinition(self.collection)
 
 	return nil
 }

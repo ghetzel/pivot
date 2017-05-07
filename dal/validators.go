@@ -2,6 +2,7 @@ package dal
 
 import (
 	"fmt"
+
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 )

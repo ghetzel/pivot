@@ -1,9 +1,10 @@
 package filter
 
 import (
+	"testing"
+
 	"github.com/ghetzel/pivot/dal"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestFilterParse(t *testing.T) {

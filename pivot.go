@@ -1,10 +1,11 @@
 package pivot
 
 import (
+	"time"
+
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/op/go-logging"
-	"time"
 )
 
 var log = logging.MustGetLogger(`pivot`)

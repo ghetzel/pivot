@@ -2,6 +2,7 @@ package generators
 
 import (
 	"fmt"
+
 	"github.com/ghetzel/pivot/filter"
 )
 

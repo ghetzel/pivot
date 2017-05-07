@@ -2,8 +2,9 @@ package dal
 
 import (
 	"fmt"
-	"github.com/ghetzel/go-stockutil/typeutil"
 	"reflect"
+
+	"github.com/ghetzel/go-stockutil/typeutil"
 )
 
 type CollectionAction int
@@ -48,6 +49,49 @@ func NewCollection(name string) *Collection {
 func (self *Collection) AddFields(fields ...Field) *Collection {
 	self.Fields = append(self.Fields, fields...)
 	return self
+}
+
+// Copies certain collection and field properties from the definition object into this collection
+// instance.  This is useful for collections that are created by parsing the schema as it exists on
+// the remote datastore, which will have some but not all of the information we need to work with the
+// data.  Definition collections are the authoritative source for things like what the default value
+// should be, and which validators and formatters apply to a given field.
+//
+// This function converts this instance into a Collection definition by copying the relevant values
+// from given definition.
+//
+func (self *Collection) ApplyDefinition(definition *Collection) error {
+	if definition != nil {
+		for i, field := range self.Fields {
+			if defField, ok := definition.GetField(field.Name); ok {
+				if field.Description == `` {
+					self.Fields[i].Description = defField.Description
+				}
+
+				if field.Length == 0 && defField.Length != 0 {
+					self.Fields[i].Length = defField.Length
+				}
+
+				if field.Precision == 0 && defField.Precision != 0 {
+					self.Fields[i].Precision = defField.Precision
+				}
+
+				// unconditionally pull these over as they are either client-only fields or we know better
+				// than the database on this one
+				self.Fields[i].Type = defField.Type
+				self.Fields[i].KeyType = defField.KeyType
+				self.Fields[i].Subtype = defField.Subtype
+				self.Fields[i].DefaultValue = defField.DefaultValue
+				self.Fields[i].ValidateOnPopulate = defField.ValidateOnPopulate
+				self.Fields[i].Validator = defField.Validator
+				self.Fields[i].Formatter = defField.Formatter
+			} else {
+				return fmt.Errorf("Definition is missing field %q", field.Name)
+			}
+		}
+	}
+
+	return nil
 }
 
 func (self *Collection) SetRecordType(in interface{}) *Collection {
@@ -175,11 +219,31 @@ func (self *Collection) NewInstance(initializers ...InitializerFunc) interface{}
 	return instance
 }
 
+func (self *Collection) FillDefaults(record *Record) {
+	for _, field := range self.Fields {
+		if field.DefaultValue != nil {
+			if typeutil.IsZero(record.Get(field.Name)) {
+				record.Set(field.Name, field.GetDefaultValue())
+			}
+		}
+	}
+}
+
 func (self *Collection) GetField(name string) (Field, bool) {
 	for _, field := range self.Fields {
 		if field.Name == name {
 			return field, true
 		}
+	}
+
+	if name == self.IdentityField {
+		return Field{
+			Name:     self.IdentityField,
+			Type:     self.IdentityFieldType,
+			Identity: true,
+			Key:      true,
+			Required: true,
+		}, true
 	}
 
 	return Field{}, false

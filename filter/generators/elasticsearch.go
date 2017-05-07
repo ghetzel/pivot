@@ -3,6 +3,7 @@ package generators
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/ghetzel/pivot/filter"
 )
 

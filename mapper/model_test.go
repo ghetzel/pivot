@@ -1,12 +1,13 @@
 package mapper
 
 import (
-	"github.com/ghetzel/pivot"
-	"github.com/ghetzel/pivot/dal"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/ghetzel/pivot"
+	"github.com/ghetzel/pivot/dal"
+	"github.com/stretchr/testify/require"
 )
 
 func TestModelCRUD(t *testing.T) {

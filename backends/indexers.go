@@ -2,9 +2,10 @@ package backends
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"math"
 )
 
 var IndexerPageSize int = 100

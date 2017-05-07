@@ -4,6 +4,7 @@ package backends
 
 import (
 	"database/sql"
+
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 )

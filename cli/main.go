@@ -1,11 +1,12 @@
 package main
 
 import (
+	"os"
+
 	"github.com/ghetzel/cli"
 	"github.com/ghetzel/pivot"
 	"github.com/ghetzel/pivot/util"
 	"github.com/op/go-logging"
-	"os"
 )
 
 var log = logging.MustGetLogger(`main`)

@@ -3,13 +3,14 @@ package backends
 import (
 	"database/sql"
 	"fmt"
+	"strings"
+
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
 	_ "github.com/lib/pq"
-	"strings"
 )
 
 func (self *SqlBackend) initializePostgres() (string, string, error) {

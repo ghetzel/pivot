@@ -4,14 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"reflect"
+	"sort"
+	"strings"
+	"time"
+
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"reflect"
-	"sort"
-	"strings"
 )
 
 var SqlObjectTypeEncode = func(in interface{}) ([]byte, error) {
@@ -603,6 +605,11 @@ func (self *Sql) ApplyNormalizer(fieldName string, in string) string {
 }
 
 func (self *Sql) PrepareInputValue(f string, value interface{}) (interface{}, error) {
+	// times get returned as-is
+	if _, ok := value.(time.Time); ok {
+		return value, nil
+	}
+
 	switch reflect.ValueOf(value).Kind() {
 	case reflect.Struct, reflect.Map, reflect.Ptr, reflect.Array, reflect.Slice:
 		return SqlObjectTypeEncode(value)

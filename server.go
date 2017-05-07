@@ -3,6 +3,10 @@ package pivot
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
@@ -10,9 +14,6 @@ import (
 	"github.com/ghetzel/pivot/util"
 	"github.com/husobee/vestigo"
 	"github.com/urfave/negroni"
-	"net/http"
-	"strings"
-	"time"
 )
 
 const DEFAULT_SERVER_ADDRESS = `127.0.0.1`

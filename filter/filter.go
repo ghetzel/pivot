@@ -2,12 +2,13 @@ package filter
 
 import (
 	"fmt"
-	"github.com/fatih/structs"
-	"github.com/ghetzel/go-stockutil/sliceutil"
-	"github.com/ghetzel/pivot/dal"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/fatih/structs"
+	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/pivot/dal"
 )
 
 var CriteriaSeparator = `/`
