@@ -574,7 +574,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 		if _, err := tx.Exec(stmt, values...); err == nil {
 			defer func() {
 				self.RegisterCollection(definition)
-				self.refreshAllCollections()
+				self.refreshCollection(definition.Name, definition)
 			}()
 			return tx.Commit()
 		} else {
