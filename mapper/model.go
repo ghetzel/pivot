@@ -64,6 +64,8 @@ func NewModel(db backends.Backend, collection *dal.Collection) *Model {
 		model.collection.IdentityFieldType = v
 	}
 
+	db.RegisterCollection(collection)
+
 	return model
 }
 
