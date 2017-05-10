@@ -948,6 +948,17 @@ func (self *SqlBackend) refreshCollection(name string, definition *dal.Collectio
 
 func (self *SqlBackend) getCollectionFromCache(name string) (*dal.Collection, error) {
 	self.collectionCacheLock.RLock()
+
+	if len(self.collectionCache) == 0 {
+		self.collectionCacheLock.RUnlock()
+
+		if err := self.refreshAllCollections(); err != nil {
+			return nil, err
+		}
+
+		self.collectionCacheLock.RLock()
+	}
+
 	collection, ok := self.collectionCache[name]
 	self.collectionCacheLock.RUnlock()
 
