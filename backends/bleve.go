@@ -355,7 +355,17 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 }
 
 func (self *BleveIndexer) DeleteQuery(name string, f filter.Filter) error {
-	return fmt.Errorf("not implemented")
+	f.Fields = []string{BleveIdentityField}
+	var ids []interface{}
+
+	if err := self.QueryFunc(name, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
+		ids = append(ids, indexRecord.ID)
+		return nil
+	}); err == nil {
+		return self.parent.Delete(name, ids)
+	} else {
+		return err
+	}
 }
 
 func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index, error) {
