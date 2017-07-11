@@ -59,7 +59,7 @@ type SqlBackend struct {
 	collectionCacheLock         sync.RWMutex
 }
 
-func NewSqlBackend(connection dal.ConnectionString) *SqlBackend {
+func NewSqlBackend(connection dal.ConnectionString) Backend {
 	return &SqlBackend{
 		conn:                      connection,
 		queryGenTypeMapping:       generators.DefaultSqlTypeMapping,

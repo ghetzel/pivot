@@ -191,7 +191,7 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 
 						// skip values that are that type's zero value if OmitEmpty is set
 						if field.OmitEmpty {
-							if value == nil || value == reflect.Zero(reflect.TypeOf(value)).Interface() {
+							if typeutil.IsZero(value) {
 								continue
 							}
 						}

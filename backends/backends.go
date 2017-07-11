@@ -30,13 +30,32 @@ type Backend interface {
 	WithAggregator(collection string) Aggregator
 }
 
+var NotImplementedError = fmt.Errorf("Not Implemented")
+
+type BackendFunc func(dal.ConnectionString) Backend
+
+var backendMap = map[string]BackendFunc{
+	`sqlite`:   NewSqlBackend,
+	`mysql`:    NewSqlBackend,
+	`postgres`: NewSqlBackend,
+	`fs`:       NewFilesystemBackend,
+}
+
+func RegisterBackend(name string, fn BackendFunc) {
+	backendMap[name] = fn
+}
+
 func MakeBackend(connection dal.ConnectionString) (Backend, error) {
+	backendName := connection.Backend()
 	log.Debugf("Creating backend for connection string %q", connection.String())
 
-	switch connection.Backend() {
-	case `sqlite`, `mysql`, `postgres`:
-		return NewSqlBackend(connection), nil
-	default:
-		return nil, fmt.Errorf("Unknown backend type %q", connection.Backend())
+	if fn, ok := backendMap[backendName]; ok {
+		if backend := fn(connection); backend != nil {
+			return backend, nil
+		} else {
+			return nil, fmt.Errorf("Error occurred instantiating backend %q", backendName)
+		}
+	} else {
+		return nil, fmt.Errorf("Unknown backend type %q", backendName)
 	}
 }

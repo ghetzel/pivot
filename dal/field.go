@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"time"
@@ -223,4 +224,24 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 	}
 
 	return diff
+}
+
+func (self *Field) MarshalJSON() ([]byte, error) {
+	type Alias Field
+
+	if data, err := json.Marshal(&struct {
+		*Alias
+	}{
+		Alias: (*Alias)(self),
+	}); err == nil {
+		return data, nil
+	} else {
+		return json.Marshal(&struct {
+			DefaultValue interface{} `json:"default,omitempty"`
+			*Alias
+		}{
+			DefaultValue: nil,
+			Alias:        (*Alias)(self),
+		})
+	}
 }

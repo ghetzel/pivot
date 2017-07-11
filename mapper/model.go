@@ -95,6 +95,8 @@ func (self *Model) Migrate() error {
 		} else {
 			return err
 		}
+	} else if err != nil {
+		return err
 	} else {
 		actualCollection = c
 	}

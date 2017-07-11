@@ -3,6 +3,7 @@ package pivot
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -37,6 +38,51 @@ func setupTestMysql(run func()) {
 	}
 }
 
+func setupTestFilesystemDefault(run func()) {
+	if root, err := ioutil.TempDir(``, `pivot-backend-fs-default-`); err == nil {
+		defer os.RemoveAll(root)
+
+		if b, err := makeBackend(fmt.Sprintf("fs://%s/", root)); err == nil {
+			backend = b
+			run()
+		} else {
+			fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+		}
+	} else {
+		panic(err.Error())
+	}
+}
+
+func setupTestFilesystemYaml(run func()) {
+	if root, err := ioutil.TempDir(``, `pivot-backend-fs-yaml-`); err == nil {
+		defer os.RemoveAll(root)
+
+		if b, err := makeBackend(fmt.Sprintf("fs+yaml://%s/", root)); err == nil {
+			backend = b
+			run()
+		} else {
+			fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+		}
+	} else {
+		panic(err.Error())
+	}
+}
+
+func setupTestFilesystemJson(run func()) {
+	if root, err := ioutil.TempDir(``, `pivot-backend-fs-json-`); err == nil {
+		defer os.RemoveAll(root)
+
+		if b, err := makeBackend(fmt.Sprintf("fs+yaml://%s/", root)); err == nil {
+			backend = b
+			run()
+		} else {
+			fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+		}
+	} else {
+		panic(err.Error())
+	}
+}
+
 func TestMain(m *testing.M) {
 	var i int
 
@@ -48,8 +94,11 @@ func TestMain(m *testing.M) {
 		}
 	}
 
-	setupTestMysql(run)
+	// setupTestMysql(run)
 	setupTestSqlite(run)
+	setupTestFilesystemDefault(run)
+	setupTestFilesystemYaml(run)
+	setupTestFilesystemJson(run)
 }
 
 func makeBackend(conn string) (backends.Backend, error) {
@@ -623,41 +672,40 @@ func TestAggregators(t *testing.T) {
 
 	assert.NoError(err)
 
-	// Insert and Retrieve
-	// --------------------------------------------------------------------------------------------
-	assert.NoError(backend.Insert(`TestAggregators`, dal.NewRecordSet(
-		dal.NewRecord(nil).Set(`color`, `red`).Set(`inventory`, 34).Set(`factor`, float64(2.7)).Set(`created_at`, time.Now()),
-		dal.NewRecord(nil).Set(`color`, `green`).Set(`inventory`, 92).Set(`factor`, float64(9.8)).Set(`created_at`, time.Now()),
-		dal.NewRecord(nil).Set(`color`, `blue`).Set(`inventory`, 0).Set(`factor`, float64(5.6)).Set(`created_at`, time.Now()),
-		dal.NewRecord(nil).Set(`color`, `orange`).Set(`inventory`, 54).Set(`factor`, float64(0)).Set(`created_at`, time.Now()),
-		dal.NewRecord(nil).Set(`color`, `yellow`).Set(`inventory`, 123).Set(`factor`, float64(3.14)).Set(`created_at`, time.Now()),
-		dal.NewRecord(nil).Set(`color`, `gold`).Set(`inventory`, 19).Set(`factor`, float64(4.67)).Set(`created_at`, time.Now()),
-	)))
+	if agg := backend.WithAggregator(`TestAggregators`); agg != nil {
+		// Insert and Retrieve
+		// --------------------------------------------------------------------------------------------
+		assert.NoError(backend.Insert(`TestAggregators`, dal.NewRecordSet(
+			dal.NewRecord(nil).Set(`color`, `red`).Set(`inventory`, 34).Set(`factor`, float64(2.7)).Set(`created_at`, time.Now()),
+			dal.NewRecord(nil).Set(`color`, `green`).Set(`inventory`, 92).Set(`factor`, float64(9.8)).Set(`created_at`, time.Now()),
+			dal.NewRecord(nil).Set(`color`, `blue`).Set(`inventory`, 0).Set(`factor`, float64(5.6)).Set(`created_at`, time.Now()),
+			dal.NewRecord(nil).Set(`color`, `orange`).Set(`inventory`, 54).Set(`factor`, float64(0)).Set(`created_at`, time.Now()),
+			dal.NewRecord(nil).Set(`color`, `yellow`).Set(`inventory`, 123).Set(`factor`, float64(3.14)).Set(`created_at`, time.Now()),
+			dal.NewRecord(nil).Set(`color`, `gold`).Set(`inventory`, 19).Set(`factor`, float64(4.67)).Set(`created_at`, time.Now()),
+		)))
 
-	agg := backend.WithAggregator(`TestAggregators`)
-	assert.NotNil(agg)
+		vui, err := agg.Count(`TestAggregators`, filter.All)
+		assert.NoError(err)
+		assert.Equal(uint64(6), vui)
 
-	vui, err := agg.Count(`TestAggregators`, filter.All)
-	assert.NoError(err)
-	assert.Equal(uint64(6), vui)
+		vf, err := agg.Sum(`TestAggregators`, `inventory`, filter.All)
+		assert.NoError(err)
+		assert.Equal(float64(322), vf)
 
-	vf, err := agg.Sum(`TestAggregators`, `inventory`, filter.All)
-	assert.NoError(err)
-	assert.Equal(float64(322), vf)
+		vf, err = agg.Minimum(`TestAggregators`, `inventory`, filter.All)
+		assert.NoError(err)
+		assert.Equal(float64(0), vf)
 
-	vf, err = agg.Minimum(`TestAggregators`, `inventory`, filter.All)
-	assert.NoError(err)
-	assert.Equal(float64(0), vf)
+		vf, err = agg.Minimum(`TestAggregators`, `factor`, filter.All)
+		assert.NoError(err)
+		assert.Equal(float64(0), vf)
 
-	vf, err = agg.Minimum(`TestAggregators`, `factor`, filter.All)
-	assert.NoError(err)
-	assert.Equal(float64(0), vf)
+		vf, err = agg.Maximum(`TestAggregators`, `inventory`, filter.All)
+		assert.NoError(err)
+		assert.Equal(float64(123), vf)
 
-	vf, err = agg.Maximum(`TestAggregators`, `inventory`, filter.All)
-	assert.NoError(err)
-	assert.Equal(float64(123), vf)
-
-	vf, err = agg.Maximum(`TestAggregators`, `factor`, filter.All)
-	assert.NoError(err)
-	assert.Equal(float64(9.8), vf)
+		vf, err = agg.Maximum(`TestAggregators`, `factor`, filter.All)
+		assert.NoError(err)
+		assert.Equal(float64(9.8), vf)
+	}
 }
