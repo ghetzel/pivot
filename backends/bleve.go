@@ -170,11 +170,6 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 			page := 1
 			processed := 0
 
-			// filter size falls back to package default
-			if f.Limit == 0 {
-				f.Limit = IndexerPageSize
-			}
-
 			// perform requests until we have enough results or the index is out of them
 			for {
 				request := bleve.NewSearchRequestOptions(bq, IndexerPageSize, offset, false)
