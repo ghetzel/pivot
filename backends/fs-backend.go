@@ -347,10 +347,14 @@ func (self *FilesystemBackend) writeObject(collection *dal.Collection, id string
 
 					if _, err := lockfile.Write([]byte(fmt.Sprintf("%v", time.Now().UnixNano()))); err == nil {
 						if file, err := os.Create(filepath.Join(dataRoot, filename)); err == nil {
+							defer file.Close()
+
 							querylog.Debugf("[%T] Write to %v: %v", self, file.Name(), string(data))
 
 							// write the data
 							_, err := file.Write(data)
+							os.Remove(lockfilename)
+
 							return err
 						} else {
 							return err
@@ -378,6 +382,8 @@ func (self *FilesystemBackend) readObject(collection *dal.Collection, id string,
 	if dataRoot, err := self.getDataRoot(collection.Name, isData); err == nil {
 		if filename := self.makeFilename(collection, id, isData); filename != `` {
 			if file, err := os.Open(filepath.Join(dataRoot, filename)); err == nil {
+				defer file.Close()
+
 				if data, err := ioutil.ReadAll(file); err == nil {
 					switch self.format {
 					case FormatYAML:
