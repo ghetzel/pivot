@@ -39,6 +39,7 @@ var backendMap = map[string]BackendFunc{
 	`mysql`:    NewSqlBackend,
 	`postgres`: NewSqlBackend,
 	`fs`:       NewFilesystemBackend,
+	`tiedot`:   NewTiedotBackend,
 }
 
 func RegisterBackend(name string, fn BackendFunc) {

@@ -17,6 +17,9 @@ import (
 var backend backends.Backend
 var TestData = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 
+var defaultTestCrudIdSet = []interface{}{`1`, `2`, `3`}
+var testCrudIdSet = []interface{}{`1`, `2`, `3`}
+
 func setupTestSqlite(run func()) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
@@ -83,6 +86,24 @@ func setupTestFilesystemJson(run func()) {
 	}
 }
 
+func setupTestTiedot(run func()) {
+	if root, err := ioutil.TempDir(``, `pivot-backend-tiedot-`); err == nil {
+		defer os.RemoveAll(root)
+
+		if b, err := makeBackend(fmt.Sprintf("tiedot://%s/", root)); err == nil {
+			backend = b
+
+			testCrudIdSet = []interface{}{nil, nil, nil}
+			run()
+			testCrudIdSet = defaultTestCrudIdSet
+		} else {
+			fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+		}
+	} else {
+		panic(err.Error())
+	}
+}
+
 func TestMain(m *testing.M) {
 	var i int
 
@@ -95,6 +116,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// setupTestMysql(run)
+	setupTestTiedot(run)
 	setupTestSqlite(run)
 	setupTestFilesystemDefault(run)
 	setupTestFilesystemYaml(run)
@@ -158,20 +180,28 @@ func TestBasicCRUD(t *testing.T) {
 
 	// Insert and Retrieve
 	// --------------------------------------------------------------------------------------------
-	assert.Nil(backend.Insert(`TestBasicCRUD`, dal.NewRecordSet(
-		dal.NewRecord(`1`).Set(`name`, `First`),
-		dal.NewRecord(`2`).Set(`name`, `Second`),
-		dal.NewRecord(`3`).Set(`name`, `Third`))))
+	recordset := dal.NewRecordSet(
+		dal.NewRecord(testCrudIdSet[0]).Set(`name`, `First`),
+		dal.NewRecord(testCrudIdSet[1]).Set(`name`, `Second`),
+		dal.NewRecord(testCrudIdSet[2]).Set(`name`, `Third`))
 
-	assert.True(backend.Exists(`TestBasicCRUD`, `1`))
-	assert.True(backend.Exists(`TestBasicCRUD`, 1))
+	assert.Nil(backend.Insert(`TestBasicCRUD`, recordset))
+
+	assert.True(backend.Exists(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[0].ID)))
+	assert.True(backend.Exists(`TestBasicCRUD`, recordset.Records[0].ID))
 	assert.False(backend.Exists(`TestBasicCRUD`, `99`))
 	assert.False(backend.Exists(`TestBasicCRUD`, 99))
 
-	record, err = backend.Retrieve(`TestBasicCRUD`, `1`)
+	record, err = backend.Retrieve(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[0].ID))
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(int64(1), record.ID)
+
+	if testCrudIdSet[0] == nil {
+		assert.Equal(recordset.Records[0].ID.(int64), record.ID)
+	} else {
+		assert.Equal(int64(1), record.ID)
+	}
+
 	assert.Equal(`First`, record.Get(`name`))
 	assert.Empty(record.Data)
 	v := record.Get(`created_at`)
@@ -180,16 +210,28 @@ func TestBasicCRUD(t *testing.T) {
 	assert.True(ok)
 	assert.False(vTime.IsZero())
 
-	record, err = backend.Retrieve(`TestBasicCRUD`, `2`)
+	record, err = backend.Retrieve(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[1].ID))
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(int64(2), record.ID)
+
+	if testCrudIdSet[1] == nil {
+		assert.Equal(recordset.Records[1].ID.(int64), record.ID)
+	} else {
+		assert.Equal(int64(2), record.ID)
+	}
+
 	assert.Equal(`Second`, record.Get(`name`))
 
-	record, err = backend.Retrieve(`TestBasicCRUD`, `3`)
+	record, err = backend.Retrieve(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[2].ID))
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(int64(3), record.ID)
+
+	if testCrudIdSet[2] == nil {
+		assert.Equal(recordset.Records[2].ID.(int64), record.ID)
+	} else {
+		assert.Equal(int64(3), record.ID)
+	}
+
 	assert.Equal(`Third`, record.Get(`name`))
 
 	// make sure we can json encode the record, too
@@ -199,23 +241,32 @@ func TestBasicCRUD(t *testing.T) {
 	// Update and Retrieve
 	// --------------------------------------------------------------------------------------------
 	assert.Nil(backend.Update(`TestBasicCRUD`, dal.NewRecordSet(
-		dal.NewRecord(`3`).Set(`name`, `Threeve`))))
+		dal.NewRecord(fmt.Sprintf("%v", recordset.Records[2].ID)).Set(`name`, `Threeve`))))
 
-	record, err = backend.Retrieve(`TestBasicCRUD`, `3`)
+	record, err = backend.Retrieve(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[2].ID))
 	assert.Nil(err)
 	assert.NotNil(record)
-	assert.Equal(int64(3), record.ID)
+
+	if testCrudIdSet[2] == nil {
+		assert.Equal(recordset.Records[2].ID.(int64), record.ID)
+	} else {
+		assert.Equal(int64(3), record.ID)
+	}
+
 	assert.Equal(`Threeve`, record.Get(`name`))
 
 	// Retrieve-Delete-Verify
 	// --------------------------------------------------------------------------------------------
-	record, err = backend.Retrieve(`TestBasicCRUD`, `2`)
+	record, err = backend.Retrieve(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[1].ID))
 	assert.Nil(err)
-	assert.Equal(int64(2), record.ID)
 
-	f, err := filter.Parse(fmt.Sprintf("id/2"))
-	assert.Nil(err)
-	assert.Nil(backend.Delete(`TestBasicCRUD`, f))
+	if testCrudIdSet[1] == nil {
+		assert.Equal(recordset.Records[1].ID.(int64), record.ID)
+	} else {
+		assert.Equal(int64(2), record.ID)
+	}
+
+	assert.Nil(backend.Delete(`TestBasicCRUD`, recordset.Records[1].ID))
 }
 
 func TestSearchQuery(t *testing.T) {
@@ -622,25 +673,33 @@ func TestObjectType(t *testing.T) {
 
 	// Insert and Retrieve
 	// --------------------------------------------------------------------------------------------
-	assert.Nil(backend.Insert(`TestObjectType`, dal.NewRecordSet(
-		dal.NewRecord(1).Set(`properties`, map[string]interface{}{
+	recordset := dal.NewRecordSet(
+		dal.NewRecord(testCrudIdSet[0]).Set(`properties`, map[string]interface{}{
 			`name`:  `First`,
 			`count`: 1,
 		}),
-		dal.NewRecord(2).Set(`properties`, map[string]interface{}{
+		dal.NewRecord(testCrudIdSet[1]).Set(`properties`, map[string]interface{}{
 			`name`:    `Second`,
 			`count`:   0,
 			`enabled`: false,
 		}),
-		dal.NewRecord(3).Set(`properties`, map[string]interface{}{
+		dal.NewRecord(testCrudIdSet[2]).Set(`properties`, map[string]interface{}{
 			`name`:  `Third`,
 			`count`: 3,
-		}))))
+		}))
 
-	record, err = backend.Retrieve(`TestObjectType`, 1)
+	assert.Nil(backend.Insert(`TestObjectType`, recordset))
+
+	record, err = backend.Retrieve(`TestObjectType`, recordset.Records[0].ID)
 	assert.NoError(err)
 	assert.NotNil(record)
-	assert.Equal(int64(1), record.ID)
+
+	if testCrudIdSet[0] == nil {
+		assert.Equal(recordset.Records[0].ID.(int64), record.ID)
+	} else {
+		assert.Equal(int64(1), record.ID)
+	}
+
 	assert.Equal(`First`, record.GetNested(`properties.name`))
 	assert.Equal(float64(1), record.GetNested(`properties.count`))
 }
