@@ -111,7 +111,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 										return err
 									}
 								} else {
-									if err := resultFn(nil, err, IndexPage{}); err != nil {
+									if err := resultFn(dal.NewRecord(nil), err, IndexPage{}); err != nil {
 										return err
 									}
 
