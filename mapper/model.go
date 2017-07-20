@@ -180,7 +180,9 @@ func (self *Model) Delete(ids ...interface{}) error {
 // as-is.
 //
 func (self *Model) Find(f filter.Filter, into interface{}) error {
-	if search := self.db.WithSearch(self.collection.Name); search != nil {
+	f.IdentityField = self.collection.IdentityField
+
+	if search := self.db.WithSearch(self.collection.Name, f); search != nil {
 		// perform query
 		if recordset, err := search.Query(self.collection.Name, f); err == nil {
 			return self.populateOutputParameter(f, recordset, into)
@@ -197,8 +199,9 @@ func (self *Model) Find(f filter.Filter, into interface{}) error {
 //
 func (self *Model) FindFunc(f filter.Filter, destZeroValue interface{}, resultFn ResultFunc) error {
 	f.Limit = 0
+	f.IdentityField = self.collection.IdentityField
 
-	if search := self.db.WithSearch(self.collection.Name); search != nil {
+	if search := self.db.WithSearch(self.collection.Name, f); search != nil {
 		_, err := search.Query(self.collection.Name, f, func(record *dal.Record, err error, _ backends.IndexPage) error {
 			if err == nil {
 				if _, ok := destZeroValue.(*dal.Record); ok {
@@ -241,7 +244,9 @@ func (self *Model) List(fields []string) (map[string][]interface{}, error) {
 }
 
 func (self *Model) ListWithFilter(fields []string, f filter.Filter) (map[string][]interface{}, error) {
-	if search := self.db.WithSearch(self.collection.Name); search != nil {
+	f.IdentityField = self.collection.IdentityField
+
+	if search := self.db.WithSearch(self.collection.Name, f); search != nil {
 		return search.ListValues(self.collection.Name, fields, f)
 	} else {
 		return nil, fmt.Errorf("backend %T does not support searching", self.db)
@@ -249,6 +254,8 @@ func (self *Model) ListWithFilter(fields []string, f filter.Filter) (map[string]
 }
 
 func (self *Model) Sum(field string, f filter.Filter) (float64, error) {
+	f.IdentityField = self.collection.IdentityField
+
 	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
 		return agg.Sum(self.collection.Name, field, f)
 	} else {
@@ -257,6 +264,8 @@ func (self *Model) Sum(field string, f filter.Filter) (float64, error) {
 }
 
 func (self *Model) Count(f filter.Filter) (uint64, error) {
+	f.IdentityField = self.collection.IdentityField
+
 	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
 		return agg.Count(self.collection.Name, f)
 	} else {
@@ -265,6 +274,8 @@ func (self *Model) Count(f filter.Filter) (uint64, error) {
 }
 
 func (self *Model) Minimum(field string, f filter.Filter) (float64, error) {
+	f.IdentityField = self.collection.IdentityField
+
 	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
 		return agg.Minimum(self.collection.Name, field, f)
 	} else {
@@ -273,6 +284,8 @@ func (self *Model) Minimum(field string, f filter.Filter) (float64, error) {
 }
 
 func (self *Model) Maximum(field string, f filter.Filter) (float64, error) {
+	f.IdentityField = self.collection.IdentityField
+
 	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
 		return agg.Maximum(self.collection.Name, field, f)
 	} else {
@@ -281,6 +294,8 @@ func (self *Model) Maximum(field string, f filter.Filter) (float64, error) {
 }
 
 func (self *Model) Average(field string, f filter.Filter) (float64, error) {
+	f.IdentityField = self.collection.IdentityField
+
 	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
 		return agg.Average(self.collection.Name, field, f)
 	} else {

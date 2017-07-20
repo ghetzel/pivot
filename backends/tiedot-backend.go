@@ -10,6 +10,7 @@ import (
 	"github.com/ghetzel/go-stockutil/pathutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
 )
 
 type TiedotBackend struct {
@@ -149,7 +150,7 @@ func (self *TiedotBackend) Delete(name string, ids ...interface{}) error {
 	return nil
 }
 
-func (self *TiedotBackend) WithSearch(collectionName string) Indexer {
+func (self *TiedotBackend) WithSearch(collectionName string, filters ...filter.Filter) Indexer {
 	if indexer, ok := self.indexer[collectionName]; ok {
 		return indexer
 	}

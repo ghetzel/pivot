@@ -5,6 +5,7 @@ import (
 
 	"github.com/alexcesaro/statsd"
 	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
 	"github.com/op/go-logging"
 )
 
@@ -26,7 +27,7 @@ type Backend interface {
 	DeleteCollection(collection string) error
 	ListCollections() ([]string, error)
 	GetCollection(collection string) (*dal.Collection, error)
-	WithSearch(collection string) Indexer
+	WithSearch(collection string, filters ...filter.Filter) Indexer
 	WithAggregator(collection string) Aggregator
 }
 

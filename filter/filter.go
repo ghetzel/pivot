@@ -263,6 +263,14 @@ func (self *Filter) IdOnly() bool {
 	return false
 }
 
+func (self *Filter) IsMatchAll() bool {
+	if self.MatchAll || self.Spec == AllValue {
+		return true
+	}
+
+	return false
+}
+
 func (self *Filter) String() string {
 	if self.MatchAll {
 		return AllValue

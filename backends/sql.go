@@ -295,6 +295,11 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 							if rows.Next() {
 								return self.scanFnValueToRecord(collection, columns, reflect.ValueOf(rows.Scan), fields)
 							} else {
+								// if it doesn't exist, make sure it's not indexed
+								if search := self.WithSearch(collection.Name); search != nil {
+									defer search.IndexRemove(collection.Name, []interface{}{id})
+								}
+
 								return nil, fmt.Errorf("Record %v does not exist", id)
 							}
 						} else {
@@ -402,6 +407,11 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 
 func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
+		// remove documents from index
+		if search := self.WithSearch(collection.Name); search != nil {
+			defer search.IndexRemove(collection.Name, ids)
+		}
+
 		f := filter.MakeFilter()
 
 		f.AddCriteria(filter.Criterion{
@@ -420,12 +430,7 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 				// execute SQL
 				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
 					if err := tx.Commit(); err == nil {
-						if search := self.WithSearch(collection.Name); search != nil {
-							// remove documents from index
-							return search.IndexRemove(collection.Name, ids)
-						} else {
-							return nil
-						}
+						return nil
 					} else {
 						return err
 					}
@@ -445,7 +450,13 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 	}
 }
 
-func (self *SqlBackend) WithSearch(collectionName string) Indexer {
+func (self *SqlBackend) WithSearch(collectionName string, filters ...filter.Filter) Indexer {
+	if len(filters) > 0 {
+		if filters[0].MatchAll {
+			return self
+		}
+	}
+
 	if indexer, ok := self.indexer[collectionName]; ok {
 		return indexer
 	}

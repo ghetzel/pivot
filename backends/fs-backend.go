@@ -14,6 +14,7 @@ import (
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
 	"github.com/ghodss/yaml"
 )
 
@@ -190,16 +191,16 @@ func (self *FilesystemBackend) Update(name string, recordset *dal.RecordSet, tar
 
 func (self *FilesystemBackend) Delete(name string, ids ...interface{}) error {
 	if collection, ok := self.registeredCollections[name]; ok {
+		// remove documents from index
+		if search := self.WithSearch(collection.Name); search != nil {
+			defer search.IndexRemove(collection.Name, ids)
+		}
+
 		if dataRoot, err := self.getDataRoot(collection.Name, true); err == nil {
 			for _, id := range ids {
 				if filename := self.makeFilename(collection, fmt.Sprintf("%v", id), true); filename != `` {
 					os.Remove(filepath.Join(dataRoot, filename))
 				}
-			}
-
-			if search := self.WithSearch(collection.Name); search != nil {
-				// remove documents from index
-				return search.IndexRemove(collection.Name, ids)
 			}
 
 			return nil
@@ -211,7 +212,7 @@ func (self *FilesystemBackend) Delete(name string, ids ...interface{}) error {
 	}
 }
 
-func (self *FilesystemBackend) WithSearch(collectionName string) Indexer {
+func (self *FilesystemBackend) WithSearch(collectionName string, filters ...filter.Filter) Indexer {
 	if indexer, ok := self.indexer[collectionName]; ok {
 		return indexer
 	}
@@ -402,6 +403,13 @@ func (self *FilesystemBackend) readObject(collection *dal.Collection, id string,
 				} else {
 					return err
 				}
+			} else if os.IsNotExist(err) {
+				// if it doesn't exist, make sure it's not indexed
+				if search := self.WithSearch(collection.Name); search != nil {
+					defer search.IndexRemove(collection.Name, []interface{}{id})
+				}
+
+				return fmt.Errorf("Record %v does not exist", id)
 			} else {
 				return err
 			}

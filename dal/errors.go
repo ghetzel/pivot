@@ -2,6 +2,7 @@ package dal
 
 import (
 	"fmt"
+	"strings"
 )
 
 const (
@@ -16,4 +17,12 @@ func IsCollectionNotFoundErr(err error) bool {
 	}
 
 	return (err.Error() == ERR_COLLECTION_NOT_FOUND)
+}
+
+func IsNotExistError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	return strings.HasSuffix(err.Error(), ` does not exist`)
 }
