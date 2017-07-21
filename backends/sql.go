@@ -33,7 +33,7 @@ type sqlTableDetails struct {
 
 type additionalIndexer struct {
 	ForCollection string
-	Indexer Indexer
+	Indexer       Indexer
 }
 
 type sqlTableDetailsFunc func(datasetName string, collectionName string) (*dal.Collection, error)
@@ -44,7 +44,7 @@ type SqlBackend struct {
 	Aggregator
 	conn                        dal.ConnectionString
 	db                          *sql.DB
-	indexer                     []additionalIndexer
+	indexer                     Indexer
 	aggregator                  map[string]Aggregator
 	options                     ConnectOptions
 	queryGenTypeMapping         generators.SqlTypeMapping
@@ -72,7 +72,6 @@ func NewSqlBackend(connection dal.ConnectionString) Backend {
 		registeredCollections:     make(map[string]*dal.Collection),
 		collectionCache:           make(map[string]*dal.Collection),
 		dropTableQuery:            `DROP TABLE %s`,
-		indexer:                   make([]additionalIndexer, 0),
 		aggregator:                make(map[string]Aggregator),
 	}
 }
@@ -137,9 +136,7 @@ func (self *SqlBackend) Initialize() error {
 		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
-					self.indexer = []additionalIndexer{
-						Indexer: indexer,
-					}
+					self.indexer = indexer
 				} else {
 					return err
 				}
@@ -150,24 +147,22 @@ func (self *SqlBackend) Initialize() error {
 			return err
 		}
 	} else {
-		self.indexer = []additionalIndexer{
-			Indexer: self,
-		}
+		self.indexer = self
 	}
 
-	for name, addlIndexerConnString := range self.options.AdditionalIndexers {
-		if ics, err := dal.ParseConnectionString(addlIndexerConnString); err == nil {
-			if indexer, err := MakeIndexer(ics); err == nil {
-				if err := indexer.IndexInitialize(self); err == nil {
-					self.indexer = append(self.indexer, additionalIndexer{
-						Indexer: indexer,
-					})
-				} else {
-					return err
-				}
-			} else {
+	if len(self.options.AdditionalIndexers) > 0 {
+		mi := NewMultiIndex()
+		multi := mi.(*MultiIndex)
+		multi.AddIndexer(self.indexer)
+
+		for _, addlIndexerConnString := range self.options.AdditionalIndexers {
+			if err := multi.AddIndexerByConnectionString(addlIndexerConnString); err != nil {
 				return err
 			}
+		}
+
+		if err := multi.IndexInitialize(self); err == nil {
+			self.indexer = multi
 		} else {
 			return err
 		}
@@ -296,10 +291,10 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 
 			if err := queryGen.Initialize(collection.Name); err == nil {
 				if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-					querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
+					querylog.Debugf("[%T] %s %v", self, string(stmt[:]), id)
 
 					// perform query
-					if rows, err := self.db.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
+					if rows, err := self.db.Query(string(stmt[:]), id); err == nil {
 						defer rows.Close()
 
 						if columns, err := rows.Columns(); err == nil {
@@ -462,19 +457,7 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 }
 
 func (self *SqlBackend) WithSearch(collectionName string, filters ...filter.Filter) Indexer {
-	if len(filters) > 0 {
-		if filters[0].MatchAll {
-			return self
-		}
-	}
-
-	if indexer, ok := self.indexer[collectionName]; ok {
-		return indexer
-	}
-
-	defaultIndexer, _ := self.indexer[``]
-
-	return defaultIndexer
+	return self.indexer
 }
 
 func (self *SqlBackend) WithAggregator(collectionName string) Aggregator {

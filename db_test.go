@@ -32,6 +32,21 @@ func setupTestSqlite(run func()) {
 	}
 }
 
+func setupTestSqliteWithBleveIndexer(run func()) {
+	os.RemoveAll(`./tmp/db_test`)
+	os.MkdirAll(`./tmp/db_test`, 0755)
+
+	if b, err := makeBackend(`sqlite:///./tmp/db_test/test.db`, backends.ConnectOptions{
+		Indexer: `bleve:///./tmp/db_test/`,
+	}); err == nil {
+		backend = b
+		run()
+	} else {
+		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+	}
+}
+
+
 func setupTestMysql(run func()) {
 	if b, err := makeBackend(`mysql://test:test@db/test`); err == nil {
 		backend = b
@@ -118,14 +133,19 @@ func TestMain(m *testing.M) {
 	// setupTestMysql(run)
 	setupTestTiedot(run)
 	setupTestSqlite(run)
+	setupTestSqliteWithBleveIndexer(run)
 	setupTestFilesystemDefault(run)
 	setupTestFilesystemYaml(run)
 	setupTestFilesystemJson(run)
 }
 
-func makeBackend(conn string) (backends.Backend, error) {
+func makeBackend(conn string, options ...backends.ConnectOptions) (backends.Backend, error) {
 	if cs, err := dal.ParseConnectionString(conn); err == nil {
 		if backend, err := backends.MakeBackend(cs); err == nil {
+			if len(options) > 0 {
+				backend.SetOptions(options[0])
+			}
+
 			if err := backend.Initialize(); err == nil {
 				return backend, nil
 			} else {
