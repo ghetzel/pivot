@@ -31,6 +31,11 @@ type sqlTableDetails struct {
 	DefaultValue string
 }
 
+type additionalIndexer struct {
+	ForCollection string
+	Indexer Indexer
+}
+
 type sqlTableDetailsFunc func(datasetName string, collectionName string) (*dal.Collection, error)
 
 type SqlBackend struct {
@@ -39,7 +44,7 @@ type SqlBackend struct {
 	Aggregator
 	conn                        dal.ConnectionString
 	db                          *sql.DB
-	indexer                     map[string]Indexer
+	indexer                     []additionalIndexer
 	aggregator                  map[string]Aggregator
 	options                     ConnectOptions
 	queryGenTypeMapping         generators.SqlTypeMapping
@@ -67,7 +72,7 @@ func NewSqlBackend(connection dal.ConnectionString) Backend {
 		registeredCollections:     make(map[string]*dal.Collection),
 		collectionCache:           make(map[string]*dal.Collection),
 		dropTableQuery:            `DROP TABLE %s`,
-		indexer:                   make(map[string]Indexer),
+		indexer:                   make([]additionalIndexer, 0),
 		aggregator:                make(map[string]Aggregator),
 	}
 }
@@ -132,7 +137,9 @@ func (self *SqlBackend) Initialize() error {
 		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
-					self.indexer[``] = indexer
+					self.indexer = []additionalIndexer{
+						Indexer: indexer,
+					}
 				} else {
 					return err
 				}
@@ -143,14 +150,18 @@ func (self *SqlBackend) Initialize() error {
 			return err
 		}
 	} else {
-		self.indexer[``] = self
+		self.indexer = []additionalIndexer{
+			Indexer: self,
+		}
 	}
 
 	for name, addlIndexerConnString := range self.options.AdditionalIndexers {
 		if ics, err := dal.ParseConnectionString(addlIndexerConnString); err == nil {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
-					self.indexer[name] = indexer
+					self.indexer = append(self.indexer, additionalIndexer{
+						Indexer: indexer,
+					})
 				} else {
 					return err
 				}
