@@ -56,6 +56,15 @@ func setupTestMysql(run func()) {
 	}
 }
 
+func setupTestPostgres(run func()) {
+	if b, err := makeBackend(`postgres://test:test@db/test`); err == nil {
+		backend = b
+		run()
+	} else {
+		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+	}
+}
+
 func setupTestFilesystemDefault(run func()) {
 	if root, err := ioutil.TempDir(``, `pivot-backend-fs-default-`); err == nil {
 		defer os.RemoveAll(root)
