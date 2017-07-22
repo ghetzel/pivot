@@ -195,6 +195,10 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 					// totalPages = ceil(result count / page size)
 					totalPages := int(math.Ceil(float64(results.Total) / float64(f.Limit)))
 
+					if totalPages <= 0 {
+						totalPages = 1
+					}
+
 					// call the resultFn for each hit on this page
 					for _, hit := range results.Hits {
 						if err := resultFn(dal.NewRecord(hit.ID).SetFields(hit.Fields), nil, IndexPage{
@@ -246,22 +250,23 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter, resultFns ..
 
 	if err := self.QueryFunc(collection, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
 		PopulateRecordSetPageDetails(recordset, f, page)
+		emptyRecord := dal.NewRecord(indexRecord.ID)
 
 		if len(resultFns) > 0 {
 			resultFn := resultFns[0]
 
 			if f.IdOnly() {
-				return resultFn(dal.NewRecord(indexRecord.ID), err, page)
+				return resultFn(emptyRecord, err, page)
 			} else {
 				if record, err := self.parent.Retrieve(collection, indexRecord.ID, f.Fields...); err == nil {
 					return resultFn(record, err, page)
 				} else {
-					return resultFn(nil, err, page)
+					return resultFn(emptyRecord, err, page)
 				}
 			}
 		} else {
 			if f.IdOnly() {
-				recordset.Records = append(recordset.Records, dal.NewRecord(indexRecord.ID))
+				recordset.Records = append(recordset.Records, emptyRecord)
 			} else {
 				if record, err := self.parent.Retrieve(collection, indexRecord.ID, f.Fields...); err == nil {
 					recordset.Records = append(recordset.Records, record)
@@ -317,24 +322,26 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 
 				output := make(map[string][]interface{})
 
+				for name, facet := range results.Facets {
+					values := make([]interface{}, 0)
+
+					for _, term := range facet.Terms {
+						values = append(values, term.Term)
+					}
+
+					querylog.Debugf("[%T] facet %q (%d values)", self, name, len(values))
+					output[name] = sliceutil.Compact(values)
+				}
+
 				if idQuery {
 					values := make([]interface{}, 0)
 
 					for _, hit := range results.Hits {
-						values = append(values, hit.ID)
+						values = append(values, stringutil.Autotype(hit.ID))
 					}
 
+					querylog.Debugf("[%T] facet _id (%d values)", self, len(values))
 					output[`id`] = values
-				} else {
-					for name, facet := range results.Facets {
-						values := make([]interface{}, 0)
-
-						for _, term := range facet.Terms {
-							values = append(values, term.Term)
-						}
-
-						output[name] = sliceutil.Compact(values)
-					}
 				}
 
 				return output, nil
