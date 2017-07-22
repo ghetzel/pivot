@@ -46,6 +46,21 @@ func setupTestSqliteWithBleveIndexer(run func()) {
 	}
 }
 
+func setupTestSqliteWithAdditionalBleveIndexer(run func()) {
+	os.RemoveAll(`./tmp/db_test`)
+	os.MkdirAll(`./tmp/db_test`, 0755)
+
+	if b, err := makeBackend(`sqlite:///./tmp/db_test/test.db`, backends.ConnectOptions{
+		AdditionalIndexers: []string{
+			`bleve:///./tmp/db_test/`,
+		},
+	}); err == nil {
+		backend = b
+		run()
+	} else {
+		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+	}
+}
 
 func setupTestMysql(run func()) {
 	if b, err := makeBackend(`mysql://test:test@db/test`); err == nil {
@@ -139,10 +154,11 @@ func TestMain(m *testing.M) {
 		}
 	}
 
-	// setupTestMysql(run)
+	setupTestMysql(run)
 	setupTestTiedot(run)
 	setupTestSqlite(run)
 	setupTestSqliteWithBleveIndexer(run)
+	setupTestSqliteWithAdditionalBleveIndexer(run)
 	setupTestFilesystemDefault(run)
 	setupTestFilesystemYaml(run)
 	setupTestFilesystemJson(run)

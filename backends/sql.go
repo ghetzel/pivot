@@ -151,8 +151,7 @@ func (self *SqlBackend) Initialize() error {
 	}
 
 	if len(self.options.AdditionalIndexers) > 0 {
-		mi := NewMultiIndex()
-		multi := mi.(*MultiIndex)
+		multi := NewMultiIndex()
 		multi.AddIndexer(self.indexer)
 
 		for _, addlIndexerConnString := range self.options.AdditionalIndexers {

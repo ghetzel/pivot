@@ -54,7 +54,7 @@ type IndexerResult struct {
 type IndexerResultFunc func(indexer Indexer, current int, last int) error // {}
 var IndexerResultsStop = fmt.Errorf(`stop indexer results`)
 
-func NewMultiIndex(connectionStrings ...string) Indexer {
+func NewMultiIndex(connectionStrings ...string) *MultiIndex {
 	return &MultiIndex{
 		RetrievalStrategy:  Sequential,
 		PersistStrategy:    All,
@@ -312,11 +312,11 @@ func (self *MultiIndex) EachSelectedIndex(collection string, operation IndexOper
 
 				lastIndexer = result.Index
 			}
-		} else if results == nil {
-			break
 		} else {
 			return err
 		}
+
+		break
 	}
 
 	return nil
