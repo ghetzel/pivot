@@ -312,6 +312,7 @@ func (self *MultiIndex) EachSelectedIndex(collection string, operation IndexOper
 
 				lastIndexer = result.Index
 			}
+
 		} else {
 			return err
 		}
@@ -379,6 +380,7 @@ func (self *MultiIndex) SelectIndex(collection string, operation IndexOperation,
 		rv := make([]IndexerResult, 0)
 
 		for i, indexer := range self.indexers {
+
 			rv = append(rv, IndexerResult{
 				Index:   i,
 				Indexer: indexer,

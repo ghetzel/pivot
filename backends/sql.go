@@ -131,12 +131,14 @@ func (self *SqlBackend) Initialize() error {
 		return err
 	}
 
+	var primaryIndexer Indexer
+
 	// setup indexer (if not using ourself as the default)
 	if indexConnString := self.options.Indexer; indexConnString != `` {
 		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
-					self.indexer = indexer
+					primaryIndexer = indexer
 				} else {
 					return err
 				}
@@ -147,12 +149,12 @@ func (self *SqlBackend) Initialize() error {
 			return err
 		}
 	} else {
-		self.indexer = self
+		primaryIndexer = self
 	}
 
 	if len(self.options.AdditionalIndexers) > 0 {
 		multi := NewMultiIndex()
-		multi.AddIndexer(self.indexer)
+		multi.AddIndexer(primaryIndexer)
 
 		for _, addlIndexerConnString := range self.options.AdditionalIndexers {
 			if err := multi.AddIndexerByConnectionString(addlIndexerConnString); err != nil {
@@ -165,6 +167,8 @@ func (self *SqlBackend) Initialize() error {
 		} else {
 			return err
 		}
+	} else {
+		self.indexer = primaryIndexer
 	}
 
 	// setup aggregators (currently this is just the SQL implementation)
