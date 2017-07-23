@@ -1,6 +1,6 @@
 .PHONY: test deps
 
-all: fmt deps build bundle
+all: fmt deps build bundle test
 
 deps:
 	@go list golang.org/x/tools/cmd/goimports || go get golang.org/x/tools/cmd/goimports

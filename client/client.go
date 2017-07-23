@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	bee "github.com/ghetzel/bee-hotel"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/pivot/util"
 	"github.com/op/go-logging"
