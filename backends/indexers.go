@@ -66,45 +66,34 @@ func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f filter.Filter, pag
 	}
 }
 
-type NullIndexer struct {
-}
+func DefaultQueryImplementation(indexer Indexer, collection string, f filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+	recordset := dal.NewRecordSet()
 
-func (self *NullIndexer) IndexConnectionString() *dal.ConnectionString {
-	return nil
-}
+	recordset.Unbounded = true
 
-func (self *NullIndexer) IndexInitialize(Backend) error {
-	return NotImplementedError
-}
+	if err := indexer.QueryFunc(collection, f, func(record *dal.Record, err error, page IndexPage) error {
+		PopulateRecordSetPageDetails(recordset, f, page)
 
-func (self *NullIndexer) IndexExists(collection string, id interface{}) bool {
-	return false
-}
+		if len(resultFns) > 0 {
+			resultFn := resultFns[0]
 
-func (self *NullIndexer) IndexRetrieve(collection string, id interface{}) (*dal.Record, error) {
-	return nil, NotImplementedError
-}
+			if f.IdOnly() {
+				return resultFn(dal.NewRecord(record.ID), err, page)
+			} else {
+				return resultFn(record, err, page)
+			}
+		} else {
+			if f.IdOnly() {
+				recordset.Records = append(recordset.Records, dal.NewRecord(record.ID))
+			} else {
+				recordset.Records = append(recordset.Records, record)
+			}
 
-func (self *NullIndexer) IndexRemove(collection string, ids []interface{}) error {
-	return NotImplementedError
-}
+			return nil
+		}
+	}); err != nil {
+		return nil, err
+	}
 
-func (self *NullIndexer) Index(collection string, records *dal.RecordSet) error {
-	return NotImplementedError
-}
-
-func (self *NullIndexer) QueryFunc(collection string, filter filter.Filter, resultFn IndexResultFunc) error {
-	return NotImplementedError
-}
-
-func (self *NullIndexer) Query(collection string, filter filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
-	return nil, NotImplementedError
-}
-
-func (self *NullIndexer) ListValues(collection string, fields []string, filter filter.Filter) (map[string][]interface{}, error) {
-	return nil, NotImplementedError
-}
-
-func (self *NullIndexer) DeleteQuery(collection string, f filter.Filter) error {
-	return NotImplementedError
+	return recordset, nil
 }

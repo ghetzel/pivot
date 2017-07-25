@@ -157,8 +157,8 @@ func (self *FilesystemBackend) Exists(name string, id interface{}) bool {
 	return false
 }
 
-func (self *FilesystemBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
-	if collection, ok := self.registeredCollections[name]; ok {
+func (self *FilesystemBackend) Retrieve(collectionName string, id interface{}, fields ...string) (*dal.Record, error) {
+	if collection, ok := self.registeredCollections[collectionName]; ok {
 		var record dal.Record
 
 		if err := self.readObject(collection, fmt.Sprintf("%v", id), true, &record); err == nil {
@@ -172,8 +172,8 @@ func (self *FilesystemBackend) Retrieve(name string, id interface{}, fields ...s
 	}
 }
 
-func (self *FilesystemBackend) Update(name string, recordset *dal.RecordSet, target ...string) error {
-	if collection, ok := self.registeredCollections[name]; ok {
+func (self *FilesystemBackend) Update(collectionName string, recordset *dal.RecordSet, target ...string) error {
+	if collection, ok := self.registeredCollections[collectionName]; ok {
 		for _, record := range recordset.Records {
 			if err := self.writeObject(collection, fmt.Sprintf("%v", record.ID), true, record); err != nil {
 				return err
@@ -192,8 +192,8 @@ func (self *FilesystemBackend) Update(name string, recordset *dal.RecordSet, tar
 	}
 }
 
-func (self *FilesystemBackend) Delete(name string, ids ...interface{}) error {
-	if collection, ok := self.registeredCollections[name]; ok {
+func (self *FilesystemBackend) Delete(collectionName string, ids ...interface{}) error {
+	if collection, ok := self.registeredCollections[collectionName]; ok {
 		// remove documents from index
 		if search := self.WithSearch(collection.Name); search != nil {
 			defer search.IndexRemove(collection.Name, ids)
@@ -380,6 +380,29 @@ func (self *FilesystemBackend) writeObject(collection *dal.Collection, id string
 	} else {
 		return err
 	}
+}
+
+func (self *FilesystemBackend) listObjectIdsInCollection(collection *dal.Collection) ([]string, error) {
+	ids := make([]string, 0)
+
+	if dataRoot, err := self.getDataRoot(collection.Name, true); err == nil {
+		if entries, err := ioutil.ReadDir(dataRoot); err == nil {
+			for _, entry := range entries {
+				basename := filepath.Base(entry.Name())
+				baseNoExt := strings.TrimSuffix(basename, filepath.Ext(entry.Name()))
+
+				if filename := self.makeFilename(collection, baseNoExt, true); filename == basename {
+					ids = append(ids, baseNoExt)
+				}
+			}
+		} else {
+			return ids, err
+		}
+	} else {
+		return ids, err
+	}
+
+	return ids, nil
 }
 
 func (self *FilesystemBackend) readObject(collection *dal.Collection, id string, isData bool, into interface{}) error {

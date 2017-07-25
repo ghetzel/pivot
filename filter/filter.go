@@ -8,6 +8,8 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 )
 
@@ -342,4 +344,110 @@ func (self *Filter) NewFromSpec(specs ...string) (Filter, error) {
 	criteria = append(criteria, specs...)
 
 	return Parse(strings.Join(criteria, CriteriaSeparator))
+}
+
+func (self *Filter) MatchesRecord(record *dal.Record) bool {
+	if self.IsMatchAll() {
+		return true
+	}
+
+	if self.Limit == 0 || record == nil {
+		return false
+	}
+
+	for _, criterion := range self.Criteria {
+		for _, vI := range criterion.Values {
+			vStr := fmt.Sprintf("%v", vI)
+
+			switch vStr {
+			case `null`:
+				vI = nil
+			}
+
+			var invertQuery bool
+			var cmpValue interface{}
+			var cmpValueS string
+
+			if criterion.Field == self.IdentityField {
+				cmpValue = record.ID
+			} else {
+				cmpValue = record.Get(criterion.Field)
+			}
+
+			if cmpValue != nil {
+				cmpValueS = fmt.Sprintf("%v", cmpValue)
+			}
+
+			switch criterion.Operator {
+			case `is`, ``, `not`:
+				if criterion.Operator == `not` {
+					invertQuery = true
+				}
+
+				// false if the values are equal and we're doing a not-query, or they aren't equal
+				if isEqual, err := typeutil.RelaxedEqual(vI, cmpValue); err == nil {
+					if isEqual && invertQuery || !isEqual {
+						return false
+					}
+				} else {
+					return false
+				}
+
+			case `prefix`:
+				if !strings.HasPrefix(cmpValueS, vStr) {
+					return false
+				}
+
+			case `suffix`:
+				if !strings.HasSuffix(cmpValueS, vStr) {
+					return false
+				}
+
+			case `contains`:
+				if !strings.Contains(cmpValueS, vStr) {
+					return false
+				}
+
+			case `gt`, `lt`, `gte`, `lte`:
+				var cmpValueF float64
+				var vF float64
+
+				if v, err := stringutil.ConvertToFloat(vI); err == nil {
+					vF = v
+
+					if c, err := stringutil.ConvertToFloat(cmpValueF); err == nil {
+						cmpValueF = c
+					} else {
+						return false
+					}
+				} else {
+					return false
+				}
+
+				switch criterion.Operator {
+				case `gt`:
+					if !(cmpValueF > vF) {
+						return false
+					}
+				case `gte`:
+					if !(cmpValueF >= vF) {
+						return false
+					}
+				case `lt`:
+					if !(cmpValueF < vF) {
+						return false
+					}
+				case `lte`:
+					if !(cmpValueF <= vF) {
+						return false
+					}
+				}
+
+			default:
+				return false
+			}
+		}
+	}
+
+	return true
 }

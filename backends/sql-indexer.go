@@ -154,36 +154,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 }
 
 func (self *SqlBackend) Query(collection string, f filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
-	recordset := dal.NewRecordSet()
-
-	// TODO: figure out a smart way to get row counts so that we can offer bounded/paginated resultsets
-	recordset.Unbounded = true
-
-	if err := self.QueryFunc(collection, f, func(record *dal.Record, err error, page IndexPage) error {
-		PopulateRecordSetPageDetails(recordset, f, page)
-
-		if len(resultFns) > 0 {
-			resultFn := resultFns[0]
-
-			if f.IdOnly() {
-				return resultFn(dal.NewRecord(record.ID), err, page)
-			} else {
-				return resultFn(record, err, page)
-			}
-		} else {
-			if f.IdOnly() {
-				recordset.Records = append(recordset.Records, dal.NewRecord(record.ID))
-			} else {
-				recordset.Records = append(recordset.Records, record)
-			}
-
-			return nil
-		}
-	}); err != nil {
-		return nil, err
-	}
-
-	return recordset, nil
+	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 
 func (self *SqlBackend) ListValues(collectionName string, fields []string, f filter.Filter) (map[string][]interface{}, error) {

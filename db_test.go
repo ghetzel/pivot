@@ -114,7 +114,7 @@ func setupTestFilesystemJson(run func()) {
 	if root, err := ioutil.TempDir(``, `pivot-backend-fs-json-`); err == nil {
 		defer os.RemoveAll(root)
 
-		if b, err := makeBackend(fmt.Sprintf("fs+yaml://%s/", root)); err == nil {
+		if b, err := makeBackend(fmt.Sprintf("fs+json://%s/", root)); err == nil {
 			backend = b
 			run()
 		} else {
@@ -154,13 +154,13 @@ func TestMain(m *testing.M) {
 		}
 	}
 
-	setupTestMysql(run)
-	setupTestTiedot(run)
-	setupTestSqlite(run)
-	setupTestSqliteWithBleveIndexer(run)
-	setupTestSqliteWithAdditionalBleveIndexer(run)
-	setupTestFilesystemDefault(run)
-	setupTestFilesystemYaml(run)
+	// setupTestMysql(run)
+	// setupTestTiedot(run)
+	// setupTestSqlite(run)
+	// setupTestSqliteWithBleveIndexer(run)
+	// setupTestSqliteWithAdditionalBleveIndexer(run)
+	// setupTestFilesystemDefault(run)
+	// setupTestFilesystemYaml(run)
 	setupTestFilesystemJson(run)
 }
 
