@@ -32,6 +32,7 @@ const (
 
 type FilesystemBackend struct {
 	Backend
+	Indexer
 	conn                  dal.ConnectionString
 	root                  string
 	format                SerializationFormat
@@ -123,6 +124,8 @@ func (self *FilesystemBackend) Initialize() error {
 				}
 			}
 		}
+	} else {
+		self.indexer[``] = self
 	}
 
 	return nil
