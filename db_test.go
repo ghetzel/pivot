@@ -155,12 +155,12 @@ func TestMain(m *testing.M) {
 	}
 
 	// setupTestMysql(run)
-	// setupTestTiedot(run)
-	// setupTestSqlite(run)
-	// setupTestSqliteWithBleveIndexer(run)
-	// setupTestSqliteWithAdditionalBleveIndexer(run)
-	// setupTestFilesystemDefault(run)
-	// setupTestFilesystemYaml(run)
+	setupTestTiedot(run)
+	setupTestSqlite(run)
+	setupTestSqliteWithBleveIndexer(run)
+	setupTestSqliteWithAdditionalBleveIndexer(run)
+	setupTestFilesystemDefault(run)
+	setupTestFilesystemYaml(run)
 	setupTestFilesystemJson(run)
 }
 

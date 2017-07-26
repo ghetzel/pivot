@@ -353,7 +353,7 @@ func (self *FilesystemBackend) writeObject(collection *dal.Collection, id string
 						if file, err := os.Create(filepath.Join(dataRoot, filename)); err == nil {
 							defer file.Close()
 
-							querylog.Debugf("[%T] Write to %v: %v", self, file.Name(), string(data))
+							// querylog.Debugf("[%T] Write to %v: %v", self, file.Name(), string(data))
 
 							// write the data
 							_, err := file.Write(data)
@@ -451,7 +451,9 @@ func (self *FilesystemBackend) readObject(collection *dal.Collection, id string,
 
 func (self *FilesystemBackend) prepareIncomingRecord(collectionName string, record *dal.Record) {
 	if collection, ok := self.registeredCollections[collectionName]; ok {
-		record.ID = stringutil.Autotype(record.ID)
+		if collection.IdentityFieldType != dal.StringType {
+			record.ID = stringutil.Autotype(record.ID)
+		}
 
 		for _, field := range collection.Fields {
 			value := record.Get(field.Name)

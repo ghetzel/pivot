@@ -3,6 +3,7 @@ package backends
 import (
 	"math"
 
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 )
@@ -37,7 +38,7 @@ func (self *FilesystemBackend) QueryFunc(collectionName string, filter filter.Fi
 			page := 1
 			processed := 0
 			offset := filter.Offset
-			totalResults := int64(len(ids))
+			totalResults := int64(0)
 			totalPages := 1
 
 			if filter.Limit > 0 {
@@ -45,26 +46,32 @@ func (self *FilesystemBackend) QueryFunc(collectionName string, filter filter.Fi
 			}
 
 			for _, id := range ids {
-				indexPage := IndexPage{
-					Page:         page,
-					TotalPages:   totalPages,
-					Limit:        filter.Limit,
-					Offset:       offset,
-					TotalResults: totalResults,
-				}
-
 				// retrieve the record by id
 				if record, err := self.Retrieve(collection.Name, id); err == nil {
 					// if matching all records OR the found record matches the filter
-					if filter.IsMatchAll() || filter.MatchesRecord(record) {
+					if filter.MatchesRecord(record) {
 						if processed >= offset {
-							if err := resultFn(record, err, indexPage); err != nil {
+							totalResults += 1
+
+							if err := resultFn(record, err, IndexPage{
+								Page:         page,
+								TotalPages:   totalPages,
+								Limit:        filter.Limit,
+								Offset:       offset,
+								TotalResults: totalResults,
+							}); err != nil {
 								return err
 							}
 						}
 					}
 				} else {
-					if err := resultFn(dal.NewRecord(nil), err, indexPage); err != nil {
+					if err := resultFn(dal.NewRecord(nil), err, IndexPage{
+						Page:         page,
+						TotalPages:   totalPages,
+						Limit:        filter.Limit,
+						Offset:       offset,
+						TotalResults: totalResults,
+					}); err != nil {
 						return err
 					}
 				}
@@ -72,7 +79,7 @@ func (self *FilesystemBackend) QueryFunc(collectionName string, filter filter.Fi
 				processed += 1
 				page = int(float64(processed) / float64(filter.Limit))
 
-				if filter.Limit > 0 && processed >= filter.Limit {
+				if filter.Limit > 0 && processed >= (offset+filter.Limit) {
 					querylog.Debugf("[%T] %d at or beyond limit %d, returning results", self, processed, filter.Limit)
 					break
 				}
@@ -92,30 +99,47 @@ func (self *FilesystemBackend) Query(collection string, f filter.Filter, resultF
 }
 
 func (self *FilesystemBackend) ListValues(collectionName string, fields []string, f filter.Filter) (map[string][]interface{}, error) {
-	values := make(map[string][]interface{})
+	if collection, ok := self.registeredCollections[collectionName]; ok {
+		values := make(map[string][]interface{})
 
-	if err := self.QueryFunc(collectionName, f, func(record *dal.Record, err error, page IndexPage) error {
-		if err == nil {
-			for _, field := range fields {
-				var v []interface{}
+		if err := self.QueryFunc(collectionName, f, func(record *dal.Record, err error, page IndexPage) error {
+			if err == nil {
+				for _, field := range fields {
+					var v []interface{}
 
-				if current, ok := values[field]; ok {
-					v = current
-				} else {
-					v = make([]interface{}, 0)
+					switch field {
+					case collection.IdentityField:
+						field = collection.IdentityField
+
+						if current, ok := values[field]; ok {
+							v = current
+						} else {
+							v = make([]interface{}, 0)
+						}
+
+						v = sliceutil.Unique(append(v, record.ID))
+					default:
+						if current, ok := values[field]; ok {
+							v = current
+						} else {
+							v = make([]interface{}, 0)
+						}
+
+						v = sliceutil.Unique(append(v, record.Get(field)))
+					}
+
+					values[field] = v
 				}
-
-				v = append(v, record.Get(field))
-
-				values[field] = v
 			}
-		}
 
-		return nil
-	}); err == nil {
-		return values, nil
+			return nil
+		}); err == nil {
+			return values, nil
+		} else {
+			return values, err
+		}
 	} else {
-		return values, err
+		return nil, dal.CollectionNotFound
 	}
 }
 

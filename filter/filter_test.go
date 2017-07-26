@@ -164,9 +164,6 @@ func TestFilterCopy(t *testing.T) {
 
 	f2 := Copy(&f1)
 
-	// so far, these should be equivalent
-	assert.Equal(f1, f2)
-
 	assert.Equal([]Criterion{
 		{
 			Type:   dal.AutoType,

@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/sliceutil"
@@ -22,6 +23,22 @@ var QueryUnescapeValues = false
 var AllValue = `all`
 var SortAscending = `+`
 var SortDescending = `-`
+var DefaultIdentityField = `id`
+
+type NormalizerFunc func(in string) string // {}
+
+var DefaultNormalizerFunc = func(in string) string {
+	in = strings.ToLower(in)
+	in = strings.Map(func(r rune) rune {
+		if unicode.IsLetter(r) || unicode.IsNumber(r) {
+			return r
+		}
+
+		return -1
+	}, in)
+
+	return in
+}
 
 type Criterion struct {
 	Type     dal.Type      `json:"type,omitempty"`
@@ -81,18 +98,21 @@ type Filter struct {
 	Options       map[string]interface{}
 	Paginate      bool
 	IdentityField string
+	Normalizer    NormalizerFunc
 }
 
 func MakeFilter(specs ...string) Filter {
 	spec := strings.Join(specs, CriteriaSeparator)
 
 	f := Filter{
-		Spec:     spec,
-		Criteria: make([]Criterion, 0),
-		Sort:     make([]string, 0),
-		Fields:   make([]string, 0),
-		Options:  make(map[string]interface{}),
-		Paginate: true,
+		Spec:          spec,
+		Criteria:      make([]Criterion, 0),
+		Sort:          make([]string, 0),
+		Fields:        make([]string, 0),
+		Options:       make(map[string]interface{}),
+		Paginate:      true,
+		IdentityField: DefaultIdentityField,
+		Normalizer:    DefaultNormalizerFunc,
 	}
 
 	if spec == AllValue {
@@ -242,6 +262,15 @@ func Parse(spec string) (Filter, error) {
 	return rv, nil
 }
 
+func MustParse(spec string) *Filter {
+	if f, err := Parse(spec); err == nil {
+		return &f
+	} else {
+		panic(err.Error())
+		return nil
+	}
+}
+
 func (self *Filter) AddCriteria(criteria ...Criterion) *Filter {
 	self.Criteria = append(self.Criteria, criteria...)
 	return self
@@ -351,13 +380,13 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 		return true
 	}
 
-	if self.Limit == 0 || record == nil {
+	if record == nil {
 		return false
 	}
 
 	for _, criterion := range self.Criteria {
 		for _, vI := range criterion.Values {
-			vStr := fmt.Sprintf("%v", vI)
+			vStr := self.Normalizer(fmt.Sprintf("%v", vI))
 
 			switch vStr {
 			case `null`:
@@ -375,21 +404,52 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 			}
 
 			if cmpValue != nil {
-				cmpValueS = fmt.Sprintf("%v", cmpValue)
+				cmpValueS = self.Normalizer(fmt.Sprintf("%v", cmpValue))
 			}
+
+			// fmt.Printf("term:%v value:%v\n", vStr, cmpValueS)
 
 			switch criterion.Operator {
 			case `is`, ``, `not`:
+				var isEqual bool
+
 				if criterion.Operator == `not` {
 					invertQuery = true
 				}
 
-				// false if the values are equal and we're doing a not-query, or they aren't equal
-				if isEqual, err := typeutil.RelaxedEqual(vI, cmpValue); err == nil {
-					if isEqual && invertQuery || !isEqual {
+				switch criterion.Type {
+				case dal.AutoType:
+					if e, err := typeutil.RelaxedEqual(vStr, cmpValueS); err == nil {
+						isEqual = e
+					} else {
 						return false
 					}
-				} else {
+				case dal.FloatType:
+					if vF, err := stringutil.ConvertToFloat(vI); err == nil {
+						if cF, err := stringutil.ConvertToFloat(cmpValue); err == nil {
+							isEqual = (vF == cF)
+						}
+					}
+
+				case dal.IntType:
+					if vInt, err := stringutil.ConvertToFloat(vI); err == nil {
+						if cI, err := stringutil.ConvertToFloat(cmpValue); err == nil {
+							isEqual = (vInt == cI)
+						}
+					}
+
+				case dal.BooleanType:
+					if vBool, err := stringutil.ConvertToBool(vI); err == nil {
+						if cB, err := stringutil.ConvertToBool(cmpValue); err == nil {
+							isEqual = (vBool == cB)
+						}
+					}
+
+				default:
+					isEqual = (vI == cmpValue)
+				}
+
+				if !invertQuery && !isEqual || invertQuery && isEqual {
 					return false
 				}
 
@@ -415,7 +475,7 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 				if v, err := stringutil.ConvertToFloat(vI); err == nil {
 					vF = v
 
-					if c, err := stringutil.ConvertToFloat(cmpValueF); err == nil {
+					if c, err := stringutil.ConvertToFloat(cmpValue); err == nil {
 						cmpValueF = c
 					} else {
 						return false
