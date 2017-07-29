@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 	"testing"
 	"time"
 
@@ -158,7 +157,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// setupTestMysql(run)
-	setupTestTiedot(run)
+	// setupTestTiedot(run)
 	setupTestSqlite(run)
 	setupTestSqliteWithBleveIndexer(run)
 	setupTestSqliteWithAdditionalBleveIndexer(run)
@@ -321,19 +320,7 @@ func TestIdFormattersRandomId(t *testing.T) {
 
 	assert.Nil(backend.CreateCollection(
 		dal.NewCollection(`TestIdFormattersRandomId`).
-			SetIdentity(``, dal.StringType, func(recordI interface{}, _ dal.FieldOperation) (interface{}, error) {
-				if record, ok := recordI.(*dal.Record); ok {
-					id := record.ID
-
-					if id == nil {
-						id = uuid.NewV4().String()
-					}
-
-					return id, nil
-				} else {
-					return nil, fmt.Errorf("Identity formatter expected a *dal.Record, got %T", recordI)
-				}
-			}, nil).
+			SetIdentity(``, dal.StringType, dal.GenerateUUID, nil).
 			AddFields(dal.Field{
 				Name: `name`,
 				Type: dal.StringType,
@@ -382,23 +369,7 @@ func TestIdFormattersIdFromFieldValues(t *testing.T) {
 
 	assert.Nil(backend.CreateCollection(
 		dal.NewCollection(`TestIdFormattersIdFromFieldValues`).
-			SetIdentity(``, dal.StringType, func(recordI interface{}, _ dal.FieldOperation) (interface{}, error) {
-				if record, ok := recordI.(*dal.Record); ok {
-					id := record.ID
-
-					if id == nil {
-						id = fmt.Sprintf(
-							"%v-%v",
-							strings.ToLower(record.GetString(`group`)),
-							strings.ToLower(record.GetString(`name`)),
-						)
-					}
-
-					return id, nil
-				} else {
-					return nil, fmt.Errorf("Identity formatter expected a *dal.Record, got %T", recordI)
-				}
-			}, nil).
+			SetIdentity(``, dal.StringType, dal.DeriveFromFields("%v-%v", `group`, `name`), nil).
 			AddFields(dal.Field{
 				Name:         `group`,
 				Type:         dal.StringType,
@@ -421,31 +392,32 @@ func TestIdFormattersIdFromFieldValues(t *testing.T) {
 	// Insert and Retrieve (UUID)
 	// --------------------------------------------------------------------------------------------
 	recordset := dal.NewRecordSet(
-		dal.NewRecord(nil).Set(`name`, `First`),
-		dal.NewRecord(nil).Set(`name`, `Second`),
-		dal.NewRecord(nil).Set(`name`, `Third`))
+		dal.NewRecord(nil).Set(`name`, `first`),
+		dal.NewRecord(nil).Set(`name`, `first`).Set(`group`, `users`),
+		dal.NewRecord(nil).Set(`name`, `third`))
 
 	assert.Equal(3, len(recordset.Records))
 	assert.Nil(backend.Insert(`TestIdFormattersIdFromFieldValues`, recordset))
 
-	assert.NotNil(uuid.FromStringOrNil(fmt.Sprintf("%v", recordset.Records[0].ID)))
-	assert.NotNil(uuid.FromStringOrNil(fmt.Sprintf("%v", recordset.Records[1].ID)))
-	assert.NotNil(uuid.FromStringOrNil(fmt.Sprintf("%v", recordset.Records[2].ID)))
+	assert.Equal(`system-first`, fmt.Sprintf("%v", recordset.Records[0].ID))
+	assert.Equal(`users-first`, fmt.Sprintf("%v", recordset.Records[1].ID))
+	assert.Equal(`system-third`, fmt.Sprintf("%v", recordset.Records[2].ID))
 
 	record, err := backend.Retrieve(`TestIdFormattersIdFromFieldValues`, recordset.Records[0].ID)
 	assert.NoError(err)
 	assert.EqualValues(recordset.Records[0].ID, record.ID)
-	assert.Equal(`First`, record.Get(`name`))
+	assert.Equal(`first`, record.Get(`name`))
 
 	record, err = backend.Retrieve(`TestIdFormattersIdFromFieldValues`, recordset.Records[1].ID)
 	assert.NoError(err)
 	assert.EqualValues(recordset.Records[1].ID, record.ID)
-	assert.Equal(`Second`, record.Get(`name`))
+	assert.Equal(`first`, record.Get(`name`))
+	assert.Equal(`users`, record.Get(`group`))
 
 	record, err = backend.Retrieve(`TestIdFormattersIdFromFieldValues`, recordset.Records[2].ID)
 	assert.NoError(err)
 	assert.EqualValues(recordset.Records[2].ID, record.ID)
-	assert.Equal(`Third`, record.Get(`name`))
+	assert.Equal(`third`, record.Get(`name`))
 }
 
 func TestSearchQuery(t *testing.T) {

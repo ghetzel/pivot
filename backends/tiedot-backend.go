@@ -100,7 +100,10 @@ func (self *TiedotBackend) Retrieve(name string, idI interface{}, fields ...stri
 			if id, err := stringutil.ConvertToInteger(idI); err == nil {
 				if document, err := col.Read(int(id)); err == nil {
 					record := dal.NewRecord(id)
-					collection.FillDefaults(record)
+
+					if err := record.Populate(record, collection); err != nil {
+						return nil, err
+					}
 
 					for k, v := range document {
 						record.Set(k, v)
@@ -204,6 +207,12 @@ func (self *TiedotBackend) GetCollection(name string) (*dal.Collection, error) {
 func (self *TiedotBackend) upsertRecordset(name string, recordset *dal.RecordSet, isCreate bool) error {
 	if collection, ok := self.registeredCollections[name]; ok {
 		for _, record := range recordset.Records {
+			if r, err := collection.MakeRecord(record); err == nil {
+				record = r
+			} else {
+				return err
+			}
+
 			if isCreate && record.ID != nil {
 				return fmt.Errorf("Backend %T does not allow explicitly setting IDs", self)
 			}
