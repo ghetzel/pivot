@@ -126,13 +126,13 @@ func (self *FilesystemBackend) Initialize() error {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
 					primaryIndexer = indexer
-				}else{
+				} else {
 					return err
 				}
-			}else{
+			} else {
 				return err
 			}
-		}else{
+		} else {
 			return err
 		}
 	} else {
