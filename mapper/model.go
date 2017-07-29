@@ -179,55 +179,63 @@ func (self *Model) Delete(ids ...interface{}) error {
 // if into points to a dal.RecordSet, the RecordSet resulting from the query will be returned
 // as-is.
 //
-func (self *Model) Find(f filter.Filter, into interface{}) error {
-	f.IdentityField = self.collection.IdentityField
+func (self *Model) Find(fI interface{}, into interface{}) error {
+	if f, err := self.filterFromInterface(fI); err == nil {
+		f.IdentityField = self.collection.IdentityField
 
-	if search := self.db.WithSearch(self.collection.Name, f); search != nil {
-		// perform query
-		if recordset, err := search.Query(self.collection.Name, f); err == nil {
-			return self.populateOutputParameter(f, recordset, into)
+		if search := self.db.WithSearch(self.collection.Name, f); search != nil {
+			// perform query
+			if recordset, err := search.Query(self.collection.Name, f); err == nil {
+				return self.populateOutputParameter(f, recordset, into)
+			} else {
+				return err
+			}
 		} else {
-			return err
+			return fmt.Errorf("backend %T does not support searching", self.db)
 		}
 	} else {
-		return fmt.Errorf("backend %T does not support searching", self.db)
+		return err
 	}
 }
 
 // Perform a query for instances of the model that match the given filter.Filter.
 // The given callback function will be called once per result.
 //
-func (self *Model) FindFunc(f filter.Filter, destZeroValue interface{}, resultFn ResultFunc) error {
-	f.Limit = 0
-	f.IdentityField = self.collection.IdentityField
+func (self *Model) FindFunc(fI interface{}, destZeroValue interface{}, resultFn ResultFunc) error {
+	if f, err := self.filterFromInterface(fI); err == nil {
+		f.Limit = 0
+		f.IdentityField = self.collection.IdentityField
 
-	if search := self.db.WithSearch(self.collection.Name, f); search != nil {
-		_, err := search.Query(self.collection.Name, f, func(record *dal.Record, err error, _ backends.IndexPage) error {
-			if err == nil {
-				if _, ok := destZeroValue.(*dal.Record); ok {
-					resultFn(record, nil)
-				} else if _, ok := destZeroValue.(dal.Record); ok {
-					resultFn(*record, nil)
-				} else {
-					into := reflect.New(reflect.TypeOf(destZeroValue)).Interface()
-
-					// populate that type with data from this record
-					if err := record.Populate(into, self.collection); err == nil {
-						resultFn(into, nil)
+		if search := self.db.WithSearch(self.collection.Name, f); search != nil {
+			_, err := search.Query(self.collection.Name, f, func(record *dal.Record, err error, _ backends.IndexPage) error {
+				if err == nil {
+					if _, ok := destZeroValue.(*dal.Record); ok {
+						resultFn(record, nil)
+					} else if _, ok := destZeroValue.(dal.Record); ok {
+						resultFn(*record, nil)
 					} else {
-						return err
+						into := reflect.New(reflect.TypeOf(destZeroValue)).Interface()
+
+						// populate that type with data from this record
+						if err := record.Populate(into, self.collection); err == nil {
+							resultFn(into, nil)
+						} else {
+							return err
+						}
 					}
+				} else {
+					resultFn(nil, err)
 				}
-			} else {
-				resultFn(nil, err)
-			}
 
-			return nil
-		})
+				return nil
+			})
 
-		return err
+			return err
+		} else {
+			return fmt.Errorf("backend %T does not support searching", self.db)
+		}
 	} else {
-		return fmt.Errorf("backend %T does not support searching", self.db)
+		return err
 	}
 }
 
@@ -243,63 +251,99 @@ func (self *Model) List(fields []string) (map[string][]interface{}, error) {
 	return self.ListWithFilter(fields, filter.All)
 }
 
-func (self *Model) ListWithFilter(fields []string, f filter.Filter) (map[string][]interface{}, error) {
-	f.IdentityField = self.collection.IdentityField
+func (self *Model) ListWithFilter(fields []string, fI interface{}) (map[string][]interface{}, error) {
+	if f, err := self.filterFromInterface(fI); err == nil {
+		f.IdentityField = self.collection.IdentityField
 
-	if search := self.db.WithSearch(self.collection.Name, f); search != nil {
-		return search.ListValues(self.collection.Name, fields, f)
+		if search := self.db.WithSearch(self.collection.Name, f); search != nil {
+			return search.ListValues(self.collection.Name, fields, f)
+		} else {
+			return nil, fmt.Errorf("backend %T does not support searching", self.db)
+		}
 	} else {
-		return nil, fmt.Errorf("backend %T does not support searching", self.db)
+		return nil, err
 	}
 }
 
-func (self *Model) Sum(field string, f filter.Filter) (float64, error) {
-	f.IdentityField = self.collection.IdentityField
+func (self *Model) Sum(field string, fI interface{}) (float64, error) {
+	if f, err := self.filterFromInterface(fI); err == nil {
+		f.IdentityField = self.collection.IdentityField
 
-	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
-		return agg.Sum(self.collection.Name, field, f)
+		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
+			return agg.Sum(self.collection.Name, field, f)
+		} else {
+			return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+		}
 	} else {
-		return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+		return 0, err
 	}
 }
 
-func (self *Model) Count(f filter.Filter) (uint64, error) {
-	f.IdentityField = self.collection.IdentityField
+func (self *Model) Count(fI interface{}) (uint64, error) {
+	if f, err := self.filterFromInterface(fI); err == nil {
+		f.IdentityField = self.collection.IdentityField
 
-	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
-		return agg.Count(self.collection.Name, f)
+		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
+			return agg.Count(self.collection.Name, f)
+		} else {
+			return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+		}
 	} else {
-		return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+		return 0, err
 	}
 }
 
-func (self *Model) Minimum(field string, f filter.Filter) (float64, error) {
-	f.IdentityField = self.collection.IdentityField
+func (self *Model) Minimum(field string, fI interface{}) (float64, error) {
+	if f, err := self.filterFromInterface(fI); err == nil {
+		f.IdentityField = self.collection.IdentityField
 
-	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
-		return agg.Minimum(self.collection.Name, field, f)
+		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
+			return agg.Minimum(self.collection.Name, field, f)
+		} else {
+			return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+		}
 	} else {
-		return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+		return 0, err
 	}
 }
 
-func (self *Model) Maximum(field string, f filter.Filter) (float64, error) {
-	f.IdentityField = self.collection.IdentityField
+func (self *Model) Maximum(field string, fI interface{}) (float64, error) {
+	if f, err := self.filterFromInterface(fI); err == nil {
+		f.IdentityField = self.collection.IdentityField
 
-	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
-		return agg.Maximum(self.collection.Name, field, f)
+		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
+			return agg.Maximum(self.collection.Name, field, f)
+		} else {
+			return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+		}
 	} else {
-		return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+		return 0, err
 	}
 }
 
-func (self *Model) Average(field string, f filter.Filter) (float64, error) {
-	f.IdentityField = self.collection.IdentityField
+func (self *Model) Average(field string, fI interface{}) (float64, error) {
+	if f, err := self.filterFromInterface(fI); err == nil {
+		f.IdentityField = self.collection.IdentityField
 
-	if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
-		return agg.Average(self.collection.Name, field, f)
+		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
+			return agg.Average(self.collection.Name, field, f)
+		} else {
+			return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+		}
 	} else {
-		return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
+		return 0, err
+	}
+}
+
+func (self *Model) filterFromInterface(in interface{}) (filter.Filter, error) {
+	if f, ok := in.(filter.Filter); ok {
+		return f, nil
+	} else if fMap, ok := in.(map[string]interface{}); ok {
+		return filter.FromMap(fMap)
+	} else if fStr, ok := in.(string); ok {
+		return filter.Parse(fStr)
+	} else {
+		return filter.Null, fmt.Errorf("Expected filter.Filter, map[string]interface{}, or string; got: %T", in)
 	}
 }
 
