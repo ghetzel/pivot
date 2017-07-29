@@ -23,17 +23,17 @@ type Mapper interface {
 	Update(from interface{}) error
 	CreateOrUpdate(id interface{}, from interface{}) error
 	Delete(ids ...interface{}) error
-	Find(f filter.Filter, into interface{}) error
-	FindFunc(f filter.Filter, destZeroValue interface{}, resultFn ResultFunc) error
+	Find(flt interface{}, into interface{}) error
+	FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error
 	All(into interface{}) error
 	Each(destZeroValue interface{}, resultFn ResultFunc) error
 	List(fields []string) (map[string][]interface{}, error)
-	ListWithFilter(fields []string, f filter.Filter) (map[string][]interface{}, error)
-	Sum(field string, f filter.Filter) (float64, error)
-	Count(f filter.Filter) (uint64, error)
-	Minimum(field string, f filter.Filter) (float64, error)
-	Maximum(field string, f filter.Filter) (float64, error)
-	Average(field string, f filter.Filter) (float64, error)
+	ListWithFilter(fields []string, flt interface{}) (map[string][]interface{}, error)
+	Sum(field string, flt interface{}) (float64, error)
+	Count(flt interface{}) (uint64, error)
+	Minimum(field string, flt interface{}) (float64, error)
+	Maximum(field string, flt interface{}) (float64, error)
+	Average(field string, flt interface{}) (float64, error)
 }
 
 type Model struct {
@@ -179,8 +179,8 @@ func (self *Model) Delete(ids ...interface{}) error {
 // if into points to a dal.RecordSet, the RecordSet resulting from the query will be returned
 // as-is.
 //
-func (self *Model) Find(fI interface{}, into interface{}) error {
-	if f, err := self.filterFromInterface(fI); err == nil {
+func (self *Model) Find(flt interface{}, into interface{}) error {
+	if f, err := self.filterFromInterface(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if search := self.db.WithSearch(self.collection.Name, f); search != nil {
@@ -201,8 +201,8 @@ func (self *Model) Find(fI interface{}, into interface{}) error {
 // Perform a query for instances of the model that match the given filter.Filter.
 // The given callback function will be called once per result.
 //
-func (self *Model) FindFunc(fI interface{}, destZeroValue interface{}, resultFn ResultFunc) error {
-	if f, err := self.filterFromInterface(fI); err == nil {
+func (self *Model) FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error {
+	if f, err := self.filterFromInterface(flt); err == nil {
 		f.Limit = 0
 		f.IdentityField = self.collection.IdentityField
 
@@ -251,8 +251,8 @@ func (self *Model) List(fields []string) (map[string][]interface{}, error) {
 	return self.ListWithFilter(fields, filter.All)
 }
 
-func (self *Model) ListWithFilter(fields []string, fI interface{}) (map[string][]interface{}, error) {
-	if f, err := self.filterFromInterface(fI); err == nil {
+func (self *Model) ListWithFilter(fields []string, flt interface{}) (map[string][]interface{}, error) {
+	if f, err := self.filterFromInterface(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if search := self.db.WithSearch(self.collection.Name, f); search != nil {
@@ -265,8 +265,8 @@ func (self *Model) ListWithFilter(fields []string, fI interface{}) (map[string][
 	}
 }
 
-func (self *Model) Sum(field string, fI interface{}) (float64, error) {
-	if f, err := self.filterFromInterface(fI); err == nil {
+func (self *Model) Sum(field string, flt interface{}) (float64, error) {
+	if f, err := self.filterFromInterface(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
@@ -279,8 +279,8 @@ func (self *Model) Sum(field string, fI interface{}) (float64, error) {
 	}
 }
 
-func (self *Model) Count(fI interface{}) (uint64, error) {
-	if f, err := self.filterFromInterface(fI); err == nil {
+func (self *Model) Count(flt interface{}) (uint64, error) {
+	if f, err := self.filterFromInterface(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
@@ -293,8 +293,8 @@ func (self *Model) Count(fI interface{}) (uint64, error) {
 	}
 }
 
-func (self *Model) Minimum(field string, fI interface{}) (float64, error) {
-	if f, err := self.filterFromInterface(fI); err == nil {
+func (self *Model) Minimum(field string, flt interface{}) (float64, error) {
+	if f, err := self.filterFromInterface(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
@@ -307,8 +307,8 @@ func (self *Model) Minimum(field string, fI interface{}) (float64, error) {
 	}
 }
 
-func (self *Model) Maximum(field string, fI interface{}) (float64, error) {
-	if f, err := self.filterFromInterface(fI); err == nil {
+func (self *Model) Maximum(field string, flt interface{}) (float64, error) {
+	if f, err := self.filterFromInterface(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
@@ -321,8 +321,8 @@ func (self *Model) Maximum(field string, fI interface{}) (float64, error) {
 	}
 }
 
-func (self *Model) Average(field string, fI interface{}) (float64, error) {
-	if f, err := self.filterFromInterface(fI); err == nil {
+func (self *Model) Average(field string, flt interface{}) (float64, error) {
+	if f, err := self.filterFromInterface(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
