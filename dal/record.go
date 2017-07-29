@@ -67,6 +67,18 @@ func (self *Record) GetNested(key string, fallback ...interface{}) interface{} {
 	)
 }
 
+func (self *Record) GetString(key string, fallback ...string) string {
+	if v := self.Get(key); v == nil {
+		if len(fallback) > 0 {
+			return fallback[0]
+		} else {
+			return ``
+		}
+	} else {
+		return fmt.Sprintf("%v", v)
+	}
+}
+
 func (self *Record) Set(key string, value interface{}) *Record {
 	self.init()
 
@@ -106,168 +118,228 @@ func (self *Record) AppendNested(key string, value ...interface{}) *Record {
 // Populates a given struct with with the values in this record.
 //
 func (self *Record) Populate(into interface{}, collection *Collection) error {
-	if err := validatePtrToStructType(into); err != nil {
-		return err
-	}
+	// special case for what is essentially copying another record into this one
+	if record, ok := into.(*Record); ok {
+		for key, value := range record.Fields {
+			if collection != nil {
+				collection.FillDefaults(self)
 
-	// if the struct we got is a zero value, and we've been given a collection,
-	// use it with NewInstance
-	if collection != nil {
-		if typeutil.IsZero(into) {
-			into = collection.NewInstance()
-		}
-	}
+				if collectionField, ok := collection.GetField(key); ok {
+					// use the field's type in the collection schema to convert the value
+					if v, err := collectionField.ConvertValue(value); err == nil {
+						value = v
+					} else {
+						return err
+					}
 
-	instanceStruct := structs.New(into)
-	var idFieldName string
-	var fallbackIdFieldName string
+					// apply formatters to this value
+					if v, err := collectionField.Format(value, RetrieveOperation); err == nil {
+						value = v
+					} else {
+						return err
+					}
 
-	// if a collection is specified, set the fallback identity field name to what the collection
-	// knows the ID field is called.  This is used for input structs that don't explicitly tag
-	// a field with the ",identity" option
-	if collection != nil {
-		if id := collection.IdentityField; id != `` {
-			fallbackIdFieldName = id
-		}
-	}
-
-	// get the name of the identity field from the given struct
-	if id, err := GetIdentityFieldName(into, fallbackIdFieldName); err == nil {
-		idFieldName = id
-	} else {
-		return err
-	}
-
-	if idFieldName != `` {
-		// get the underlying field from the struct we're outputting to
-		if idField, ok := instanceStruct.FieldOk(idFieldName); ok {
-			if self.ID != nil {
-				id := self.ID
-
-				// we need to use reflect directly because structs Field.Set() involves
-				// a type check that's too restrictive for us here
-				reflectField := reflect.ValueOf(into)
-
-				if reflectField.Kind() == reflect.Ptr {
-					reflectField = reflectField.Elem()
-				}
-
-				reflectField = reflectField.FieldByName(idFieldName)
-
-				fType := reflect.TypeOf(idField.Value())
-				vValue := reflect.ValueOf(id)
-
-				if fType != nil {
-					// convert the value to the field's type if necessary
-					if !vValue.Type().AssignableTo(fType) {
-						if vValue.Type().ConvertibleTo(fType) {
-							vValue = vValue.Convert(fType)
+					// this specifies that we should double-check the validity of the values coming in
+					if collectionField.ValidateOnPopulate {
+						// validate the value
+						if err := collectionField.Validate(value); err != nil {
+							return err
 						}
 					}
 				}
+			}
 
-				// set (via reflect) is we can
-				if vValue.Type().AssignableTo(reflectField.Type()) {
-					reflectField.Set(vValue)
-				} else {
-					return fmt.Errorf("Field '%s' is not settable", idFieldName)
-				}
+			self.Set(key, value)
+		}
+
+		self.ID = record.ID
+
+		if collection != nil {
+			if idI, err := collection.formatAndValidateId(self.ID, RetrieveOperation, self); err == nil {
+				self.ID = idI
+			}
+		}
+	} else {
+		if err := validatePtrToStructType(into); err != nil {
+			return err
+		}
+
+		// if the struct we got is a zero value, and we've been given a collection,
+		// use it with NewInstance
+		if collection != nil {
+			if typeutil.IsZero(into) {
+				into = collection.NewInstance()
 			}
 		}
 
-		// get field descriptors for the output struct
-		if fields, err := getFieldsForStruct(into); err == nil {
-			// for each value in the record's fields map...
-			for key, value := range self.Fields {
-				// only operate on fields that exist in the output struct
-				if field, ok := fields[key]; ok {
-					// only operate on exported output struct fields
-					if field.Field.IsExported() {
-						// skip the identity field, we already took care of this
-						if field.Identity || field.Field.Name() == idFieldName {
-							continue
-						}
+		instanceStruct := structs.New(into)
+		var idFieldName string
+		var fallbackIdFieldName string
 
-						// if a collection is specified, then use the corresponding field from that collection
-						// to format the value first
-						if collection != nil {
-							if collectionField, ok := collection.GetField(key); ok {
-								if v, err := collectionField.Format(value, RetrieveOperation); err == nil {
-									value = v
-								} else {
-									return err
-								}
+		// if a collection is specified, set the fallback identity field name to what the collection
+		// knows the ID field is called.  This is used for input structs that don't explicitly tag
+		// a field with the ",identity" option
+		if collection != nil {
+			if id := collection.IdentityField; id != `` {
+				fallbackIdFieldName = id
+			}
+		}
 
-								if collectionField.ValidateOnPopulate {
-									// validate the value
-									if err := collectionField.Validate(value); err != nil {
-										return err
-									}
-								}
-							} else {
-								// because we were given a collection, we know whether we should actually
-								// work with this field or not
+		// get the name of the identity field from the given struct
+		if id, err := GetIdentityFieldName(into, fallbackIdFieldName); err == nil {
+			idFieldName = id
+		} else {
+			return err
+		}
+
+		if idFieldName != `` {
+			// get field descriptors for the output struct
+			if fields, err := getFieldsForStruct(into); err == nil {
+				// for each value in the record's fields map...
+				for key, value := range self.Fields {
+					// only operate on fields that exist in the output struct
+					if field, ok := fields[key]; ok {
+						// only operate on exported output struct fields
+						if field.Field.IsExported() {
+							// skip the identity field, we handle that separately
+							if field.Identity || field.Field.Name() == idFieldName {
 								continue
 							}
-						}
 
-						// skip values that are that type's zero value if OmitEmpty is set
-						if field.OmitEmpty {
-							if typeutil.IsZero(value) {
-								continue
-							}
-						}
-
-						// get the underlying type of the field
-						fType := reflect.TypeOf(field.Field.Value())
-						vValue := reflect.ValueOf(value)
-
-						// convert the value to the field's type if necessary
-						if fType != nil {
-							if vValue.IsValid() {
-								if !vValue.Type().AssignableTo(fType) {
-									if vValue.Type().ConvertibleTo(fType) {
-										vValue = vValue.Convert(fType)
-										value = vValue.Interface()
-									}
-								}
-							} else {
-								value = reflect.Zero(fType).Interface()
-							}
-						}
-
-						// set (via reflect) if we can
-						if vValue.IsValid() {
-							if vValue.Type().AssignableTo(field.ReflectField.Type()) {
-								field.ReflectField.Set(vValue)
-							} else {
-								// last-ditch effort to handle weird edge cases
-								switch field.ReflectField.Type().String() {
-								case `time.Time`:
-									if v, err := stringutil.ConvertToTime(value); err == nil {
-										field.ReflectField.Set(reflect.ValueOf(v))
-									} else if v, err := stringutil.ConvertToInteger(value); err == nil {
-										field.ReflectField.Set(reflect.ValueOf(time.Unix(0, v)))
+							// if a collection is specified, then use the corresponding field from that collection
+							// to format the value first
+							if collection != nil {
+								if collectionField, ok := collection.GetField(key); ok {
+									// use the field's type in the collection schema to convert the value
+									if v, err := collectionField.ConvertValue(value); err == nil {
+										value = v
 									} else {
 										return err
 									}
-								default:
-									return fmt.Errorf("Field '%s' cannot be set to %v", field.Field.Name(), value)
+
+									// apply formatters to this value
+									if v, err := collectionField.Format(value, RetrieveOperation); err == nil {
+										value = v
+									} else {
+										return err
+									}
+
+									// this specifies that we should double-check the validity of the values coming in
+									if collectionField.ValidateOnPopulate {
+										// validate the value
+										if err := collectionField.Validate(value); err != nil {
+											return err
+										}
+									}
+								} else {
+									// because we were given a collection, we know whether we should actually
+									// work with this field or not
+									continue
 								}
 							}
-						} else {
-							if err := field.Field.Set(value); err != nil {
-								return err
+
+							// skip values that are that type's zero value if OmitEmpty is set
+							if field.OmitEmpty {
+								if typeutil.IsZero(value) {
+									continue
+								}
+							}
+
+							// get the underlying type of the field
+							fType := reflect.TypeOf(field.Field.Value())
+							vValue := reflect.ValueOf(value)
+
+							// convert the value to the field's type if necessary
+							if fType != nil {
+								if vValue.IsValid() {
+									if !vValue.Type().AssignableTo(fType) {
+										if vValue.Type().ConvertibleTo(fType) {
+											vValue = vValue.Convert(fType)
+											value = vValue.Interface()
+										}
+									}
+								} else {
+									value = reflect.Zero(fType).Interface()
+								}
+							}
+
+							// set (via reflect) if we can
+							if vValue.IsValid() {
+								if vValue.Type().AssignableTo(field.ReflectField.Type()) {
+									field.ReflectField.Set(vValue)
+								} else {
+									// last-ditch effort to handle weird edge cases
+									switch field.ReflectField.Type().String() {
+									case `time.Time`:
+										if v, err := stringutil.ConvertToTime(value); err == nil {
+											field.ReflectField.Set(reflect.ValueOf(v))
+										} else if v, err := stringutil.ConvertToInteger(value); err == nil {
+											field.ReflectField.Set(reflect.ValueOf(time.Unix(0, v)))
+										} else {
+											return err
+										}
+									default:
+										return fmt.Errorf("Field '%s' cannot be set to %v", field.Field.Name(), value)
+									}
+								}
+							} else {
+								if err := field.Field.Set(value); err != nil {
+									return err
+								}
 							}
 						}
+					}
+				}
+			} else {
+				return err
+			}
+
+			// get the underlying field from the struct we're outputting to
+			if idField, ok := instanceStruct.FieldOk(idFieldName); ok {
+				// if possible, format and validate the record ID first.
+				// this lets us create (for example) random IDs
+				if collection != nil {
+					if idI, err := collection.formatAndValidateId(self.ID, RetrieveOperation, self); err == nil {
+						self.ID = idI
+					}
+				}
+
+				if self.ID != nil {
+					id := self.ID
+
+					// we need to use reflect directly because structs Field.Set() involves
+					// a type check that's too restrictive for us here
+					reflectField := reflect.ValueOf(into)
+
+					if reflectField.Kind() == reflect.Ptr {
+						reflectField = reflectField.Elem()
+					}
+
+					reflectField = reflectField.FieldByName(idFieldName)
+
+					fType := reflect.TypeOf(idField.Value())
+					vValue := reflect.ValueOf(id)
+
+					if fType != nil {
+						// convert the value to the field's type if necessary
+						if !vValue.Type().AssignableTo(fType) {
+							if vValue.Type().ConvertibleTo(fType) {
+								vValue = vValue.Convert(fType)
+							}
+						}
+					}
+
+					// set (via reflect) is we can
+					if vValue.Type().AssignableTo(reflectField.Type()) {
+						reflectField.Set(vValue)
+					} else {
+						return fmt.Errorf("Field '%s' is not settable", idFieldName)
 					}
 				}
 			}
 		} else {
-			return err
+			return fmt.Errorf("Could not determine identity field name")
 		}
-	} else {
-		return fmt.Errorf("Could not determine identity field name")
 	}
 
 	return nil

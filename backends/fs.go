@@ -12,7 +12,6 @@ import (
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/pathutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
-	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghodss/yaml"
@@ -199,7 +198,9 @@ func (self *FilesystemBackend) Retrieve(collectionName string, id interface{}, f
 		var record dal.Record
 
 		if err := self.readObject(collection, fmt.Sprintf("%v", id), true, &record); err == nil {
-			self.prepareIncomingRecord(collection.Name, &record)
+			if err := self.prepareIncomingRecord(collection.Name, &record); err != nil {
+				return nil, err
+			}
 
 			// add/touch item in cache for rapid readback if necessary
 			self.recordCache.Add(fmt.Sprintf("%v|%v", collectionName, record.ID), &record)
@@ -216,6 +217,12 @@ func (self *FilesystemBackend) Retrieve(collectionName string, id interface{}, f
 func (self *FilesystemBackend) Update(collectionName string, recordset *dal.RecordSet, target ...string) error {
 	if collection, ok := self.registeredCollections[collectionName]; ok {
 		for _, record := range recordset.Records {
+			if r, err := collection.MakeRecord(record); err == nil {
+				record = r
+			} else {
+				return err
+			}
+
 			if err := self.writeObject(collection, fmt.Sprintf("%v", record.ID), true, record); err != nil {
 				return err
 			}
@@ -504,22 +511,18 @@ func (self *FilesystemBackend) readObject(collection *dal.Collection, id string,
 	return nil
 }
 
-func (self *FilesystemBackend) prepareIncomingRecord(collectionName string, record *dal.Record) {
+func (self *FilesystemBackend) prepareIncomingRecord(collectionName string, record *dal.Record) error {
 	if collection, ok := self.registeredCollections[collectionName]; ok {
 		if collection.IdentityFieldType != dal.StringType {
 			record.ID = stringutil.Autotype(record.ID)
 		}
 
-		for _, field := range collection.Fields {
-			value := record.Get(field.Name)
-
-			if !ok || typeutil.IsZero(value) {
-				if field.DefaultValue != nil {
-					record.Set(field.Name, field.GetDefaultValue())
-				} else if field.Required {
-					record.Set(field.Name, field.GetTypeInstance())
-				}
-			}
+		if err := record.Populate(record, collection); err != nil {
+			return err
 		}
+	} else {
+		return dal.CollectionNotFound
 	}
+
+	return nil
 }

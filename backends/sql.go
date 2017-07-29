@@ -191,12 +191,15 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 			// for each record being inserted...
 			for _, record := range recordset.Records {
+				if r, err := collection.MakeRecord(record); err == nil {
+					record = r
+				} else {
+					return err
+				}
+
 				// setup query generator
 				queryGen := self.makeQueryGen(collection)
 				queryGen.Type = generators.SqlInsertStatement
-
-				// ensure the the default values for all of this record's fields are filled in
-				collection.FillDefaults(record)
 
 				// add record data to query input
 				for k, v := range record.Fields {
@@ -346,6 +349,12 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 		if tx, err := self.db.Begin(); err == nil {
 			// for each record being updated...
 			for _, record := range recordset.Records {
+				if r, err := collection.MakeRecord(record); err == nil {
+					record = r
+				} else {
+					return err
+				}
+
 				// setup query generator
 				queryGen := self.makeQueryGen(collection)
 				queryGen.Type = generators.SqlUpdateStatement
@@ -850,6 +859,11 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 		}
 
 		record := dal.NewRecord(id).SetFields(fields)
+
+		if err := record.Populate(record, collection); err != nil {
+			return nil, err
+		}
+
 		return record, nil
 	} else {
 		return nil, err
@@ -967,12 +981,14 @@ func (self *SqlBackend) getCollectionFromCache(name string) (*dal.Collection, er
 		self.collectionCacheLock.RLock()
 	}
 
-	collection, ok := self.collectionCache[name]
+	_, ok := self.collectionCache[name]
 	self.collectionCacheLock.RUnlock()
 
 	if ok {
-		return collection, nil
-	} else {
-		return nil, dal.CollectionNotFound
+		if registered, ok := self.registeredCollections[name]; ok {
+			return registered, nil
+		}
 	}
+
+	return nil, dal.CollectionNotFound
 }

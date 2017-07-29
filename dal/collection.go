@@ -29,21 +29,42 @@ type Instantiator interface {
 }
 
 type Collection struct {
-	Name                string  `json:"name"`
-	Fields              []Field `json:"fields"`
-	IdentityField       string  `json:"identity_field,omitempty"`
-	IdentityFieldType   Type    `json:"identity_field_type,omitempty"`
-	recordType          reflect.Type
-	instanceInitializer InitializerFunc
+	Name                   string             `json:"name"`
+	Fields                 []Field            `json:"fields"`
+	IdentityField          string             `json:"identity_field,omitempty"`
+	IdentityFieldType      Type               `json:"identity_field_type,omitempty"`
+	IdentityFieldFormatter FieldFormatterFunc `json:"-"`
+	IdentityFieldValidator FieldValidatorFunc `json:"-"`
+	recordType             reflect.Type
+	instanceInitializer    InitializerFunc
 }
 
 func NewCollection(name string) *Collection {
 	return &Collection{
-		Name:              name,
-		Fields:            make([]Field, 0),
-		IdentityField:     DefaultIdentityField,
-		IdentityFieldType: DefaultIdentityFieldType,
+		Name:                   name,
+		Fields:                 make([]Field, 0),
+		IdentityField:          DefaultIdentityField,
+		IdentityFieldType:      DefaultIdentityFieldType,
+		IdentityFieldValidator: ValidateNotEmpty,
 	}
+}
+
+func (self *Collection) SetIdentity(name string, idtype Type, formatter FieldFormatterFunc, validator FieldValidatorFunc) *Collection {
+	if name != `` {
+		self.IdentityField = name
+	}
+
+	self.IdentityFieldType = idtype
+
+	if formatter != nil {
+		self.IdentityFieldFormatter = formatter
+	}
+
+	if validator != nil {
+		self.IdentityFieldValidator = validator
+	}
+
+	return self
 }
 
 func (self *Collection) AddFields(fields ...Field) *Collection {
@@ -257,6 +278,28 @@ func (self *Collection) ConvertValue(name string, value interface{}) (interface{
 	}
 }
 
+func (self *Collection) formatAndValidateId(id interface{}, op FieldOperation, record *Record) (interface{}, error) {
+	// if specified, apply a formatter to the ID
+	if self.IdentityFieldFormatter != nil {
+		// NOTE: because we want the option to generate IDs based on the values of other record fields,
+		//       we pass the whole record into IdentityFieldFormatters
+		if idI, err := self.IdentityFieldFormatter(record, op); err == nil {
+			id = idI
+		} else {
+			return id, err
+		}
+	}
+
+	// if given, validate the ID value
+	if self.IdentityFieldValidator != nil {
+		if err := self.IdentityFieldValidator(id); err != nil {
+			return id, err
+		}
+	}
+
+	return id, nil
+}
+
 // Generates a Record instance from the given value based on this collection's schema.
 func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 	if err := validatePtrToStructType(in); err != nil {
@@ -265,6 +308,8 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 
 	// if the argument is already a record, return it as-is
 	if record, ok := in.(*Record); ok {
+		self.FillDefaults(record)
+
 		// we're returning the record we were given, but first we need to validate and format it
 		for key, value := range record.Fields {
 			if field, ok := self.GetField(key); ok {
@@ -282,11 +327,18 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 			}
 		}
 
+		if idI, err := self.formatAndValidateId(record.ID, PersistOperation, record); err == nil {
+			record.ID = idI
+		}
+
 		return record, nil
 	}
 
 	// create the record we're going to populate
 	record := NewRecord(nil)
+
+	// populate it with default values
+	self.FillDefaults(record)
 
 	// get details for the fields present on the given input struct
 	if fields, err := getFieldsForStruct(in); err == nil {
@@ -296,7 +348,7 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 				value := fieldDescr.Field.Value()
 
 				// set the ID field if this field is explicitly marked as the identity
-				if fieldDescr.Identity && !fieldDescr.Field.IsZero() {
+				if fieldDescr.Identity && !typeutil.IsZero(fieldDescr.Field) {
 					record.ID = value
 				} else {
 					if collectionField, ok := self.GetField(tagName); ok {
@@ -330,7 +382,7 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 				if tagName == self.IdentityField {
 					if fieldDescr.Field.IsExported() {
 						// skip fields containing a zero value
-						if !fieldDescr.Field.IsZero() {
+						if !typeutil.IsZero(fieldDescr.Field) {
 							record.ID = fieldDescr.Field.Value()
 							delete(record.Fields, tagName)
 							break
@@ -358,6 +410,10 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 					delete(record.Fields, `ID`)
 				}
 			}
+		}
+
+		if idI, err := self.formatAndValidateId(record.ID, PersistOperation, record); err == nil {
+			record.ID = idI
 		}
 
 		return record, nil
