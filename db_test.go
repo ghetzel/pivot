@@ -746,7 +746,7 @@ func TestObjectType(t *testing.T) {
 	}
 
 	assert.Equal(`First`, record.GetNested(`properties.name`))
-	assert.Equal(float64(1), record.GetNested(`properties.count`))
+	assert.EqualValues(1, record.GetNested(`properties.count`))
 }
 
 func TestAggregators(t *testing.T) {

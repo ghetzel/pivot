@@ -294,6 +294,16 @@ func (self *Filter) IdOnly() bool {
 	return false
 }
 
+func (self *Filter) GetFirstValue() (interface{}, bool) {
+	if len(self.Criteria) > 0 {
+		if len(self.Criteria[0].Values) > 0 {
+			return self.Criteria[0].Values[0], true
+		}
+	}
+
+	return nil, false
+}
+
 func (self *Filter) IsMatchAll() bool {
 	if self.MatchAll || self.Spec == AllValue {
 		return true

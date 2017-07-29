@@ -16,9 +16,12 @@ import (
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghodss/yaml"
+	"github.com/hashicorp/golang-lru"
 )
 
 var WriteLockFormat = `%s.lock`
+var FilesystemRecordCacheSize = 1024
+var RecordCacheEnabled = false
 
 const DefaultFilesystemRecordSubdirectory = `data`
 
@@ -36,18 +39,18 @@ type FilesystemBackend struct {
 	conn                  dal.ConnectionString
 	root                  string
 	format                SerializationFormat
-	indexer               map[string]Indexer
+	indexer               Indexer
 	aggregator            map[string]Aggregator
 	options               ConnectOptions
 	registeredCollections map[string]*dal.Collection
 	recordSubdir          string
+	recordCache           *lru.ARCCache
 }
 
 func NewFilesystemBackend(connection dal.ConnectionString) Backend {
 	return &FilesystemBackend{
 		conn:                  connection,
 		format:                FormatYAML,
-		indexer:               make(map[string]Indexer),
 		aggregator:            make(map[string]Aggregator),
 		registeredCollections: make(map[string]*dal.Collection),
 		recordSubdir:          DefaultFilesystemRecordSubdirectory,
@@ -115,17 +118,51 @@ func (self *FilesystemBackend) Initialize() error {
 		return err
 	}
 
+	var primaryIndexer Indexer
+
 	// setup indexer
 	if indexConnString := self.options.Indexer; indexConnString != `` {
 		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
-					self.indexer[``] = indexer
+					primaryIndexer = indexer
+				}else{
+					return err
 				}
+			}else{
+				return err
 			}
+		}else{
+			return err
 		}
 	} else {
-		self.indexer[``] = self
+		primaryIndexer = self
+	}
+
+	// setup additional indexers
+	if len(self.options.AdditionalIndexers) > 0 {
+		multi := NewMultiIndex()
+		multi.AddIndexer(primaryIndexer)
+
+		for _, addlIndexerConnString := range self.options.AdditionalIndexers {
+			if err := multi.AddIndexerByConnectionString(addlIndexerConnString); err != nil {
+				return err
+			}
+		}
+
+		if err := multi.IndexInitialize(self); err == nil {
+			self.indexer = multi
+		} else {
+			return err
+		}
+	} else {
+		self.indexer = primaryIndexer
+	}
+
+	if arc, err := lru.NewARC(FilesystemRecordCacheSize); err == nil {
+		self.recordCache = arc
+	} else {
+		return err
 	}
 
 	return nil
@@ -163,6 +200,10 @@ func (self *FilesystemBackend) Retrieve(collectionName string, id interface{}, f
 
 		if err := self.readObject(collection, fmt.Sprintf("%v", id), true, &record); err == nil {
 			self.prepareIncomingRecord(collection.Name, &record)
+
+			// add/touch item in cache for rapid readback if necessary
+			self.recordCache.Add(fmt.Sprintf("%v|%v", collectionName, record.ID), &record)
+
 			return &record, nil
 		} else {
 			return nil, err
@@ -178,6 +219,9 @@ func (self *FilesystemBackend) Update(collectionName string, recordset *dal.Reco
 			if err := self.writeObject(collection, fmt.Sprintf("%v", record.ID), true, record); err != nil {
 				return err
 			}
+
+			// add/touch item in cache for rapid readback if necessary
+			self.recordCache.Add(fmt.Sprintf("%v|%v", collectionName, record.ID), record)
 		}
 
 		if search := self.WithSearch(collection.Name); search != nil {
@@ -204,6 +248,9 @@ func (self *FilesystemBackend) Delete(collectionName string, ids ...interface{})
 				if filename := self.makeFilename(collection, fmt.Sprintf("%v", id), true); filename != `` {
 					os.Remove(filepath.Join(dataRoot, filename))
 				}
+
+				// explicitly remove item from cache
+				self.recordCache.Remove(fmt.Sprintf("%v|%v", collectionName, id))
 			}
 
 			return nil
@@ -216,13 +263,7 @@ func (self *FilesystemBackend) Delete(collectionName string, ids ...interface{})
 }
 
 func (self *FilesystemBackend) WithSearch(collectionName string, filters ...filter.Filter) Indexer {
-	if indexer, ok := self.indexer[collectionName]; ok {
-		return indexer
-	}
-
-	defaultIndexer, _ := self.indexer[``]
-
-	return defaultIndexer
+	return self.indexer
 }
 
 func (self *FilesystemBackend) WithAggregator(collectionName string) Aggregator {
@@ -347,6 +388,7 @@ func (self *FilesystemBackend) writeObject(collection *dal.Collection, id string
 
 			if _, err := os.Stat(lockfilename); os.IsNotExist(err) {
 				if lockfile, err := os.Create(lockfilename); err == nil {
+					defer lockfile.Close()
 					defer os.Remove(lockfilename)
 
 					if _, err := lockfile.Write([]byte(fmt.Sprintf("%v", time.Now().UnixNano()))); err == nil {
@@ -406,10 +448,23 @@ func (self *FilesystemBackend) listObjectIdsInCollection(collection *dal.Collect
 }
 
 func (self *FilesystemBackend) readObject(collection *dal.Collection, id string, isData bool, into interface{}) error {
+	if RecordCacheEnabled && isData && into != nil {
+		if record, ok := into.(*dal.Record); ok {
+			if cacheRecordI, ok := self.recordCache.Get(fmt.Sprintf("%v|%v", collection.Name, id)); ok {
+				if cacheRecord, ok := cacheRecordI.(*dal.Record); ok && cacheRecord != nil {
+					record.Copy(cacheRecord)
+					querylog.Debugf("[%T] Record %v/%v read from cache", self, collection.Name, id)
+					return nil
+				}
+			}
+		}
+	}
+
 	if dataRoot, err := self.getDataRoot(collection.Name, isData); err == nil {
 		if filename := self.makeFilename(collection, id, isData); filename != `` {
 			if file, err := os.Open(filepath.Join(dataRoot, filename)); err == nil {
 				defer file.Close()
+				querylog.Debugf("[%T] Record %v/%v read from disk", self, collection.Name, id)
 
 				if data, err := ioutil.ReadAll(file); err == nil {
 					switch self.format {

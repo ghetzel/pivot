@@ -27,7 +27,23 @@ func NewRecord(id interface{}) *Record {
 	}
 }
 
+func (self *Record) init() {
+	if self.Fields == nil {
+		self.Fields = make(map[string]interface{})
+	}
+}
+
+func (self *Record) Copy(other *Record) {
+	if other != nil {
+		self.ID = other.ID
+		self.Fields = other.Fields
+		self.Data = other.Data
+	}
+}
+
 func (self *Record) Get(key string, fallback ...interface{}) interface{} {
+	self.init()
+
 	if v, ok := self.Fields[key]; ok {
 		return v
 	} else {
@@ -36,6 +52,8 @@ func (self *Record) Get(key string, fallback ...interface{}) interface{} {
 }
 
 func (self *Record) GetNested(key string, fallback ...interface{}) interface{} {
+	self.init()
+
 	var fb interface{}
 
 	if len(fallback) > 0 {
@@ -50,11 +68,15 @@ func (self *Record) GetNested(key string, fallback ...interface{}) interface{} {
 }
 
 func (self *Record) Set(key string, value interface{}) *Record {
+	self.init()
+
 	self.Fields[key] = value
 	return self
 }
 
 func (self *Record) SetNested(key string, value interface{}) *Record {
+	self.init()
+
 	parts := strings.Split(key, FieldNestingSeparator)
 	maputil.DeepSet(self.Fields, parts, value)
 	return self

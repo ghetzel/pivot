@@ -59,7 +59,7 @@ func (self *BleveIndexer) IndexInitialize(parent Backend) error {
 }
 
 func (self *BleveIndexer) IndexRetrieve(collection string, id interface{}) (*dal.Record, error) {
-	defer stats.NewTiming().Send(`pivot.backends.bleve.retrieve_time`)
+	defer stats.NewTiming().Send(`pivot.indexers.bleve.retrieve_time`)
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		request := bleve.NewSearchRequest(bleve.NewDocIDQuery([]string{fmt.Sprintf("%v", id)}))
@@ -87,7 +87,7 @@ func (self *BleveIndexer) IndexExists(collection string, id interface{}) bool {
 }
 
 func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error {
-	defer stats.NewTiming().Send(`pivot.backends.bleve.index_time`)
+	defer stats.NewTiming().Send(`pivot.indexers.bleve.index_time`)
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		var batch *bleve.Batch
@@ -140,7 +140,7 @@ func (self *BleveIndexer) checkAndFlushBatches() {
 			}
 
 			if shouldFlush {
-				defer stats.NewTiming().Send(`pivot.backends.bleve.deferred_batch_flush`)
+				defer stats.NewTiming().Send(`pivot.indexers.bleve.deferred_batch_flush`)
 
 				if index, err := self.getIndexForCollection(collection); err == nil {
 					querylog.Debugf("[%T] Indexing %d records to %s", self, deferred.batch.Size(), collection)
@@ -158,7 +158,7 @@ func (self *BleveIndexer) checkAndFlushBatches() {
 }
 
 func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn IndexResultFunc) error {
-	defer stats.NewTiming().Send(`pivot.backends.bleve.query_time`)
+	defer stats.NewTiming().Send(`pivot.indexers.bleve.query_time`)
 
 	if f.IdentityField == `` {
 		f.IdentityField = BleveIdentityField
@@ -371,7 +371,7 @@ func (self *BleveIndexer) DeleteQuery(name string, f filter.Filter) error {
 }
 
 func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index, error) {
-	defer stats.NewTiming().Send(`pivot.backends.bleve.retrieve_index`)
+	defer stats.NewTiming().Send(`pivot.indexers.bleve.retrieve_index`)
 
 	if v, ok := self.indexCache[collection]; ok {
 		return v, nil
@@ -408,7 +408,7 @@ func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index,
 }
 
 func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter) (query.Query, error) {
-	defer stats.NewTiming().Send(`pivot.backends.bleve.filter_to_native`)
+	defer stats.NewTiming().Send(`pivot.indexers.bleve.filter_to_native`)
 
 	if f.MatchAll {
 		return bleve.NewMatchAllQuery(), nil

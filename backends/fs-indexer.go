@@ -21,6 +21,7 @@ func (self *FilesystemBackend) IndexExists(collection string, id interface{}) bo
 }
 
 func (self *FilesystemBackend) IndexRetrieve(collection string, id interface{}) (*dal.Record, error) {
+	defer stats.NewTiming().Send(`pivot.indexers.filesystem.retrieve_time`)
 	return self.Retrieve(collection, id)
 }
 
@@ -33,62 +34,87 @@ func (self *FilesystemBackend) Index(collection string, records *dal.RecordSet) 
 }
 
 func (self *FilesystemBackend) QueryFunc(collectionName string, filter filter.Filter, resultFn IndexResultFunc) error {
-	if collection, ok := self.registeredCollections[collectionName]; ok {
-		if ids, err := self.listObjectIdsInCollection(collection); err == nil {
-			page := 1
-			processed := 0
-			offset := filter.Offset
-			totalResults := int64(0)
-			totalPages := 1
+	defer stats.NewTiming().Send(`pivot.indexers.filesystem.query_time`)
+	querylog.Debugf("[%T] Query using filter %q", self, filter.String())
 
-			if filter.Limit > 0 {
-				totalPages = int(math.Ceil(float64(totalResults) / float64(filter.Limit)))
-			}
+	if filter.IdOnly() {
+		if id, ok := filter.GetFirstValue(); ok {
+			if record, err := self.Retrieve(collectionName, id); err == nil {
+				querylog.Debugf("[%T] Record %v matches filter %q", self, id, filter.String())
 
-			for _, id := range ids {
-				// retrieve the record by id
-				if record, err := self.Retrieve(collection.Name, id); err == nil {
-					// if matching all records OR the found record matches the filter
-					if filter.MatchesRecord(record) {
-						if processed >= offset {
-							totalResults += 1
-
-							if err := resultFn(record, err, IndexPage{
-								Page:         page,
-								TotalPages:   totalPages,
-								Limit:        filter.Limit,
-								Offset:       offset,
-								TotalResults: totalResults,
-							}); err != nil {
-								return err
-							}
-						}
-					}
-				} else {
-					if err := resultFn(dal.NewRecord(nil), err, IndexPage{
-						Page:         page,
-						TotalPages:   totalPages,
-						Limit:        filter.Limit,
-						Offset:       offset,
-						TotalResults: totalResults,
-					}); err != nil {
-						return err
-					}
+				if err := resultFn(record, err, IndexPage{
+					Page:         1,
+					TotalPages:   1,
+					Limit:        filter.Limit,
+					Offset:       0,
+					TotalResults: 1,
+				}); err != nil {
+					return err
 				}
-
-				processed += 1
-				page = int(float64(processed) / float64(filter.Limit))
-
-				if filter.Limit > 0 && processed >= (offset+filter.Limit) {
-					querylog.Debugf("[%T] %d at or beyond limit %d, returning results", self, processed, filter.Limit)
-					break
-				}
+			} else {
+				return err
 			}
-		} else {
-			return err
 		}
 	} else {
-		return dal.CollectionNotFound
+		if collection, ok := self.registeredCollections[collectionName]; ok {
+			if ids, err := self.listObjectIdsInCollection(collection); err == nil {
+				page := 1
+				processed := 0
+				offset := filter.Offset
+				totalResults := int64(0)
+				totalPages := 1
+
+				if filter.Limit > 0 {
+					totalPages = int(math.Ceil(float64(totalResults) / float64(filter.Limit)))
+				}
+
+				for _, id := range ids {
+					// retrieve the record by id
+					if record, err := self.Retrieve(collection.Name, id); err == nil {
+						// if matching all records OR the found record matches the filter
+						if filter.MatchesRecord(record) {
+							if processed >= offset {
+								querylog.Debugf("[%T] Record %v matches filter %q", self, record.ID, filter.String())
+
+								totalResults += 1
+
+								if err := resultFn(record, err, IndexPage{
+									Page:         page,
+									TotalPages:   totalPages,
+									Limit:        filter.Limit,
+									Offset:       offset,
+									TotalResults: totalResults,
+								}); err != nil {
+									return err
+								}
+							}
+						}
+					} else {
+						if err := resultFn(dal.NewRecord(nil), err, IndexPage{
+							Page:         page,
+							TotalPages:   totalPages,
+							Limit:        filter.Limit,
+							Offset:       offset,
+							TotalResults: totalResults,
+						}); err != nil {
+							return err
+						}
+					}
+
+					processed += 1
+					page = int(float64(processed) / float64(filter.Limit))
+
+					if filter.Limit > 0 && processed >= (offset+filter.Limit) {
+						querylog.Debugf("[%T] %d at or beyond limit %d, returning results", self, processed, filter.Limit)
+						break
+					}
+				}
+			} else {
+				return err
+			}
+		} else {
+			return dal.CollectionNotFound
+		}
 	}
 
 	return nil
