@@ -10,7 +10,6 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
-	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 )
 
@@ -429,7 +428,7 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 
 				switch criterion.Type {
 				case dal.AutoType:
-					if e, err := typeutil.RelaxedEqual(vStr, cmpValueS); err == nil {
+					if e, err := stringutil.RelaxedEqual(vStr, cmpValueS); err == nil {
 						isEqual = e
 					} else {
 						return false

@@ -22,7 +22,7 @@ func ValidateAll(validators []FieldValidatorFunc) FieldValidatorFunc {
 func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc {
 	return func(value interface{}) error {
 		for _, choice := range choices {
-			if ok, err := typeutil.RelaxedEqual(choice, value); err == nil && ok {
+			if ok, err := stringutil.RelaxedEqual(choice, value); err == nil && ok {
 				return nil
 			}
 		}
