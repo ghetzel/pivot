@@ -298,6 +298,30 @@ func (self *MultiIndex) DeleteQuery(collection string, f filter.Filter) error {
 	return indexErr
 }
 
+func (self *MultiIndex) FlushIndex() error {
+	var errors []error
+
+	for _, indexer := range self.indexers {
+		if err := indexer.FlushIndex(); err != nil {
+			errors = append(errors, err)
+		}
+	}
+
+	if len(errors) == 0 {
+		return nil
+	} else if len(errors) == 1 {
+		return errors[0]
+	} else {
+		str := ``
+
+		for _, err := range errors {
+			str += "  " + err.Error() + "\n"
+		}
+
+		return fmt.Errorf("multiple errors:\n%s", str)
+	}
+}
+
 func (self *MultiIndex) EachSelectedIndex(collection string, operation IndexOperation, resultFn IndexerResultFunc) error {
 	lastIndexer := -1
 

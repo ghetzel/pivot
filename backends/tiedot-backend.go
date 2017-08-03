@@ -18,7 +18,7 @@ type TiedotBackend struct {
 	conn                  dal.ConnectionString
 	root                  string
 	db                    *db.DB
-	indexer               map[string]Indexer
+	indexer               Indexer
 	aggregator            map[string]Aggregator
 	options               ConnectOptions
 	registeredCollections map[string]*dal.Collection
@@ -27,7 +27,6 @@ type TiedotBackend struct {
 func NewTiedotBackend(connection dal.ConnectionString) Backend {
 	return &TiedotBackend{
 		conn:                  connection,
-		indexer:               make(map[string]Indexer),
 		aggregator:            make(map[string]Aggregator),
 		registeredCollections: make(map[string]*dal.Collection),
 	}
@@ -67,7 +66,7 @@ func (self *TiedotBackend) Initialize() error {
 		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
 			if indexer, err := MakeIndexer(ics); err == nil {
 				if err := indexer.IndexInitialize(self); err == nil {
-					self.indexer[``] = indexer
+					self.indexer = indexer
 				}
 			}
 		}
@@ -154,13 +153,7 @@ func (self *TiedotBackend) Delete(name string, ids ...interface{}) error {
 }
 
 func (self *TiedotBackend) WithSearch(collectionName string, filters ...filter.Filter) Indexer {
-	if indexer, ok := self.indexer[collectionName]; ok {
-		return indexer
-	}
-
-	defaultIndexer, _ := self.indexer[``]
-
-	return defaultIndexer
+	return self.indexer
 }
 
 func (self *TiedotBackend) WithAggregator(collectionName string) Aggregator {
@@ -202,6 +195,14 @@ func (self *TiedotBackend) GetCollection(name string) (*dal.Collection, error) {
 	}
 
 	return nil, dal.CollectionNotFound
+}
+
+func (self *TiedotBackend) Flush() error {
+	if self.indexer != nil {
+		return self.indexer.FlushIndex()
+	}
+
+	return nil
 }
 
 func (self *TiedotBackend) upsertRecordset(name string, recordset *dal.RecordSet, isCreate bool) error {

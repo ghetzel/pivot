@@ -318,6 +318,14 @@ func (self *FilesystemBackend) GetCollection(name string) (*dal.Collection, erro
 	return nil, dal.CollectionNotFound
 }
 
+func (self *FilesystemBackend) Flush() error {
+	if self.indexer != nil {
+		return self.indexer.FlushIndex()
+	}
+
+	return nil
+}
+
 func (self *FilesystemBackend) getDataRoot(collectionName string, isData bool) (string, error) {
 	var dataRoot string
 

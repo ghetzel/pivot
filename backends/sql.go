@@ -637,6 +637,14 @@ func (self *SqlBackend) GetCollection(name string) (*dal.Collection, error) {
 	}
 }
 
+func (self *SqlBackend) Flush() error {
+	if self.indexer != nil {
+		return self.indexer.FlushIndex()
+	}
+
+	return nil
+}
+
 func (self *SqlBackend) makeQueryGen(collection *dal.Collection) *generators.Sql {
 	queryGen := generators.NewSqlGenerator()
 	queryGen.TypeMapping = self.queryGenTypeMapping

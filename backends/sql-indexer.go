@@ -259,3 +259,7 @@ func (self *SqlBackend) DeleteQuery(name string, f filter.Filter) error {
 		return err
 	}
 }
+
+func (self *SqlBackend) FlushIndex() error {
+	return nil
+}

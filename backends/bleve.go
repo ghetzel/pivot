@@ -116,14 +116,14 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 			}
 		}
 
-		self.checkAndFlushBatches()
+		self.checkAndFlushBatches(false)
 		return nil
 	} else {
 		return err
 	}
 }
 
-func (self *BleveIndexer) checkAndFlushBatches() {
+func (self *BleveIndexer) checkAndFlushBatches(forceFlush bool) {
 	self.batchLock.RLock()
 	defer self.batchLock.RUnlock()
 
@@ -136,6 +136,10 @@ func (self *BleveIndexer) checkAndFlushBatches() {
 			}
 
 			if time.Since(deferred.lastFlush) >= BleveBatchFlushInterval {
+				shouldFlush = true
+			}
+
+			if forceFlush {
 				shouldFlush = true
 			}
 
@@ -368,6 +372,11 @@ func (self *BleveIndexer) DeleteQuery(name string, f filter.Filter) error {
 	} else {
 		return err
 	}
+}
+
+func (self *BleveIndexer) FlushIndex() error {
+	self.checkAndFlushBatches(true)
+	return nil
 }
 
 func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index, error) {

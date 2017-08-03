@@ -32,6 +32,7 @@ type Indexer interface {
 	Query(collection string, filter filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 	ListValues(collection string, fields []string, filter filter.Filter) (map[string][]interface{}, error)
 	DeleteQuery(collection string, f filter.Filter) error
+	FlushIndex() error
 }
 
 func MakeIndexer(connection dal.ConnectionString) (Indexer, error) {

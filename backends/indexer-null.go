@@ -47,3 +47,7 @@ func (self *NullIndexer) ListValues(collection string, fields []string, filter f
 func (self *NullIndexer) DeleteQuery(collection string, f filter.Filter) error {
 	return NotImplementedError
 }
+
+func (self *NullIndexer) FlushIndex() error {
+	return NotImplementedError
+}

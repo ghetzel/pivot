@@ -29,6 +29,7 @@ type Backend interface {
 	GetCollection(collection string) (*dal.Collection, error)
 	WithSearch(collection string, filters ...filter.Filter) Indexer
 	WithAggregator(collection string) Aggregator
+	Flush() error
 }
 
 var NotImplementedError = fmt.Errorf("Not Implemented")

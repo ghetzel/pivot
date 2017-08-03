@@ -184,3 +184,7 @@ func (self *FilesystemBackend) DeleteQuery(collectionName string, f filter.Filte
 		return err
 	}
 }
+
+func (self *FilesystemBackend) FlushIndex() error {
+	return nil
+}
