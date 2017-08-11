@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -120,4 +121,24 @@ func TestCollectionNewInstance(t *testing.T) {
 	assert.True(instance.Enabled)
 	assert.Zero(instance.Age)
 	assert.Equal(constantTimeFn(), instance.CreatedAt)
+}
+
+func TestCollectionValidator(t *testing.T) {
+	assert := require.New(t)
+
+	collection := &Collection{
+		Name:              `TestCollectionValidator`,
+		IdentityFieldType: StringType,
+		PreSaveValidator: func(record *Record) error {
+			if fmt.Sprintf("%v", record.ID) == `two` {
+				return fmt.Errorf("ID cannot be 'two' for reasons")
+			}
+
+			return nil
+		},
+	}
+
+	assert.NoError(collection.ValidateRecord(NewRecord(`one`), PersistOperation))
+	assert.Error(collection.ValidateRecord(NewRecord(`two`), PersistOperation))
+	assert.NoError(collection.ValidateRecord(NewRecord(`three`), PersistOperation))
 }

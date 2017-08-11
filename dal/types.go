@@ -31,6 +31,7 @@ const (
 
 type FieldValidatorFunc func(interface{}) error
 type FieldFormatterFunc func(interface{}, FieldOperation) (interface{}, error)
+type CollectionValidatorFunc func(*Record) error
 
 type DeltaType string
 

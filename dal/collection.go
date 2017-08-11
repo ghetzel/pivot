@@ -29,12 +29,13 @@ type Instantiator interface {
 }
 
 type Collection struct {
-	Name                   string             `json:"name"`
-	Fields                 []Field            `json:"fields"`
-	IdentityField          string             `json:"identity_field,omitempty"`
-	IdentityFieldType      Type               `json:"identity_field_type,omitempty"`
-	IdentityFieldFormatter FieldFormatterFunc `json:"-"`
-	IdentityFieldValidator FieldValidatorFunc `json:"-"`
+	Name                   string                  `json:"name"`
+	Fields                 []Field                 `json:"fields"`
+	IdentityField          string                  `json:"identity_field,omitempty"`
+	IdentityFieldType      Type                    `json:"identity_field_type,omitempty"`
+	IdentityFieldFormatter FieldFormatterFunc      `json:"-"`
+	IdentityFieldValidator FieldValidatorFunc      `json:"-"`
+	PreSaveValidator       CollectionValidatorFunc `json:"-"`
 	recordType             reflect.Type
 	instanceInitializer    InitializerFunc
 }
@@ -327,8 +328,14 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 			}
 		}
 
+		// validate ID value
 		if idI, err := self.formatAndValidateId(record.ID, PersistOperation, record); err == nil {
 			record.ID = idI
+		}
+
+		// validate whole record (if specified)
+		if err := self.ValidateRecord(record, PersistOperation); err != nil {
+			return nil, err
 		}
 
 		return record, nil
@@ -416,10 +423,29 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 			record.ID = idI
 		}
 
+		// validate whole record (if specified)
+		if err := self.ValidateRecord(record, PersistOperation); err != nil {
+			return nil, err
+		}
+
 		return record, nil
 	} else {
 		return nil, err
 	}
+}
+
+func (self *Collection) ValidateRecord(record *Record, op FieldOperation) error {
+	switch op {
+	case PersistOperation:
+		// validate whole record (if specified)
+		if self.PreSaveValidator != nil {
+			if err := self.PreSaveValidator(record); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func (self *Collection) Diff(actual *Collection) []SchemaDelta {
