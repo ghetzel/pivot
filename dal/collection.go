@@ -331,6 +331,8 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 		// validate ID value
 		if idI, err := self.formatAndValidateId(record.ID, PersistOperation, record); err == nil {
 			record.ID = idI
+		} else {
+			return nil, err
 		}
 
 		// validate whole record (if specified)
@@ -421,6 +423,8 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 
 		if idI, err := self.formatAndValidateId(record.ID, PersistOperation, record); err == nil {
 			record.ID = idI
+		} else {
+			return nil, err
 		}
 
 		// validate whole record (if specified)

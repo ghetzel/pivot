@@ -157,6 +157,8 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 		if collection != nil {
 			if idI, err := collection.formatAndValidateId(self.ID, RetrieveOperation, self); err == nil {
 				self.ID = idI
+			} else {
+				return err
 			}
 		}
 	} else {
@@ -301,6 +303,8 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 				if collection != nil {
 					if idI, err := collection.formatAndValidateId(self.ID, RetrieveOperation, self); err == nil {
 						self.ID = idI
+					} else {
+						return err
 					}
 				}
 

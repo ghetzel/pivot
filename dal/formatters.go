@@ -1,11 +1,34 @@
 package dal
 
 import (
+	"encoding/base32"
+	"encoding/base64"
+	"encoding/hex"
 	"fmt"
+	"strings"
 
 	"github.com/ghetzel/go-stockutil/typeutil"
+	"github.com/jbenet/go-base58"
 	"github.com/satori/go.uuid"
 )
+
+type EncoderFunc func([]byte) (string, error) //{}
+
+var Base32Encoder = func(src []byte) (string, error) {
+	return strings.TrimSuffix(base32.StdEncoding.EncodeToString(src), `=`), nil
+}
+
+var Base58Encoder = func(src []byte) (string, error) {
+	return base58.Encode(src), nil
+}
+
+var Base64Encoder = func(src []byte) (string, error) {
+	return strings.TrimSuffix(base64.StdEncoding.EncodeToString(src), `=`), nil
+}
+
+var HexEncoder = func(src []byte) (string, error) {
+	return hex.EncodeToString(src), nil
+}
 
 func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error) {
 	if record, ok := value.(*Record); ok {
@@ -17,6 +40,28 @@ func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error) {
 	}
 
 	return value, nil
+}
+
+func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc {
+	return func(value interface{}, _ FieldOperation) (interface{}, error) {
+		if record, ok := value.(*Record); ok {
+			value = record.ID
+		}
+
+		if typeutil.IsZero(value) {
+			if v, err := encoder(uuid.NewV4().Bytes()); err == nil {
+				if typeutil.IsZero(v) {
+					return value, fmt.Errorf("UUID encoder produced a zero-length result")
+				}
+
+				value = v
+			} else {
+				return value, err
+			}
+		}
+
+		return value, nil
+	}
 }
 
 func DeriveFromFields(format string, fields ...string) FieldFormatterFunc {
