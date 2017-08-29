@@ -6,7 +6,6 @@ import (
 	"math"
 	"path"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/blevesearch/bleve"
@@ -20,6 +19,7 @@ import (
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
+	"github.com/orcaman/concurrent-map"
 )
 
 var BleveBatchFlushCount = 1
@@ -36,15 +36,14 @@ type BleveIndexer struct {
 	conn               *dal.ConnectionString
 	parent             Backend
 	indexCache         map[string]bleve.Index
-	indexDeferredBatch map[string]*deferredBatch
-	batchLock          sync.RWMutex
+	indexDeferredBatch cmap.ConcurrentMap
 }
 
 func NewBleveIndexer(connection dal.ConnectionString) *BleveIndexer {
 	return &BleveIndexer{
 		conn:               &connection,
 		indexCache:         make(map[string]bleve.Index),
-		indexDeferredBatch: make(map[string]*deferredBatch),
+		indexDeferredBatch: cmap.New(),
 	}
 }
 
@@ -92,20 +91,16 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		var batch *bleve.Batch
 
-		self.batchLock.RLock()
-		d, ok := self.indexDeferredBatch[collection]
-		self.batchLock.RUnlock()
+		d, ok := self.indexDeferredBatch.Get(collection)
 
 		if ok {
-			batch = d.batch
+			batch = d.(*deferredBatch).batch
 		} else {
 			batch = index.NewBatch()
-			self.batchLock.Lock()
-			self.indexDeferredBatch[collection] = &deferredBatch{
+			self.indexDeferredBatch.Set(collection, &deferredBatch{
 				batch:     batch,
 				lastFlush: time.Now(),
-			}
-			self.batchLock.Unlock()
+			})
 		}
 
 		for _, record := range records.Records {
@@ -124,13 +119,10 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 }
 
 func (self *BleveIndexer) checkAndFlushBatches(forceFlush bool) {
-	self.batchLock.RLock()
-	defer func(){
-		self.indexDeferredBatch = make(map[string]*deferredBatch)
-		self.batchLock.RUnlock()
-	}()
+	for item := range self.indexDeferredBatch.Iter() {
+		collection := item.Key
+		deferred := item.Val.(*deferredBatch)
 
-	for collection, deferred := range self.indexDeferredBatch {
 		if deferred.batch != nil {
 			shouldFlush := false
 
@@ -155,6 +147,12 @@ func (self *BleveIndexer) checkAndFlushBatches(forceFlush bool) {
 					if err := index.Batch(deferred.batch); err == nil {
 						deferred.batch = index.NewBatch()
 						deferred.lastFlush = time.Now()
+
+						defer func() {
+							for _, key := range self.indexDeferredBatch.Keys() {
+								self.indexDeferredBatch.Remove(key)
+							}
+						}()
 					} else {
 						log.Errorf("[%T] error indexing %d records to %s: %v", self, deferred.batch.Size(), collection, err)
 					}
