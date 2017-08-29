@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/jbenet/go-base58"
@@ -77,5 +78,13 @@ func DeriveFromFields(format string, fields ...string) FieldFormatterFunc {
 		} else {
 			return nil, fmt.Errorf("DeriveFromFields formatter requires a *dal.Record argument, got %T", input)
 		}
+	}
+}
+
+func CurrentTime(value interface{}, op FieldOperation) (interface{}, error) {
+	if op == PersistOperation {
+		return time.Now(), nil
+	} else {
+		return value, nil
 	}
 }

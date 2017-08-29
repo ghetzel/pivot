@@ -125,7 +125,10 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 
 func (self *BleveIndexer) checkAndFlushBatches(forceFlush bool) {
 	self.batchLock.RLock()
-	defer self.batchLock.RUnlock()
+	defer func(){
+		self.indexDeferredBatch = make(map[string]*deferredBatch)
+		self.batchLock.RUnlock()
+	}()
 
 	for collection, deferred := range self.indexDeferredBatch {
 		if deferred.batch != nil {
