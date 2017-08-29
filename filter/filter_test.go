@@ -127,7 +127,7 @@ func TestFilterFromMap(t *testing.T) {
 
 		case `f2`:
 			assert.True(dal.IntType == criterion.Type)
-			assert.Equal([]interface{}{`2`}, criterion.Values)
+			assert.Equal([]interface{}{2}, criterion.Values)
 
 		case `f3`:
 			assert.True(dal.FloatType == criterion.Type)

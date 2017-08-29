@@ -126,13 +126,28 @@ func Copy(other *Filter) Filter {
 }
 
 func FromMap(in map[string]interface{}) (Filter, error) {
-	criteria := make([]string, 0)
+	rv := MakeFilter()
 
 	for typeField, opValue := range in {
-		criteria = append(criteria, fmt.Sprintf("%s%s%v", typeField, FieldTermSeparator, opValue))
+		fType, fName := SplitModifierToken(typeField)
+		var vOper string
+		var vValues interface{}
+
+		if pair, ok := opValue.(string); ok {
+			vOper, vValues = SplitModifierToken(pair)
+		} else {
+			vValues = opValue
+		}
+
+		rv.AddCriteria(Criterion{
+			Type:     dal.Type(fType),
+			Field:    fName,
+			Operator: vOper,
+			Values:   sliceutil.Sliceify(vValues),
+		})
 	}
 
-	return Parse(strings.Join(criteria, CriteriaSeparator))
+	return rv, nil
 }
 
 var Null Filter = MakeFilter(``)
@@ -190,27 +205,27 @@ func Parse(spec string) (Filter, error) {
 				token = strings.TrimPrefix(token, SortDescending)
 				token = strings.TrimPrefix(token, SortAscending)
 
-				parts := strings.SplitN(token, ModifierDelimiter, 2)
+				fType, fName := SplitModifierToken(token)
 
-				if len(parts) == 1 {
+				if fType == `` {
 					criterion = Criterion{
-						Field: parts[0],
+						Field: fName,
 						Type:  dal.AutoType,
 					}
 				} else {
-					typeLengthPair := strings.SplitN(parts[0], FieldLengthDelimiter, 2)
+					typeLengthPair := strings.SplitN(fType, FieldLengthDelimiter, 2)
 
 					if len(typeLengthPair) == 1 {
 						criterion = Criterion{
-							Type:  sliceutil.Or(dal.Type(parts[0]), dal.StringType).(dal.Type),
-							Field: parts[1],
+							Type:  sliceutil.Or(dal.Type(fType), dal.StringType).(dal.Type),
+							Field: fName,
 						}
 					} else {
 						if v, err := strconv.ParseUint(typeLengthPair[1], 10, 32); err == nil {
 							criterion = Criterion{
 								Type:   sliceutil.Or(dal.Type(typeLengthPair[0]), dal.StringType).(dal.Type),
 								Length: int(v),
-								Field:  parts[1],
+								Field:  fName,
 							}
 						} else {
 							return rv, err
@@ -226,19 +241,15 @@ func Parse(spec string) (Filter, error) {
 					}
 				}
 			} else {
-				parts := strings.SplitN(token, ModifierDelimiter, 2)
+				vOper, vValue := SplitModifierToken(token)
 				criterion.Values = make([]interface{}, 0)
 
-				if len(parts) == 1 {
-					for _, v := range strings.Split(parts[0], ValueSeparator) {
-						criterion.Values = append(criterion.Values, v)
-					}
-				} else {
-					criterion.Operator = parts[0]
+				if vOper != `` {
+					criterion.Operator = vOper
+				}
 
-					for _, v := range strings.Split(parts[1], ValueSeparator) {
-						criterion.Values = append(criterion.Values, v)
-					}
+				for _, v := range strings.Split(vValue, ValueSeparator) {
+					criterion.Values = append(criterion.Values, v)
 				}
 
 				if QueryUnescapeValues {
@@ -519,4 +530,14 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 	}
 
 	return true
+}
+
+func SplitModifierToken(in string) (string, string) {
+	parts := strings.SplitN(in, ModifierDelimiter, 2)
+
+	if len(parts) == 1 {
+		return ``, parts[0]
+	} else {
+		return parts[0], parts[1]
+	}
 }
