@@ -41,6 +41,7 @@ var backendMap = map[string]BackendFunc{
 	`mysql`:    NewSqlBackend,
 	`postgres`: NewSqlBackend,
 	`fs`:       NewFilesystemBackend,
+	`file`:     NewFilesystemBackend,
 	`tiedot`:   NewTiedotBackend,
 }
 
