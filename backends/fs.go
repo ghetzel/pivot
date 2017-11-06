@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/pathutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
@@ -278,7 +277,22 @@ func (self *FilesystemBackend) WithAggregator(collectionName string) Aggregator 
 }
 
 func (self *FilesystemBackend) ListCollections() ([]string, error) {
-	return maputil.StringKeys(self.registeredCollections), nil
+	if entries, err := ioutil.ReadDir(self.root); err == nil {
+		var schemata []string
+
+		for _, entry := range entries {
+			if entry.IsDir() {
+				if collection, err := self.readSchemaFromDisk(entry.Name()); err == nil {
+					schemata = append(schemata, collection.Name)
+
+				}
+			}
+		}
+
+		return schemata, nil
+	} else {
+		return nil, err
+	}
 }
 
 func (self *FilesystemBackend) CreateCollection(definition *dal.Collection) error {
@@ -307,15 +321,25 @@ func (self *FilesystemBackend) DeleteCollection(collectionName string) error {
 }
 
 func (self *FilesystemBackend) GetCollection(name string) (*dal.Collection, error) {
-	if collection, ok := self.registeredCollections[name]; ok {
-		var v map[string]interface{}
+	var v map[string]interface{}
+	var collection *dal.Collection
 
-		if err := self.readObject(collection, `schema`, false, v); err == nil {
-			return collection, nil
-		}
+	if c, ok := self.registeredCollections[name]; ok {
+		collection = c
+	} else if c, err := self.readSchemaFromDisk(name); err == nil {
+		collection = c
+		self.registeredCollections[name] = collection
 	}
 
-	return nil, dal.CollectionNotFound
+	if collection != nil {
+		if err := self.readObject(collection, `schema`, false, v); err == nil {
+			return collection, nil
+		} else {
+			return nil, err
+		}
+	} else {
+		return collection, nil
+	}
 }
 
 func (self *FilesystemBackend) Flush() error {
@@ -324,6 +348,23 @@ func (self *FilesystemBackend) Flush() error {
 	}
 
 	return nil
+}
+
+func (self *FilesystemBackend) readSchemaFromDisk(name string) (*dal.Collection, error) {
+	schemaDesc := filepath.Join(self.root, name, `schema.json`)
+
+	if file, err := os.Open(schemaDesc); err == nil {
+		defer file.Close()
+		var schema dal.Collection
+
+		if err := json.NewDecoder(file).Decode(&schema); err == nil {
+			return &schema, nil
+		} else {
+			return nil, err
+		}
+	} else {
+		return nil, err
+	}
 }
 
 func (self *FilesystemBackend) getDataRoot(collectionName string, isData bool) (string, error) {

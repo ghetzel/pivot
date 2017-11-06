@@ -3,4 +3,5 @@
 /public
 /test.yml
 /*.db
+/*.db-*
 /tmp

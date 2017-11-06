@@ -61,6 +61,7 @@ func (self *BleveIndexer) IndexRetrieve(collection string, id interface{}) (*dal
 	defer stats.NewTiming().Send(`pivot.indexers.bleve.retrieve_time`)
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
+
 		request := bleve.NewSearchRequest(bleve.NewDocIDQuery([]string{fmt.Sprintf("%v", id)}))
 
 		if results, err := index.Search(request); err == nil {
@@ -89,6 +90,7 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 	defer stats.NewTiming().Send(`pivot.indexers.bleve.index_time`)
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
+
 		var batch *bleve.Batch
 
 		d, ok := self.indexDeferredBatch.Get(collection)
@@ -142,6 +144,7 @@ func (self *BleveIndexer) checkAndFlushBatches(forceFlush bool) {
 				defer stats.NewTiming().Send(`pivot.indexers.bleve.deferred_batch_flush`)
 
 				if index, err := self.getIndexForCollection(collection); err == nil {
+
 					querylog.Debugf("[%T] Indexing %d records to %s", self, deferred.batch.Size(), collection)
 
 					if err := index.Batch(deferred.batch); err == nil {
@@ -171,13 +174,19 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		if bq, err := self.filterToBleveQuery(index, f); err == nil {
+			limit := f.Limit
+
+			if limit == 0 || limit > IndexerPageSize {
+				limit = IndexerPageSize
+			}
+
 			offset := f.Offset
 			page := 1
 			processed := 0
 
 			// perform requests until we have enough results or the index is out of them
 			for {
-				request := bleve.NewSearchRequestOptions(bq, IndexerPageSize, offset, false)
+				request := bleve.NewSearchRequestOptions(bq, limit, offset, false)
 
 				// apply sorting (if specified)
 				if f.Sort != nil && len(f.Sort) > 0 {
@@ -289,6 +298,7 @@ func (self *BleveIndexer) Query(collection string, f filter.Filter, resultFns ..
 
 func (self *BleveIndexer) IndexRemove(collection string, ids []interface{}) error {
 	if index, err := self.getIndexForCollection(collection); err == nil {
+
 		batch := index.NewBatch()
 
 		for _, id := range ids {
@@ -303,6 +313,7 @@ func (self *BleveIndexer) IndexRemove(collection string, ids []interface{}) erro
 
 func (self *BleveIndexer) ListValues(collection string, fields []string, f filter.Filter) (map[string][]interface{}, error) {
 	if index, err := self.getIndexForCollection(collection); err == nil {
+
 		if bq, err := self.filterToBleveQuery(index, f); err == nil {
 			request := bleve.NewSearchRequestOptions(bq, 0, 0, false)
 			request.Fields = []string{}
@@ -501,22 +512,44 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 					currentQuery = bleve.NewWildcardQuery(`*` + analyzedValue + `*`)
 
 				case `gt`, `lt`, `gte`, `lte`:
-					var min, max *float64
 					var minInc, maxInc bool
 
-					if v, err := stringutil.ConvertToFloat(analyzedValue); err == nil {
-						if strings.HasPrefix(criterion.Operator, `gt`) {
-							min = &v
-							minInc = strings.HasSuffix(criterion.Operator, `e`)
-						} else {
-							max = &v
-							maxInc = strings.HasSuffix(criterion.Operator, `e`)
-						}
+					if strings.HasPrefix(criterion.Operator, `gt`) {
+						minInc = strings.HasSuffix(criterion.Operator, `e`)
 					} else {
-						return nil, err
+						maxInc = strings.HasSuffix(criterion.Operator, `e`)
 					}
 
-					currentQuery = bleve.NewNumericRangeInclusiveQuery(min, max, &minInc, &maxInc)
+					switch criterion.Type {
+					case dal.TimeType:
+						var min, max time.Time
+
+						if v, err := stringutil.ConvertToTime(analyzedValue); err == nil {
+							if strings.HasPrefix(criterion.Operator, `gt`) {
+								min = v
+							} else {
+								max = v
+							}
+						} else {
+							return nil, err
+						}
+
+						currentQuery = query.NewDateRangeInclusiveQuery(min, max, &minInc, &maxInc)
+					default:
+						var min, max *float64
+
+						if v, err := stringutil.ConvertToFloat(analyzedValue); err == nil {
+							if strings.HasPrefix(criterion.Operator, `gt`) {
+								min = &v
+							} else {
+								max = &v
+							}
+						} else {
+							return nil, err
+						}
+
+						currentQuery = bleve.NewNumericRangeInclusiveQuery(min, max, &minInc, &maxInc)
+					}
 
 				// case `not`:
 				// 	q := bleve.NewBooleanQuery()
