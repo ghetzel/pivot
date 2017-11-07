@@ -34,8 +34,31 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 			return nil, err
 		}
 
+		compileOptions := `PRAGMA compile_options`
+		querylog.Debugf("[%T] %s", self, compileOptions)
+
+		if options, err := self.db.Query(compileOptions); err == nil {
+			defer options.Close()
+
+			for options.Next() {
+				var option string
+
+				if err := options.Scan(&option); err == nil {
+					switch option {
+					case `ENABLE_JSON1`:
+						self.queryGenNestedFieldFormat = "json_extract(%v, '$.%v')"
+						log.Debugf("sqlite: using JSON1 extension")
+					}
+				} else {
+					return nil, err
+				}
+			}
+		} else {
+			return nil, err
+		}
+
 		stmt := fmt.Sprintf("PRAGMA table_info(%q)", collectionName)
-		querylog.Debugf("[%T] %s", self, string(stmt[:]))
+		querylog.Debugf("[%T] %s", self, stmt)
 
 		if rows, err := self.db.Query(stmt); err == nil {
 			defer rows.Close()

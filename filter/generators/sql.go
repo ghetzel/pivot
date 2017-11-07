@@ -117,40 +117,45 @@ var DefaultSqlTypeMapping = MysqlTypeMapping
 
 type Sql struct {
 	filter.Generator
-	TableNameFormat     string                 // format string used to wrap table names
-	FieldNameFormat     string                 // format string used to wrap field names
-	FieldWrappers       map[string]string      // map of field name-format strings to wrap specific fields in after FieldNameFormat is applied
-	PlaceholderFormat   string                 // if using placeholders, the format string used to insert them
-	PlaceholderArgument string                 // if specified, either "index", "index1" or "field"
-	NormalizeFields     []string               // a list of field names that should have the NormalizerFormat applied to them and their corresponding values
-	NormalizerFormat    string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
-	UseInStatement      bool                   // whether multiple values in a criterion should be tested using an IN() statement
-	Distinct            bool                   // whether a DISTINCT clause should be used in SELECT statements
-	Count               bool                   // whether this query is being used to count rows, which means that SELECT fields are discarded in favor of COUNT(1)
-	TypeMapping         SqlTypeMapping         // provides mapping information between DAL types and native SQL types
-	Type                SqlStatementType       // what type of SQL statement is being generated
-	InputData           map[string]interface{} // key-value data for statement types that require input data (e.g.: inserts, updates)
-	collection          string
-	fields              []string
-	criteria            []string
-	inputValues         []interface{}
-	values              []interface{}
+	TableNameFormat       string                 // format string used to wrap table names
+	FieldNameFormat       string                 // format string used to wrap field names
+	NestedFieldNameFormat string                 // map of field name-format strings to wrap fields addressing nested map keys. supercedes FieldNameFormat
+	NestedFieldSeparator  string                 // the string used to denote nesting in a nested field name
+	NestedFieldJoiner     string                 // the string used to re-join all but the first value in a nested field when interpolating into NestedFieldNameFormat
+	FieldWrappers         map[string]string      // map of field name-format strings to wrap specific fields in after FieldNameFormat is applied
+	PlaceholderFormat     string                 // if using placeholders, the format string used to insert them
+	PlaceholderArgument   string                 // if specified, either "index", "index1" or "field"
+	NormalizeFields       []string               // a list of field names that should have the NormalizerFormat applied to them and their corresponding values
+	NormalizerFormat      string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
+	UseInStatement        bool                   // whether multiple values in a criterion should be tested using an IN() statement
+	Distinct              bool                   // whether a DISTINCT clause should be used in SELECT statements
+	Count                 bool                   // whether this query is being used to count rows, which means that SELECT fields are discarded in favor of COUNT(1)
+	TypeMapping           SqlTypeMapping         // provides mapping information between DAL types and native SQL types
+	Type                  SqlStatementType       // what type of SQL statement is being generated
+	InputData             map[string]interface{} // key-value data for statement types that require input data (e.g.: inserts, updates)
+	collection            string
+	fields                []string
+	criteria              []string
+	inputValues           []interface{}
+	values                []interface{}
 }
 
 func NewSqlGenerator() *Sql {
 	return &Sql{
-		Generator:           filter.Generator{},
-		PlaceholderFormat:   `?`,
-		PlaceholderArgument: ``,
-		NormalizeFields:     make([]string, 0),
-		NormalizerFormat:    "%s",
-		TableNameFormat:     "%s",
-		FieldNameFormat:     "%s",
-		FieldWrappers:       make(map[string]string),
-		UseInStatement:      true,
-		TypeMapping:         DefaultSqlTypeMapping,
-		Type:                SqlSelectStatement,
-		InputData:           make(map[string]interface{}),
+		Generator:            filter.Generator{},
+		PlaceholderFormat:    `?`,
+		PlaceholderArgument:  ``,
+		NormalizeFields:      make([]string, 0),
+		NormalizerFormat:     "%s",
+		TableNameFormat:      "%s",
+		FieldNameFormat:      "%s",
+		NestedFieldSeparator: `.`,
+		NestedFieldJoiner:    `.`,
+		FieldWrappers:        make(map[string]string),
+		UseInStatement:       true,
+		TypeMapping:          DefaultSqlTypeMapping,
+		Type:                 SqlSelectStatement,
+		InputData:            make(map[string]interface{}),
 	}
 }
 
@@ -184,7 +189,13 @@ func (self *Sql) Finalize(f filter.Filter) error {
 				fieldNames := make([]string, len(self.fields))
 
 				for i, f := range self.fields {
-					fieldNames[i] = self.ToFieldName(f)
+					fName := self.ToFieldName(f)
+
+					if strings.Contains(f, self.NestedFieldSeparator) {
+						fName = fmt.Sprintf("%v AS "+self.FieldNameFormat, fName, f)
+					}
+
+					fieldNames[i] = fName
 				}
 
 				self.Push([]byte(strings.Join(fieldNames, `, `)))
@@ -464,7 +475,15 @@ func (self *Sql) ToFieldName(field string) string {
 	var formattedField string
 
 	if field != `` {
-		formattedField = fmt.Sprintf(self.FieldNameFormat, field)
+		if nestFmt := self.NestedFieldNameFormat; nestFmt != `` {
+			if parts := strings.Split(field, self.NestedFieldSeparator); len(parts) > 1 {
+				formattedField = fmt.Sprintf(nestFmt, parts[0], strings.Join(parts[1:], self.NestedFieldJoiner))
+			}
+		}
+
+		if formattedField == `` {
+			formattedField = fmt.Sprintf(self.FieldNameFormat, field)
+		}
 	}
 
 	if wrapper, ok := self.FieldWrappers[field]; ok {

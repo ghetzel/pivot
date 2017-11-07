@@ -93,7 +93,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 							for rows.Next() {
 								// log.Debugf("  row: %d", processed)
 
-								if record, err := self.scanFnValueToRecord(collection, columns, reflect.ValueOf(rows.Scan), f.Fields); err == nil {
+								if record, err := self.scanFnValueToRecord(queryGen, collection, columns, reflect.ValueOf(rows.Scan), f.Fields); err == nil {
 									processed += 1
 									processedThisQuery += 1
 
@@ -111,7 +111,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 										return err
 									}
 								} else {
-									if err := resultFn(dal.NewRecord(nil), err, IndexPage{}); err != nil {
+									if err := resultFn(dal.NewRecord(nil).Set(`error`, err.Error()), err, IndexPage{}); err != nil {
 										return err
 									}
 

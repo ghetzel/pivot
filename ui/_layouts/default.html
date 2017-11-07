@@ -1,0 +1,62 @@
+---
+bindings:
+- name:     collections
+  resource: :/api/schema
+---
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script type="text/javascript" src="/js/jquery-2.2.4.min.js"></script>
+        <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="/js/tether.min.js"></script>
+        <script type="text/javascript" src="/js/stapes.min.js"></script>
+        <script type="text/javascript" src="/js/jquery.json-viewer.js"></script>
+        <script type="text/javascript" src="/js/app.js"></script>
+
+        <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+        <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
+        <link rel="stylesheet" href="/css/jquery.json-viewer.css" type="text/css">
+        <link rel="stylesheet" href="/css/app.css" type="text/css">
+
+        <title>Pivot</title>
+    </head>
+
+    <body>
+        <nav class="navbar fixed-top navbar-dark bg-dark navbar-expand">
+        <!--
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#menu"
+                aria-controls="menu"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        -->
+
+            <div class="navbar-collapse" id="menu">
+                <a class="navbar-brand" href="#">Pivot</a>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-fw fa-cubes"></i>
+                            Collections
+                            <span class="caret"></span>
+                        </a>
+                        <div class="dropdown-menu" id="collections">
+                        {{ range .bindings.collections }}
+                            <a class="dropdown-item" href="/collections?id={{ . }}">{{ . }}</a>
+                        {{ end }}
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div id="content" class="container-fluid">{{ template "content" . }}</div>
+    </body>
+</html>

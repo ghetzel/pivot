@@ -1,0 +1,45 @@
+---
+bindings:
+- name:     collection
+  resource: :/api/collections/{{ qs `id` }}
+---
+<div class="container">
+    <h3 class="mb-4">{{ .bindings.collection.name }}</h3>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Column</th>
+                <th>Data Type</th>
+                <th>Constraints</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{ range .bindings.collection.fields }}
+            <tr>
+                <td class="{{ if .required }}bold{{ end }}">
+                    <span class="pre">{{ .name }}</span>
+                </td>
+                <td>
+                    {{ .type }}
+                </td>
+                <td>
+                {{ if .identity }}
+                    <span class="badge badge-primary" title="Identity or key field">I</span>
+                {{ end }}
+                {{ if .required }}
+                    <span class="badge badge-danger" title="Non-empty value required">R</span>
+                {{ end }}
+                {{ if .unique }}
+                    <span class="badge badge-success" title="Value must be unique among the entire collection">U</span>
+                {{ end }}
+                </td>
+                <td>
+                    {{ .description }}
+                </td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
+</div>

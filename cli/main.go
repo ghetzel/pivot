@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/ghetzel/cli"
@@ -29,7 +30,7 @@ func main() {
 			EnvVar: `LOGLEVEL`,
 		},
 		cli.BoolFlag{
-			Name:  `log-queries`,
+			Name:  `log-queries, Q`,
 			Usage: `Whether to include queries in the logging output`,
 		},
 		cli.StringFlag{
@@ -66,18 +67,18 @@ func main() {
 				cli.StringFlag{
 					Name:  `address, a`,
 					Usage: `The local address the server should listen on.`,
-					Value: pivot.DEFAULT_SERVER_ADDRESS,
+					Value: fmt.Sprintf("%s:%d", pivot.DefaultAddress, pivot.DefaultPort),
 				},
-				cli.IntFlag{
-					Name:  `port, p`,
-					Usage: `The port the server should listen on.`,
-					Value: pivot.DEFAULT_SERVER_PORT,
+				cli.StringFlag{
+					Name:  `ui-dir`,
+					Usage: `The path to the UI directory`,
+					Value: pivot.DefaultUiDirectory,
 				},
 			},
 			Action: func(c *cli.Context) {
 				server := pivot.NewServer(c.Args().First())
 				server.Address = c.String(`address`)
-				server.Port = c.Int(`port`)
+				server.UiDirectory = c.String(`ui-dir`)
 
 				if err := server.ListenAndServe(); err != nil {
 					log.Fatalf("Failed to start server: %v", err)

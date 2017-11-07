@@ -52,6 +52,7 @@ type SqlBackend struct {
 	queryGenPlaceholderFormat   string
 	queryGenTableFormat         string
 	queryGenFieldFormat         string
+	queryGenNestedFieldFormat   string
 	queryGenNormalizerFormat    string
 	listAllTablesQuery          string
 	createPrimaryKeyIntFormat   string
@@ -305,7 +306,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 
 						if columns, err := rows.Columns(); err == nil {
 							if rows.Next() {
-								return self.scanFnValueToRecord(collection, columns, reflect.ValueOf(rows.Scan), fields)
+								return self.scanFnValueToRecord(queryGen, collection, columns, reflect.ValueOf(rows.Scan), fields)
 							} else {
 								// if it doesn't exist, make sure it's not indexed
 								if search := self.WithSearch(collection.Name); search != nil {
@@ -665,6 +666,10 @@ func (self *SqlBackend) makeQueryGen(collection *dal.Collection) *generators.Sql
 		queryGen.FieldNameFormat = v
 	}
 
+	if v := self.queryGenNestedFieldFormat; v != `` {
+		queryGen.NestedFieldNameFormat = v
+	}
+
 	if collection != nil {
 		// perform string normalization on non-pk, non-key string fields
 		for _, field := range collection.Fields {
@@ -686,7 +691,7 @@ func (self *SqlBackend) makeQueryGen(collection *dal.Collection) *generators.Sql
 	return queryGen
 }
 
-func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns []string, scanFn reflect.Value, wantedFields []string) (*dal.Record, error) {
+func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection *dal.Collection, columns []string, scanFn reflect.Value, wantedFields []string) (*dal.Record, error) {
 	if scanFn.Kind() != reflect.Func {
 		return nil, fmt.Errorf("Can only accept a function value")
 	}
@@ -699,7 +704,9 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 	// put a zero-value instance of each column's type in the result array, which will
 	// serve as a hint to the sql.Scan function as to how to convert the data
 	for i, column := range columns {
-		if field, ok := collection.GetField(column); ok {
+		baseColumn := strings.Split(column, queryGen.NestedFieldSeparator)[0]
+
+		if field, ok := collection.GetField(baseColumn); ok {
 			if field.DefaultValue != nil {
 				output[i] = field.GetDefaultValue()
 			} else if field.Required {
@@ -723,7 +730,7 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 				}
 			}
 		} else {
-			return nil, fmt.Errorf("Collection '%s' does not have a field called '%s'", collection.Name, column)
+			querylog.Warningf("[%T] Collection '%s' does not have a field called '%s'", self, collection.Name, baseColumn)
 		}
 	}
 
@@ -762,107 +769,114 @@ func (self *SqlBackend) scanFnValueToRecord(collection *dal.Collection, columns 
 
 	ColumnLoop:
 		for i, column := range columns {
-			// skip the ok check because we already validated this above
-			field, _ := collection.GetField(column)
+			nestedPath := strings.Split(column, queryGen.NestedFieldSeparator)
+			baseColumn := nestedPath[0]
 
-			var value interface{}
+			if field, ok := collection.GetField(baseColumn); ok {
+				var value interface{}
 
-			// convert value types as needed
-			switch output[i].(type) {
-			// raw byte arrays will either be strings, blobs, or binary-encoded objects
-			// we need to figure out which
-			case []uint8:
-				v := output[i].([]uint8)
+				// convert value types as needed
+				switch output[i].(type) {
+				// raw byte arrays will either be strings, blobs, or binary-encoded objects
+				// we need to figure out which
+				case []uint8:
+					v := output[i].([]uint8)
 
-				var dest map[string]interface{}
+					var dest map[string]interface{}
 
-				switch field.Type {
-				case dal.ObjectType:
-					if err := generators.SqlObjectTypeDecode([]byte(v[:]), &dest); err == nil {
-						value = dest
-					} else {
+					switch field.Type {
+					case dal.ObjectType:
+						if err := generators.SqlObjectTypeDecode([]byte(v[:]), &dest); err == nil {
+							value = dest
+						} else {
+							value = string(v[:])
+						}
+
+					// if this field is a raw type, then it's not a string, which
+					// leaves raw or object
+					//
+					case dal.RawType:
+						// blindly attempt to load the data as if it were an object, then
+						// fallback to using the raw byte array
+						//
+						if err := generators.SqlObjectTypeDecode([]byte(v[:]), &dest); err == nil {
+							value = dest
+						} else {
+							value = []byte(v[:])
+						}
+
+					default:
 						value = string(v[:])
 					}
+				case sql.NullString:
+					v := output[i].(sql.NullString)
 
-				// if this field is a raw type, then it's not a string, which
-				// leaves raw or object
-				//
-				case dal.RawType:
-					// blindly attempt to load the data as if it were an object, then
-					// fallback to using the raw byte array
-					//
-					if err := generators.SqlObjectTypeDecode([]byte(v[:]), &dest); err == nil {
-						value = dest
+					if v.Valid {
+						value = v.String
 					} else {
-						value = []byte(v[:])
+						value = nil
 					}
 
+				case sql.NullBool:
+					v := output[i].(sql.NullBool)
+
+					if v.Valid {
+						value = v.Bool
+					} else {
+						value = nil
+					}
+
+				case sql.NullInt64:
+					v := output[i].(sql.NullInt64)
+
+					if v.Valid {
+						value = v.Int64
+					} else {
+						value = nil
+					}
+
+				case sql.NullFloat64:
+					v := output[i].(sql.NullFloat64)
+
+					if v.Valid {
+						value = v.Float64
+					} else {
+						value = nil
+					}
 				default:
-					value = string(v[:])
-				}
-			case sql.NullString:
-				v := output[i].(sql.NullString)
-
-				if v.Valid {
-					value = v.String
-				} else {
-					value = nil
+					value = output[i]
 				}
 
-			case sql.NullBool:
-				v := output[i].(sql.NullBool)
+				// set the appropriate field for the dal.Record
+				if v, err := field.ConvertValue(value); err == nil {
+					if column == collection.IdentityField {
+						id = v
+					} else {
+						if len(wantedFields) > 0 {
+							shouldSkip := true
 
-				if v.Valid {
-					value = v.Bool
-				} else {
-					value = nil
-				}
+							for _, wantedField := range wantedFields {
+								parts := strings.Split(wantedField, queryGen.NestedFieldSeparator)
 
-			case sql.NullInt64:
-				v := output[i].(sql.NullInt64)
+								if parts[0] == baseColumn {
+									shouldSkip = false
+									break
+								}
+							}
 
-				if v.Valid {
-					value = v.Int64
-				} else {
-					value = nil
-				}
+							if shouldSkip {
+								continue ColumnLoop
+							}
 
-			case sql.NullFloat64:
-				v := output[i].(sql.NullFloat64)
+						}
 
-				if v.Valid {
-					value = v.Float64
-				} else {
-					value = nil
-				}
-			default:
-				value = output[i]
-			}
-
-			// set the appropriate field for the dal.Record
-			if v, err := field.ConvertValue(value); err == nil {
-				if column == collection.IdentityField {
-					id = v
-				} else if len(wantedFields) > 0 {
-					shouldSkip := true
-
-					for _, wantedField := range wantedFields {
-						parts := strings.Split(wantedField, `.`)
-
-						if parts[0] == column {
-							shouldSkip = false
-							break
+						if newFields, ok := maputil.DeepSet(fields, nestedPath, v).(map[string]interface{}); ok {
+							fields = newFields
 						}
 					}
-
-					if shouldSkip {
-						continue ColumnLoop
-					}
+				} else {
+					return nil, err
 				}
-
-				fields[column] = v
-			} else {
-				return nil, err
 			}
 		}
 
@@ -927,8 +941,19 @@ func (self *SqlBackend) refreshAllCollections() error {
 						log.Errorf("Error refreshing collection %s: %v", definition.Name, err)
 					}
 				} else {
-					// skip unregistered tables
-					continue
+					if err := self.refreshCollection(tableName, nil); err == nil {
+						self.collectionCacheLock.RLock()
+						collection, ok := self.collectionCache[tableName]
+						self.collectionCacheLock.RUnlock()
+
+						if ok {
+							self.collectionCacheLock.Lock()
+							self.registeredCollections[tableName] = collection
+							self.collectionCacheLock.Unlock()
+						}
+					} else {
+						log.Errorf("Error refreshing collection %s: %v", tableName, err)
+					}
 				}
 			} else {
 				log.Errorf("Error refreshing collection %s: %v", tableName, err)

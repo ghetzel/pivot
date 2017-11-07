@@ -1,9 +1,11 @@
 .PHONY: test deps
 
-all: fmt deps build bundle test
+all: fmt deps build
 
 deps:
+	@go list github.com/mjibson/esc || go get github.com/mjibson/esc/...
 	@go list golang.org/x/tools/cmd/goimports || go get golang.org/x/tools/cmd/goimports
+	go generate -x
 	go get .
 
 clean-bundle:
@@ -14,6 +16,7 @@ clean:
 
 fmt:
 	goimports -w .
+	go vet .
 
 test:
 	go test .
@@ -22,19 +25,6 @@ test:
 	go test ./filter/*/*
 	go test ./mapper/
 
-bundle: clean-bundle
-	@echo "Bundling static resources under ./public/"
-	@test -d public && rm -rf public || true
-	@mkdir public
-	@cp -R static/* public/
-	@mkdir public/res
-	@for backend in backends/*; do \
-		if [ -d "$${backend}/resources" ]; then \
-			mkdir public/res/`basename "$${backend}"`; \
-			cp -R $${backend}/resources/* public/res/`basename "$${backend}"`; \
-		fi \
-	done
-
-build: fmt
-	go build -o bin/`basename ${PWD}` cli/*.go
+build: deps fmt
+	go build --tags json1 -o bin/`basename ${PWD}` cli/*.go
 
