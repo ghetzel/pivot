@@ -95,6 +95,10 @@ func main() {
 					Name:  `collection, c`,
 					Usage: `A specific collection to copy (can be specified multiple times).`,
 				},
+				cli.BoolFlag{
+					Name:  `no-schema-check, S`,
+					Usage: `Skip verifying schema equality.`,
+				},
 			},
 			Action: func(c *cli.Context) {
 				var source backends.Backend
@@ -159,7 +163,7 @@ func main() {
 								continue
 							}
 
-							if diffs := destCollection.Diff(collection); len(diffs) == 0 {
+							if diffs := destCollection.Diff(collection); len(diffs) == 0 || c.Bool(`no-schema-check`) {
 								sourceItem := mapper.NewModel(source, collection)
 								var i int
 
