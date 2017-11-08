@@ -3,7 +3,11 @@ package dal
 import (
 	"fmt"
 	"strings"
+
+	"github.com/op/go-logging"
 )
+
+var log = logging.MustGetLogger(`pivot/dal`)
 
 type Type string
 

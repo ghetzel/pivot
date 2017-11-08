@@ -1,0 +1,27 @@
+<div class="container">
+    <div class="d-flex justify-content-between">
+        <h3 class="mb-4">Collections</h3>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Collection</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {{ range .bindings.collections }}
+            <tr>
+                <td>
+                    <a href="/collections?id={{ . }}">{{ . }}</a>
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-primary" href="/query?id={{ . }}&amp;q=all">Browse</a>
+                </td>
+            </tr>
+        {{ end }}
+        </tbody>
+    </table>
+</div>

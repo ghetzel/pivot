@@ -19,3 +19,14 @@
     font-weight: bold;
     font-size:   10pt;
 }
+
+.table-plain, .table-plain tbody, .table-plain tr {
+    margin-bottom: 0;
+    border-width: 0;
+}
+
+.elide {
+    overflow:      hidden;
+    text-overflow: ellipsis;
+    white-space:   nowrap;
+}

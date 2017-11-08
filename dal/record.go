@@ -129,14 +129,16 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 					if v, err := collectionField.ConvertValue(value); err == nil {
 						value = v
 					} else {
-						return err
+						log.Warningf("error populating field %q: %v", key, err)
+						continue
 					}
 
 					// apply formatters to this value
 					if v, err := collectionField.Format(value, RetrieveOperation); err == nil {
 						value = v
 					} else {
-						return err
+						log.Warningf("error formatting field %q: %v", key, err)
+						continue
 					}
 
 					// this specifies that we should double-check the validity of the values coming in
@@ -158,7 +160,7 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 			if idI, err := collection.formatAndValidateId(self.ID, RetrieveOperation, self); err == nil {
 				self.ID = idI
 			} else {
-				return err
+				log.Warningf("error formatting ID: %v", err)
 			}
 		}
 	} else {

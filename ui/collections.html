@@ -4,7 +4,13 @@ bindings:
   resource: :/api/collections/{{ qs `id` }}
 ---
 <div class="container">
-    <h3 class="mb-4">{{ .bindings.collection.name }}</h3>
+    <div class="d-flex justify-content-between">
+        <h3 class="mb-4">{{ .bindings.collection.name }}</h3>
+
+        <div>
+            <a class="btn btn-sm btn-primary" href="/query?id={{ .bindings.collection.name }}&amp;q=all">Browse</a>
+        </div>
+    </div>
 
     <table class="table">
         <thead>

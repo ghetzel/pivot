@@ -20,30 +20,44 @@ bindings:
             </tr>
         </thead>
         <tbody>
-        {{ range $record := .bindings.results.records }}
+        {{ range $index, $record := .bindings.results.records }}
             <tr>
                 <td>{{ $record.id }}</td>
-                <td>
-                    <dl class="row">
-                    {{ range $k, $v := $record.fields }}
-                        <dt class="col-2">{{ $k }}</dt>
-                        <dd class="col-10" id="q_{{ $record.id }}_{{ $k }}">
-                        {{ if isMap $v }}
-                            <script type="text/javascript">
-                                $(function(){
-                                    var data = JSON.parse({{ jsonify $v }});
+                <td style="padding: 0">
+                    <table class="table table-sm table-plain table-responsive">
+                        <tbody>
+                        {{ range $k, $v := $record.fields }}
+                        <tr class="elide">
+                            <th>{{ $k }}</th>
+                            <td id="q_{{ $index }}_{{ $k }}">
+                            {{ if isMap $v }}
+                                <script type="text/javascript">
+                                    $(function(){
+                                        var data = JSON.parse({{ jsonify $v }});
 
-                                    $('#q_{{ $record.id }}_{{ $k }}').jsonViewer(data, {
-                                        collapsed: true,
+                                        $('#q_{{ $index }}_{{ $k }}').jsonViewer(data, {
+                                            collapsed: true,
+                                        });
                                     });
-                                });
-                            </script>
-                        {{ else }}
-                            <code>{{ $v }}</code>
+                                </script>
+                            {{ else if surroundedBy $v "{" "}" }}
+                                <script type="text/javascript">
+                                    $(function(){
+                                        var data = JSON.parse({{ $v }});
+
+                                        $('#q_{{ $index }}_{{ $k }}').jsonViewer(data, {
+                                            collapsed: true,
+                                        });
+                                    });
+                                </script>
+                            {{ else }}
+                                <code>{{ $v }}</code>
+                            {{ end }}
+                            </td>
+                        </tr>
                         {{ end }}
-                        </dd>
-                    {{ end }}
-                    </dl>
+                        </tbody>
+                    </table>
                 </td>
             </tr>
         {{ end }}

@@ -484,11 +484,7 @@ func (self *SqlBackend) WithAggregator(collectionName string) Aggregator {
 }
 
 func (self *SqlBackend) ListCollections() ([]string, error) {
-	if err := self.refreshAllCollections(); err == nil {
-		return maputil.StringKeys(self.collectionCache), nil
-	} else {
-		return nil, err
-	}
+	return maputil.StringKeys(self.registeredCollections), nil
 }
 
 func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
@@ -875,7 +871,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 						}
 					}
 				} else {
-					return nil, err
+					querylog.Warningf("[%T] Collection %s: field %v: %v", self, collection.Name, baseColumn, err)
 				}
 			}
 		}
@@ -883,7 +879,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 		record := dal.NewRecord(id).SetFields(fields)
 
 		if err := record.Populate(record, collection); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error populating record: %v", err)
 		}
 
 		return record, nil
