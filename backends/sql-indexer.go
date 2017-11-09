@@ -40,7 +40,7 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 
 				// if we are paginating, then we need to do a preliminary query to get the
 				// total number of records that match this query
-				if f.Paginate {
+				if f.Paginate && !f.IdOnly() {
 					prequeryGen := self.makeQueryGen(collection)
 					prequeryGen.Count = true
 
@@ -99,6 +99,10 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 
 									if totalResults == 0 {
 										totalResults = int64(processed)
+									}
+
+									if f.IdOnly() {
+										totalPages = 1
 									}
 
 									if err := resultFn(record, nil, IndexPage{
