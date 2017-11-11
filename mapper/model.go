@@ -1,5 +1,8 @@
 package mapper
 
+// The mapper package provides a simplified, high-level interface for
+// interacting with database objects.
+
 import (
 	"fmt"
 	"reflect"
