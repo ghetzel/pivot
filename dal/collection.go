@@ -116,6 +116,7 @@ func (self *Collection) ApplyDefinition(definition *Collection) error {
 
 				// unconditionally pull these over as they are either client-only fields or we know better
 				// than the database on this one
+				self.Fields[i].Required = defField.Required
 				self.Fields[i].Type = defField.Type
 				self.Fields[i].KeyType = defField.KeyType
 				self.Fields[i].Subtype = defField.Subtype

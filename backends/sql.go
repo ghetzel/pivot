@@ -78,7 +78,11 @@ func (self *SqlBackend) GetConnectionString() *dal.ConnectionString {
 }
 
 func (self *SqlBackend) RegisterCollection(collection *dal.Collection) {
-	self.registeredCollections.Store(collection.Name, collection)
+	if collection != nil {
+		if _, ok := self.registeredCollections.Load(collection.Name); !ok {
+			self.registeredCollections.Store(collection.Name, collection)
+		}
+	}
 }
 
 func (self *SqlBackend) SetOptions(options ConnectOptions) {
@@ -985,7 +989,7 @@ func (self *SqlBackend) refreshCollection(name string, definition *dal.Collectio
 			// some local values that only existed on the definition itself.  we need to copy those into
 			// the collection that just came back
 			collection.ApplyDefinition(definition)
-			self.RegisterCollection(collection)
+			self.RegisterCollection(definition)
 		}
 
 		return nil
