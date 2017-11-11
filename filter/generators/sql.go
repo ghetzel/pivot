@@ -202,11 +202,7 @@ func (self *Sql) Finalize(f filter.Filter) error {
 
 				for _, aggpair := range self.aggregateBy {
 					fName := self.ToAggregatedFieldName(aggpair.Aggregation, aggpair.Field)
-
-					if strings.Contains(aggpair.Field, self.NestedFieldSeparator) {
-						fName = fmt.Sprintf("%v AS "+self.FieldNameFormat, fName, f)
-					}
-
+					fName = fmt.Sprintf("%v AS "+self.FieldNameFormat, fName, aggpair.Field)
 					fieldNames = append(fieldNames, fName)
 				}
 
@@ -724,7 +720,12 @@ func (self *Sql) populateWhereClause() {
 func (self *Sql) populateGroupBy() {
 	if len(self.groupBy) > 0 {
 		self.Push([]byte(` GROUP BY `))
-		self.Push([]byte(strings.Join(self.groupBy, `, `)))
+
+		self.Push([]byte(strings.Join(
+			sliceutil.MapString(self.groupBy, func(_ int, v string) string {
+				return self.ToFieldName(v)
+			}), `, `),
+		))
 	}
 }
 
