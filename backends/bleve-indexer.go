@@ -473,8 +473,9 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter)
 				var currentQuery query.FieldableQuery
 
 				switch criterion.Operator {
-				case `is`, ``, `not`:
-					if criterion.Operator == `not` {
+				case `is`, ``, `not`, `like`, `unlike`:
+					switch criterion.Operator {
+					case `not`, `unlike`:
 						invertQuery = true
 					}
 

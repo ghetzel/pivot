@@ -463,7 +463,7 @@ func TestSearchQuery(t *testing.T) {
 		for _, qs := range []string{
 			`id/1`,
 			`name/First`,
-			`name/first`,
+			`name/like:first`,
 			`name/contains:irs`,
 			`name/contains:irS`,
 			`name/prefix:fir`,
@@ -792,7 +792,7 @@ func TestSearchAnalysis(t *testing.T) {
 		for _, qs := range []string{
 			`single/contains:result`,
 			`single/suffix:result`,
-			`char_filter_test/this result`,
+			`char_filter_test/like:this result`,
 		} {
 			t.Logf("Querying (want 3 results): %q\n", qs)
 			f, err := filter.Parse(qs)

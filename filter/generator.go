@@ -8,6 +8,8 @@ type IGenerator interface {
 	WithCriterion(Criterion) error
 	OrCriterion(Criterion) error
 	WithField(string) error
+	GroupByField(string) error
+	AggregateByField(Aggregation, string) error
 	SetOption(string, interface{}) error
 	GetValues() []interface{}
 	Reset()

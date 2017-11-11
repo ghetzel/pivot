@@ -60,9 +60,7 @@ type SqlBackend struct {
 	showTableDetailQuery        string
 	refreshCollectionFunc       sqlTableDetailsFunc
 	dropTableQuery              string
-	registeredCollections       map[string]*dal.Collection
-	collectionCache             map[string]*dal.Collection
-	collectionCacheLock         sync.RWMutex
+	registeredCollections       sync.Map
 }
 
 func NewSqlBackend(connection dal.ConnectionString) Backend {
@@ -70,8 +68,6 @@ func NewSqlBackend(connection dal.ConnectionString) Backend {
 		conn:                      connection,
 		queryGenTypeMapping:       generators.DefaultSqlTypeMapping,
 		queryGenPlaceholderFormat: `?`,
-		registeredCollections:     make(map[string]*dal.Collection),
-		collectionCache:           make(map[string]*dal.Collection),
 		dropTableQuery:            `DROP TABLE %s`,
 		aggregator:                make(map[string]Aggregator),
 	}
@@ -82,7 +78,7 @@ func (self *SqlBackend) GetConnectionString() *dal.ConnectionString {
 }
 
 func (self *SqlBackend) RegisterCollection(collection *dal.Collection) {
-	self.registeredCollections[collection.Name] = collection
+	self.registeredCollections.Store(collection.Name, collection)
 }
 
 func (self *SqlBackend) SetOptions(options ConnectOptions) {
@@ -243,6 +239,8 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 			if err := tx.Commit(); err == nil {
 				if search := self.WithSearch(collection.Name); search != nil {
 					if err := search.Index(collection.Name, recordset); err != nil {
+						querylog.Debugf("[%T] index error %v", self, err)
+					} else {
 						return err
 					}
 				}
@@ -265,7 +263,7 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 			defer tx.Commit()
 
 			if f, err := filter.FromMap(map[string]interface{}{
-				collection.IdentityField: id,
+				collection.IdentityField: fmt.Sprintf("is:%v", id),
 			}); err == nil {
 				f.Fields = []string{collection.IdentityField}
 				queryGen := self.makeQueryGen(collection)
@@ -278,11 +276,23 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 						if rows, err := tx.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
 							defer rows.Close()
 							return rows.Next()
+						} else {
+							querylog.Debugf("[%T] query error %v", self, err)
 						}
+					} else {
+						querylog.Debugf("[%T] query generator error %v", self, err)
 					}
+				} else {
+					querylog.Debugf("[%T] query generator error %v", self, err)
 				}
+			} else {
+				querylog.Debugf("[%T] filter error %v", self, err)
 			}
+		} else {
+			querylog.Debugf("[%T] transaction error %v", self, err)
 		}
+	} else {
+		querylog.Debugf("[%T] cache error %v", self, err)
 	}
 
 	return false
@@ -291,7 +301,7 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
 		if f, err := filter.FromMap(map[string]interface{}{
-			collection.IdentityField: id,
+			collection.IdentityField: fmt.Sprintf("is:%v", id),
 		}); err == nil {
 			f.Fields = fields
 			queryGen := self.makeQueryGen(collection)
@@ -374,7 +384,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 				} else {
 					// try to build a filter targeting this specific record
 					if f, err := filter.FromMap(map[string]interface{}{
-						collection.IdentityField: record.ID,
+						collection.IdentityField: fmt.Sprintf("is:%v", record.ID),
 					}); err == nil {
 						recordUpdateFilter = f
 					} else {
@@ -588,7 +598,10 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 		if _, err := tx.Exec(stmt, values...); err == nil {
 			defer func() {
 				self.RegisterCollection(definition)
-				self.refreshCollection(definition.Name, definition)
+
+				if err := self.refreshCollection(definition.Name, definition); err != nil {
+					querylog.Debugf("[%T] failed to refresh collection: %v", self, err)
+				}
 			}()
 			return tx.Commit()
 		} else {
@@ -930,24 +943,15 @@ func (self *SqlBackend) refreshAllCollections() error {
 			var tableName string
 
 			if err := rows.Scan(&tableName); err == nil {
-				if definition, ok := self.registeredCollections[tableName]; ok {
+				if definitionI, ok := self.registeredCollections.Load(tableName); ok {
+					definition := definitionI.(*dal.Collection)
 					knownTables = append(knownTables, definition.Name)
 
 					if err := self.refreshCollection(definition.Name, definition); err != nil {
 						log.Errorf("Error refreshing collection %s: %v", definition.Name, err)
 					}
 				} else {
-					if err := self.refreshCollection(tableName, nil); err == nil {
-						self.collectionCacheLock.RLock()
-						collection, ok := self.collectionCache[tableName]
-						self.collectionCacheLock.RUnlock()
-
-						if ok {
-							self.collectionCacheLock.Lock()
-							self.registeredCollections[tableName] = collection
-							self.collectionCacheLock.Unlock()
-						}
-					} else {
+					if err := self.refreshCollection(tableName, nil); err != nil {
 						log.Errorf("Error refreshing collection %s: %v", tableName, err)
 					}
 				}
@@ -957,17 +961,13 @@ func (self *SqlBackend) refreshAllCollections() error {
 		}
 
 		// purge from cache any tables that the list all query didn't return
-		self.collectionCacheLock.RLock()
-		cachedTables := maputil.StringKeys(self.collectionCache)
-		self.collectionCacheLock.RUnlock()
-
-		for _, cached := range cachedTables {
-			if !sliceutil.ContainsString(knownTables, cached) {
-				self.collectionCacheLock.Lock()
-				delete(self.collectionCache, cached)
-				self.collectionCacheLock.Unlock()
+		self.registeredCollections.Range(func(key, value interface{}) bool {
+			if !sliceutil.ContainsString(knownTables, key.(string)) {
+				self.registeredCollections.Delete(key)
 			}
-		}
+
+			return true
+		})
 
 		return rows.Err()
 	} else {
@@ -985,10 +985,7 @@ func (self *SqlBackend) refreshCollection(name string, definition *dal.Collectio
 			// some local values that only existed on the definition itself.  we need to copy those into
 			// the collection that just came back
 			collection.ApplyDefinition(definition)
-
-			self.collectionCacheLock.Lock()
-			defer self.collectionCacheLock.Unlock()
-			self.collectionCache[collection.Name] = collection
+			self.RegisterCollection(collection)
 		}
 
 		return nil
@@ -998,26 +995,9 @@ func (self *SqlBackend) refreshCollection(name string, definition *dal.Collectio
 }
 
 func (self *SqlBackend) getCollectionFromCache(name string) (*dal.Collection, error) {
-	self.collectionCacheLock.RLock()
-
-	if len(self.collectionCache) == 0 {
-		self.collectionCacheLock.RUnlock()
-
-		if err := self.refreshAllCollections(); err != nil {
-			return nil, err
-		}
-
-		self.collectionCacheLock.RLock()
+	if registered, ok := self.registeredCollections.Load(name); ok {
+		return registered.(*dal.Collection), nil
+	} else {
+		return nil, dal.CollectionNotFound
 	}
-
-	_, ok := self.collectionCache[name]
-	self.collectionCacheLock.RUnlock()
-
-	if ok {
-		if registered, ok := self.registeredCollections[name]; ok {
-			return registered, nil
-		}
-	}
-
-	return nil, dal.CollectionNotFound
 }

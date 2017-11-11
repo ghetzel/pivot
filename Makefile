@@ -19,11 +19,7 @@ fmt:
 	go vet .
 
 test:
-	go test .
-	go test ./dal/
-	go test ./filter/
-	go test ./filter/*/*
-	go test ./mapper/
+	go test --tags json1 .
 
 build: deps fmt
 	go build --tags json1 -o bin/`basename ${PWD}` cli/*.go

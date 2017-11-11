@@ -752,20 +752,20 @@ func TestSqlMultipleValuesWithNormalizer(t *testing.T) {
 
 	fn(map[string]qv{
 		`id/1`: {
-			query: `SELECT * FROM foo WHERE (LOWER(id) = LOWER(?))`,
+			query: `SELECT * FROM foo WHERE (id = ?)`,
 			values: []interface{}{
 				int64(1),
 			},
 		},
 		`id/1|2`: {
-			query: `SELECT * FROM foo WHERE (LOWER(id) IN(LOWER(?), LOWER(?)))`,
+			query: `SELECT * FROM foo WHERE (id IN(?, ?))`,
 			values: []interface{}{
 				int64(1),
 				int64(2),
 			},
 		},
 		`id/1|2|3`: {
-			query: `SELECT * FROM foo WHERE (LOWER(id) IN(LOWER(?), LOWER(?), LOWER(?)))`,
+			query: `SELECT * FROM foo WHERE (id IN(?, ?, ?))`,
 			values: []interface{}{
 				int64(1),
 				int64(2),
@@ -773,7 +773,7 @@ func TestSqlMultipleValuesWithNormalizer(t *testing.T) {
 			},
 		},
 		`id/1|2|3/age/7`: {
-			query: `SELECT * FROM foo WHERE (LOWER(id) IN(LOWER(?), LOWER(?), LOWER(?))) AND (age = ?)`,
+			query: `SELECT * FROM foo WHERE (id IN(?, ?, ?)) AND (age = ?)`,
 			values: []interface{}{
 				int64(1),
 				int64(2),
@@ -917,6 +917,28 @@ func TestSqlSelectAggregateFunctions(t *testing.T) {
 	}, gen.GetValues())
 }
 
+func TestSqlSelectGroupBy(t *testing.T) {
+	assert := require.New(t)
+
+	f, err := filter.Parse(`all`)
+	assert.Nil(err)
+	f.Fields = []string{`state`, `city`}
+
+	gen := NewSqlGenerator()
+
+	gen.GroupByField(`state`)
+	gen.GroupByField(`city`)
+	gen.AggregateByField(filter.Average, `age`)
+
+	sql, err := filter.Render(gen, `foo`, f)
+	assert.Nil(err)
+
+	assert.Equal(
+		`SELECT state, city, AVG(age) FROM foo GROUP BY state, city`,
+		string(sql[:]),
+	)
+}
+
 func TestSqlBulkDelete(t *testing.T) {
 	assert := require.New(t)
 
@@ -944,7 +966,7 @@ func TestSqlBulkDelete(t *testing.T) {
 func TestSqlBulkDeleteWithNormalizers(t *testing.T) {
 	assert := require.New(t)
 
-	f, err := filter.Parse(`name/not:Bob|Frank|Steve`)
+	f, err := filter.Parse(`name/unlike:Bob|Frank|Steve`)
 	assert.Nil(err)
 
 	gen := NewSqlGenerator()

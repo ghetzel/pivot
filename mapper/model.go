@@ -34,6 +34,7 @@ type Mapper interface {
 	Minimum(field string, flt interface{}) (float64, error)
 	Maximum(field string, flt interface{}) (float64, error)
 	Average(field string, flt interface{}) (float64, error)
+	GroupBy(fields []string, aggregates []filter.Aggregate, flt interface{}) (*dal.RecordSet, error)
 }
 
 type Model struct {
@@ -335,9 +336,25 @@ func (self *Model) Average(field string, flt interface{}) (float64, error) {
 	}
 }
 
+func (self *Model) GroupBy(fields []string, aggregates []filter.Aggregate, flt interface{}) (*dal.RecordSet, error) {
+	if f, err := self.filterFromInterface(flt); err == nil {
+		f.IdentityField = self.collection.IdentityField
+
+		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
+			return agg.GroupBy(self.collection.Name, fields, aggregates, f)
+		} else {
+			return nil, fmt.Errorf("backend %T does not support aggregation", self.db)
+		}
+	} else {
+		return nil, err
+	}
+}
+
 func (self *Model) filterFromInterface(in interface{}) (filter.Filter, error) {
 	if f, ok := in.(filter.Filter); ok {
 		return f, nil
+	} else if f, ok := in.(*filter.Filter); ok {
+		return *f, nil
 	} else if fMap, ok := in.(map[string]interface{}); ok {
 		return filter.FromMap(fMap)
 	} else if fStr, ok := in.(string); ok {

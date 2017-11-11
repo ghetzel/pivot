@@ -104,21 +104,33 @@ func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map
 	return c, nil
 }
 
-func esCriterionOperatorContains(gen *Elasticsearch, criterion filter.Criterion) (map[string]interface{}, error) {
+func esCriterionOperatorPattern(gen *Elasticsearch, opname string, criterion filter.Criterion) (map[string]interface{}, error) {
 	c := make(map[string]interface{})
 
 	if len(criterion.Values) == 0 {
-		return c, fmt.Errorf("The not criterion must have at least one value")
+		return nil, fmt.Errorf("The not criterion must have at least one value")
 	} else {
 		or_regexp := make([]map[string]interface{}, 0)
 
 		for _, value := range criterion.Values {
 			gen.values = append(gen.values, value)
+			var valueClause string
+
+			switch opname {
+			case `contains`:
+				valueClause = fmt.Sprintf(".*%s.*", value)
+			case `prefix`:
+				valueClause = fmt.Sprintf("%s.*", value)
+			case `suffix`:
+				valueClause = fmt.Sprintf(".*%s", value)
+			default:
+				return nil, fmt.Errorf("Unsupported pattern operator %q", opname)
+			}
 
 			or_regexp = append(or_regexp, map[string]interface{}{
 				`regexp`: map[string]interface{}{
 					criterion.Field: map[string]interface{}{
-						`value`: fmt.Sprintf(".*%s.*", value),
+						`value`: valueClause,
 						`flags`: `ALL`,
 					},
 				},
@@ -129,7 +141,7 @@ func esCriterionOperatorContains(gen *Elasticsearch, criterion filter.Criterion)
 					or_regexp = append(or_regexp, map[string]interface{}{
 						`regexp`: map[string]interface{}{
 							(criterion.Field + `.` + vS): map[string]interface{}{
-								`value`: fmt.Sprintf(".*%s.*", value),
+								`value`: valueClause,
 								`flags`: `ALL`,
 							},
 						},

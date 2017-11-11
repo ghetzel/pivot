@@ -138,6 +138,8 @@ type Sql struct {
 	criteria              []string
 	inputValues           []interface{}
 	values                []interface{}
+	groupBy               []string
+	aggregateBy           []filter.Aggregate
 }
 
 func NewSqlGenerator() *Sql {
@@ -183,19 +185,29 @@ func (self *Sql) Finalize(f filter.Filter) error {
 				self.Push([]byte(`DISTINCT `))
 			}
 
-			if len(self.fields) == 0 {
+			if len(self.fields) == 0 && len(self.groupBy) == 0 && len(self.aggregateBy) == 0 {
 				self.Push([]byte(`*`))
 			} else {
-				fieldNames := make([]string, len(self.fields))
+				fieldNames := make([]string, 0)
 
-				for i, f := range self.fields {
+				for _, f := range self.fields {
 					fName := self.ToFieldName(f)
 
 					if strings.Contains(f, self.NestedFieldSeparator) {
 						fName = fmt.Sprintf("%v AS "+self.FieldNameFormat, fName, f)
 					}
 
-					fieldNames[i] = fName
+					fieldNames = append(fieldNames, fName)
+				}
+
+				for _, aggpair := range self.aggregateBy {
+					fName := self.ToAggregatedFieldName(aggpair.Aggregation, aggpair.Field)
+
+					if strings.Contains(aggpair.Field, self.NestedFieldSeparator) {
+						fName = fmt.Sprintf("%v AS "+self.FieldNameFormat, fName, f)
+					}
+
+					fieldNames = append(fieldNames, fName)
 				}
 
 				self.Push([]byte(strings.Join(fieldNames, `, `)))
@@ -206,6 +218,7 @@ func (self *Sql) Finalize(f filter.Filter) error {
 		self.Push([]byte(self.collection))
 
 		self.populateWhereClause()
+		self.populateGroupBy()
 
 		if !self.Count {
 			self.populateOrderBy(f)
@@ -305,6 +318,20 @@ func (self *Sql) SetOption(_ string, _ interface{}) error {
 	return nil
 }
 
+func (self *Sql) GroupByField(field string) error {
+	self.groupBy = append(self.groupBy, field)
+	return nil
+}
+
+func (self *Sql) AggregateByField(agg filter.Aggregation, field string) error {
+	self.aggregateBy = append(self.aggregateBy, filter.Aggregate{
+		Aggregation: agg,
+		Field:       field,
+	})
+
+	return nil
+}
+
 func (self *Sql) GetValues() []interface{} {
 	return append(self.inputValues, self.values...)
 }
@@ -328,7 +355,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 	if self.UseInStatement {
 		if len(criterion.Values) > 1 {
 			switch criterion.Operator {
-			case ``, `is`, `not`:
+			case ``, `is`, `not`, `like`, `unlike`:
 				useInStatement = true
 			}
 		}
@@ -338,7 +365,10 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 	// for multi-valued IN-statements, we need to wrap the field name in the normalizer here
 	if useInStatement {
-		outFieldName = self.ApplyNormalizer(criterion.Field, outFieldName)
+		switch criterion.Operator {
+		case `like`, `unlike`:
+			outFieldName = self.ApplyNormalizer(criterion.Field, outFieldName)
+		}
 	}
 
 	// for each value being tested in this criterion
@@ -407,34 +437,50 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 		}
 
 		switch criterion.Operator {
-		case `is`, ``:
+		case `is`, ``, `like`:
 			if value == `NULL` {
 				outVal = outVal + ` IS NULL`
 			} else {
 
 				if useInStatement {
-					outVal = outVal + self.ApplyNormalizer(criterion.Field, fmt.Sprintf("%s", value))
+					if criterion.Operator == `like` {
+						outVal = outVal + self.ApplyNormalizer(criterion.Field, fmt.Sprintf("%s", value))
+					} else {
+						outVal = outVal + fmt.Sprintf("%s", value)
+					}
 				} else {
-					outVal = self.ApplyNormalizer(criterion.Field, outVal)
-					outVal = outVal + fmt.Sprintf(" = %s", self.ApplyNormalizer(criterion.Field, value))
+					if criterion.Operator == `like` {
+						outVal = self.ApplyNormalizer(criterion.Field, outVal)
+						outVal = outVal + fmt.Sprintf(" = %s", self.ApplyNormalizer(criterion.Field, value))
+					} else {
+						outVal = outVal + fmt.Sprintf(" = %s", value)
+					}
 				}
 			}
-		case `not`:
+		case `not`, `unlike`:
 			if value == `NULL` {
 				outVal = outVal + ` IS NOT NULL`
 			} else {
-
 				if useInStatement {
-					outVal = outVal + self.ApplyNormalizer(criterion.Field, fmt.Sprintf("%s", value))
+					if criterion.Operator == `unlike` {
+						outVal = outVal + self.ApplyNormalizer(criterion.Field, fmt.Sprintf("%s", value))
+					} else {
+						outVal = outVal + fmt.Sprintf("%s", value)
+					}
 				} else {
-					outVal = self.ApplyNormalizer(criterion.Field, outVal)
-					outVal = outVal + fmt.Sprintf(" <> %s", self.ApplyNormalizer(criterion.Field, value))
+					if criterion.Operator == `unlike` {
+						outVal = self.ApplyNormalizer(criterion.Field, outVal)
+						outVal = outVal + fmt.Sprintf(" <> %s", self.ApplyNormalizer(criterion.Field, value))
+					} else {
+						outVal = outVal + fmt.Sprintf(" <> %s", value)
+					}
 				}
 			}
 		case `contains`, `prefix`, `suffix`:
 			// wrap the field in any string normalizing functions (the same thing
 			// will happen to the values being compared)
 			outVal = self.ApplyNormalizer(criterion.Field, outVal) + fmt.Sprintf(` LIKE %s`, self.ApplyNormalizer(criterion.Field, value))
+
 		case `gt`:
 			outVal = outVal + fmt.Sprintf(" > %s", value)
 		case `gte`:
@@ -453,7 +499,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 	if useInStatement {
 		criterionStr = criterionStr + outFieldName + ` `
 
-		if criterion.Operator == `not` {
+		if criterion.Operator == `not` || criterion.Operator == `unlike` {
 			criterionStr = criterionStr + `NOT `
 		}
 
@@ -491,6 +537,29 @@ func (self *Sql) ToFieldName(field string) string {
 	}
 
 	return formattedField
+}
+
+func (self *Sql) ToAggregatedFieldName(agg filter.Aggregation, field string) string {
+	field = self.ToFieldName(field)
+
+	switch agg {
+	case filter.First:
+		return fmt.Sprintf("FIRST(%v)", field)
+	case filter.Last:
+		return fmt.Sprintf("LAST(%v)", field)
+	case filter.Minimum:
+		return fmt.Sprintf("MIN(%v)", field)
+	case filter.Maximum:
+		return fmt.Sprintf("MAX(%v)", field)
+	case filter.Sum:
+		return fmt.Sprintf("SUM(%v)", field)
+	case filter.Average:
+		return fmt.Sprintf("AVG(%v)", field)
+	case filter.Count:
+		return fmt.Sprintf("COUNT(%v)", field)
+	default:
+		return field
+	}
 }
 
 func (self *Sql) ToNativeValue(t dal.Type, subtypes []dal.Type, in interface{}) string {
@@ -649,6 +718,13 @@ func (self *Sql) populateWhereClause() {
 				self.Push([]byte(` `))
 			}
 		}
+	}
+}
+
+func (self *Sql) populateGroupBy() {
+	if len(self.groupBy) > 0 {
+		self.Push([]byte(` GROUP BY `))
+		self.Push([]byte(strings.Join(self.groupBy, `, `)))
 	}
 }
 

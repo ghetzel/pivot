@@ -40,16 +40,34 @@ var DefaultNormalizerFunc = func(in string) string {
 }
 
 type Criterion struct {
-	Type     dal.Type      `json:"type,omitempty"`
-	Length   int           `json:"length,omitempty"`
-	Field    string        `json:"field"`
-	Operator string        `json:"operator,omitempty"`
-	Values   []interface{} `json:"values"`
+	Type        dal.Type      `json:"type,omitempty"`
+	Length      int           `json:"length,omitempty"`
+	Field       string        `json:"field"`
+	Operator    string        `json:"operator,omitempty"`
+	Values      []interface{} `json:"values"`
+	Aggregation Aggregation   `json:"aggregation,omitempty"`
 }
 
 type SortBy struct {
 	Field      string
 	Descending bool
+}
+
+type Aggregation int
+
+const (
+	First Aggregation = iota
+	Last
+	Minimum
+	Maximum
+	Sum
+	Average
+	Count
+)
+
+type Aggregate struct {
+	Aggregation Aggregation
+	Field       string
 }
 
 func (self *Criterion) String() string {
@@ -98,6 +116,18 @@ type Filter struct {
 	Paginate      bool
 	IdentityField string
 	Normalizer    NormalizerFunc
+}
+
+func New() *Filter {
+	return &Filter{
+		Criteria:      make([]Criterion, 0),
+		Sort:          make([]string, 0),
+		Fields:        make([]string, 0),
+		Options:       make(map[string]interface{}),
+		Paginate:      true,
+		IdentityField: DefaultIdentityField,
+		Normalizer:    DefaultNormalizerFunc,
+	}
 }
 
 func MakeFilter(specs ...string) Filter {
@@ -286,6 +316,34 @@ func (self *Filter) AddCriteria(criteria ...Criterion) *Filter {
 	return self
 }
 
+func (self *Filter) SortBy(fields ...string) *Filter {
+	if len(fields) > 0 {
+		self.Sort = fields
+	}
+
+	return self
+}
+
+func (self *Filter) WithFields(fields ...string) *Filter {
+	if len(fields) > 0 {
+		self.Fields = append(self.Fields, fields...)
+	}
+
+	return self
+}
+
+func (self *Filter) BoundedBy(limit int, offset int) *Filter {
+	if limit >= 0 {
+		self.Limit = limit
+	}
+
+	if offset >= 0 {
+		self.Offset = offset
+	}
+
+	return self
+}
+
 func (self *Filter) CriteriaFields() []string {
 	fields := make([]string, len(self.Criteria))
 
@@ -406,10 +464,16 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 
 	for _, criterion := range self.Criteria {
 		for _, vI := range criterion.Values {
-			vStr := self.Normalizer(fmt.Sprintf("%v", vI))
+			vStr := fmt.Sprintf("%v", vI)
 
+			// if the operator isn't of the exact match sort, normalize the criterion value
+			if !IsExactMatchOperator(criterion.Operator) {
+				vStr = self.Normalizer(vStr)
+			}
+
+			// treat unset criterion values and the literal value "null" as nil
 			switch vStr {
-			case `null`:
+			case `null`, ``:
 				vI = nil
 			}
 
@@ -424,18 +488,21 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 			}
 
 			if cmpValue != nil {
-				cmpValueS = self.Normalizer(fmt.Sprintf("%v", cmpValue))
+				cmpValueS = fmt.Sprintf("%v", cmpValue)
+
+				// if the operator isn't of the exact match sort, normalize the record field value
+				if !IsExactMatchOperator(criterion.Operator) {
+					cmpValueS = self.Normalizer(cmpValueS)
+				}
 			}
 
 			// fmt.Printf("term:%v value:%v\n", vStr, cmpValueS)
 
 			switch criterion.Operator {
-			case `is`, ``, `not`:
+			case `is`, ``, `not`, `like`, `unlike`:
 				var isEqual bool
 
-				if criterion.Operator == `not` {
-					invertQuery = true
-				}
+				invertQuery = IsInvertingOperator(criterion.Operator)
 
 				switch criterion.Type {
 				case dal.AutoType:
@@ -530,6 +597,24 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 	}
 
 	return true
+}
+
+func IsExactMatchOperator(operator string) bool {
+	switch operator {
+	case ``, `is`, `not`, `gt`, `gte`, `lt`, `lte`:
+		return true
+	}
+
+	return false
+}
+
+func IsInvertingOperator(operator string) bool {
+	switch operator {
+	case `not`, `unlike`:
+		return true
+	}
+
+	return false
 }
 
 func SplitModifierToken(in string) (string, string) {

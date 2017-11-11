@@ -84,6 +84,22 @@ func (self *Collection) AddFields(fields ...Field) *Collection {
 //
 func (self *Collection) ApplyDefinition(definition *Collection) error {
 	if definition != nil {
+		if v := definition.IdentityField; v != `` {
+			self.IdentityField = v
+		}
+
+		if v := definition.IdentityFieldType; v != `` {
+			self.IdentityFieldType = v
+		}
+
+		if fn := definition.IdentityFieldFormatter; fn != nil {
+			self.IdentityFieldFormatter = fn
+		}
+
+		if fn := definition.IdentityFieldValidator; fn != nil {
+			self.IdentityFieldValidator = fn
+		}
+
 		for i, field := range self.Fields {
 			if defField, ok := definition.GetField(field.Name); ok {
 				if field.Description == `` {

@@ -11,11 +11,13 @@ import (
 
 type Elasticsearch struct {
 	filter.Generator
-	collection string
-	fields     []string
-	criteria   []map[string]interface{}
-	options    map[string]interface{}
-	values     []interface{}
+	collection  string
+	fields      []string
+	criteria    []map[string]interface{}
+	options     map[string]interface{}
+	values      []interface{}
+	facetFields []string
+	aggregateBy []filter.Aggregate
 }
 
 func NewElasticsearchGenerator() *Elasticsearch {
@@ -67,6 +69,20 @@ func (self *Elasticsearch) SetOption(key string, value interface{}) error {
 	return nil
 }
 
+func (self *Elasticsearch) GroupByField(field string) error {
+	self.facetFields = append(self.facetFields, field)
+	return nil
+}
+
+func (self *Elasticsearch) AggregateByField(agg filter.Aggregation, field string) error {
+	self.aggregateBy = append(self.aggregateBy, filter.Aggregate{
+		Aggregation: agg,
+		Field:       field,
+	})
+
+	return nil
+}
+
 func (self *Elasticsearch) GetValues() []interface{} {
 	return self.values
 }
@@ -80,8 +96,8 @@ func (self *Elasticsearch) WithCriterion(criterion filter.Criterion) error {
 		c, err = esCriterionOperatorIs(self, criterion)
 	case `not`:
 		c, err = esCriterionOperatorNot(self, criterion)
-	case `contains`:
-		c, err = esCriterionOperatorContains(self, criterion)
+	case `contains`, `prefix`, `suffix`:
+		c, err = esCriterionOperatorPattern(self, criterion.Operator, criterion)
 	case `gt`, `gte`, `lt`, `lte`:
 		c, err = esCriterionOperatorRange(self, criterion, criterion.Operator)
 	default:
