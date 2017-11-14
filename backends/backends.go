@@ -43,6 +43,7 @@ var backendMap = map[string]BackendFunc{
 	`fs`:       NewFilesystemBackend,
 	`file`:     NewFilesystemBackend,
 	`tiedot`:   NewTiedotBackend,
+	`dynamodb`: NewDynamoBackend,
 }
 
 func RegisterBackend(name string, fn BackendFunc) {

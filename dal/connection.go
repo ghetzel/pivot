@@ -48,6 +48,15 @@ func (self *ConnectionString) Dataset() string {
 	return self.URI.Path
 }
 
+func (self *ConnectionString) Credentials() (string, string, bool) {
+	if userinfo := self.URI.User; userinfo != nil {
+		pw, _ := userinfo.Password()
+		return userinfo.Username(), pw, true
+	} else {
+		return ``, ``, false
+	}
+}
+
 func (self *ConnectionString) HasOpt(key string) bool {
 	_, ok := self.Options[key]
 	return ok

@@ -197,10 +197,16 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			}
 		})
 
-	router.Get(`/api/collections/:collection/:id`,
+	router.Get(`/api/collections/:collection/records/*id`,
 		func(w http.ResponseWriter, req *http.Request) {
+			var id interface{}
 			name := vestigo.Param(req, `collection`)
-			id := vestigo.Param(req, `id`)
+
+			if ids := strings.Split(vestigo.Param(req, `_name`), `/`); len(ids) == 1 {
+				id = ids[0]
+			} else {
+				id = ids
+			}
 
 			if record, err := self.backend.Retrieve(name, id); err == nil {
 				httputil.RespondJSON(w, record)
@@ -209,10 +215,16 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			}
 		})
 
-	router.Delete(`/api/collections/:collection/:id`,
+	router.Delete(`/api/collections/:collection/records/*id`,
 		func(w http.ResponseWriter, req *http.Request) {
+			var id interface{}
 			name := vestigo.Param(req, `collection`)
-			id := vestigo.Param(req, `id`)
+
+			if ids := strings.Split(vestigo.Param(req, `_name`), `/`); len(ids) == 1 {
+				id = ids[0]
+			} else {
+				id = ids
+			}
 
 			if err := self.backend.Delete(name, id); err == nil {
 				httputil.RespondJSON(w, nil)

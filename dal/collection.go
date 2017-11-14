@@ -288,6 +288,22 @@ func (self *Collection) GetField(name string) (Field, bool) {
 	return Field{}, false
 }
 
+func (self *Collection) IsIdentityField(name string) bool {
+	if field, ok := self.GetField(name); ok {
+		return field.Identity
+	}
+
+	return false
+}
+
+func (self *Collection) IsKeyField(name string) bool {
+	if field, ok := self.GetField(name); ok {
+		return (field.Key && !field.Identity)
+	}
+
+	return false
+}
+
 func (self *Collection) ConvertValue(name string, value interface{}) (interface{}, error) {
 	if field, ok := self.GetField(name); ok {
 		return field.ConvertValue(value)

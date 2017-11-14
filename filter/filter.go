@@ -362,10 +362,30 @@ func (self *Filter) IdOnly() bool {
 	return false
 }
 
+func (self *Filter) GetValues(field string) ([]interface{}, bool) {
+	for _, criterion := range self.Criteria {
+		if criterion.Field == field {
+			return criterion.Values, true
+		}
+	}
+
+	return nil, false
+}
+
 func (self *Filter) GetFirstValue() (interface{}, bool) {
 	if len(self.Criteria) > 0 {
 		if len(self.Criteria[0].Values) > 0 {
 			return self.Criteria[0].Values[0], true
+		}
+	}
+
+	return nil, false
+}
+
+func (self *Filter) GetIdentityValue() (interface{}, bool) {
+	for _, criterion := range self.Criteria {
+		if criterion.Field == self.IdentityField {
+			return sliceutil.At(criterion.Values, 0)
 		}
 	}
 
