@@ -221,6 +221,14 @@ func (self *DynamoBackend) cacheTable(name string) (*dal.Collection, error) {
 				IdentityFieldType: self.toDalType(table.HashKeyType),
 			}
 
+			collection.AddFields(dal.Field{
+				Name:     table.HashKey,
+				Identity: true,
+				Key:      true,
+				Required: true,
+				Type:     self.toDalType(table.HashKeyType),
+			})
+
 			if rangeKey := table.RangeKey; rangeKey != `` {
 				collection.AddFields(dal.Field{
 					Name:     rangeKey,
