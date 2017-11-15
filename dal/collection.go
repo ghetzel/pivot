@@ -304,6 +304,16 @@ func (self *Collection) IsKeyField(name string) bool {
 	return false
 }
 
+func (self *Collection) GetFirstNonIdentityKeyField() (Field, bool) {
+	for _, field := range self.Fields {
+		if field.Key && !field.Identity {
+			return field, true
+		}
+	}
+
+	return Field{}, false
+}
+
 func (self *Collection) ConvertValue(name string, value interface{}) (interface{}, error) {
 	if field, ok := self.GetField(name); ok {
 		return field.ConvertValue(value)

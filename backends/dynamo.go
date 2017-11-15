@@ -2,6 +2,7 @@ package backends
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -24,6 +25,7 @@ type DynamoBackend struct {
 	db         *dynamo.DB
 	region     string
 	tableCache sync.Map
+	indexer    Indexer
 }
 
 type dynamoQueryIntent int
@@ -128,20 +130,36 @@ func (self *DynamoBackend) Retrieve(name string, id interface{}, fields ...strin
 	}
 }
 
-func (self *DynamoBackend) Insert(collection string, records *dal.RecordSet) error {
-	return fmt.Errorf("NI")
+func (self *DynamoBackend) Insert(name string, records *dal.RecordSet) error {
+	if collection, err := self.GetCollection(name); err == nil {
+		return self.upsertRecords(collection, records, true)
+	} else {
+		return err
+	}
 }
 
-func (self *DynamoBackend) Update(collection string, records *dal.RecordSet, target ...string) error {
-	return fmt.Errorf("NI")
+func (self *DynamoBackend) Update(name string, records *dal.RecordSet, target ...string) error {
+	if collection, err := self.GetCollection(name); err == nil {
+		return self.upsertRecords(collection, records, false)
+	} else {
+		return err
+	}
 }
 
-func (self *DynamoBackend) Delete(collection string, ids ...interface{}) error {
-	return fmt.Errorf("NI")
+func (self *DynamoBackend) Delete(name string, ids ...interface{}) error {
+	for _, id := range ids {
+		if op, err := self.getSingleRecordDelete(name, id); err == nil {
+			op.Run()
+		} else {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (self *DynamoBackend) CreateCollection(definition *dal.Collection) error {
-	return fmt.Errorf("NI")
+	return fmt.Errorf("Not Implemented")
 }
 
 func (self *DynamoBackend) DeleteCollection(name string) error {
@@ -165,15 +183,19 @@ func (self *DynamoBackend) GetCollection(name string) (*dal.Collection, error) {
 	return self.cacheTable(name)
 }
 
-func (self *DynamoBackend) WithSearch(collection string, filters ...filter.Filter) Indexer {
+func (self *DynamoBackend) WithSearch(name string, filters ...filter.Filter) Indexer {
 	return nil
 }
 
-func (self *DynamoBackend) WithAggregator(collection string) Aggregator {
+func (self *DynamoBackend) WithAggregator(name string) Aggregator {
 	return nil
 }
 
 func (self *DynamoBackend) Flush() error {
+	if self.indexer != nil {
+		return self.indexer.FlushIndex()
+	}
+
 	return nil
 }
 
@@ -194,21 +216,14 @@ func (self *DynamoBackend) cacheTable(name string) (*dal.Collection, error) {
 			return collectionI.(*dal.Collection), nil
 		} else {
 			collection := &dal.Collection{
-				Name: table.Name,
+				Name:              table.Name,
+				IdentityField:     table.HashKey,
+				IdentityFieldType: self.toDalType(table.HashKeyType),
 			}
-
-			collection.AddFields(dal.Field{
-				Name:     table.HashKey,
-				Identity: true,
-				Key:      true,
-				Required: true,
-				Type:     self.toDalType(table.HashKeyType),
-			})
 
 			if rangeKey := table.RangeKey; rangeKey != `` {
 				collection.AddFields(dal.Field{
 					Name:     rangeKey,
-					Identity: false,
 					Key:      true,
 					Required: true,
 					Type:     self.toDalType(table.RangeKeyType),
@@ -223,30 +238,25 @@ func (self *DynamoBackend) cacheTable(name string) (*dal.Collection, error) {
 	}
 }
 
-func (self *DynamoBackend) toRecordKeyFilter(collection *dal.Collection, id interface{}, allowMissingRangeKey bool) (*filter.Filter, *dal.Field, *dal.Field, error) {
-	var hashKey *dal.Field
+func (self *DynamoBackend) toRecordKeyFilter(collection *dal.Collection, id interface{}, allowMissingRangeKey bool) (*filter.Filter, *dal.Field, error) {
 	var rangeKey *dal.Field
 	var hashValue interface{}
 	var rangeValue interface{}
 
 	for _, field := range collection.Fields {
 		if f := field; f.Key {
-			if f.Identity {
-				hashKey = &f
-			} else {
-				rangeKey = &f
-			}
+			rangeKey = &f
 		}
 	}
 
 	// at least the identity field must have been found
-	if hashKey == nil {
-		return nil, nil, nil, fmt.Errorf("No identity field found in collection %v", collection.Name)
+	if collection.IdentityField == `` {
+		return nil, nil, fmt.Errorf("No identity field found in collection %v", collection.Name)
 	}
 
 	flt := filter.New()
 	flt.Limit = 1
-	flt.IdentityField = hashKey.Name
+	flt.IdentityField = collection.IdentityField
 
 	// if the rangeKey exists, then the id value must be a slice/array containing both parts
 	if typeutil.IsArray(id) {
@@ -259,8 +269,8 @@ func (self *DynamoBackend) toRecordKeyFilter(collection *dal.Collection, id inte
 
 	if hashValue != nil {
 		flt.AddCriteria(filter.Criterion{
-			Type:   hashKey.Type,
-			Field:  hashKey.Name,
+			Field:  collection.IdentityField,
+			Type:   collection.IdentityFieldType,
 			Values: []interface{}{hashValue},
 		})
 
@@ -277,19 +287,19 @@ func (self *DynamoBackend) toRecordKeyFilter(collection *dal.Collection, id inte
 				})
 
 			} else if !allowMissingRangeKey {
-				return nil, nil, nil, fmt.Errorf("Second ID component must not be nil")
+				return nil, nil, fmt.Errorf("Second ID component must not be nil")
 			}
 		}
 
-		return flt, hashKey, rangeKey, nil
+		return flt, rangeKey, nil
 	} else {
-		return nil, nil, nil, fmt.Errorf("First ID component must not be nil")
+		return nil, nil, fmt.Errorf("First ID component must not be nil")
 	}
 }
 
 func (self *DynamoBackend) getSingleRecordQuery(name string, id interface{}, fields ...string) (*filter.Filter, *dynamo.Query, error) {
 	if collection, err := self.GetCollection(name); err == nil {
-		if flt, _, rangeKey, err := self.toRecordKeyFilter(collection, id, false); err == nil {
+		if flt, rangeKey, err := self.toRecordKeyFilter(collection, id, false); err == nil {
 			if hashKeyValue, ok := flt.GetIdentityValue(); ok {
 				query := self.db.Table(collection.Name).Get(flt.IdentityField, hashKeyValue)
 
@@ -314,4 +324,68 @@ func (self *DynamoBackend) getSingleRecordQuery(name string, id interface{}, fie
 	} else {
 		return nil, nil, err
 	}
+}
+
+func (self *DynamoBackend) getSingleRecordDelete(name string, id interface{}) (*dynamo.Delete, error) {
+	if collection, err := self.GetCollection(name); err == nil {
+		if flt, rangeKey, err := self.toRecordKeyFilter(collection, id, false); err == nil {
+			if hashKeyValue, ok := flt.GetIdentityValue(); ok {
+				deleteOp := self.db.Table(collection.Name).Delete(flt.IdentityField, hashKeyValue)
+
+				if rangeKey != nil {
+					if rV, ok := flt.GetValues(rangeKey.Name); ok && len(rV) > 0 {
+						deleteOp.Range(rangeKey.Name, rV[0])
+					} else {
+						return nil, fmt.Errorf("Could not determine range key value")
+					}
+				}
+
+				return deleteOp, nil
+			} else {
+				return nil, fmt.Errorf("Could not determine hash key value")
+			}
+		} else {
+			return nil, fmt.Errorf("filter create error: %v", err)
+		}
+	} else {
+		return nil, err
+	}
+}
+
+func (self *DynamoBackend) upsertRecords(collection *dal.Collection, records *dal.RecordSet, isCreate bool) error {
+	for _, record := range records.Records {
+		item := make(map[string]interface{})
+
+		for k, v := range record.Fields {
+			item[k] = v
+		}
+
+		item[collection.IdentityField] = record.ID
+
+		op := self.db.Table(collection.Name).Put(item)
+
+		if isCreate {
+			expr := []string{`attribute_not_exists($)`}
+
+			exprValues := []interface{}{record.ID}
+
+			if rangeKey, ok := collection.GetFirstNonIdentityKeyField(); ok {
+				expr = append(expr, `attribute_not_exists($)`)
+
+				if v := record.Get(rangeKey.Name); v != nil {
+					exprValues = append(exprValues, v)
+				} else {
+					return fmt.Errorf("Cannot create record: missing range key")
+				}
+			}
+
+			op.If(strings.Join(expr, ` AND `), exprValues...)
+		}
+
+		if err := op.Run(); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

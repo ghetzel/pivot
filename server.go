@@ -160,7 +160,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 			f := filter.All
 
-			if v := req.URL.Query().Get(`/apiq`); v != `` {
+			if v := httputil.Q(req, `q`); v != `` {
 				if fV, err := filter.Parse(v); err == nil {
 					f = fV
 				} else {
@@ -212,6 +212,40 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 				httputil.RespondJSON(w, record)
 			} else {
 				httputil.RespondJSON(w, err)
+			}
+		})
+
+	router.Post(`/api/collections/:collection/records`,
+		func(w http.ResponseWriter, req *http.Request) {
+			var recordset dal.RecordSet
+
+			if err := httputil.ParseJSON(req.Body, &recordset); err == nil {
+				name := vestigo.Param(req, `collection`)
+
+				if err := self.backend.Insert(name, &recordset); err == nil {
+					httputil.RespondJSON(w, nil)
+				} else {
+					httputil.RespondJSON(w, err)
+				}
+			} else {
+				httputil.RespondJSON(w, err, http.StatusBadRequest)
+			}
+		})
+
+	router.Put(`/api/collections/:collection/records`,
+		func(w http.ResponseWriter, req *http.Request) {
+			var recordset dal.RecordSet
+
+			if err := httputil.ParseJSON(req.Body, &recordset); err == nil {
+				name := vestigo.Param(req, `collection`)
+
+				if err := self.backend.Update(name, &recordset); err == nil {
+					httputil.RespondJSON(w, nil)
+				} else {
+					httputil.RespondJSON(w, err)
+				}
+			} else {
+				httputil.RespondJSON(w, err, http.StatusBadRequest)
 			}
 		})
 
