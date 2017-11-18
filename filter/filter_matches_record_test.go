@@ -53,5 +53,6 @@ func TestFilterMatchesRecord(t *testing.T) {
 	assert.True(MustParse(`name/suffix:rod`).MatchesRecord(dal.NewRecord(1).Set(`name`, `Goldenrod`)))
 
 	assert.True(MustParse(`name/contains:olden rod`).MatchesRecord(dal.NewRecord(1).Set(`name`, `Golden rod`)))
-	assert.True(MustParse(`name/golden rod`).MatchesRecord(dal.NewRecord(1).Set(`name`, `Golden rod`)))
+	assert.True(MustParse(`name/Golden rod`).MatchesRecord(dal.NewRecord(1).Set(`name`, `Golden rod`)))
+	assert.True(MustParse(`name/like:golden rod`).MatchesRecord(dal.NewRecord(1).Set(`name`, `Golden rod`)))
 }

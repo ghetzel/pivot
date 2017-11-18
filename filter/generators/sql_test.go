@@ -934,7 +934,7 @@ func TestSqlSelectGroupBy(t *testing.T) {
 	assert.Nil(err)
 
 	assert.Equal(
-		`SELECT state, city, AVG(age) FROM foo GROUP BY state, city`,
+		`SELECT state, city, AVG(age) AS age FROM foo GROUP BY state, city`,
 		string(sql[:]),
 	)
 }

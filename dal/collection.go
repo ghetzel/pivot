@@ -346,6 +346,8 @@ func (self *Collection) formatAndValidateId(id interface{}, op FieldOperation, r
 
 // Generates a Record instance from the given value based on this collection's schema.
 func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
+	var idFieldName string
+
 	if err := validatePtrToStructType(in); err != nil {
 		return nil, err
 	}
@@ -401,6 +403,7 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 
 				// set the ID field if this field is explicitly marked as the identity
 				if fieldDescr.Identity && !typeutil.IsZero(fieldDescr.Field) {
+					idFieldName = tagName
 					record.ID = value
 				} else {
 					if collectionField, ok := self.GetField(tagName); ok {
@@ -422,6 +425,11 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 
 						// set the value in the output record
 						record.Set(tagName, value)
+
+						// make sure the corresponding value in the input struct matches
+						if err := fieldDescr.Field.Set(value); err != nil {
+							return nil, fmt.Errorf("failed to writeback value to %q: %v", tagName, err)
+						}
 					}
 				}
 			}
@@ -435,6 +443,7 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 					if fieldDescr.Field.IsExported() {
 						// skip fields containing a zero value
 						if !typeutil.IsZero(fieldDescr.Field) {
+							idFieldName = tagName
 							record.ID = fieldDescr.Field.Value()
 							delete(record.Fields, tagName)
 							break
@@ -445,27 +454,28 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 		}
 
 		// an ID still wasn't found, so try the field called "id"
-		if record.ID == nil {
-			if f, ok := fields[`id`]; ok {
-				if !f.Field.IsZero() {
-					record.ID = f.Field.Value()
-					delete(record.Fields, `id`)
-				}
-			}
-		}
-
-		// an ID still wasn't found, so try the field called "ID"
-		if record.ID == nil {
-			if f, ok := fields[`ID`]; ok {
-				if !f.Field.IsZero() {
-					record.ID = f.Field.Value()
-					delete(record.Fields, `ID`)
+		for _, fieldName := range []string{`id`, `ID`, `Id`} {
+			if record.ID == nil {
+				if f, ok := fields[fieldName]; ok {
+					if !f.Field.IsZero() {
+						idFieldName = fieldName
+						record.ID = f.Field.Value()
+						delete(record.Fields, fieldName)
+						break
+					}
 				}
 			}
 		}
 
 		if idI, err := self.formatAndValidateId(record.ID, PersistOperation, record); err == nil {
 			record.ID = idI
+
+			// make sure the corresponding ID in the input struct matches
+			if fieldDescr, ok := fields[idFieldName]; ok {
+				if err := fieldDescr.Field.Set(idI); err != nil {
+					return nil, fmt.Errorf("failed to writeback value to %q: %v", idFieldName, err)
+				}
+			}
 		} else {
 			return nil, err
 		}
