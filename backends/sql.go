@@ -61,7 +61,7 @@ type SqlBackend struct {
 	refreshCollectionFunc       sqlTableDetailsFunc
 	dropTableQuery              string
 	registeredCollections       sync.Map
-	knownCollections            []string
+	knownCollections            map[string]bool
 }
 
 func NewSqlBackend(connection dal.ConnectionString) Backend {
@@ -71,6 +71,7 @@ func NewSqlBackend(connection dal.ConnectionString) Backend {
 		queryGenPlaceholderFormat: `?`,
 		dropTableQuery:            `DROP TABLE %s`,
 		aggregator:                make(map[string]Aggregator),
+		knownCollections:          make(map[string]bool),
 	}
 }
 
@@ -641,11 +642,11 @@ func (self *SqlBackend) DeleteCollection(collectionName string) error {
 }
 
 func (self *SqlBackend) GetCollection(name string) (*dal.Collection, error) {
-	if !sliceutil.Contains(self.knownCollections, name) {
-		return nil, dal.CollectionNotFound
-	}
-
 	if err := self.refreshCollectionFromDatabase(name, nil); err == nil {
+		if _, ok := self.knownCollections[name]; !ok {
+			return nil, dal.CollectionNotFound
+		}
+
 		if collection, err := self.getCollectionFromCache(name); err == nil {
 			return collection, nil
 		} else {
@@ -995,7 +996,8 @@ func (self *SqlBackend) refreshCollectionFromDatabase(name string, definition *d
 			// the collection that just came back
 			collection.ApplyDefinition(definition)
 			self.RegisterCollection(definition)
-			self.knownCollections = append(self.knownCollections, collection.Name)
+
+			self.knownCollections[name] = true
 		}
 
 		return nil
