@@ -61,6 +61,7 @@ type SqlBackend struct {
 	refreshCollectionFunc       sqlTableDetailsFunc
 	dropTableQuery              string
 	registeredCollections       sync.Map
+	knownCollections            []string
 }
 
 func NewSqlBackend(connection dal.ConnectionString) Backend {
@@ -603,7 +604,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 			defer func() {
 				self.RegisterCollection(definition)
 
-				if err := self.refreshCollection(definition.Name, definition); err != nil {
+				if err := self.refreshCollectionFromDatabase(definition.Name, definition); err != nil {
 					querylog.Debugf("[%T] failed to refresh collection: %v", self, err)
 				}
 			}()
@@ -640,7 +641,11 @@ func (self *SqlBackend) DeleteCollection(collectionName string) error {
 }
 
 func (self *SqlBackend) GetCollection(name string) (*dal.Collection, error) {
-	if err := self.refreshCollection(name, nil); err == nil {
+	if !sliceutil.Contains(self.knownCollections, name) {
+		return nil, dal.CollectionNotFound
+	}
+
+	if err := self.refreshCollectionFromDatabase(name, nil); err == nil {
 		if collection, err := self.getCollectionFromCache(name); err == nil {
 			return collection, nil
 		} else {
@@ -951,11 +956,11 @@ func (self *SqlBackend) refreshAllCollections() error {
 					definition := definitionI.(*dal.Collection)
 					knownTables = append(knownTables, definition.Name)
 
-					if err := self.refreshCollection(definition.Name, definition); err != nil {
+					if err := self.refreshCollectionFromDatabase(definition.Name, definition); err != nil {
 						log.Errorf("Error refreshing collection %s: %v", definition.Name, err)
 					}
 				} else {
-					if err := self.refreshCollection(tableName, nil); err != nil {
+					if err := self.refreshCollectionFromDatabase(tableName, nil); err != nil {
 						log.Errorf("Error refreshing collection %s: %v", tableName, err)
 					}
 				}
@@ -979,7 +984,7 @@ func (self *SqlBackend) refreshAllCollections() error {
 	}
 }
 
-func (self *SqlBackend) refreshCollection(name string, definition *dal.Collection) error {
+func (self *SqlBackend) refreshCollectionFromDatabase(name string, definition *dal.Collection) error {
 	if collection, err := self.refreshCollectionFunc(
 		strings.TrimPrefix(self.conn.Dataset(), `/`),
 		name,
@@ -990,6 +995,7 @@ func (self *SqlBackend) refreshCollection(name string, definition *dal.Collectio
 			// the collection that just came back
 			collection.ApplyDefinition(definition)
 			self.RegisterCollection(definition)
+			self.knownCollections = append(self.knownCollections, collection.Name)
 		}
 
 		return nil
