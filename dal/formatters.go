@@ -88,3 +88,11 @@ func CurrentTime(value interface{}, op FieldOperation) (interface{}, error) {
 		return value, nil
 	}
 }
+
+func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error) {
+	if op == PersistOperation && typeutil.IsZero(value) {
+		return time.Now(), nil
+	}
+
+	return value, nil
+}
