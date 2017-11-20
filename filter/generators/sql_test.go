@@ -216,7 +216,7 @@ func TestSqlInserts(t *testing.T) {
 	}
 
 	for _, expected := range tests {
-		f := filter.MakeFilter(``)
+		f := filter.New()
 
 		gen := NewSqlGenerator()
 		gen.Type = SqlInsertStatement
@@ -787,7 +787,7 @@ func TestSqlMultipleValuesWithNormalizer(t *testing.T) {
 func TestSqlSorting(t *testing.T) {
 	assert := require.New(t)
 
-	f := filter.MakeFilter(`all`)
+	f := filter.All()
 	f.Sort = []string{`+name`, `-age`}
 
 	gen := NewSqlGenerator()
@@ -801,14 +801,14 @@ func TestSqlSorting(t *testing.T) {
 func TestSqlLimitOffset(t *testing.T) {
 	assert := require.New(t)
 
-	f := filter.MakeFilter(`all`)
+	f := filter.All()
 	f.Limit = 4
 	gen := NewSqlGenerator()
 	sql, err := filter.Render(gen, `foo`, f)
 	assert.Nil(err)
 	assert.Equal(`SELECT * FROM foo LIMIT 4`, string(sql[:]))
 
-	f = filter.MakeFilter(`all`)
+	f = filter.All()
 	f.Limit = 4
 	f.Offset = 12
 	gen = NewSqlGenerator()

@@ -11,28 +11,30 @@ import (
 	"github.com/ghetzel/pivot/filter/generators"
 )
 
-func (self *SqlBackend) Sum(collection string, field string, f ...filter.Filter) (float64, error) {
+type sqlAggResultFunc func(*sql.Rows, *generators.Sql, *dal.Collection, *filter.Filter) (interface{}, error)
+
+func (self *SqlBackend) Sum(collection string, field string, f ...*filter.Filter) (float64, error) {
 	return self.aggregateFloat(collection, filter.Sum, field, f)
 }
 
-func (self *SqlBackend) Count(collection string, f ...filter.Filter) (uint64, error) {
+func (self *SqlBackend) Count(collection string, f ...*filter.Filter) (uint64, error) {
 	v, err := self.aggregateFloat(collection, filter.Count, `*`, f)
 	return uint64(v), err
 }
 
-func (self *SqlBackend) Minimum(collection string, field string, f ...filter.Filter) (float64, error) {
+func (self *SqlBackend) Minimum(collection string, field string, f ...*filter.Filter) (float64, error) {
 	return self.aggregateFloat(collection, filter.Minimum, field, f)
 }
 
-func (self *SqlBackend) Maximum(collection string, field string, f ...filter.Filter) (float64, error) {
+func (self *SqlBackend) Maximum(collection string, field string, f ...*filter.Filter) (float64, error) {
 	return self.aggregateFloat(collection, filter.Maximum, field, f)
 }
 
-func (self *SqlBackend) Average(collection string, field string, f ...filter.Filter) (float64, error) {
+func (self *SqlBackend) Average(collection string, field string, f ...*filter.Filter) (float64, error) {
 	return self.aggregateFloat(collection, filter.Average, field, f)
 }
 
-func (self *SqlBackend) GroupBy(collection string, groupBy []string, aggregates []filter.Aggregate, f ...filter.Filter) (*dal.RecordSet, error) {
+func (self *SqlBackend) GroupBy(collection string, groupBy []string, aggregates []filter.Aggregate, f ...*filter.Filter) (*dal.RecordSet, error) {
 	if result, err := self.aggregate(collection, groupBy, aggregates, f, self.extractRecordSet); err == nil {
 		return result.(*dal.RecordSet), nil
 	} else {
@@ -40,7 +42,7 @@ func (self *SqlBackend) GroupBy(collection string, groupBy []string, aggregates 
 	}
 }
 
-func (self *SqlBackend) aggregateFloat(name string, aggregation filter.Aggregation, field string, f []filter.Filter) (float64, error) {
+func (self *SqlBackend) aggregateFloat(name string, aggregation filter.Aggregation, field string, f []*filter.Filter) (float64, error) {
 	if result, err := self.aggregate(name, nil, []filter.Aggregate{
 		{
 			Aggregation: aggregation,
@@ -53,13 +55,13 @@ func (self *SqlBackend) aggregateFloat(name string, aggregation filter.Aggregati
 	}
 }
 
-func (self *SqlBackend) aggregate(name string, groupBy []string, aggregates []filter.Aggregate, f []filter.Filter, resultFn func(*sql.Rows, *generators.Sql, *dal.Collection, filter.Filter) (interface{}, error)) (interface{}, error) {
+func (self *SqlBackend) aggregate(name string, groupBy []string, aggregates []filter.Aggregate, f []*filter.Filter, resultFn sqlAggResultFunc) (interface{}, error) {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
 		queryGen := self.makeQueryGen(collection)
-		var flt filter.Filter
+		var flt *filter.Filter
 
 		if len(f) == 0 {
-			flt = filter.MakeFilter()
+			flt = filter.New()
 		} else {
 			flt = f[0]
 		}
@@ -102,7 +104,7 @@ func (self *SqlBackend) AggregatorInitialize(parent Backend) error {
 	return nil
 }
 
-func (self *SqlBackend) extractSingleFloat64(rows *sql.Rows, _ *generators.Sql, _ *dal.Collection, _ filter.Filter) (interface{}, error) {
+func (self *SqlBackend) extractSingleFloat64(rows *sql.Rows, _ *generators.Sql, _ *dal.Collection, _ *filter.Filter) (interface{}, error) {
 	if rows.Next() {
 		var rv sql.NullFloat64
 
@@ -116,7 +118,7 @@ func (self *SqlBackend) extractSingleFloat64(rows *sql.Rows, _ *generators.Sql, 
 	}
 }
 
-func (self *SqlBackend) extractRecordSet(rows *sql.Rows, queryGen *generators.Sql, collection *dal.Collection, flt filter.Filter) (interface{}, error) {
+func (self *SqlBackend) extractRecordSet(rows *sql.Rows, queryGen *generators.Sql, collection *dal.Collection, flt *filter.Filter) (interface{}, error) {
 	recordset := dal.NewRecordSet()
 
 	if columns, err := rows.Columns(); err == nil {

@@ -268,7 +268,7 @@ func (self *FilesystemBackend) Delete(collectionName string, ids ...interface{})
 	}
 }
 
-func (self *FilesystemBackend) WithSearch(collectionName string, filters ...filter.Filter) Indexer {
+func (self *FilesystemBackend) WithSearch(collectionName string, filters ...*filter.Filter) Indexer {
 	return self.indexer
 }
 

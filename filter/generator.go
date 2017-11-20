@@ -2,7 +2,7 @@ package filter
 
 type IGenerator interface {
 	Initialize(string) error
-	Finalize(Filter) error
+	Finalize(*Filter) error
 	Push([]byte)
 	Payload() []byte
 	WithCriterion(Criterion) error
@@ -20,7 +20,7 @@ type Generator struct {
 	payload []byte
 }
 
-func Render(generator IGenerator, collectionName string, filter Filter) ([]byte, error) {
+func Render(generator IGenerator, collectionName string, filter *Filter) ([]byte, error) {
 	if err := generator.Initialize(collectionName); err != nil {
 		return nil, err
 	}
@@ -71,6 +71,6 @@ func (self *Generator) Payload() []byte {
 	return self.payload
 }
 
-func (self *Generator) Finalize() error {
+func (self *Generator) Finalize(_ *Filter) error {
 	return nil
 }

@@ -152,7 +152,7 @@ func (self *TiedotBackend) Delete(name string, ids ...interface{}) error {
 	return nil
 }
 
-func (self *TiedotBackend) WithSearch(collectionName string, filters ...filter.Filter) Indexer {
+func (self *TiedotBackend) WithSearch(collectionName string, filters ...*filter.Filter) Indexer {
 	return self.indexer
 }
 

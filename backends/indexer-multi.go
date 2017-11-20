@@ -198,7 +198,7 @@ func (self *MultiIndex) Index(collection string, records *dal.RecordSet) error {
 	return indexErr
 }
 
-func (self *MultiIndex) QueryFunc(collection string, filter filter.Filter, resultFn IndexResultFunc) error {
+func (self *MultiIndex) QueryFunc(collection string, filter *filter.Filter, resultFn IndexResultFunc) error {
 	var indexErr error
 
 	if err := self.EachSelectedIndex(collection, RetrieveOperation, func(indexer Indexer, _ int, _ int) error {
@@ -221,7 +221,7 @@ func (self *MultiIndex) QueryFunc(collection string, filter filter.Filter, resul
 	return indexErr
 }
 
-func (self *MultiIndex) Query(collection string, filter filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+func (self *MultiIndex) Query(collection string, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
 	var indexErr error
 
@@ -248,7 +248,7 @@ func (self *MultiIndex) Query(collection string, filter filter.Filter, resultFns
 	return recordset, indexErr
 }
 
-func (self *MultiIndex) ListValues(collection string, fields []string, filter filter.Filter) (map[string][]interface{}, error) {
+func (self *MultiIndex) ListValues(collection string, fields []string, filter *filter.Filter) (map[string][]interface{}, error) {
 	values := make(map[string][]interface{})
 	var indexErr error
 
@@ -281,7 +281,7 @@ func (self *MultiIndex) ListValues(collection string, fields []string, filter fi
 	return values, indexErr
 }
 
-func (self *MultiIndex) DeleteQuery(collection string, f filter.Filter) error {
+func (self *MultiIndex) DeleteQuery(collection string, f *filter.Filter) error {
 	var indexErr error
 
 	if err := self.EachSelectedIndex(collection, DeleteOperation, func(indexer Indexer, _ int, _ int) error {

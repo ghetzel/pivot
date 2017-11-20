@@ -165,7 +165,7 @@ func (self *BleveIndexer) checkAndFlushBatches(forceFlush bool) {
 	}
 }
 
-func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn IndexResultFunc) error {
+func (self *BleveIndexer) QueryFunc(collection string, f *filter.Filter, resultFn IndexResultFunc) error {
 	defer stats.NewTiming().Send(`pivot.indexers.bleve.query_time`)
 
 	if f.IdentityField == `` {
@@ -255,7 +255,7 @@ func (self *BleveIndexer) QueryFunc(collection string, f filter.Filter, resultFn
 	}
 }
 
-func (self *BleveIndexer) Query(collection string, f filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+func (self *BleveIndexer) Query(collection string, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
 
 	if f.IdentityField == `` {
@@ -311,7 +311,7 @@ func (self *BleveIndexer) IndexRemove(collection string, ids []interface{}) erro
 	}
 }
 
-func (self *BleveIndexer) ListValues(collection string, fields []string, f filter.Filter) (map[string][]interface{}, error) {
+func (self *BleveIndexer) ListValues(collection string, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 
 		if bq, err := self.filterToBleveQuery(index, f); err == nil {
@@ -372,7 +372,7 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f filte
 	}
 }
 
-func (self *BleveIndexer) DeleteQuery(name string, f filter.Filter) error {
+func (self *BleveIndexer) DeleteQuery(name string, f *filter.Filter) error {
 	f.Fields = []string{BleveIdentityField}
 	var ids []interface{}
 
@@ -428,7 +428,7 @@ func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index,
 	}
 }
 
-func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f filter.Filter) (query.Query, error) {
+func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f *filter.Filter) (query.Query, error) {
 	defer stats.NewTiming().Send(`pivot.indexers.bleve.filter_to_native`)
 
 	if f.MatchAll {

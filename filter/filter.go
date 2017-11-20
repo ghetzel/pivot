@@ -155,7 +155,7 @@ func Copy(other *Filter) Filter {
 	return *other
 }
 
-func FromMap(in map[string]interface{}) (Filter, error) {
+func FromMap(in map[string]interface{}) (*Filter, error) {
 	rv := MakeFilter()
 
 	for typeField, opValue := range in {
@@ -177,11 +177,18 @@ func FromMap(in map[string]interface{}) (Filter, error) {
 		})
 	}
 
-	return rv, nil
+	return &rv, nil
 }
 
-var Null Filter = MakeFilter(``)
-var All Filter = MakeFilter(AllValue)
+func Null() *Filter {
+	f := MakeFilter(``)
+	return &f
+}
+
+func All() *Filter {
+	f := MakeFilter(AllValue)
+	return &f
+}
 
 // Filter syntax definition
 //
@@ -192,12 +199,13 @@ var All Filter = MakeFilter(AllValue)
 // type       ::= str | bool | int | float | date
 // comparator :=  is | not | gt | gte | lt | lte | prefix | suffix | regex
 //
-func Parse(spec string) (Filter, error) {
+func Parse(spec string) (*Filter, error) {
 	var criterion Criterion
 
 	spec = strings.TrimPrefix(spec, `/`)
 
-	rv := MakeFilter(spec)
+	rvV := MakeFilter(spec)
+	rv := &rvV
 	criteriaPre := strings.Split(spec, CriteriaSeparator)
 	criteria := make([]string, 0)
 
@@ -213,7 +221,8 @@ func Parse(spec string) (Filter, error) {
 
 	switch {
 	case spec == ``:
-		return Null, nil
+		nullFilter := MakeFilter(``)
+		return &nullFilter, nil
 
 	case spec == AllValue:
 		return rv, nil
@@ -304,7 +313,7 @@ func Parse(spec string) (Filter, error) {
 
 func MustParse(spec string) *Filter {
 	if f, err := Parse(spec); err == nil {
-		return &f
+		return f
 	} else {
 		panic(err.Error())
 		return nil
@@ -447,7 +456,7 @@ func (self *Filter) ApplyOptions(in interface{}) error {
 	return nil
 }
 
-func (self *Filter) NewFromMap(in map[string]interface{}) (Filter, error) {
+func (self *Filter) NewFromMap(in map[string]interface{}) (*Filter, error) {
 	criteria := make([]string, 0)
 
 	for _, criterion := range self.Criteria {
@@ -461,7 +470,7 @@ func (self *Filter) NewFromMap(in map[string]interface{}) (Filter, error) {
 	return Parse(strings.Join(criteria, CriteriaSeparator))
 }
 
-func (self *Filter) NewFromSpec(specs ...string) (Filter, error) {
+func (self *Filter) NewFromSpec(specs ...string) (*Filter, error) {
 	criteria := make([]string, 0)
 
 	for _, criterion := range self.Criteria {

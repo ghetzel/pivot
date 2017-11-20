@@ -183,7 +183,7 @@ func (self *DynamoBackend) GetCollection(name string) (*dal.Collection, error) {
 	return self.cacheTable(name)
 }
 
-func (self *DynamoBackend) WithSearch(name string, filters ...filter.Filter) Indexer {
+func (self *DynamoBackend) WithSearch(name string, filters ...*filter.Filter) Indexer {
 	return nil
 }
 

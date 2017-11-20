@@ -28,10 +28,10 @@ type Indexer interface {
 	IndexRetrieve(collection string, id interface{}) (*dal.Record, error)
 	IndexRemove(collection string, ids []interface{}) error
 	Index(collection string, records *dal.RecordSet) error
-	QueryFunc(collection string, filter filter.Filter, resultFn IndexResultFunc) error
-	Query(collection string, filter filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
-	ListValues(collection string, fields []string, filter filter.Filter) (map[string][]interface{}, error)
-	DeleteQuery(collection string, f filter.Filter) error
+	QueryFunc(collection string, filter *filter.Filter, resultFn IndexResultFunc) error
+	Query(collection string, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
+	ListValues(collection string, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
+	DeleteQuery(collection string, f *filter.Filter) error
 	FlushIndex() error
 }
 
@@ -46,7 +46,7 @@ func MakeIndexer(connection dal.ConnectionString) (Indexer, error) {
 	}
 }
 
-func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f filter.Filter, page IndexPage) {
+func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f *filter.Filter, page IndexPage) {
 	// result count is whatever we were told it was for this query
 	recordset.ResultCount = page.TotalResults
 
@@ -67,7 +67,7 @@ func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f filter.Filter, pag
 	}
 }
 
-func DefaultQueryImplementation(indexer Indexer, collection string, f filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+func DefaultQueryImplementation(indexer Indexer, collection string, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
 
 	recordset.Unbounded = true

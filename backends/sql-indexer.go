@@ -12,7 +12,7 @@ import (
 	"github.com/ghetzel/pivot/filter/generators"
 )
 
-func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, resultFn IndexResultFunc) error {
+func (self *SqlBackend) QueryFunc(collectionName string, f *filter.Filter, resultFn IndexResultFunc) error {
 	defer stats.NewTiming().Send(`pivot.backends.sql.query_time`)
 
 	if collection, err := self.getCollectionFromCache(collectionName); err == nil {
@@ -157,11 +157,11 @@ func (self *SqlBackend) QueryFunc(collectionName string, f filter.Filter, result
 	}
 }
 
-func (self *SqlBackend) Query(collection string, f filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+func (self *SqlBackend) Query(collection string, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 
-func (self *SqlBackend) ListValues(collectionName string, fields []string, f filter.Filter) (map[string][]interface{}, error) {
+func (self *SqlBackend) ListValues(collectionName string, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
 	if collection, err := self.getCollectionFromCache(collectionName); err == nil {
 		for i, f := range fields {
 			if f == `id` {
@@ -231,7 +231,7 @@ func (self *SqlBackend) IndexRemove(collection string, ids []interface{}) error 
 }
 
 // DeleteQuery removes records using a filter
-func (self *SqlBackend) DeleteQuery(name string, f filter.Filter) error {
+func (self *SqlBackend) DeleteQuery(name string, f *filter.Filter) error {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
 		if tx, err := self.db.Begin(); err == nil {
 			queryGen := self.makeQueryGen(collection)

@@ -244,15 +244,15 @@ func (self *Model) FindFunc(flt interface{}, destZeroValue interface{}, resultFn
 }
 
 func (self *Model) All(into interface{}) error {
-	return self.Find(filter.All, into)
+	return self.Find(filter.All(), into)
 }
 
 func (self *Model) Each(destZeroValue interface{}, resultFn ResultFunc) error {
-	return self.FindFunc(filter.All, destZeroValue, resultFn)
+	return self.FindFunc(filter.All(), destZeroValue, resultFn)
 }
 
 func (self *Model) List(fields []string) (map[string][]interface{}, error) {
-	return self.ListWithFilter(fields, filter.All)
+	return self.ListWithFilter(fields, filter.All())
 }
 
 func (self *Model) ListWithFilter(fields []string, flt interface{}) (map[string][]interface{}, error) {
@@ -353,21 +353,21 @@ func (self *Model) GroupBy(fields []string, aggregates []filter.Aggregate, flt i
 	}
 }
 
-func (self *Model) filterFromInterface(in interface{}) (filter.Filter, error) {
+func (self *Model) filterFromInterface(in interface{}) (*filter.Filter, error) {
 	if f, ok := in.(filter.Filter); ok {
-		return f, nil
+		return &f, nil
 	} else if f, ok := in.(*filter.Filter); ok {
-		return *f, nil
+		return f, nil
 	} else if fMap, ok := in.(map[string]interface{}); ok {
 		return filter.FromMap(fMap)
 	} else if fStr, ok := in.(string); ok {
 		return filter.Parse(fStr)
 	} else {
-		return filter.Null, fmt.Errorf("Expected filter.Filter, map[string]interface{}, or string; got: %T", in)
+		return filter.Null(), fmt.Errorf("Expected filter.Filter, map[string]interface{}, or string; got: %T", in)
 	}
 }
 
-func (self *Model) populateOutputParameter(f filter.Filter, recordset *dal.RecordSet, into interface{}) error {
+func (self *Model) populateOutputParameter(f *filter.Filter, recordset *dal.RecordSet, into interface{}) error {
 	vInto := reflect.ValueOf(into)
 
 	// get value pointed to if we were given a pointer

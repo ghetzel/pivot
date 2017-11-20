@@ -173,7 +173,7 @@ func (self *Sql) Initialize(collectionName string) error {
 }
 
 // Takes all the information collected so far and generates a SQL statement from it
-func (self *Sql) Finalize(f filter.Filter) error {
+func (self *Sql) Finalize(f *filter.Filter) error {
 	switch self.Type {
 	case SqlSelectStatement:
 		self.Push([]byte(`SELECT `))
@@ -729,7 +729,7 @@ func (self *Sql) populateGroupBy() {
 	}
 }
 
-func (self *Sql) populateOrderBy(f filter.Filter) {
+func (self *Sql) populateOrderBy(f *filter.Filter) {
 	if len(f.Sort) > 0 {
 		self.Push([]byte(` ORDER BY `))
 		orderByFields := make([]string, len(f.Sort))
@@ -750,7 +750,7 @@ func (self *Sql) populateOrderBy(f filter.Filter) {
 	}
 }
 
-func (self *Sql) populateLimitOffset(f filter.Filter) {
+func (self *Sql) populateLimitOffset(f *filter.Filter) {
 	if f.Limit > 0 {
 		self.Push([]byte(fmt.Sprintf(" LIMIT %d", f.Limit)))
 

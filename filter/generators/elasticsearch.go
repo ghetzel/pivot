@@ -37,7 +37,7 @@ func (self *Elasticsearch) Initialize(collectionName string) error {
 	return nil
 }
 
-func (self *Elasticsearch) Finalize(filter filter.Filter) error {
+func (self *Elasticsearch) Finalize(filter *filter.Filter) error {
 	var query map[string]interface{}
 
 	if filter.Spec == `all` {

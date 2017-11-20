@@ -136,13 +136,13 @@ func TestModelFind(t *testing.T) {
 	var resultsStruct []ModelTwo
 	assert.Error(model.All(resultsStruct))
 
-	assert.Nil(model.All(&resultsStruct))
+	assert.NoError(model.All(&resultsStruct))
 	assert.Equal(3, len(resultsStruct))
 
 	var recordset dal.RecordSet
 
 	assert.Error(model.All(recordset))
-	assert.Nil(model.All(&recordset))
+	assert.NoError(model.All(&recordset))
 	assert.Equal(int64(3), recordset.ResultCount)
 	assert.Nil(model.Drop())
 }

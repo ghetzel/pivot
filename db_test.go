@@ -526,7 +526,7 @@ func TestSearchQueryPaginated(t *testing.T) {
 
 		assert.Nil(backend.Insert(`TestSearchQueryPaginated`, rsSave))
 
-		f := filter.All
+		f := filter.All()
 		f.Limit = 25
 
 		recordset, err := search.Query(`TestSearchQueryPaginated`, f)
@@ -719,28 +719,28 @@ func TestListValues(t *testing.T) {
 				`group`: `blues`,
 			}))))
 
-		keyValues, err := search.ListValues(`TestListValues`, []string{`name`}, filter.All)
+		keyValues, err := search.ListValues(`TestListValues`, []string{`name`}, filter.All())
 		assert.Nil(err)
 		assert.Equal(1, len(keyValues))
 		v, ok := keyValues[`name`]
 		assert.True(ok)
 		assert.Equal([]interface{}{`first`, `second`, `third`}, v)
 
-		keyValues, err = search.ListValues(`TestListValues`, []string{`group`}, filter.All)
+		keyValues, err = search.ListValues(`TestListValues`, []string{`group`}, filter.All())
 		assert.Nil(err)
 		assert.Equal(1, len(keyValues))
 		v, ok = keyValues[`group`]
 		assert.True(ok)
 		assert.Equal([]interface{}{`reds`, `blues`}, v)
 
-		keyValues, err = search.ListValues(`TestListValues`, []string{`id`}, filter.All)
+		keyValues, err = search.ListValues(`TestListValues`, []string{`id`}, filter.All())
 		assert.Nil(err)
 		assert.Equal(1, len(keyValues))
 		v, ok = keyValues[`id`]
 		assert.True(ok)
 		assert.Equal([]interface{}{int64(1), int64(2), int64(3)}, v)
 
-		keyValues, err = search.ListValues(`TestListValues`, []string{`id`, `group`}, filter.All)
+		keyValues, err = search.ListValues(`TestListValues`, []string{`id`, `group`}, filter.All())
 		assert.Nil(err)
 		assert.Equal(2, len(keyValues))
 
@@ -894,27 +894,27 @@ func TestAggregators(t *testing.T) {
 			dal.NewRecord(nil).Set(`color`, `gold`).Set(`inventory`, 19).Set(`factor`, float64(4.67)).Set(`created_at`, time.Now()),
 		)))
 
-		vui, err := agg.Count(`TestAggregators`, filter.All)
+		vui, err := agg.Count(`TestAggregators`, filter.All())
 		assert.NoError(err)
 		assert.Equal(uint64(6), vui)
 
-		vf, err := agg.Sum(`TestAggregators`, `inventory`, filter.All)
+		vf, err := agg.Sum(`TestAggregators`, `inventory`, filter.All())
 		assert.NoError(err)
 		assert.Equal(float64(322), vf)
 
-		vf, err = agg.Minimum(`TestAggregators`, `inventory`, filter.All)
+		vf, err = agg.Minimum(`TestAggregators`, `inventory`, filter.All())
 		assert.NoError(err)
 		assert.Equal(float64(0), vf)
 
-		vf, err = agg.Minimum(`TestAggregators`, `factor`, filter.All)
+		vf, err = agg.Minimum(`TestAggregators`, `factor`, filter.All())
 		assert.NoError(err)
 		assert.Equal(float64(0), vf)
 
-		vf, err = agg.Maximum(`TestAggregators`, `inventory`, filter.All)
+		vf, err = agg.Maximum(`TestAggregators`, `inventory`, filter.All())
 		assert.NoError(err)
 		assert.Equal(float64(123), vf)
 
-		vf, err = agg.Maximum(`TestAggregators`, `factor`, filter.All)
+		vf, err = agg.Maximum(`TestAggregators`, `factor`, filter.All())
 		assert.NoError(err)
 		assert.Equal(float64(9.8), vf)
 	}

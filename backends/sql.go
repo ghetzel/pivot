@@ -227,7 +227,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 				}
 
 				// render the query into the final SQL
-				if stmt, err := filter.Render(queryGen, collection.Name, filter.Null); err == nil {
+				if stmt, err := filter.Render(queryGen, collection.Name, filter.Null()); err == nil {
 					querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 					// execute the SQL
@@ -352,7 +352,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 }
 
 func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...string) error {
-	var targetFilter filter.Filter
+	var targetFilter *filter.Filter
 
 	if len(target) > 0 {
 		if f, err := filter.Parse(target[0]); err == nil {
@@ -376,7 +376,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 				queryGen := self.makeQueryGen(collection)
 				queryGen.Type = generators.SqlUpdateStatement
 
-				var recordUpdateFilter filter.Filter
+				var recordUpdateFilter *filter.Filter
 
 				// if this record was specified without a specific ID, attempt to use the broader
 				// target filter (if given)
@@ -447,7 +447,7 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 			defer search.IndexRemove(collection.Name, ids)
 		}
 
-		f := filter.MakeFilter()
+		f := filter.New()
 
 		f.AddCriteria(filter.Criterion{
 			Field:  collection.IdentityField,
@@ -485,7 +485,7 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 	}
 }
 
-func (self *SqlBackend) WithSearch(collectionName string, filters ...filter.Filter) Indexer {
+func (self *SqlBackend) WithSearch(collectionName string, filters ...*filter.Filter) Indexer {
 	return self.indexer
 }
 

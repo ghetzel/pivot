@@ -158,7 +158,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			name := vestigo.Param(req, `collection`)
 			fieldNames := vestigo.Param(req, `_name`)
 
-			f := filter.All
+			f := filter.All()
 
 			if v := httputil.Q(req, `q`); v != `` {
 				if fV, err := filter.Parse(v); err == nil {

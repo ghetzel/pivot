@@ -13,14 +13,14 @@ func TestFilterParse(t *testing.T) {
 	CriteriaSeparator = `/`
 	FieldTermSeparator = `/`
 
-	tests := map[string]func(Filter, error){
-		AllValue: func(f Filter, err error) {
+	tests := map[string]func(*Filter, error){
+		AllValue: func(f *Filter, err error) {
 			assert.Nil(err)
 			assert.True(f.MatchAll)
 			assert.Equal(f.Spec, AllValue)
 			assert.Equal(0, len(f.Criteria))
 		},
-		`k1/contains:v1/int:k2/lt:v2a|v2b`: func(f Filter, err error) {
+		`k1/contains:v1/int:k2/lt:v2a|v2b`: func(f *Filter, err error) {
 			assert.Nil(err)
 			assert.Equal(2, len(f.Criteria))
 
@@ -76,14 +76,14 @@ func TestFilterParseAltDelimiters(t *testing.T) {
 	CriteriaSeparator = ` `
 	FieldTermSeparator = `=`
 
-	tests := map[string]func(Filter, error){
-		AllValue: func(f Filter, err error) {
+	tests := map[string]func(*Filter, error){
+		AllValue: func(f *Filter, err error) {
 			assert.Nil(err)
 			assert.True(f.MatchAll)
 			assert.Equal(f.Spec, AllValue)
 			assert.Equal(0, len(f.Criteria))
 		},
-		`k1=contains:v1 int:k2=lt:v2a|v2b`: func(f Filter, err error) {
+		`k1=contains:v1 int:k2=lt:v2a|v2b`: func(f *Filter, err error) {
 			assert.Nil(err)
 			assert.Equal(2, len(f.Criteria))
 
@@ -162,7 +162,7 @@ func TestFilterCopy(t *testing.T) {
 	f1, err := Parse(`id/42`)
 	assert.Nil(err)
 
-	f2 := Copy(&f1)
+	f2 := Copy(f1)
 
 	assert.Equal([]Criterion{
 		{

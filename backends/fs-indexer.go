@@ -33,7 +33,7 @@ func (self *FilesystemBackend) Index(collection string, records *dal.RecordSet) 
 	return nil
 }
 
-func (self *FilesystemBackend) QueryFunc(collectionName string, filter filter.Filter, resultFn IndexResultFunc) error {
+func (self *FilesystemBackend) QueryFunc(collectionName string, filter *filter.Filter, resultFn IndexResultFunc) error {
 	defer stats.NewTiming().Send(`pivot.indexers.filesystem.query_time`)
 	querylog.Debugf("[%T] Query using filter %q", self, filter.String())
 
@@ -120,11 +120,11 @@ func (self *FilesystemBackend) QueryFunc(collectionName string, filter filter.Fi
 	return nil
 }
 
-func (self *FilesystemBackend) Query(collection string, f filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+func (self *FilesystemBackend) Query(collection string, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 
-func (self *FilesystemBackend) ListValues(collectionName string, fields []string, f filter.Filter) (map[string][]interface{}, error) {
+func (self *FilesystemBackend) ListValues(collectionName string, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
 	if collection, ok := self.registeredCollections[collectionName]; ok {
 		values := make(map[string][]interface{})
 
@@ -169,7 +169,7 @@ func (self *FilesystemBackend) ListValues(collectionName string, fields []string
 	}
 }
 
-func (self *FilesystemBackend) DeleteQuery(collectionName string, f filter.Filter) error {
+func (self *FilesystemBackend) DeleteQuery(collectionName string, f *filter.Filter) error {
 	idsToRemove := make([]interface{}, 0)
 
 	if err := self.QueryFunc(collectionName, f, func(record *dal.Record, err error, page IndexPage) error {

@@ -27,7 +27,7 @@ type Backend interface {
 	DeleteCollection(collection string) error
 	ListCollections() ([]string, error)
 	GetCollection(collection string) (*dal.Collection, error)
-	WithSearch(collection string, filters ...filter.Filter) Indexer
+	WithSearch(collection string, filters ...*filter.Filter) Indexer
 	WithAggregator(collection string) Aggregator
 	Flush() error
 }
