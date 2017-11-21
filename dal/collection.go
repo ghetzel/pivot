@@ -427,9 +427,7 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 						record.Set(tagName, value)
 
 						// make sure the corresponding value in the input struct matches
-						if err := fieldDescr.Field.Set(value); err != nil {
-							return nil, fmt.Errorf("failed to writeback value to %q: %v", tagName, err)
-						}
+						fieldDescr.Field.Set(value)
 					}
 				}
 			}
