@@ -21,13 +21,8 @@ func (self *ConnectionString) String() string {
 }
 
 func (self *ConnectionString) Scheme() (string, string) {
-	parts := strings.SplitN(self.URI.Scheme, `+`, 2)
-
-	if len(parts) == 1 {
-		return parts[0], ``
-	} else {
-		return parts[0], parts[1]
-	}
+	backend, protocol := stringutil.SplitPair(self.URI.Scheme, `+`)
+	return backend, strings.Trim(protocol, `/`)
 }
 
 func (self *ConnectionString) Backend() string {

@@ -39,7 +39,6 @@ type FilesystemBackend struct {
 	format                SerializationFormat
 	indexer               Indexer
 	aggregator            map[string]Aggregator
-	options               ConnectOptions
 	registeredCollections map[string]*dal.Collection
 	recordSubdir          string
 	recordCache           *lru.ARCCache
@@ -63,8 +62,13 @@ func (self *FilesystemBackend) RegisterCollection(collection *dal.Collection) {
 	self.registeredCollections[collection.Name] = collection
 }
 
-func (self *FilesystemBackend) SetOptions(options ConnectOptions) {
-	self.options = options
+func (self *FilesystemBackend) SetIndexer(indexConnString dal.ConnectionString) error {
+	if indexer, err := MakeIndexer(indexConnString); err == nil {
+		self.indexer = indexer
+		return nil
+	} else {
+		return err
+	}
 }
 
 func (self *FilesystemBackend) Initialize() error {
@@ -116,50 +120,17 @@ func (self *FilesystemBackend) Initialize() error {
 		return err
 	}
 
-	var primaryIndexer Indexer
-
-	// setup indexer
-	if indexConnString := self.options.Indexer; indexConnString != `` {
-		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
-			if indexer, err := MakeIndexer(ics); err == nil {
-				if err := indexer.IndexInitialize(self); err == nil {
-					primaryIndexer = indexer
-				} else {
-					return err
-				}
-			} else {
-				return err
-			}
-		} else {
-			return err
-		}
-	} else {
-		primaryIndexer = self
-	}
-
-	// setup additional indexers
-	if len(self.options.AdditionalIndexers) > 0 {
-		multi := NewMultiIndex()
-		multi.AddIndexer(primaryIndexer)
-
-		for _, addlIndexerConnString := range self.options.AdditionalIndexers {
-			if err := multi.AddIndexerByConnectionString(addlIndexerConnString); err != nil {
-				return err
-			}
-		}
-
-		if err := multi.IndexInitialize(self); err == nil {
-			self.indexer = multi
-		} else {
-			return err
-		}
-	} else {
-		self.indexer = primaryIndexer
-	}
-
 	if arc, err := lru.NewARC(FilesystemRecordCacheSize); err == nil {
 		self.recordCache = arc
 	} else {
+		return err
+	}
+
+	if self.indexer == nil {
+		self.indexer = self
+	}
+
+	if err := self.indexer.IndexInitialize(self); err != nil {
 		return err
 	}
 

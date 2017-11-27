@@ -47,7 +47,13 @@ func (self *DynamoBackend) GetConnectionString() *dal.ConnectionString {
 	return &self.cs
 }
 
-func (self *DynamoBackend) SetOptions(ConnectOptions) {
+func (self *DynamoBackend) SetIndexer(indexConnString dal.ConnectionString) error {
+	if indexer, err := MakeIndexer(indexConnString); err == nil {
+		self.indexer = indexer
+		return nil
+	} else {
+		return err
+	}
 }
 
 func (self *DynamoBackend) Initialize() error {
@@ -88,6 +94,14 @@ func (self *DynamoBackend) Initialize() error {
 			}
 		}
 	} else {
+		return err
+	}
+
+	if self.indexer == nil {
+		self.indexer = self
+	}
+
+	if err := self.indexer.IndexInitialize(self); err != nil {
 		return err
 	}
 

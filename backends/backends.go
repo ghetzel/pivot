@@ -14,8 +14,8 @@ var querylog = logging.MustGetLogger(`pivot/querylog`)
 var stats, _ = statsd.New()
 
 type Backend interface {
-	SetOptions(ConnectOptions)
 	Initialize() error
+	SetIndexer(dal.ConnectionString) error
 	RegisterCollection(*dal.Collection)
 	GetConnectionString() *dal.ConnectionString
 	Exists(collection string, id interface{}) bool

@@ -26,7 +26,7 @@ var BleveBatchFlushCount = 1
 var BleveBatchFlushInterval = 10 * time.Second
 var BleveIdentityField = `_id`
 
-type deferredBatch struct {
+type bleveDeferredBatch struct {
 	batch     *bleve.Batch
 	lastFlush time.Time
 }
@@ -96,10 +96,10 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 		d, ok := self.indexDeferredBatch.Get(collection)
 
 		if ok {
-			batch = d.(*deferredBatch).batch
+			batch = d.(*bleveDeferredBatch).batch
 		} else {
 			batch = index.NewBatch()
-			self.indexDeferredBatch.Set(collection, &deferredBatch{
+			self.indexDeferredBatch.Set(collection, &bleveDeferredBatch{
 				batch:     batch,
 				lastFlush: time.Now(),
 			})
@@ -123,7 +123,7 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 func (self *BleveIndexer) checkAndFlushBatches(forceFlush bool) {
 	for item := range self.indexDeferredBatch.Iter() {
 		collection := item.Key
-		deferred := item.Val.(*deferredBatch)
+		deferred := item.Val.(*bleveDeferredBatch)
 
 		if deferred.batch != nil {
 			shouldFlush := false

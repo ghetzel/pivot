@@ -50,7 +50,9 @@ func (self *Elasticsearch) Finalize(filter *filter.Filter) error {
 		}
 	}
 
-	if data, err := json.MarshalIndent(query, ``, `    `); err == nil {
+	if data, err := json.MarshalIndent(map[string]interface{}{
+		`filter`: query,
+	}, ``, `    `); err == nil {
 		self.Push(data)
 	} else {
 		return err

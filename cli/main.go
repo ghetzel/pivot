@@ -62,7 +62,7 @@ func main() {
 		{
 			Name:      `web`,
 			Usage:     `Start a web server UI.`,
-			ArgsUsage: `CONNECTION_STRING`,
+			ArgsUsage: `CONNECTION_STRING [INDEXER_CONNECTION_STRING]`,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  `address, a`,
@@ -79,6 +79,10 @@ func main() {
 				server := pivot.NewServer(c.Args().First())
 				server.Address = c.String(`address`)
 				server.UiDirectory = c.String(`ui-dir`)
+
+				if ics := c.Args().Get(1); ics != `` {
+					server.ConnectOptions.Indexer = ics
+				}
 
 				if err := server.ListenAndServe(); err != nil {
 					log.Fatalf("Failed to start server: %v", err)

@@ -42,11 +42,10 @@ type SqlBackend struct {
 	Backend
 	Indexer
 	Aggregator
-	conn                        dal.ConnectionString
+	conn                        *dal.ConnectionString
 	db                          *sql.DB
 	indexer                     Indexer
 	aggregator                  map[string]Aggregator
-	options                     ConnectOptions
 	queryGenTypeMapping         generators.SqlTypeMapping
 	queryGenPlaceholderArgument string
 	queryGenPlaceholderFormat   string
@@ -66,7 +65,7 @@ type SqlBackend struct {
 
 func NewSqlBackend(connection dal.ConnectionString) Backend {
 	return &SqlBackend{
-		conn:                      connection,
+		conn:                      &connection,
 		queryGenTypeMapping:       generators.DefaultSqlTypeMapping,
 		queryGenPlaceholderFormat: `?`,
 		dropTableQuery:            `DROP TABLE %s`,
@@ -76,19 +75,23 @@ func NewSqlBackend(connection dal.ConnectionString) Backend {
 }
 
 func (self *SqlBackend) GetConnectionString() *dal.ConnectionString {
-	return &self.conn
+	return self.conn
 }
 
 func (self *SqlBackend) RegisterCollection(collection *dal.Collection) {
 	if collection != nil {
-		if _, ok := self.registeredCollections.Load(collection.Name); !ok {
-			self.registeredCollections.Store(collection.Name, collection)
-		}
+		self.registeredCollections.Store(collection.Name, collection)
+		log.Debugf("[%T] register collection %v", self, collection.Name)
 	}
 }
 
-func (self *SqlBackend) SetOptions(options ConnectOptions) {
-	self.options = options
+func (self *SqlBackend) SetIndexer(indexConnString dal.ConnectionString) error {
+	if indexer, err := MakeIndexer(indexConnString); err == nil {
+		self.indexer = indexer
+		return nil
+	} else {
+		return err
+	}
 }
 
 func (self *SqlBackend) Initialize() error {
@@ -134,44 +137,13 @@ func (self *SqlBackend) Initialize() error {
 		return err
 	}
 
-	var primaryIndexer Indexer
-
-	// setup indexer (if not using ourself as the default)
-	if indexConnString := self.options.Indexer; indexConnString != `` {
-		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
-			if indexer, err := MakeIndexer(ics); err == nil {
-				if err := indexer.IndexInitialize(self); err == nil {
-					primaryIndexer = indexer
-				} else {
-					return err
-				}
-			} else {
-				return err
-			}
-		} else {
-			return err
-		}
-	} else {
-		primaryIndexer = self
+	// make ourselves the indexer by default
+	if self.indexer == nil {
+		self.indexer = self
 	}
 
-	if len(self.options.AdditionalIndexers) > 0 {
-		multi := NewMultiIndex()
-		multi.AddIndexer(primaryIndexer)
-
-		for _, addlIndexerConnString := range self.options.AdditionalIndexers {
-			if err := multi.AddIndexerByConnectionString(addlIndexerConnString); err != nil {
-				return err
-			}
-		}
-
-		if err := multi.IndexInitialize(self); err == nil {
-			self.indexer = multi
-		} else {
-			return err
-		}
-	} else {
-		self.indexer = primaryIndexer
+	if err := self.indexer.IndexInitialize(self); err != nil {
+		return err
 	}
 
 	// setup aggregators (currently this is just the SQL implementation)
@@ -970,14 +942,16 @@ func (self *SqlBackend) refreshAllCollections() error {
 			}
 		}
 
-		// purge from cache any tables that the list all query didn't return
-		self.registeredCollections.Range(func(key, value interface{}) bool {
-			if !sliceutil.ContainsString(knownTables, key.(string)) {
-				self.registeredCollections.Delete(key)
-			}
+		if !self.conn.OptBool(`autoregister`, false) {
+			// purge from cache any tables that the list all query didn't return
+			self.registeredCollections.Range(func(key, value interface{}) bool {
+				if !sliceutil.ContainsString(knownTables, key.(string)) {
+					self.registeredCollections.Delete(key)
+				}
 
-			return true
-		})
+				return true
+			})
+		}
 
 		return rows.Err()
 	} else {
@@ -991,11 +965,16 @@ func (self *SqlBackend) refreshCollectionFromDatabase(name string, definition *d
 		name,
 	); err == nil {
 		if len(collection.Fields) > 0 {
-			// we've read the collection back from the database, but in the process we've lost
-			// some local values that only existed on the definition itself.  we need to copy those into
-			// the collection that just came back
-			collection.ApplyDefinition(definition)
-			self.RegisterCollection(definition)
+			if definition != nil {
+				// we've read the collection back from the database, but in the process we've lost
+				// some local values that only existed on the definition itself.  we need to copy those into
+				// the collection that just came back
+				collection.ApplyDefinition(definition)
+				self.RegisterCollection(definition)
+
+			} else if self.conn.OptBool(`autoregister`, false) {
+				self.RegisterCollection(collection)
+			}
 
 			self.knownCollections[name] = true
 		}

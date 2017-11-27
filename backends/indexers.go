@@ -41,6 +41,8 @@ func MakeIndexer(connection dal.ConnectionString) (Indexer, error) {
 	switch connection.Backend() {
 	case `bleve`:
 		return NewBleveIndexer(connection), nil
+	case `elasticsearch`:
+		return NewElasticsearchIndexer(connection), nil
 	default:
 		return nil, fmt.Errorf("Unknown indexer type %q", connection.Backend())
 	}

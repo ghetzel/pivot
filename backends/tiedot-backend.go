@@ -20,7 +20,6 @@ type TiedotBackend struct {
 	db                    *db.DB
 	indexer               Indexer
 	aggregator            map[string]Aggregator
-	options               ConnectOptions
 	registeredCollections map[string]*dal.Collection
 }
 
@@ -40,8 +39,13 @@ func (self *TiedotBackend) RegisterCollection(collection *dal.Collection) {
 	self.registeredCollections[collection.Name] = collection
 }
 
-func (self *TiedotBackend) SetOptions(options ConnectOptions) {
-	self.options = options
+func (self *TiedotBackend) SetIndexer(indexConnString dal.ConnectionString) error {
+	if indexer, err := MakeIndexer(indexConnString); err == nil {
+		self.indexer = indexer
+		return nil
+	} else {
+		return err
+	}
 }
 
 func (self *TiedotBackend) Initialize() error {
@@ -59,17 +63,6 @@ func (self *TiedotBackend) Initialize() error {
 		self.db = db
 	} else {
 		return err
-	}
-
-	// setup indexer
-	if indexConnString := self.options.Indexer; indexConnString != `` {
-		if ics, err := dal.ParseConnectionString(indexConnString); err == nil {
-			if indexer, err := MakeIndexer(ics); err == nil {
-				if err := indexer.IndexInitialize(self); err == nil {
-					self.indexer = indexer
-				}
-			}
-		}
 	}
 
 	return nil

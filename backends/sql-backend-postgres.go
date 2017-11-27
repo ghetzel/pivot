@@ -201,6 +201,16 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 	dsn += self.conn.Dataset()
 
 	opts := self.conn.URI.Query()
+
+	// pull out pivot-specific options first
+	for k, vv := range opts {
+		switch k {
+		case `autoregister`:
+			self.conn.Options[k] = strings.Join(vv, `,`)
+			opts.Del(k)
+		}
+	}
+
 	opts.Set(`sslmode`, sliceutil.OrString(opts.Get(`sslmode`), `disable`))
 
 	if v := opts.Encode(); v != `` {

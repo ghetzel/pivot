@@ -27,6 +27,7 @@ var DefaultUiDirectory = `embedded`
 type Server struct {
 	Address          string
 	ConnectionString string
+	ConnectOptions   backends.ConnectOptions
 	UiDirectory      string
 	backend          backends.Backend
 	endpoints        []util.Endpoint
@@ -50,15 +51,11 @@ func (self *Server) ListenAndServe() error {
 		uiDir = `/`
 	}
 
-	if conn, err := dal.ParseConnectionString(self.ConnectionString); err == nil {
-		if backend, err := backends.MakeBackend(conn); err == nil {
-			self.backend = backend
+	if backend, err := NewDatabaseWithOptions(self.ConnectionString, self.ConnectOptions); err == nil {
+		self.backend = backend
 
-			if err := self.backend.Initialize(); err == nil {
-				log.Debugf("Initialized backend %T", self.backend)
-			} else {
-				return err
-			}
+		if err := self.backend.Initialize(); err == nil {
+			log.Debugf("Initialized backend %T", self.backend)
 		} else {
 			return err
 		}
