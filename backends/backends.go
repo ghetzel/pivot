@@ -52,7 +52,7 @@ func RegisterBackend(name string, fn BackendFunc) {
 
 func MakeBackend(connection dal.ConnectionString) (Backend, error) {
 	backendName := connection.Backend()
-	log.Debugf("Creating backend for connection string %q", connection.String())
+	log.Infof("Creating backend: %v", connection.String())
 
 	if fn, ok := backendMap[backendName]; ok {
 		if backend := fn(connection); backend != nil {

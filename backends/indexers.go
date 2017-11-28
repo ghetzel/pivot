@@ -36,7 +36,7 @@ type Indexer interface {
 }
 
 func MakeIndexer(connection dal.ConnectionString) (Indexer, error) {
-	log.Debugf("Creating indexer for connection string %q", connection.String())
+	log.Infof("Creating indexer: %v", connection.String())
 
 	switch connection.Backend() {
 	case `bleve`:
