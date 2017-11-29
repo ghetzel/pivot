@@ -97,12 +97,14 @@ func (self *DynamoBackend) Initialize() error {
 		return err
 	}
 
-	if self.indexer == nil {
-		self.indexer = self
-	}
+	// if self.indexer == nil {
+	// 	self.indexer = self
+	// }
 
-	if err := self.indexer.IndexInitialize(self); err != nil {
-		return err
+	if self.indexer != nil {
+		if err := self.indexer.IndexInitialize(self); err != nil {
+			return err
+		}
 	}
 
 	return nil
