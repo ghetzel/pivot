@@ -515,7 +515,7 @@ func (self *ElasticsearchIndexer) newRequest(method string, urlpath string, body
 
 	buf.Write([]byte(strings.Join(lines, "\n")))
 
-	querylog.Debugf("[%T] %v %v", self, method, urlpath)
+	querylog.Debugf("[%T] %v %v %v", self, method, urlpath, body)
 
 	host := self.conn.Host()
 	protocol := sliceutil.Or(self.conn.Protocol(), `http`)
