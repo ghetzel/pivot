@@ -201,7 +201,12 @@ func (self *ElasticsearchIndexer) IndexRetrieve(name string, id interface{}) (*d
 	defer stats.NewTiming().Send(`pivot.indexers.elasticsearch.retrieve_time`)
 
 	if index, err := self.getIndexForCollection(name); err == nil {
-		if req, err := self.newRequest(`GET`, fmt.Sprintf("/%v/%v/%v", index.Name), nil); err == nil {
+		if req, err := self.newRequest(`GET`, fmt.Sprintf(
+			"/%v/%v/%v",
+			index.Name,
+			ElasticsearchDocumentType,
+			id,
+		), nil); err == nil {
 			if response, err := self.client.Do(req); err == nil {
 				if response.StatusCode < 400 {
 					var doc elasticsearchDocument

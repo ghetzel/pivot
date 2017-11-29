@@ -472,7 +472,7 @@ func (self *SqlBackend) WithAggregator(collectionName string) Aggregator {
 }
 
 func (self *SqlBackend) ListCollections() ([]string, error) {
-	return maputil.StringKeys(self.registeredCollections), nil
+	return maputil.StringKeys(&self.registeredCollections), nil
 }
 
 func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {

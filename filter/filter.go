@@ -316,7 +316,6 @@ func MustParse(spec string) *Filter {
 		return f
 	} else {
 		panic(err.Error())
-		return nil
 	}
 }
 

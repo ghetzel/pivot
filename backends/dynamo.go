@@ -191,7 +191,7 @@ func (self *DynamoBackend) DeleteCollection(name string) error {
 }
 
 func (self *DynamoBackend) ListCollections() ([]string, error) {
-	return maputil.StringKeys(self.tableCache), nil
+	return maputil.StringKeys(&self.tableCache), nil
 }
 
 func (self *DynamoBackend) GetCollection(name string) (*dal.Collection, error) {

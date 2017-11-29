@@ -112,21 +112,21 @@ func main() {
 					if destinationURI := c.Args().Get(1); destinationURI != `` {
 						if s, err := pivot.NewDatabase(sourceURI); err == nil {
 							if err := s.Initialize(); err != nil {
-								log.Fatalf("failed to initialize source: %v")
+								log.Fatalf("failed to initialize source: %v", err)
 							}
 
 							if d, err := pivot.NewDatabase(destinationURI); err == nil {
 								if err := d.Initialize(); err != nil {
-									log.Fatalf("failed to initialize destination: %v")
+									log.Fatalf("failed to initialize destination: %v", err)
 								}
 
 								source = s
 								destination = d
 							} else {
-								log.Fatalf("failed to connect to destination: %v")
+								log.Fatalf("failed to connect to destination: %v", err)
 							}
 						} else {
-							log.Fatalf("failed to connect to source: %v")
+							log.Fatalf("failed to connect to source: %v", err)
 						}
 					} else {
 						log.Fatalf("Must specify a destination")
