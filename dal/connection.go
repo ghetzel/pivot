@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"fmt"
 	"net/url"
 	"os"
 	"os/user"
@@ -17,7 +18,13 @@ type ConnectionString struct {
 }
 
 func (self *ConnectionString) String() string {
-	return self.URI.String()
+	return fmt.Sprintf(
+		"%s://%s/%s%s",
+		self.URI.Scheme,
+		self.URI.Host,
+		strings.TrimPrefix(self.URI.Path, `/`),
+		stringutil.PrefixIf(self.URI.RawQuery, `?`),
+	)
 }
 
 func (self *ConnectionString) Scheme() (string, string) {
