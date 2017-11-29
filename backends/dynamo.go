@@ -65,9 +65,7 @@ func (self *DynamoBackend) Initialize() error {
 		cred = credentials.NewEnvCredentials()
 	}
 
-	if ak, err := cred.Get(); err == nil {
-		log.Debugf("%T: Access Key ID: %v", self, ak.AccessKeyID)
-	} else {
+	if _, err := cred.Get(); err != nil {
 		log.Debugf("%T: failed to retrieve credentials: %v", self, err)
 	}
 
