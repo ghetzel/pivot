@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -379,7 +380,18 @@ func (self *DynamoBackend) upsertRecords(collection *dal.Collection, records *da
 		item := make(map[string]interface{})
 
 		for k, v := range record.Fields {
-			item[k] = v
+			if typeutil.IsZero(v) {
+				continue
+			}
+
+			switch v.(type) {
+			case *time.Time:
+				item[k] = v.(*time.Time).Format(time.RFC3339Nano)
+			case time.Time:
+				item[k] = v.(time.Time).Format(time.RFC3339Nano)
+			default:
+				item[k] = v
+			}
 		}
 
 		item[collection.IdentityField] = record.ID
