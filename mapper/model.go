@@ -187,9 +187,9 @@ func (self *Model) Find(flt interface{}, into interface{}) error {
 	if f, err := self.filterFromInterface(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
-		if search := self.db.WithSearch(self.collection.Name, f); search != nil {
+		if search := self.db.WithSearch(self.collection.GetIndexName(), f); search != nil {
 			// perform query
-			if recordset, err := search.Query(self.collection.Name, f); err == nil {
+			if recordset, err := search.Query(self.collection.GetIndexName(), f); err == nil {
 				return self.populateOutputParameter(f, recordset, into)
 			} else {
 				return err
@@ -210,8 +210,8 @@ func (self *Model) FindFunc(flt interface{}, destZeroValue interface{}, resultFn
 		f.Limit = 0
 		f.IdentityField = self.collection.IdentityField
 
-		if search := self.db.WithSearch(self.collection.Name, f); search != nil {
-			_, err := search.Query(self.collection.Name, f, func(record *dal.Record, err error, _ backends.IndexPage) error {
+		if search := self.db.WithSearch(self.collection.GetIndexName(), f); search != nil {
+			_, err := search.Query(self.collection.GetIndexName(), f, func(record *dal.Record, err error, _ backends.IndexPage) error {
 				if err == nil {
 					if _, ok := destZeroValue.(*dal.Record); ok {
 						resultFn(record, nil)
@@ -259,8 +259,8 @@ func (self *Model) ListWithFilter(fields []string, flt interface{}) (map[string]
 	if f, err := self.filterFromInterface(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
-		if search := self.db.WithSearch(self.collection.Name, f); search != nil {
-			return search.ListValues(self.collection.Name, fields, f)
+		if search := self.db.WithSearch(self.collection.GetIndexName(), f); search != nil {
+			return search.ListValues(self.collection.GetIndexName(), fields, f)
 		} else {
 			return nil, fmt.Errorf("backend %T does not support searching", self.db)
 		}
@@ -273,8 +273,8 @@ func (self *Model) Sum(field string, flt interface{}) (float64, error) {
 	if f, err := self.filterFromInterface(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
-		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
-			return agg.Sum(self.collection.Name, field, f)
+		if agg := self.db.WithAggregator(self.collection.GetAggregatorName()); agg != nil {
+			return agg.Sum(self.collection.GetAggregatorName(), field, f)
 		} else {
 			return 0, fmt.Errorf("backend %T does not support aggregation", self.db)
 		}

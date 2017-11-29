@@ -24,14 +24,14 @@ type IndexResultFunc func(record *dal.Record, err error, page IndexPage) error /
 type Indexer interface {
 	IndexConnectionString() *dal.ConnectionString
 	IndexInitialize(Backend) error
-	IndexExists(collection string, id interface{}) bool
-	IndexRetrieve(collection string, id interface{}) (*dal.Record, error)
-	IndexRemove(collection string, ids []interface{}) error
-	Index(collection string, records *dal.RecordSet) error
-	QueryFunc(collection string, filter *filter.Filter, resultFn IndexResultFunc) error
-	Query(collection string, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
-	ListValues(collection string, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
-	DeleteQuery(collection string, f *filter.Filter) error
+	IndexExists(index string, id interface{}) bool
+	IndexRetrieve(index string, id interface{}) (*dal.Record, error)
+	IndexRemove(index string, ids []interface{}) error
+	Index(index string, records *dal.RecordSet) error
+	QueryFunc(index string, filter *filter.Filter, resultFn IndexResultFunc) error
+	Query(index string, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
+	ListValues(index string, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
+	DeleteQuery(index string, f *filter.Filter) error
 	FlushIndex() error
 }
 

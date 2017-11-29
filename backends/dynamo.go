@@ -200,7 +200,7 @@ func (self *DynamoBackend) GetCollection(name string) (*dal.Collection, error) {
 }
 
 func (self *DynamoBackend) WithSearch(name string, filters ...*filter.Filter) Indexer {
-	return nil
+	return self.indexer
 }
 
 func (self *DynamoBackend) WithAggregator(name string) Aggregator {

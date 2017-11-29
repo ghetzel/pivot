@@ -30,6 +30,7 @@ type Instantiator interface {
 
 type Collection struct {
 	Name                   string                  `json:"name"`
+	IndexName              string                  `json:"index_name"`
 	Fields                 []Field                 `json:"fields"`
 	IdentityField          string                  `json:"identity_field,omitempty"`
 	IdentityFieldType      Type                    `json:"identity_field_type,omitempty"`
@@ -48,6 +49,22 @@ func NewCollection(name string) *Collection {
 		IdentityFieldType:      DefaultIdentityFieldType,
 		IdentityFieldValidator: ValidateNotEmpty,
 	}
+}
+
+func (self *Collection) GetIndexName() string {
+	if self.IndexName != `` {
+		return self.IndexName
+	}
+
+	return self.Name
+}
+
+func (self *Collection) GetAggregatorName() string {
+	if self.IndexName != `` {
+		return self.IndexName
+	}
+
+	return self.Name
 }
 
 func (self *Collection) SetIdentity(name string, idtype Type, formatter FieldFormatterFunc, validator FieldValidatorFunc) *Collection {

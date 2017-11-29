@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"net"
 	"net/http"
 	"strings"
 	"sync"
@@ -21,7 +22,11 @@ var ElasticsearchBatchFlushCount = 1
 var ElasticsearchBatchFlushInterval = 10 * time.Second
 var ElasticsearchIdentityField = `_id`
 var ElasticsearchDocumentType = `document`
+
 var ElasticsearchRequestTimeout = 30 * time.Second
+var ElasticsearchConnectTimeout = 3 * time.Second
+var ElasticsearchTLSTimeout = 10 * time.Second
+var ElasticsearchResponseHeaderTimeout = 10 * time.Second
 
 type elasticsearchIndex struct {
 	Name     string                 `json:"_index"`
@@ -170,6 +175,14 @@ func NewElasticsearchIndexer(connection dal.ConnectionString) *ElasticsearchInde
 		indexDeferredBatch: new(esDeferredBatch),
 		client: &http.Client{
 			Timeout: ElasticsearchRequestTimeout,
+			Transport: &http.Transport{
+				Dial: (&net.Dialer{
+					Timeout:   ElasticsearchConnectTimeout,
+					KeepAlive: 30 * time.Second,
+				}).Dial,
+				TLSHandshakeTimeout:   ElasticsearchTLSTimeout,
+				ResponseHeaderTimeout: ElasticsearchResponseHeaderTimeout,
+			},
 		},
 	}
 }
@@ -502,7 +515,7 @@ func (self *ElasticsearchIndexer) newRequest(method string, urlpath string, body
 
 	buf.Write([]byte(strings.Join(lines, "\n")))
 
-	querylog.Debugf("[%T] %v", self, body)
+	querylog.Debugf("[%T] %v %v", self, method, urlpath)
 
 	host := self.conn.Host()
 	protocol := sliceutil.Or(self.conn.Protocol(), `http`)
