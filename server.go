@@ -1,6 +1,6 @@
 package pivot
 
-//go:generate esc -o static.go -pkg pivot -prefix ui ui
+//go:generate esc -o static.go -pkg pivot -modtime 1500000000 -prefix ui ui
 
 import (
 	"encoding/json"

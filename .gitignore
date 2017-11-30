@@ -5,5 +5,4 @@
 /*.db
 /*.db-*
 /tmp
-/static.go
 /*.json
