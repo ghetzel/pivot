@@ -200,6 +200,13 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 					fieldNames = append(fieldNames, fName)
 				}
 
+				// add the fields we're grouping by if they weren't already explicitly added by the filter
+				for _, groupBy := range self.groupBy {
+					if !sliceutil.ContainsString(fieldNames, groupBy) {
+						fieldNames = append(fieldNames, groupBy)
+					}
+				}
+
 				for _, aggpair := range self.aggregateBy {
 					fName := self.ToAggregatedFieldName(aggpair.Aggregation, aggpair.Field)
 					fName = fmt.Sprintf("%v AS "+self.FieldNameFormat, fName, aggpair.Field)
