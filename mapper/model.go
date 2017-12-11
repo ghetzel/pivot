@@ -343,6 +343,12 @@ func (self *Model) GroupBy(fields []string, aggregates []filter.Aggregate, flt i
 	if f, err := self.filterFromInterface(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
+		for i, agg := range aggregates {
+			if agg.Field == `` {
+				aggregates[i].Field = f.IdentityField
+			}
+		}
+
 		if agg := self.db.WithAggregator(self.collection.Name); agg != nil {
 			return agg.GroupBy(self.collection.Name, fields, aggregates, f)
 		} else {

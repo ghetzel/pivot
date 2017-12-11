@@ -169,10 +169,6 @@ func TestMain(m *testing.M) {
 func makeBackend(conn string, options ...backends.ConnectOptions) (backends.Backend, error) {
 	if cs, err := dal.ParseConnectionString(conn); err == nil {
 		if backend, err := backends.MakeBackend(cs); err == nil {
-			if len(options) > 0 {
-				backend.SetOptions(options[0])
-			}
-
 			if err := backend.Initialize(); err == nil {
 				return backend, nil
 			} else {
