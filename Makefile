@@ -22,7 +22,8 @@ fmt:
 	go vet $(PKGS)
 
 test:
-	go test --tags json1 $(PKGS)
+	# go test --tags json1 $(PKGS)
+	go test $(PKGS)
 
 build: deps fmt
 	test -d cli && go build --tags json1 -o bin/`basename ${PWD}` cli/*.go
