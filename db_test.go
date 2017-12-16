@@ -169,12 +169,12 @@ func TestMain(m *testing.M) {
 	// setupTestMysql(run)
 	// setupTestTiedot(run)
 	setupTestMongo(run)
-	// setupTestSqlite(run)
-	// setupTestSqliteWithBleveIndexer(run)
-	// setupTestSqliteWithAdditionalBleveIndexer(run)
-	// setupTestFilesystemDefault(run)
-	// setupTestFilesystemYaml(run)
-	// setupTestFilesystemJson(run)
+	setupTestSqlite(run)
+	setupTestSqliteWithBleveIndexer(run)
+	setupTestSqliteWithAdditionalBleveIndexer(run)
+	setupTestFilesystemDefault(run)
+	setupTestFilesystemYaml(run)
+	setupTestFilesystemJson(run)
 }
 
 func makeBackend(conn string, options ...backends.ConnectOptions) (backends.Backend, error) {
@@ -463,7 +463,7 @@ func TestSearchQuery(t *testing.T) {
 			recordset, err = search.Query(`TestSearchQuery`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
-			assert.Equal(int64(2), recordset.ResultCount)
+			assert.EqualValues(2, recordset.ResultCount)
 		}
 
 		// onesies
@@ -484,7 +484,7 @@ func TestSearchQuery(t *testing.T) {
 			recordset, err = search.Query(`TestSearchQuery`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset, qs)
-			assert.EqualValues(1, recordset.ResultCount, qs)
+			assert.EqualValues(1, recordset.ResultCount, "%v", recordset.Records)
 			record, ok = recordset.GetRecord(0)
 			assert.True(ok)
 			assert.NotNil(record, qs)
@@ -502,7 +502,7 @@ func TestSearchQuery(t *testing.T) {
 			recordset, err = search.Query(`TestSearchQuery`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
-			assert.Equal(int64(0), recordset.ResultCount)
+			assert.EqualValues(0, recordset.ResultCount)
 			assert.True(recordset.IsEmpty())
 		}
 	}
@@ -542,7 +542,7 @@ func TestSearchQueryPaginated(t *testing.T) {
 		assert.NotNil(recordset)
 		assert.Equal(21, len(recordset.Records))
 
-		if recordset.ResultCount >= 0 {
+		if recordset.KnownSize {
 			assert.Equal(int64(21), recordset.ResultCount)
 			assert.Equal(1, recordset.TotalPages)
 		}
@@ -583,7 +583,7 @@ func TestSearchQueryLimit(t *testing.T) {
 
 		assert.Equal(9, len(recordset.Records))
 
-		if recordset.ResultCount >= 0 {
+		if recordset.KnownSize {
 			assert.Equal(int64(21), recordset.ResultCount)
 			assert.Equal(3, recordset.TotalPages)
 		}
@@ -628,7 +628,7 @@ func TestSearchQueryOffset(t *testing.T) {
 		assert.NotNil(recordset)
 		assert.Equal(1, len(recordset.Records))
 
-		if recordset.ResultCount >= 0 {
+		if recordset.KnownSize {
 			assert.Equal(int64(21), recordset.ResultCount)
 			assert.Equal(1, recordset.TotalPages)
 		}
@@ -680,7 +680,7 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 		assert.NotNil(recordset)
 		assert.Equal(9, len(recordset.Records))
 
-		if recordset.ResultCount >= 0 {
+		if recordset.KnownSize {
 			assert.Equal(int64(21), recordset.ResultCount)
 			assert.Equal(3, recordset.TotalPages)
 		}
@@ -807,7 +807,7 @@ func TestSearchAnalysis(t *testing.T) {
 			recordset, err := search.Query(`TestSearchAnalysis`, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
-			assert.Equal(int64(3), recordset.ResultCount)
+			assert.EqualValues(3, recordset.ResultCount, "%v", recordset.Records)
 		}
 	}
 }

@@ -1,9 +1,8 @@
 package backends
 
 import (
-	"math"
-
 	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 )
@@ -61,29 +60,23 @@ func (self *FilesystemBackend) QueryFunc(collectionName string, filter *filter.F
 				page := 1
 				processed := 0
 				offset := filter.Offset
-				totalResults := int64(0)
-				totalPages := 1
-
-				if filter.Limit > 0 {
-					totalPages = int(math.Ceil(float64(totalResults) / float64(filter.Limit)))
-				}
 
 				for _, id := range ids {
 					// retrieve the record by id
 					if record, err := self.Retrieve(collection.Name, id); err == nil {
+						record.ID = stringutil.Autotype(record.ID)
+
 						// if matching all records OR the found record matches the filter
 						if filter.MatchesRecord(record) {
 							if processed >= offset {
 								querylog.Debugf("[%T] Record %v matches filter %q", self, record.ID, filter.String())
 
-								totalResults += 1
-
 								if err := resultFn(record, err, IndexPage{
 									Page:         page,
-									TotalPages:   totalPages,
+									TotalPages:   1,
 									Limit:        filter.Limit,
 									Offset:       offset,
-									TotalResults: totalResults,
+									TotalResults: -1,
 								}); err != nil {
 									return err
 								}
@@ -92,10 +85,10 @@ func (self *FilesystemBackend) QueryFunc(collectionName string, filter *filter.F
 					} else {
 						if err := resultFn(dal.NewRecord(nil), err, IndexPage{
 							Page:         page,
-							TotalPages:   totalPages,
+							TotalPages:   1,
 							Limit:        filter.Limit,
 							Offset:       offset,
-							TotalResults: totalResults,
+							TotalResults: -1,
 						}); err != nil {
 							return err
 						}

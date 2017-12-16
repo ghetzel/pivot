@@ -25,7 +25,7 @@ func TestMongodb(t *testing.T) {
 		},
 		`id/1`: {
 			query: map[string]interface{}{
-				`_id`: float64(1),
+				`_id`: `1`,
 			},
 			values: []interface{}{int64(1)},
 		},

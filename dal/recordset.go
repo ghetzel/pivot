@@ -7,6 +7,7 @@ type RecordSet struct {
 	RecordsPerPage int                    `json:"records_per_page,omitempty"`
 	Records        []*Record              `json:"records"`
 	Options        map[string]interface{} `json:"options"`
+	KnownSize      bool                   `json:"known_size"`
 }
 
 func NewRecordSet(records ...*Record) *RecordSet {

@@ -50,7 +50,12 @@ func MakeIndexer(connection dal.ConnectionString) (Indexer, error) {
 
 func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f *filter.Filter, page IndexPage) {
 	// result count is whatever we were told it was for this query
-	recordset.ResultCount = page.TotalResults
+	if page.TotalResults >= 0 {
+		recordset.KnownSize = true
+		recordset.ResultCount = page.TotalResults
+	} else {
+		recordset.ResultCount = int64(len(recordset.Records))
+	}
 
 	if page.TotalPages > 0 {
 		recordset.TotalPages = page.TotalPages
@@ -75,7 +80,7 @@ func DefaultQueryImplementation(indexer Indexer, collection string, f *filter.Fi
 	recordset := dal.NewRecordSet()
 
 	if err := indexer.QueryFunc(collection, f, func(record *dal.Record, err error, page IndexPage) error {
-		PopulateRecordSetPageDetails(recordset, f, page)
+		defer PopulateRecordSetPageDetails(recordset, f, page)
 
 		if len(resultFns) > 0 {
 			resultFn := resultFns[0]

@@ -17,7 +17,7 @@ func TestModelCRUD(t *testing.T) {
 	assert.Nil(err)
 	defer os.Remove(tmpfile.Name())
 
-	db, err := pivot.NewDatabase(`sqlite://` + tmpfile.Name())
+	db, err := pivot.NewDatabase(`sqlite:///` + tmpfile.Name())
 	assert.Nil(err)
 
 	type ModelOne struct {
@@ -85,7 +85,7 @@ func TestModelFind(t *testing.T) {
 	assert.Nil(err)
 	defer os.Remove(tmpfile.Name())
 
-	db, err := pivot.NewDatabase(`sqlite://` + tmpfile.Name())
+	db, err := pivot.NewDatabase(`sqlite:///` + tmpfile.Name())
 	assert.Nil(err)
 
 	type ModelTwo struct {
@@ -154,7 +154,7 @@ func TestModelList(t *testing.T) {
 	assert.Nil(err)
 	defer os.Remove(tmpfile.Name())
 
-	db, err := pivot.NewDatabase(`sqlite://` + tmpfile.Name())
+	db, err := pivot.NewDatabase(`sqlite:///` + tmpfile.Name())
 	assert.Nil(err)
 
 	type ModelTwo struct {

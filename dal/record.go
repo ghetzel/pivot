@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -105,6 +106,14 @@ func (self *Record) SetFields(values map[string]interface{}) *Record {
 func (self *Record) SetData(data []byte) *Record {
 	self.Data = data
 	return self
+}
+
+func (self *Record) String() string {
+	if data, err := json.Marshal(self); err == nil {
+		return string(data)
+	} else {
+		return fmt.Sprintf("Record<%v + %d fields>", self.ID, len(self.Fields))
+	}
 }
 
 func (self *Record) Append(key string, value ...interface{}) *Record {
