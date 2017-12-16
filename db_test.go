@@ -145,6 +145,16 @@ func setupTestTiedot(run func()) {
 	}
 }
 
+func setupTestMongo(run func()) {
+	if b, err := makeBackend(`mongodb://localhost/test`); err == nil {
+		backend = b
+		run()
+	} else {
+		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+		panic(err.Error())
+	}
+}
+
 func TestMain(m *testing.M) {
 	var i int
 
@@ -158,12 +168,13 @@ func TestMain(m *testing.M) {
 
 	// setupTestMysql(run)
 	// setupTestTiedot(run)
-	setupTestSqlite(run)
-	setupTestSqliteWithBleveIndexer(run)
-	setupTestSqliteWithAdditionalBleveIndexer(run)
-	setupTestFilesystemDefault(run)
-	setupTestFilesystemYaml(run)
-	setupTestFilesystemJson(run)
+	setupTestMongo(run)
+	// setupTestSqlite(run)
+	// setupTestSqliteWithBleveIndexer(run)
+	// setupTestSqliteWithAdditionalBleveIndexer(run)
+	// setupTestFilesystemDefault(run)
+	// setupTestFilesystemYaml(run)
+	// setupTestFilesystemJson(run)
 }
 
 func makeBackend(conn string, options ...backends.ConnectOptions) (backends.Backend, error) {
@@ -395,24 +406,24 @@ func TestIdFormattersIdFromFieldValues(t *testing.T) {
 	assert.Equal(3, len(recordset.Records))
 	assert.Nil(backend.Insert(`TestIdFormattersIdFromFieldValues`, recordset))
 
-	assert.Equal(`system-first`, fmt.Sprintf("%v", recordset.Records[0].ID))
-	assert.Equal(`users-first`, fmt.Sprintf("%v", recordset.Records[1].ID))
-	assert.Equal(`system-third`, fmt.Sprintf("%v", recordset.Records[2].ID))
+	assert.Equal(`system-first`, fmt.Sprintf("%v", recordset.Records[0].ID), "%#+v", recordset.Records[0])
+	assert.Equal(`users-first`, fmt.Sprintf("%v", recordset.Records[1].ID), "%#+v", recordset.Records[1])
+	assert.Equal(`system-third`, fmt.Sprintf("%v", recordset.Records[2].ID), "%#+v", recordset.Records[2])
 
 	record, err := backend.Retrieve(`TestIdFormattersIdFromFieldValues`, recordset.Records[0].ID)
 	assert.NoError(err)
-	assert.EqualValues(recordset.Records[0].ID, record.ID)
+	assert.EqualValues(`system-first`, record.ID, "%#+v", record)
 	assert.Equal(`first`, record.Get(`name`))
 
 	record, err = backend.Retrieve(`TestIdFormattersIdFromFieldValues`, recordset.Records[1].ID)
 	assert.NoError(err)
-	assert.EqualValues(recordset.Records[1].ID, record.ID)
+	assert.EqualValues(`users-first`, record.ID)
 	assert.Equal(`first`, record.Get(`name`))
 	assert.Equal(`users`, record.Get(`group`))
 
 	record, err = backend.Retrieve(`TestIdFormattersIdFromFieldValues`, recordset.Records[2].ID)
 	assert.NoError(err)
-	assert.EqualValues(recordset.Records[2].ID, record.ID)
+	assert.EqualValues(`system-third`, record.ID)
 	assert.Equal(`third`, record.Get(`name`))
 }
 
@@ -472,13 +483,13 @@ func TestSearchQuery(t *testing.T) {
 			assert.Nil(err)
 			recordset, err = search.Query(`TestSearchQuery`, f)
 			assert.Nil(err)
-			assert.NotNil(recordset)
-			assert.Equal(int64(1), recordset.ResultCount)
+			assert.NotNil(recordset, qs)
+			assert.EqualValues(1, recordset.ResultCount, qs)
 			record, ok = recordset.GetRecord(0)
 			assert.True(ok)
-			assert.NotNil(record)
-			assert.Equal(int64(1), record.ID)
-			assert.Equal(`First`, record.Get(`name`))
+			assert.NotNil(record, qs)
+			assert.EqualValues(1, record.ID, qs)
+			assert.Equal(`First`, record.Get(`name`), qs)
 		}
 
 		// nonesies
@@ -531,7 +542,7 @@ func TestSearchQueryPaginated(t *testing.T) {
 		assert.NotNil(recordset)
 		assert.Equal(21, len(recordset.Records))
 
-		if !recordset.Unbounded {
+		if recordset.ResultCount >= 0 {
 			assert.Equal(int64(21), recordset.ResultCount)
 			assert.Equal(1, recordset.TotalPages)
 		}
@@ -572,7 +583,7 @@ func TestSearchQueryLimit(t *testing.T) {
 
 		assert.Equal(9, len(recordset.Records))
 
-		if !recordset.Unbounded {
+		if recordset.ResultCount >= 0 {
 			assert.Equal(int64(21), recordset.ResultCount)
 			assert.Equal(3, recordset.TotalPages)
 		}
@@ -617,7 +628,7 @@ func TestSearchQueryOffset(t *testing.T) {
 		assert.NotNil(recordset)
 		assert.Equal(1, len(recordset.Records))
 
-		if !recordset.Unbounded {
+		if recordset.ResultCount >= 0 {
 			assert.Equal(int64(21), recordset.ResultCount)
 			assert.Equal(1, recordset.TotalPages)
 		}
@@ -625,7 +636,7 @@ func TestSearchQueryOffset(t *testing.T) {
 		record, ok := recordset.GetRecord(0)
 		assert.True(ok)
 		assert.NotNil(record)
-		assert.Equal(`20`, record.ID)
+		assert.EqualValues(20, record.ID)
 	}
 }
 
@@ -669,7 +680,7 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 		assert.NotNil(recordset)
 		assert.Equal(9, len(recordset.Records))
 
-		if !recordset.Unbounded {
+		if recordset.ResultCount >= 0 {
 			assert.Equal(int64(21), recordset.ResultCount)
 			assert.Equal(3, recordset.TotalPages)
 		}

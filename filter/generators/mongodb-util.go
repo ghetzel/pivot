@@ -2,9 +2,12 @@ package generators
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/ghetzel/pivot/filter"
 )
+
+var rxCharFilter = regexp.MustCompile(`[\W\s]`)
 
 func mongoCriterionOperatorIs(gen *MongoDB, criterion filter.Criterion) (map[string]interface{}, error) {
 	c := make(map[string]interface{})
@@ -27,7 +30,11 @@ func mongoCriterionOperatorIs(gen *MongoDB, criterion filter.Criterion) (map[str
 		}
 
 		if len(criterion.Values) == 1 {
-			c[criterion.Field] = criterion.Values[0]
+			if criterion.Field == `_id` {
+				c[criterion.Field] = fmt.Sprintf("%v", criterion.Values[0])
+			} else {
+				c[criterion.Field] = criterion.Values[0]
+			}
 		} else {
 			c[criterion.Field] = map[string]interface{}{
 				`$in`: criterion.Values,
@@ -96,16 +103,29 @@ func mongoCriterionOperatorPattern(gen *MongoDB, opname string, criterion filter
 				valueClause = fmt.Sprintf("^%s.*", value)
 			case `suffix`:
 				valueClause = fmt.Sprintf(".*%s$", value)
+			case `like`, `unlike`:
+				valueClause = rxCharFilter.ReplaceAllString(fmt.Sprintf("%v", value), `.`)
 			default:
 				return nil, fmt.Errorf("Unsupported pattern operator %q", opname)
 			}
 
-			or_regexp = append(or_regexp, map[string]interface{}{
-				criterion.Field: map[string]interface{}{
-					`$regexp`:  valueClause,
-					`$options`: `si`,
-				},
-			})
+			if opname == `unlike` {
+				or_regexp = append(or_regexp, map[string]interface{}{
+					`$not`: map[string]interface{}{
+						criterion.Field: map[string]interface{}{
+							`$regex`:   valueClause,
+							`$options`: `si`,
+						},
+					},
+				})
+			} else {
+				or_regexp = append(or_regexp, map[string]interface{}{
+					criterion.Field: map[string]interface{}{
+						`$regex`:   valueClause,
+						`$options`: `si`,
+					},
+				})
+			}
 		}
 
 		if len(or_regexp) == 1 {

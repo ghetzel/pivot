@@ -160,7 +160,7 @@ func TestMongodb(t *testing.T) {
 		`name/contains:ob`: {
 			query: map[string]interface{}{
 				`name`: map[string]interface{}{
-					`$regexp`:  `.*ob.*`,
+					`$regex`:   `.*ob.*`,
 					`$options`: `si`,
 				},
 			},
@@ -169,7 +169,7 @@ func TestMongodb(t *testing.T) {
 		`name/prefix:ob`: {
 			query: map[string]interface{}{
 				`name`: map[string]interface{}{
-					`$regexp`:  `^ob.*`,
+					`$regex`:   `^ob.*`,
 					`$options`: `si`,
 				},
 			},
@@ -178,7 +178,7 @@ func TestMongodb(t *testing.T) {
 		`name/suffix:ob`: {
 			query: map[string]interface{}{
 				`name`: map[string]interface{}{
-					`$regexp`:  `.*ob$`,
+					`$regex`:   `.*ob$`,
 					`$options`: `si`,
 				},
 			},
@@ -188,7 +188,7 @@ func TestMongodb(t *testing.T) {
 			query: map[string]interface{}{
 				`$and`: []interface{}{
 					map[string]interface{}{
-						`age`:  float64(7),
+						`age`: float64(7),
 					},
 					map[string]interface{}{
 						`name`: `ted`,

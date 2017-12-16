@@ -120,7 +120,7 @@ func (self *MongoDB) WithCriterion(criterion filter.Criterion) error {
 		c, err = mongoCriterionOperatorIs(self, criterion)
 	case `not`:
 		c, err = mongoCriterionOperatorNot(self, criterion)
-	case `contains`, `prefix`, `suffix`:
+	case `contains`, `prefix`, `suffix`, `like`, `unlike`:
 		c, err = mongoCriterionOperatorPattern(self, criterion.Operator, criterion)
 	case `gt`, `gte`, `lt`, `lte`, `range`:
 		c, err = mongoCriterionOperatorRange(self, criterion, criterion.Operator)

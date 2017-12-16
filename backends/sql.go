@@ -64,7 +64,7 @@ type SqlBackend struct {
 }
 
 func NewSqlBackend(connection dal.ConnectionString) Backend {
-	return &SqlBackend{
+	backend := &SqlBackend{
 		conn:                      &connection,
 		queryGenTypeMapping:       generators.DefaultSqlTypeMapping,
 		queryGenPlaceholderFormat: `?`,
@@ -72,6 +72,9 @@ func NewSqlBackend(connection dal.ConnectionString) Backend {
 		aggregator:                make(map[string]Aggregator),
 		knownCollections:          make(map[string]bool),
 	}
+
+	backend.indexer = backend
+	return backend
 }
 
 func (self *SqlBackend) GetConnectionString() *dal.ConnectionString {
@@ -137,11 +140,6 @@ func (self *SqlBackend) Initialize() error {
 		return err
 	}
 
-	// make ourselves the indexer by default
-	if self.indexer == nil {
-		self.indexer = self
-	}
-
 	if err := self.indexer.IndexInitialize(self); err != nil {
 		return err
 	}
@@ -179,23 +177,13 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 				// add record data to query input
 				for k, v := range record.Fields {
 					// convert incoming values to their destination field types
-					if cV, err := collection.ConvertValue(k, v); err == nil {
-						queryGen.InputData[k] = cV
-					} else {
-						defer tx.Rollback()
-						return err
-					}
+					queryGen.InputData[k] = collection.ConvertValue(k, v)
 				}
 
 				// set the primary key
 				if !typeutil.IsZero(record.ID) && fmt.Sprintf("%v", record.ID) != `0` {
 					// convert incoming ID to it's destination field type
-					if v, err := collection.ConvertValue(collection.IdentityField, record.ID); err == nil {
-						queryGen.InputData[collection.IdentityField] = v
-					} else {
-						defer tx.Rollback()
-						return err
-					}
+					queryGen.InputData[collection.IdentityField] = collection.ConvertValue(collection.IdentityField, record.ID)
 				}
 
 				// render the query into the final SQL
@@ -873,6 +861,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 
 		record := dal.NewRecord(id).SetFields(fields)
 
+		// do this AFTER populating the record's fields from the database
 		if err := record.Populate(record, collection); err != nil {
 			return nil, fmt.Errorf("error populating record: %v", err)
 		}
@@ -961,7 +950,7 @@ func (self *SqlBackend) refreshAllCollections() error {
 
 func (self *SqlBackend) refreshCollectionFromDatabase(name string, definition *dal.Collection) error {
 	if collection, err := self.refreshCollectionFunc(
-		strings.TrimPrefix(self.conn.Dataset(), `/`),
+		self.conn.Dataset(),
 		name,
 	); err == nil {
 		if len(collection.Fields) > 0 {

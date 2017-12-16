@@ -57,6 +57,8 @@ func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f *filter.Filter, pa
 	} else if recordset.ResultCount >= 0 && f.Limit > 0 {
 		// total pages = ceil(result count / page size)
 		recordset.TotalPages = int(math.Ceil(float64(recordset.ResultCount) / float64(f.Limit)))
+	} else {
+		recordset.TotalPages = 1
 	}
 
 	if recordset.RecordsPerPage == 0 {
@@ -71,8 +73,6 @@ func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f *filter.Filter, pa
 
 func DefaultQueryImplementation(indexer Indexer, collection string, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
-
-	recordset.Unbounded = true
 
 	if err := indexer.QueryFunc(collection, f, func(record *dal.Record, err error, page IndexPage) error {
 		PopulateRecordSetPageDetails(recordset, f, page)

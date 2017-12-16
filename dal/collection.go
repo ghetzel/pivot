@@ -331,12 +331,14 @@ func (self *Collection) GetFirstNonIdentityKeyField() (Field, bool) {
 	return Field{}, false
 }
 
-func (self *Collection) ConvertValue(name string, value interface{}) (interface{}, error) {
+func (self *Collection) ConvertValue(name string, value interface{}) interface{} {
 	if field, ok := self.GetField(name); ok {
-		return field.ConvertValue(value)
-	} else {
-		return nil, fmt.Errorf("Unknown field '%s'", name)
+		if v, err := field.ConvertValue(value); err == nil {
+			return v
+		}
 	}
+
+	return value
 }
 
 func (self *Collection) formatAndValidateId(id interface{}, op FieldOperation, record *Record) (interface{}, error) {

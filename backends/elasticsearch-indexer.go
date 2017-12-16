@@ -416,44 +416,11 @@ func (self *ElasticsearchIndexer) QueryFunc(name string, f *filter.Filter, resul
 }
 
 func (self *ElasticsearchIndexer) Query(name string, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
-	recordset := dal.NewRecordSet()
-
 	if f.IdentityField == `` {
 		f.IdentityField = ElasticsearchIdentityField
 	}
 
-	if err := self.QueryFunc(name, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
-		PopulateRecordSetPageDetails(recordset, f, page)
-		emptyRecord := dal.NewRecord(indexRecord.ID)
-
-		if len(resultFns) > 0 {
-			resultFn := resultFns[0]
-
-			if f.IdOnly() {
-				return resultFn(emptyRecord, err, page)
-			} else {
-				if record, err := self.parent.Retrieve(name, indexRecord.ID, f.Fields...); err == nil {
-					return resultFn(record, err, page)
-				} else {
-					return resultFn(emptyRecord, err, page)
-				}
-			}
-		} else {
-			if f.IdOnly() {
-				recordset.Records = append(recordset.Records, emptyRecord)
-			} else {
-				if record, err := self.parent.Retrieve(name, indexRecord.ID, f.Fields...); err == nil {
-					recordset.Records = append(recordset.Records, record)
-				}
-			}
-
-			return nil
-		}
-	}); err != nil {
-		return nil, err
-	}
-
-	return recordset, nil
+	return DefaultQueryImplementation(self, name, f, resultFns...)
 }
 
 func (self *ElasticsearchIndexer) IndexRemove(name string, ids []interface{}) error {

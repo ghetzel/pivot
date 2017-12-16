@@ -47,7 +47,7 @@ func (self *ConnectionString) Host() string {
 }
 
 func (self *ConnectionString) Dataset() string {
-	return self.URI.Path
+	return strings.TrimPrefix(self.URI.Path, `/`)
 }
 
 func (self *ConnectionString) Credentials() (string, string, bool) {
