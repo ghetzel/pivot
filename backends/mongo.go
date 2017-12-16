@@ -34,8 +34,32 @@ func NewMongoBackend(connection dal.ConnectionString) Backend {
 }
 
 func (self *MongoBackend) Initialize() error {
-	if session, err := mgo.DialWithTimeout(self.conn.String(), DefaultConnectTimeout); err == nil {
+	cstring := fmt.Sprintf("%s://%s/%s", self.conn.Backend(), self.conn.Host(), self.conn.Dataset())
+
+	if session, err := mgo.DialWithTimeout(cstring, DefaultConnectTimeout); err == nil {
 		self.session = session
+
+		if u, p, ok := self.conn.Credentials(); ok {
+			credentials := &mgo.Credential{
+				Username:    u,
+				Password:    p,
+				Source:      self.conn.OptString(`authdb`, ``),
+				Service:     self.conn.OptString(`authService`, ``),
+				ServiceHost: self.conn.OptString(`authHost`, ``),
+			}
+
+			switch self.conn.Protocol() {
+			case `scram`, `scram-sha1`:
+				credentials.Mechanism = `SCRAM-SHA-1`
+			case `cr`:
+				credentials.Mechanism = `MONGODB-CR`
+			}
+
+			if err := self.session.Login(credentials); err != nil {
+				return fmt.Errorf("auth failed: %v", err)
+			}
+		}
+
 		self.db = session.DB(self.conn.Dataset())
 
 		if names, err := self.db.CollectionNames(); err == nil {

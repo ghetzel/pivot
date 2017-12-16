@@ -91,7 +91,7 @@ func (self *Server) ListenAndServe() error {
 	mux.Handle(`/`, ui)
 
 	server.UseHandler(mux)
-	server.Use(httputil.NewRequestLogger())
+	// server.Use(httputil.NewRequestLogger())
 	server.Run(self.Address)
 	return nil
 }
