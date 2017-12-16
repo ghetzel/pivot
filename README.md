@@ -143,3 +143,6 @@ func main() {
 ```
 
 ## Why: Why Use This?
+
+The ability to be able to mix and match persistent structured data storage and retrieval mechanisms with various indexing strategies is a powerful one.  The idea here is to provide a common interface for systems to integrate with in a way that doesn't tightly couple those systems to specific databases, query languages, and infrastructures.  It's an attempt to deliver on the promises of traditional ORM/ODM libraries in a platform- and language-agnostic way.
+
