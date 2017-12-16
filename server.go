@@ -105,6 +105,19 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		AllowHeaders:     []string{"*"},
 	})
 
+	router.Get(`/api/status`,
+		func(w http.ResponseWriter, req *http.Request) {
+			status := map[string]interface{}{
+				`backend`: self.backend.GetConnectionString().String(),
+			}
+
+			if indexer := self.backend.WithSearch(``, nil); indexer != nil {
+				status[`indexer`] = indexer.IndexConnectionString().String()
+			}
+
+			httputil.RespondJSON(w, status)
+		})
+
 	router.Get(`/api/collections/:collection`,
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)

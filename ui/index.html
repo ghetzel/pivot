@@ -1,27 +1,49 @@
-<div class="container">
-    <div class="d-flex justify-content-between">
-        <h3 class="mb-4">Collections</h3>
+---
+bindings:
+- name:     collections
+  resource: :/api/schema
+---
+<div class="row">
+    <div class="col-sm-12 col-md-2 collections-list">
+        <h3 class="collections-list-header">Collections</h3>
+        <div class="list-group" id="collections">
+            {{ range .bindings.collections }}
+            <a href="/?collection={{ . }}" class="list-group-item list-group-item-action" data-collection="{{ . }}">
+                {{ . }}
+            </a>
+            {{ end }}
+        </div>
     </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Collection</th>
-                <th>&nbsp;</th>
-            </tr>
-        </thead>
-
-        <tbody>
-        {{ range .bindings.collections }}
-            <tr>
-                <td>
-                    <a href="/collections?id={{ . }}">{{ . }}</a>
-                </td>
-                <td>
-                    <a class="btn btn-sm btn-primary" href="/query?id={{ . }}&amp;q=all">Browse</a>
-                </td>
-            </tr>
-        {{ end }}
-        </tbody>
-    </table>
+    <div class="col-sm-12 col-md-10" id="browser">
+        <div class="container-fluid">
+            <h3 class="browser-header">(no collection selected)</h3>
+        </div>
+    </div>
 </div>
+
+<script type="text/javascript">
+    $(function(){
+        var browse = function(collection) {
+            var browser = $('#browser');
+            browser.load('/_query?' + $.param({
+                id:     collection,
+                limit:  25,
+                offset: 0,
+                sort:   '',
+            }));
+        };
+
+        // $('#collections a').on('click', function(e) {
+        //     var el = $(e.target);
+
+        //     if (el.attr('data-collection')) {
+        //         browse(el.attr('data-collection'));
+        //     }
+        // });
+
+        {{ if qs `collection` }}
+        browse('{{ qs `collection` }}');
+        {{ end }}
+    });
+</script>

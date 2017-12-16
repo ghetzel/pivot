@@ -1,5 +1,5 @@
 #content {
-    margin-top: 64px;
+    margin-top: 56px;
 }
 
 .navicon {
@@ -29,4 +29,57 @@
     overflow:      hidden;
     text-overflow: ellipsis;
     white-space:   nowrap;
+}
+
+.collections-list {
+    background:      #222;
+    padding:         0;
+    color:           #DDD;
+}
+
+.collections-list > .collections-list-header {
+    font-size:       18px;
+    background:      black;
+    color:           white;
+    padding:         1rem;
+    margin:          0;
+}
+
+#collections {
+    border-radius:   0;
+}
+
+#collections .list-group-item {
+    background:      transparent;
+    padding:         0.25rem 1rem;
+    border-radius:   0;
+    border:          0;
+    color:           #DDD;
+    overflow:        hidden;
+    text-overflow:   ellipsis;
+}
+
+#collections .list-group-item:hover {
+    background:      #111;
+    color:           white;
+}
+
+#browser {
+    padding:         0;
+}
+
+#browser > .container-fluid {
+    padding:         0;
+}
+
+#browser .browser-view {
+    margin:          0.5rem;
+}
+
+#browser .browser-header {
+    font-size:       18px;
+    background:      #444;
+    color:           white;
+    padding:         1rem;
+    margin:          0;
 }

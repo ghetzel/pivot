@@ -931,7 +931,7 @@ func (self *SqlBackend) refreshAllCollections() error {
 			}
 		}
 
-		if !self.conn.OptBool(`autoregister`, false) {
+		if !self.conn.OptBool(`autoregister`, true) {
 			// purge from cache any tables that the list all query didn't return
 			self.registeredCollections.Range(func(key, value interface{}) bool {
 				if !sliceutil.ContainsString(knownTables, key.(string)) {
@@ -961,7 +961,7 @@ func (self *SqlBackend) refreshCollectionFromDatabase(name string, definition *d
 				collection.ApplyDefinition(definition)
 				self.RegisterCollection(definition)
 
-			} else if self.conn.OptBool(`autoregister`, false) {
+			} else if self.conn.OptBool(`autoregister`, true) {
 				self.RegisterCollection(collection)
 			}
 

@@ -154,12 +154,12 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 		host = fmt.Sprintf("%s:3306", self.conn.Host())
 	}
 
-	if up := self.conn.URI.User; up != nil {
-		dsn += up.String() + `@`
+	if u, p, ok := self.conn.Credentials(); ok {
+		dsn += fmt.Sprintf("%s:%s@", u, p)
 	}
 
 	dsn += fmt.Sprintf(
-		"%s(%s)%s",
+		"%s(%s)/%s",
 		protocol,
 		host,
 		self.conn.Dataset(),

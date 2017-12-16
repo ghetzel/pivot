@@ -193,12 +193,12 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 		host = fmt.Sprintf("%s:5432", self.conn.Host())
 	}
 
-	if up := self.conn.URI.User; up != nil {
-		dsn += up.String() + `@`
+	if u, p, ok := self.conn.Credentials(); ok {
+		dsn += fmt.Sprintf("%s:%s@", u, p)
 	}
 
 	dsn += host
-	dsn += self.conn.Dataset()
+	dsn += `/` + self.conn.Dataset()
 
 	opts := self.conn.URI.Query()
 
