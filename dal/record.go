@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
@@ -107,6 +108,14 @@ func (self *Record) SetData(data []byte) *Record {
 	return self
 }
 
+func (self *Record) String() string {
+	if data, err := json.Marshal(self); err == nil {
+		return string(data)
+	} else {
+		return fmt.Sprintf("Record<%v + %d fields>", self.ID, len(self.Fields))
+	}
+}
+
 func (self *Record) Append(key string, value ...interface{}) *Record {
 	return self.Set(key, self.appendValue(key, value...))
 }
@@ -120,10 +129,12 @@ func (self *Record) AppendNested(key string, value ...interface{}) *Record {
 func (self *Record) Populate(into interface{}, collection *Collection) error {
 	// special case for what is essentially copying another record into this one
 	if record, ok := into.(*Record); ok {
+		if collection != nil {
+			collection.FillDefaults(self)
+		}
+
 		for key, value := range record.Fields {
 			if collection != nil {
-				collection.FillDefaults(self)
-
 				if collectionField, ok := collection.GetField(key); ok {
 					// use the field's type in the collection schema to convert the value
 					if v, err := collectionField.ConvertValue(value); err == nil {

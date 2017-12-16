@@ -94,9 +94,9 @@ func (self *Elasticsearch) WithCriterion(criterion filter.Criterion) error {
 	var err error
 
 	switch criterion.Operator {
-	case `is`, ``:
+	case `is`, ``, `like`:
 		c, err = esCriterionOperatorIs(self, criterion)
-	case `not`:
+	case `not`, `unlike`:
 		c, err = esCriterionOperatorNot(self, criterion)
 	case `contains`, `prefix`, `suffix`:
 		c, err = esCriterionOperatorPattern(self, criterion.Operator, criterion)

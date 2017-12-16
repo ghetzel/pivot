@@ -404,7 +404,7 @@ func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index,
 		self.useFilterMapping(mapping)
 
 		switch self.conn.Dataset() {
-		case `/memory`:
+		case `memory`:
 			if ix, err := bleve.NewMemOnly(mapping); err == nil {
 				index = ix
 			} else {

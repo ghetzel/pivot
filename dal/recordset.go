@@ -1,13 +1,13 @@
 package dal
 
 type RecordSet struct {
-	Unbounded      bool                   `json:"unbounded,omitempty"`
 	ResultCount    int64                  `json:"result_count"`
 	Page           int                    `json:"page,omitempty"`
 	TotalPages     int                    `json:"total_pages,omitempty"`
 	RecordsPerPage int                    `json:"records_per_page,omitempty"`
 	Records        []*Record              `json:"records"`
 	Options        map[string]interface{} `json:"options"`
+	KnownSize      bool                   `json:"known_size"`
 }
 
 func NewRecordSet(records ...*Record) *RecordSet {

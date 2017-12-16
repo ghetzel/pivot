@@ -88,11 +88,7 @@ func (self *FilesystemBackend) Initialize() error {
 	self.root = self.conn.Dataset()
 
 	// expand the path
-	if strings.HasPrefix(self.root, `/.`) {
-		self.root = strings.TrimPrefix(self.root, `/`)
-	} else if strings.HasPrefix(self.root, `/~`) {
-		self.root = strings.TrimPrefix(self.root, `/`)
-
+	if strings.HasPrefix(self.root, `~`) {
 		if v, err := pathutil.ExpandUser(self.root); err == nil {
 			self.root = v
 		} else {
@@ -537,6 +533,7 @@ func (self *FilesystemBackend) prepareIncomingRecord(collectionName string, reco
 			record.ID = stringutil.Autotype(record.ID)
 		}
 
+		// do this AFTER populating the record's fields from the database
 		if err := record.Populate(record, collection); err != nil {
 			return err
 		}

@@ -3,9 +3,9 @@ package filter
 import (
 	"fmt"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
-	"unicode"
 
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/sliceutil"
@@ -23,20 +23,13 @@ var AllValue = `all`
 var SortAscending = `+`
 var SortDescending = `-`
 var DefaultIdentityField = `id`
+var rxCharFilter = regexp.MustCompile(`[\W\s\_]+`)
 
 type NormalizerFunc func(in string) string // {}
 
 var DefaultNormalizerFunc = func(in string) string {
 	in = strings.ToLower(in)
-	in = strings.Map(func(r rune) rune {
-		if unicode.IsLetter(r) || unicode.IsNumber(r) {
-			return r
-		}
-
-		return -1
-	}, in)
-
-	return in
+	return rxCharFilter.ReplaceAllString(in, ``)
 }
 
 type Criterion struct {
@@ -569,17 +562,17 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 				}
 
 			case `prefix`:
-				if !strings.HasPrefix(cmpValueS, vStr) {
+				if !strings.HasPrefix(strings.ToLower(cmpValueS), strings.ToLower(vStr)) {
 					return false
 				}
 
 			case `suffix`:
-				if !strings.HasSuffix(cmpValueS, vStr) {
+				if !strings.HasSuffix(strings.ToLower(cmpValueS), strings.ToLower(vStr)) {
 					return false
 				}
 
 			case `contains`:
-				if !strings.Contains(cmpValueS, vStr) {
+				if !strings.Contains(strings.ToLower(cmpValueS), strings.ToLower(vStr)) {
 					return false
 				}
 

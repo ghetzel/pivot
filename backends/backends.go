@@ -37,13 +37,14 @@ var NotImplementedError = fmt.Errorf("Not Implemented")
 type BackendFunc func(dal.ConnectionString) Backend
 
 var backendMap = map[string]BackendFunc{
-	`sqlite`:   NewSqlBackend,
+	`dynamodb`: NewDynamoBackend,
+	`file`:     NewFilesystemBackend,
+	`fs`:       NewFilesystemBackend,
+	`mongodb`:  NewMongoBackend,
 	`mysql`:    NewSqlBackend,
 	`postgres`: NewSqlBackend,
-	`fs`:       NewFilesystemBackend,
-	`file`:     NewFilesystemBackend,
+	`sqlite`:   NewSqlBackend,
 	`tiedot`:   NewTiedotBackend,
-	`dynamodb`: NewDynamoBackend,
 }
 
 func RegisterBackend(name string, fn BackendFunc) {
