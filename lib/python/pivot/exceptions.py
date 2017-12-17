@@ -26,3 +26,11 @@ class NotFound(HttpError):
 
 class ServiceUnavailable(HttpError):
     description = 'Service Unavailable'
+
+
+class CollectionNotFound(Exception):
+    pass
+
+
+class RecordNotFound(Exception):
+    pass
