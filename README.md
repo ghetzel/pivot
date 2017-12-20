@@ -2,7 +2,46 @@
 
 Pivot is a library used to access, query, and aggregate data across a variety of database systems, written in Golang.
 
-## Where: Packages and Usage
+## Getting Started
+
+### Install
+```
+# Retrieve and build the package and place the CLI in $GOBIN/pivot
+go get github.com/ghetzel/pivot/pivot
+```
+
+### Running
+
+Pivot, in addition to using it as a library in your projects, can run as a RESTful web service that other systems can integrate with using various client libraries.  To run the Pivot API service, execute:
+
+```
+# For running the REST API server to host a database:
+pivot web CONNECTION_STRING
+
+# or, to do that but specify a separate external index (e.g.: Elasticsearch):
+pivot web CONNECTION_STRING INDEX_CONNECTION_STRING
+```
+
+#### Connection Strings
+
+Connection Strings are [URIs](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) that specify information like what type of database to connect to, where it is located, username and password, and any additional per-database options.  Connection Strings look like this:
+
+```
+type://location:port/dbname
+type://username:password@location:port/dbname
+type+protocol://username:password@location:port/dbname
+```
+
+Some common connection strings for supported backends:
+
+| Backend    | Connection String |
+| ---------- | |
+| MySQL      | `mysql://user:pass@localhost:3306/mydb` |
+| PostgreSQL | `postgres://user:pass@localhost:5432/mydb` |
+| SQLite     | `sqlite:///~/test.db` |
+
+
+## Programmatic Usage
 
 Pivot is organized into multiple sub-packages that perform various functions:
 
@@ -28,7 +67,7 @@ Below is a table describing which data systems are currently supported.  For sys
 | Amazon DynamoDB  | X       |         |
 | Elasticsearch    |         | X       |
 
-## How: Examples
+## Examples: Using Pivot as your database access layer in a Golang project
 
 ### Example 1: Basic CRUD operations using the `mapper.Mapper` interface
 
@@ -142,7 +181,7 @@ func main() {
 }
 ```
 
-## Why: Why Use This?
+## Why Use This?
 
 The ability to mix and match persistent structured data storage and retrieval mechanisms with various indexing strategies is a powerful one.  The idea here is to provide a common interface for systems to integrate with in a way that doesn't tightly couple those systems to specific databases, query languages, and infrastructures.  It's an attempt to deliver on the promises of traditional ORM/ODM libraries in a platform- and language-agnostic way.
 
