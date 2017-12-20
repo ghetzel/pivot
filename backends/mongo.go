@@ -5,6 +5,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -62,17 +64,18 @@ func (self *MongoBackend) Initialize() error {
 
 		self.db = session.DB(self.conn.Dataset())
 
-		if names, err := self.db.CollectionNames(); err == nil {
-			for _, name := range names {
-				collection := dal.NewCollection(name)
-				collection.IdentityField = MongoIdentityField
-				self.registeredCollections.Store(name, collection)
+		if self.conn.OptBool(`autoregister`, DefaultAutoregister) {
+			if names, err := self.db.CollectionNames(); err == nil {
+				for _, name := range names {
+					collection := dal.NewCollection(name)
+					self.RegisterCollection(collection)
+				}
+			} else {
+				return err
 			}
-
-			return nil
-		} else {
-			return err
 		}
+
+		return nil
 	} else {
 		return err
 	}
@@ -89,6 +92,7 @@ func (self *MongoBackend) SetIndexer(indexConnString dal.ConnectionString) error
 
 func (self *MongoBackend) RegisterCollection(collection *dal.Collection) {
 	if collection != nil {
+		collection.IdentityField = MongoIdentityField
 		self.registeredCollections.Store(collection.Name, collection)
 		log.Debugf("[%T] register collection %v", self, collection.Name)
 	}
@@ -113,30 +117,7 @@ func (self *MongoBackend) Retrieve(name string, id interface{}, fields ...string
 		var data map[string]interface{}
 
 		if err := self.db.C(collection.Name).FindId(id).One(&data); err == nil {
-			if dataId, ok := data[MongoIdentityField]; ok {
-				record := dal.NewRecord(
-					collection.ConvertValue(MongoIdentityField, stringutil.Autotype(dataId)),
-				)
-
-				if len(fields) == 0 {
-					record.SetFields(data)
-				} else {
-					for k, v := range data {
-						record.Set(k, v)
-					}
-				}
-
-				delete(record.Fields, MongoIdentityField)
-
-				// do this AFTER populating the record's fields from the database
-				if err := record.Populate(record, collection); err != nil {
-					return nil, fmt.Errorf("error populating record: %v", err)
-				}
-
-				return record, nil
-			} else {
-				return nil, fmt.Errorf("Could not locate identity field %s", MongoIdentityField)
-			}
+			return self.recordFromResult(collection, data, fields...)
 		} else {
 			return nil, err
 		}
@@ -229,7 +210,7 @@ func (self *MongoBackend) DeleteCollection(name string) error {
 }
 
 func (self *MongoBackend) ListCollections() ([]string, error) {
-	return self.db.CollectionNames()
+	return maputil.StringKeys(&self.registeredCollections), nil
 }
 
 func (self *MongoBackend) GetCollection(name string) (*dal.Collection, error) {
@@ -254,4 +235,31 @@ func (self *MongoBackend) WithAggregator(collection string) Aggregator {
 
 func (self *MongoBackend) Flush() error {
 	return nil
+}
+
+func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[string]interface{}, fields ...string) (*dal.Record, error) {
+	if dataId, ok := data[MongoIdentityField]; ok {
+		record := dal.NewRecord(
+			collection.ConvertValue(MongoIdentityField, stringutil.Autotype(dataId)),
+		)
+
+		for k, v := range data {
+			if _, ok := collection.GetField(k); ok || len(collection.Fields) == 0 {
+				if len(fields) == 0 || sliceutil.ContainsString(fields, k) {
+					record.Set(k, v)
+				}
+			}
+		}
+
+		delete(record.Fields, MongoIdentityField)
+
+		// do this AFTER populating the record's fields from the database
+		if err := record.Populate(record, collection); err != nil {
+			return nil, fmt.Errorf("error populating record: %v", err)
+		}
+
+		return record, nil
+	} else {
+		return nil, fmt.Errorf("Could not locate identity field %s", MongoIdentityField)
+	}
 }

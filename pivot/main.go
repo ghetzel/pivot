@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/user"
+	"path/filepath"
 
 	"github.com/ghetzel/cli"
 	"github.com/ghetzel/pivot"
@@ -33,10 +35,17 @@ func main() {
 			Name:  `log-queries, Q`,
 			Usage: `Whether to include queries in the logging output`,
 		},
+		cli.StringSliceFlag{
+			Name:  `schema, s`,
+			Usage: `Path to one or more schema files to load`,
+		},
+		cli.BoolTFlag{
+			Name:  `allow-netrc, N`,
+			Usage: `Allow parsing of a .netrc file.`,
+		},
 		cli.StringFlag{
-			Name:  `config, c`,
-			Usage: `Path to the configuration file to load.`,
-			Value: `/etc/pivot.yml`,
+			Name:  `netrc, n`,
+			Usage: `Specify the location of the .netrc file to parse.`,
 		},
 	}
 
@@ -54,6 +63,8 @@ func main() {
 		} else {
 			logging.SetLevel(logging.CRITICAL, `pivot/querylog`)
 		}
+
+		populateNetrc(c)
 
 		return nil
 	}
@@ -79,6 +90,10 @@ func main() {
 				server := pivot.NewServer(c.Args().First())
 				server.Address = c.String(`address`)
 				server.UiDirectory = c.String(`ui-dir`)
+
+				for _, filename := range c.GlobalStringSlice(`schema`) {
+					server.AddSchemaDefinition(filename)
+				}
 
 				if ics := c.Args().Get(1); ics != `` {
 					server.ConnectOptions.Indexer = ics
@@ -208,4 +223,20 @@ func main() {
 	}
 
 	app.Run(os.Args)
+}
+
+func populateNetrc(c *cli.Context) {
+	if netrc := c.String(`netrc`); c.Bool(`allow-netrc`) {
+		if netrc == `` {
+			if usr, err := user.Current(); err == nil {
+				pivot.NetrcFile = filepath.Join(usr.HomeDir, ".netrc")
+			} else {
+				log.Fatalf("netrc err: %v", err)
+			}
+		} else {
+			pivot.NetrcFile = netrc
+		}
+	} else {
+		pivot.NetrcFile = ``
+	}
 }

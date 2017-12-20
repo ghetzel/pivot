@@ -32,6 +32,7 @@ type Server struct {
 	backend          backends.Backend
 	endpoints        []util.Endpoint
 	routeMap         map[string]util.EndpointResponseFunc
+	schemaDefs       []string
 }
 
 func NewServer(connectionString ...string) *Server {
@@ -44,6 +45,10 @@ func NewServer(connectionString ...string) *Server {
 	}
 }
 
+func (self *Server) AddSchemaDefinition(filename string) {
+	self.schemaDefs = append(self.schemaDefs, filename)
+}
+
 func (self *Server) ListenAndServe() error {
 	uiDir := self.UiDirectory
 
@@ -53,14 +58,21 @@ func (self *Server) ListenAndServe() error {
 
 	if backend, err := NewDatabaseWithOptions(self.ConnectionString, self.ConnectOptions); err == nil {
 		self.backend = backend
+	} else {
+		return err
+	}
 
-		if err := self.backend.Initialize(); err == nil {
-			log.Debugf("Initialized backend %T", self.backend)
+	// if specified, pre-load schema definitions
+	for _, filename := range self.schemaDefs {
+		if collections, err := LoadSchemataFromFile(filename); err == nil {
+			log.Infof("Loaded %d definitions from %v", len(collections), filename)
+
+			for _, collection := range collections {
+				self.backend.RegisterCollection(collection)
+			}
 		} else {
 			return err
 		}
-	} else {
-		return err
 	}
 
 	server := negroni.New()

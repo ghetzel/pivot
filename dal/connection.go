@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/jdxcode/netrc"
 )
 
 type ConnectionString struct {
@@ -48,6 +49,27 @@ func (self *ConnectionString) Host() string {
 
 func (self *ConnectionString) Dataset() string {
 	return strings.TrimPrefix(self.URI.Path, `/`)
+}
+
+func (self *ConnectionString) LoadCredentialsFromNetrc(filename string) error {
+	if u := self.URI.User; u == nil && filename != `` {
+		if netrcFile, err := netrc.Parse(filename); err == nil {
+			if machine := netrcFile.Machine(self.URI.Hostname()); machine != nil {
+				log.Debugf("Reading credentials from %v for host %v", filename, machine.Name)
+
+				login := machine.Get(`login`)
+				password := machine.Get(`password`)
+
+				if login != `` || password != `` {
+					self.URI.User = url.UserPassword(login, password)
+				}
+			}
+		} else {
+			return fmt.Errorf("netrc error: %v", err)
+		}
+	}
+
+	return nil
 }
 
 func (self *ConnectionString) Credentials() (string, string, bool) {

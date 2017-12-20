@@ -12,6 +12,7 @@ import (
 var log = logging.MustGetLogger(`pivot/backends`)
 var querylog = logging.MustGetLogger(`pivot/querylog`)
 var stats, _ = statsd.New()
+var DefaultAutoregister = false
 
 type Backend interface {
 	Initialize() error

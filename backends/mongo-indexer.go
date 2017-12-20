@@ -2,10 +2,8 @@ package backends
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/ghetzel/go-stockutil/sliceutil"
-	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
@@ -62,17 +60,7 @@ func (self *MongoBackend) QueryFunc(index string, flt *filter.Filter, resultFn I
 					if err := iter.Err(); err != nil {
 						return err
 					} else {
-						if id, ok := result[MongoIdentityField]; ok {
-							record := dal.NewRecord(stringutil.Autotype(id))
-
-							record.SetFields(result)
-							delete(record.Fields, MongoIdentityField)
-
-							// do this AFTER populating the record's fields from the database
-							if err := record.Populate(record, collection); err != nil {
-								return fmt.Errorf("error populating record: %v", err)
-							}
-
+						if record, err := self.recordFromResult(collection, result, flt.Fields...); err == nil {
 							if err := resultFn(record, nil, IndexPage{
 								Limit:        flt.Limit,
 								Offset:       flt.Offset,
@@ -83,7 +71,7 @@ func (self *MongoBackend) QueryFunc(index string, flt *filter.Filter, resultFn I
 
 							result = nil
 						} else {
-							return fmt.Errorf("Missing identity field")
+							return err
 						}
 					}
 				}
