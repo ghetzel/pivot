@@ -222,6 +222,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Get(`/api/collections/:collection/records/*id`,
 		func(w http.ResponseWriter, req *http.Request) {
 			var id interface{}
+			var fields []string
 			name := vestigo.Param(req, `collection`)
 
 			if ids := strings.Split(vestigo.Param(req, `_name`), `/`); len(ids) == 1 {
@@ -230,7 +231,11 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 				id = ids
 			}
 
-			if record, err := self.backend.Retrieve(name, id); err == nil {
+			if v := httputil.Q(req, `fields`); v != `` {
+				fields = strings.Split(v, `,`)
+			}
+
+			if record, err := self.backend.Retrieve(name, id, fields...); err == nil {
 				httputil.RespondJSON(w, record)
 			} else {
 				httputil.RespondJSON(w, err)
@@ -245,7 +250,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 				name := vestigo.Param(req, `collection`)
 
 				if err := self.backend.Insert(name, &recordset); err == nil {
-					httputil.RespondJSON(w, nil)
+					httputil.RespondJSON(w, &recordset)
 				} else {
 					httputil.RespondJSON(w, err)
 				}
@@ -336,10 +341,15 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 			if err := json.NewDecoder(req.Body).Decode(&collection); err == nil {
 				if err := self.backend.CreateCollection(&collection); err == nil {
-					httputil.RespondJSON(w, nil)
+					httputil.RespondJSON(w, collection, http.StatusCreated)
+
+				} else if dal.IsExistError(err) {
+					httputil.RespondJSON(w, err, http.StatusConflict)
+
 				} else {
 					httputil.RespondJSON(w, err)
 				}
+
 			} else {
 				httputil.RespondJSON(w, err, http.StatusBadRequest)
 			}

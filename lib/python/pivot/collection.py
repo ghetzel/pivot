@@ -1,10 +1,11 @@
 from __future__ import absolute_import
-from .results import ResultSet, Record
+from .results import RecordSet, Record
 from . import exceptions
+from .utils import compact
 
 
 class Field(object):
-    def __init__(self, config):
+    def __init__(self, **config):
         self.name = None
         self.type = None
         self.identity = False
@@ -16,6 +17,12 @@ class Field(object):
         if isinstance(config, dict):
             for k, v in config.items():
                 setattr(self, k, v)
+
+        if self.name is None:
+            raise ValueError("Field name is required")
+
+        if self.type is None:
+            raise ValueError("Field type is required")
 
     def as_dict(self):
         defn = {
@@ -59,10 +66,18 @@ class Field(object):
 
 
 class Collection(object):
-    def __init__(self, name, client=None):
+    def __init__(self, name, client=None, definition=None):
         self.name = name
         self._client = client
-        self._definition = None
+        self._definition = definition
+
+        try:
+            name = self._definition['name']
+
+            if name:
+                self.name = name
+        except:
+            pass
 
     @property
     def client(self):
@@ -89,32 +104,89 @@ class Collection(object):
         """
         Return a list of Field objects describing this collection's schema.
         """
-        return [Field(f) for f in self.definition.get('fields', [])]
+        return [Field(**f) for f in self.definition.get('fields', [])]
 
-    def query(self, filterstring):
+    def all(self):
+        return self.query('all')
+
+    def query(self, filterstring, limit=None, offset=None, sort=None, fields=None):
         """
-        Return a ResultSet of Records matching the given query against this collection.
+        Return a RecordSet of Records matching the given query against this collection.
         """
+        if fields is None:
+            fields = []
+        if not isinstance(fields, list):
+            fields = [fields]
+
+        if sort is None:
+            sort = []
+        if not isinstance(sort, list):
+            sort = [sort]
+
         results = self.client.request(
             'get',
-            '/api/collections/{}/where/{}'.format(self.name, filterstring)
+            '/api/collections/{}/where/{}'.format(self.name, filterstring),
+            params=compact({
+                'limit':  limit,
+                'offset': offset,
+                'sort':   ','.join(sort),
+                'fields': ','.join(fields),
+            })
         ).json()
 
-        return ResultSet(results, client=self.client)
+        return RecordSet(results, client=self.client)
 
-    def get(self, rid):
+    def get(self, rid, fields=None):
         """
         Retrieve a specific record by its ID from this collection.
         """
+        if fields is None:
+            fields = []
+        if not isinstance(fields, list):
+            fields = [fields]
+
         try:
             return Record(self.client.request(
                 'get',
-                '/api/collections/{}/records/{}'.format(self.name, rid)
+                '/api/collections/{}/records/{}'.format(self.name, rid),
+                params=compact({
+                    'fields': ','.join(fields),
+                })
             ).json())
         except exceptions.NotFound:
             raise exceptions.RecordNotFound()
         except:
             raise
+
+    def delete(self, *ids):
+        ids = '/'.join([str(rid) for rid in ids])
+
+        if len(ids):
+            self.client.request(
+                'delete',
+                '/api/collections/{}/records/{}'.format(self.name, ids)
+            )
+
+        return
+
+    def create(self, *records, **kwargs):
+        update = kwargs.pop('update', False)
+
+        records = [{
+            'id':     record.pop('id', None),
+            'fields': record,
+        } for record in [dict(r) for r in records]]
+
+        return RecordSet(self.client.request(
+            ('put' if update else 'post'),
+            '/api/collections/{}/records'.format(self.name),
+            {
+                'records': records,
+            }
+        ).json(), client=self.client)
+
+    def update(self, *records):
+        return self.create(*records, update=True)
 
     def load(self):
         """

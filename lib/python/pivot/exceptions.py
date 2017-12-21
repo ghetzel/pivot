@@ -5,14 +5,22 @@ class HttpError(Exception):
     description = None
 
     def __init__(self, response, body):
-        if self.description:
+        if isinstance(body, dict) and body.get('error'):
+            super(Exception, self).__init__('HTTP {}: {}'.format(
+                response.status_code,
+                body['error']
+            ))
+
+        elif self.description:
             super(Exception, self).__init__('HTTP {}: {}'.format(
                 response.status_code,
                 self.description
             ))
+
         else:
             super(Exception, self).__init__('HTTP {}: {}'.format(
-                response.status_code
+                response.status_code,
+                body
             ))
 
 

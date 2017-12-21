@@ -28,18 +28,28 @@ class Record(dotdict):
         return value
 
 
-class ResultSet(object):
+class RecordSet(object):
+    max_repr_preview = 10
+
     def __init__(self, response, client=None):
         if not isinstance(response, dict):
-            raise ValueError('ResultSet must be populated with a dict')
+            raise ValueError('RecordSet must be populated with a dict')
 
         self._client = client
         self.response = response
-        self.result_count = response['result_count']
+        self._result_count = response['result_count']
+        self._results_iter = iter(self.records)
+
+    @property
+    def result_count(self):
+        return self._result_count
+
+    @property
+    def records(self):
+        return self.response.get('records', [])
 
     def __iter__(self):
-        records = self.response.get('records', [])
-        self._results_iter = iter(records)
+        self._results_iter = iter(self.records)
         return self
 
     def __next__(self):
@@ -50,3 +60,25 @@ class ResultSet(object):
 
     def next(self):
         return self.__next__()
+
+    def __repr__(self):
+        out = '<RecordSet ['
+        records = self.records
+
+        for i in range(self.max_repr_preview):
+            if i < len(records):
+                out += '\n  {}'.format(records[i])
+
+        if len(records) > self.max_repr_preview:
+            out += '\n  truncated [{} more, {} total]...'.format(
+                len(records) - self.max_repr_preview,
+                self.result_count
+            )
+
+        if out.endswith('['):
+            return out + ']>'
+        else:
+            return out + '\n]>'
+
+    def __str__(self):
+        return self.__repr__()

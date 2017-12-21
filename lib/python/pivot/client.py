@@ -2,7 +2,8 @@ from __future__ import absolute_import
 import requests
 import requests.exceptions
 from . import exceptions
-from .collection import Collection
+from .collection import Collection, Field
+from .utils import compact
 
 
 DEFAULT_URL = 'http://localhost:29029'
@@ -17,9 +18,11 @@ class Client(object):
         self.session = requests.Session()
 
     def request(self, method, path, data=None, params={}, headers={}, **kwargs):
+        headers['Content-Type'] = 'application/json'
+
         response = getattr(self.session, method.lower())(
             self.make_url(path),
-            data=data,
+            json=data,
             params=params,
             headers=headers,
             **kwargs
@@ -55,3 +58,32 @@ class Client(object):
         c = Collection(name, client=self)
         c.load()
         return c
+
+    def create_collection(
+        self,
+        name,
+        identity_field=None,
+        identity_field_type=None,
+        fields=[]
+    ):
+        for i, field in enumerate(fields):
+            if isinstance(field, Field):
+                fields[i] = field.as_dict()
+            elif isinstance(field, dict):
+                continue
+            else:
+                raise TypeError("Field specification must be a dict or a Field")
+
+        body = compact({
+            'name':                name,
+            'identity_field':      identity_field,
+            'identity_field_type': identity_field_type,
+            'fields':              fields,
+        })
+
+        import json
+        print('{}'.format(json.dumps(body, indent=4)))
+
+        self.request('post', '/api/schema', body).json()
+
+        return Collection(name, client=self)

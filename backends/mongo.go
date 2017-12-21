@@ -11,6 +11,7 @@ import (
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var DefaultConnectTimeout = 10 * time.Second
@@ -104,7 +105,7 @@ func (self *MongoBackend) GetConnectionString() *dal.ConnectionString {
 
 func (self *MongoBackend) Exists(name string, id interface{}) bool {
 	if collection, err := self.GetCollection(name); err == nil {
-		if n, err := self.db.C(collection.Name).FindId(id).Count(); err == nil && n == 1 {
+		if n, err := self.db.C(collection.Name).FindId(self.getId(id)).Count(); err == nil && n == 1 {
 			return true
 		}
 	}
@@ -116,7 +117,7 @@ func (self *MongoBackend) Retrieve(name string, id interface{}, fields ...string
 	if collection, err := self.GetCollection(name); err == nil {
 		var data map[string]interface{}
 
-		if err := self.db.C(collection.Name).FindId(id).One(&data); err == nil {
+		if err := self.db.C(collection.Name).FindId(self.getId(id)).One(&data); err == nil {
 			return self.recordFromResult(collection, data, fields...)
 		} else {
 			return nil, err
@@ -131,7 +132,7 @@ func (self *MongoBackend) Insert(name string, records *dal.RecordSet) error {
 		for _, record := range records.Records {
 			if _, err := collection.MakeRecord(record); err == nil {
 				data := record.Fields
-				data[MongoIdentityField] = record.ID
+				data[MongoIdentityField] = self.getId(record.ID)
 
 				if err := self.db.C(collection.Name).Insert(&data); err != nil {
 					return err
@@ -151,7 +152,7 @@ func (self *MongoBackend) Update(name string, records *dal.RecordSet, target ...
 	if collection, err := self.GetCollection(name); err == nil {
 		for _, record := range records.Records {
 			if _, err := collection.MakeRecord(record); err == nil {
-				if err := self.db.C(collection.Name).UpdateId(record.ID, record.Fields); err != nil {
+				if err := self.db.C(collection.Name).UpdateId(self.getId(record.ID), record.Fields); err != nil {
 					return err
 				}
 			} else {
@@ -168,7 +169,7 @@ func (self *MongoBackend) Update(name string, records *dal.RecordSet, target ...
 func (self *MongoBackend) Delete(name string, ids ...interface{}) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		for _, id := range ids {
-			if err := self.db.C(collection.Name).RemoveId(id); err != nil {
+			if err := self.db.C(collection.Name).RemoveId(self.getId(id)); err != nil {
 				return err
 			}
 		}
@@ -240,7 +241,9 @@ func (self *MongoBackend) Flush() error {
 func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[string]interface{}, fields ...string) (*dal.Record, error) {
 	if dataId, ok := data[MongoIdentityField]; ok {
 		record := dal.NewRecord(
-			collection.ConvertValue(MongoIdentityField, stringutil.Autotype(dataId)),
+			collection.ConvertValue(MongoIdentityField, stringutil.Autotype(
+				self.fromId(dataId),
+			)),
 		)
 
 		for k, v := range data {
@@ -262,4 +265,24 @@ func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[
 	} else {
 		return nil, fmt.Errorf("Could not locate identity field %s", MongoIdentityField)
 	}
+}
+
+func (self *MongoBackend) getId(in interface{}) interface{} {
+	switch in.(type) {
+	case string:
+		if bson.IsObjectIdHex(in.(string)) {
+			return bson.ObjectIdHex(in.(string))
+		}
+	}
+
+	return in
+}
+
+func (self *MongoBackend) fromId(in interface{}) interface{} {
+	switch in.(type) {
+	case bson.ObjectId:
+		return in.(bson.ObjectId).Hex()
+	}
+
+	return in
 }

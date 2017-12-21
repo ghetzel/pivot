@@ -26,3 +26,11 @@ func IsNotExistError(err error) bool {
 
 	return strings.HasSuffix(err.Error(), ` does not exist`)
 }
+
+func IsExistError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	return strings.HasSuffix(err.Error(), ` already exists`)
+}

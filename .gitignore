@@ -7,3 +7,5 @@
 /tmp
 /*.json
 *.pyc
+*.egg-info/
+/lib/python/env
