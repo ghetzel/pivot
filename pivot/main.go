@@ -96,8 +96,9 @@ func main() {
 				var indexer string
 				var config pivot.Configuration
 
-				if c, err := pivot.LoadConfigFile(c.GlobalString(`config`)); err == nil {
-					config = c.ForEnv(os.Getenv(`PIVOT_ENV`))
+				if cnf, err := pivot.LoadConfigFile(c.GlobalString(`config`)); err == nil {
+					config = cnf.ForEnv(os.Getenv(`PIVOT_ENV`))
+					log.Infof("Loaded configuration file from %v env=%v", c.GlobalString(`config`), os.Getenv(`PIVOT_ENV`))
 				} else if !os.IsNotExist(err) {
 					log.Fatalf("Configuration error: %v", err)
 				}
