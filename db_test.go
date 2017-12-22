@@ -893,12 +893,12 @@ func TestAggregators(t *testing.T) {
 		// Insert and Retrieve
 		// --------------------------------------------------------------------------------------------
 		assert.NoError(backend.Insert(`TestAggregators`, dal.NewRecordSet(
-			dal.NewRecord(nil).Set(`color`, `red`).Set(`inventory`, 34).Set(`factor`, float64(2.7)).Set(`created_at`, time.Now()),
-			dal.NewRecord(nil).Set(`color`, `green`).Set(`inventory`, 92).Set(`factor`, float64(9.8)).Set(`created_at`, time.Now()),
-			dal.NewRecord(nil).Set(`color`, `blue`).Set(`inventory`, 0).Set(`factor`, float64(5.6)).Set(`created_at`, time.Now()),
-			dal.NewRecord(nil).Set(`color`, `orange`).Set(`inventory`, 54).Set(`factor`, float64(0)).Set(`created_at`, time.Now()),
-			dal.NewRecord(nil).Set(`color`, `yellow`).Set(`inventory`, 123).Set(`factor`, float64(3.14)).Set(`created_at`, time.Now()),
-			dal.NewRecord(nil).Set(`color`, `gold`).Set(`inventory`, 19).Set(`factor`, float64(4.67)).Set(`created_at`, time.Now()),
+			dal.NewRecord(1).Set(`color`, `red`).Set(`inventory`, 34).Set(`factor`, float64(2.7)).Set(`created_at`, time.Now()),
+			dal.NewRecord(2).Set(`color`, `green`).Set(`inventory`, 92).Set(`factor`, float64(9.8)).Set(`created_at`, time.Now()),
+			dal.NewRecord(3).Set(`color`, `blue`).Set(`inventory`, 0).Set(`factor`, float64(5.6)).Set(`created_at`, time.Now()),
+			dal.NewRecord(4).Set(`color`, `orange`).Set(`inventory`, 54).Set(`factor`, float64(0)).Set(`created_at`, time.Now()),
+			dal.NewRecord(5).Set(`color`, `yellow`).Set(`inventory`, 123).Set(`factor`, float64(3.14)).Set(`created_at`, time.Now()),
+			dal.NewRecord(6).Set(`color`, `gold`).Set(`inventory`, 19).Set(`factor`, float64(4.67)).Set(`created_at`, time.Now()),
 		)))
 
 		vui, err := agg.Count(`TestAggregators`, filter.All())

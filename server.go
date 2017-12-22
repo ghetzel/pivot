@@ -175,6 +175,60 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			}
 		})
 
+	router.Get(`/api/collections/:collection/aggregate/:fields`,
+		func(w http.ResponseWriter, req *http.Request) {
+			name := vestigo.Param(req, `collection`)
+			fields := strings.Split(vestigo.Param(req, `fields`), `,`)
+			aggregations := strings.Split(httputil.Q(req, `fn`, `count`), `,`)
+
+			if f, err := filter.Parse(httputil.Q(req, `q`, `all`)); err == nil {
+
+				if aggregator := self.backend.WithAggregator(name); aggregator != nil {
+					results := make(map[string]interface{})
+
+					for _, field := range fields {
+						fieldResults := make(map[string]interface{})
+
+						for _, aggregation := range aggregations {
+							var value interface{}
+							var err error
+
+							switch aggregation {
+							case `count`:
+								value, err = aggregator.Count(name, f)
+							case `sum`:
+								value, err = aggregator.Sum(name, field, f)
+							case `minimum`, `min`:
+								value, err = aggregator.Minimum(name, field, f)
+							case `maximum`, `max`:
+								value, err = aggregator.Maximum(name, field, f)
+							case `average`, `avg`:
+								value, err = aggregator.Average(name, field, f)
+							default:
+								httputil.RespondJSON(w, fmt.Errorf("Unsupported aggregator %s", aggregator), http.StatusBadRequest)
+								return
+							}
+
+							if err != nil {
+								httputil.RespondJSON(w, err)
+								return
+							}
+
+							fieldResults[aggregation] = value
+						}
+
+						results[field] = fieldResults
+					}
+
+					httputil.RespondJSON(w, results)
+				} else {
+					httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support aggregations.", self.backend), http.StatusBadRequest)
+				}
+			} else {
+				httputil.RespondJSON(w, err, http.StatusBadRequest)
+			}
+		})
+
 	router.Get(`/api/collections/:collection/list/*fields`,
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)

@@ -231,7 +231,7 @@ func (self *MongoBackend) WithSearch(collection string, filters ...*filter.Filte
 }
 
 func (self *MongoBackend) WithAggregator(collection string) Aggregator {
-	return nil
+	return self
 }
 
 func (self *MongoBackend) Flush() error {
