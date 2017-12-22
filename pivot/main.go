@@ -31,6 +31,11 @@ func main() {
 			Value:  `debug`,
 			EnvVar: `LOGLEVEL`,
 		},
+		cli.StringFlag{
+			Name:  `config, c`,
+			Usage: `Path to the configuration file to load.`,
+			Value: `pivot.yml`,
+		},
 		cli.BoolFlag{
 			Name:  `log-queries, Q`,
 			Usage: `Whether to include queries in the logging output`,
@@ -73,7 +78,7 @@ func main() {
 		{
 			Name:      `web`,
 			Usage:     `Start a web server UI.`,
-			ArgsUsage: `CONNECTION_STRING [INDEXER_CONNECTION_STRING]`,
+			ArgsUsage: `[CONNECTION_STRING [INDEXER_CONNECTION_STRING]]`,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  `address, a`,
@@ -87,16 +92,35 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) {
-				server := pivot.NewServer(c.Args().First())
+				var backend string
+				var indexer string
+				var config pivot.Configuration
+
+				if c, err := pivot.LoadConfigFile(c.GlobalString(`config`)); err == nil {
+					config = c.ForEnv(os.Getenv(`PIVOT_ENV`))
+				} else if !os.IsNotExist(err) {
+					log.Fatalf("Configuration error: %v", err)
+				}
+
+				if v := c.Args().Get(0); v != `` {
+					backend = v
+				} else {
+					backend = config.Backend
+				}
+
+				if v := c.Args().Get(1); v != `` {
+					indexer = v
+				} else {
+					indexer = config.Indexer
+				}
+
+				server := pivot.NewServer(backend)
 				server.Address = c.String(`address`)
 				server.UiDirectory = c.String(`ui-dir`)
+				server.ConnectOptions.Indexer = indexer
 
 				for _, filename := range c.GlobalStringSlice(`schema`) {
 					server.AddSchemaDefinition(filename)
-				}
-
-				if ics := c.Args().Get(1); ics != `` {
-					server.ConnectOptions.Indexer = ics
 				}
 
 				if err := server.ListenAndServe(); err != nil {

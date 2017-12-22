@@ -3,10 +3,14 @@ package pivot
 import (
 	"io/ioutil"
 
+	"github.com/fatih/structs"
 	"github.com/ghodss/yaml"
 )
 
 type Configuration struct {
+	Backend      string                   `json:"backend"`
+	Indexer      string                   `json:"indexer"`
+	Environments map[string]Configuration `json:"environments"`
 }
 
 func LoadConfigFile(path string) (Configuration, error) {
@@ -23,6 +27,29 @@ func LoadConfigFile(path string) (Configuration, error) {
 	return config, nil
 }
 
-func (self *Configuration) Initialize() error {
-	return nil
+func (self *Configuration) ForEnv(env string) Configuration {
+	config := *self
+	base := structs.New(&config)
+
+	if envConfig, ok := self.Environments[env]; ok {
+		specific := structs.New(envConfig)
+
+		// merge the environment-specific values over top of the general ones
+		for _, field := range base.Fields() {
+			if field.IsExported() {
+				switch field.Name() {
+				case `Environment`:
+					continue
+				default:
+					if specificField, ok := specific.FieldOk(field.Name()); ok {
+						if !specificField.IsZero() {
+							field.Set(specificField.Value())
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return config
 }
