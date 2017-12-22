@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/filter"
 )
 
@@ -144,13 +145,17 @@ func mongoCriterionOperatorRange(gen *MongoDB, criterion filter.Criterion, opera
 	switch operator {
 	case `range`:
 		if l := len(criterion.Values); l > 0 && (l%2 == 0) {
-			gen.values = append(gen.values, criterion.Values[0])
 			or_clauses := make([]map[string]interface{}, 0)
 
 			for i := 0; i < l; i += 2 {
+				value1 := stringutil.Autotype(criterion.Values[i])
+				value2 := stringutil.Autotype(criterion.Values[i+1])
+
+				gen.values = append(gen.values, value1, value2)
+
 				c[criterion.Field] = map[string]interface{}{
-					`$gte`: criterion.Values[i],
-					`$lt`:  criterion.Values[i+1],
+					`$gte`: value1,
+					`$lt`:  value2,
 				}
 
 				or_clauses = append(or_clauses, c)
@@ -173,10 +178,11 @@ func mongoCriterionOperatorRange(gen *MongoDB, criterion filter.Criterion, opera
 		case 0:
 			return c, fmt.Errorf("No values given for criterion %v", criterion.Field)
 		case 1:
-			gen.values = append(gen.values, criterion.Values[0])
+			value := stringutil.Autotype(criterion.Values[0])
+			gen.values = append(gen.values, value)
 
 			c[criterion.Field] = map[string]interface{}{
-				`$` + operator: criterion.Values[0],
+				`$` + operator: value,
 			}
 		default:
 			return c, fmt.Errorf("Numeric comparators can only accept one value, %d given", l)

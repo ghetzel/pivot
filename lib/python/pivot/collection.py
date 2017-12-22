@@ -188,6 +188,75 @@ class Collection(object):
     def update(self, *records):
         return self.create(*records, update=True)
 
+    def aggregate(self, fields, fns=None, filterstring=None):
+        """
+        Return a dict of field-aggregates for the given fields, optionally specifying
+        additional aggregation functions and a pre-aggregation filter.
+        """
+        if fields is None:
+            fields = ['_id']
+        if not isinstance(fields, list):
+            fields = [fields]
+
+        return self.client.request(
+            'get',
+            '/api/collections/{}/aggregate/{}'.format(self.name, ','.join(fields)),
+            params=compact({
+                'fn': ','.join(fns),
+                'q': filterstring,
+            })
+        ).json()
+
+    def count(self, filterstring=None):
+        """
+        Return a count of all records, or just those matching the given filter.
+        """
+        return self.aggregate(None, fns=['count'], filterstring=filterstring).get(
+            '_id', {}
+        ).get('count', 0)
+
+    def sum(self, field, filterstring=None):
+        """
+        Return the sum of all values of the given field, optionally filtered by
+        the given filterstring.
+        """
+        return float(self.aggregate(field, fns=['sum'], filterstring=filterstring).get(
+            field, {}
+        ).get('sum', 0))
+
+    def average(self, field, filterstring=None):
+        """
+        Return the arithmetic mean of all values of the given field, optionally
+        filtered by then given filterstring.
+        """
+        return float(self.aggregate(field, fns=['avg'], filterstring=filterstring).get(
+            field, {}
+        ).get('avg', 0))
+
+    def minimum(self, field, filterstring=None):
+        """
+        Return the minimum of all values of the given field, optionally
+        filtered by then given filterstring.
+        """
+        return float(self.aggregate(field, fns=['min'], filterstring=filterstring).get(
+            field, {}
+        ).get('min', 0))
+
+    def maximum(self, field, filterstring=None):
+        """
+        Return the maximum of all values of the given field, optionally
+        filtered by then given filterstring.
+        """
+        return float(self.aggregate(field, fns=['max'], filterstring=filterstring).get(
+            field, {}
+        ).get('max', 0))
+
+    def __len__(self):
+        """
+        Implements len(collection)
+        """
+        return self.count()
+
     def load(self):
         """
         Load this collection's definition from Pivot.

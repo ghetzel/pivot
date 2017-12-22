@@ -146,21 +146,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			name := vestigo.Param(req, `collection`)
 			query := vestigo.Param(req, `_name`)
 
-			limit := int(httputil.QInt(req, `limit`, int64(DefaultResultLimit)))
-			offset := int(httputil.QInt(req, `offset`))
-
-			if f, err := filter.Parse(query); err == nil {
-				f.Limit = limit
-				f.Offset = offset
-
-				if v := httputil.Q(req, `sort`); v != `` {
-					f.Sort = strings.Split(v, `,`)
-				}
-
-				if v := httputil.Q(req, `fields`); v != `` {
-					f.Fields = strings.Split(v, `,`)
-				}
-
+			if f, err := filterFromRequest(req, query, int64(DefaultResultLimit)); err == nil {
 				if search := self.backend.WithSearch(name); search != nil {
 					if recordset, err := search.Query(name, f); err == nil {
 						httputil.RespondJSON(w, recordset)
@@ -181,8 +167,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			fields := strings.Split(vestigo.Param(req, `fields`), `,`)
 			aggregations := strings.Split(httputil.Q(req, `fn`, `count`), `,`)
 
-			if f, err := filter.Parse(httputil.Q(req, `q`, `all`)); err == nil {
-
+			if f, err := filterFromRequest(req, httputil.Q(req, `q`, `all`), 0); err == nil {
 				if aggregator := self.backend.WithAggregator(name); aggregator != nil {
 					results := make(map[string]interface{})
 
@@ -198,14 +183,14 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 								value, err = aggregator.Count(name, f)
 							case `sum`:
 								value, err = aggregator.Sum(name, field, f)
-							case `minimum`, `min`:
+							case `min`:
 								value, err = aggregator.Minimum(name, field, f)
-							case `maximum`, `max`:
+							case `max`:
 								value, err = aggregator.Maximum(name, field, f)
-							case `average`, `avg`:
+							case `avg`:
 								value, err = aggregator.Average(name, field, f)
 							default:
-								httputil.RespondJSON(w, fmt.Errorf("Unsupported aggregator %s", aggregator), http.StatusBadRequest)
+								httputil.RespondJSON(w, fmt.Errorf("Unsupported aggregator '%s'", aggregation), http.StatusBadRequest)
 								return
 							}
 
@@ -234,26 +219,20 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			name := vestigo.Param(req, `collection`)
 			fieldNames := vestigo.Param(req, `_name`)
 
-			f := filter.All()
+			if f, err := filterFromRequest(req, httputil.Q(req, `q`, `all`), 0); err == nil {
+				if search := self.backend.WithSearch(name); search != nil {
+					fields := strings.TrimPrefix(fieldNames, `/`)
 
-			if v := httputil.Q(req, `q`); v != `` {
-				if fV, err := filter.Parse(v); err == nil {
-					f = fV
+					if recordset, err := search.ListValues(name, strings.Split(fields, `/`), f); err == nil {
+						httputil.RespondJSON(w, recordset)
+					} else {
+						httputil.RespondJSON(w, err)
+					}
 				} else {
-					httputil.RespondJSON(w, err, http.StatusBadRequest)
-				}
-			}
-
-			if search := self.backend.WithSearch(name); search != nil {
-				fields := strings.TrimPrefix(fieldNames, `/`)
-
-				if recordset, err := search.ListValues(name, strings.Split(fields, `/`), f); err == nil {
-					httputil.RespondJSON(w, recordset)
-				} else {
-					httputil.RespondJSON(w, err)
+					httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support complex queries.", self.backend), http.StatusBadRequest)
 				}
 			} else {
-				httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support complex queries.", self.backend), http.StatusBadRequest)
+				httputil.RespondJSON(w, err, http.StatusBadRequest)
 			}
 		})
 
@@ -421,4 +400,26 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		})
 
 	return nil
+}
+
+func filterFromRequest(req *http.Request, filterStr string, defaultLimit int64) (*filter.Filter, error) {
+	limit := int(httputil.QInt(req, `limit`, defaultLimit))
+	offset := int(httputil.QInt(req, `offset`))
+
+	if f, err := filter.Parse(filterStr); err == nil {
+		f.Limit = limit
+		f.Offset = offset
+
+		if v := httputil.Q(req, `sort`); v != `` {
+			f.Sort = strings.Split(v, `,`)
+		}
+
+		if v := httputil.Q(req, `fields`); v != `` {
+			f.Fields = strings.Split(v, `,`)
+		}
+
+		return f, nil
+	} else {
+		return nil, err
+	}
 }

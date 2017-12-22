@@ -3,6 +3,7 @@ package backends
 import (
 	"encoding/json"
 
+	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -153,10 +154,13 @@ func (self *MongoBackend) filterToNative(collection *dal.Collection, flt *filter
 		flt,
 	); err == nil {
 		var query bson.M
+		querylog.Debugf("[%T] query: %v", self, string(data))
 
 		if err := json.Unmarshal(data, &query); err != nil {
 			return nil, err
 		}
+
+		query = bson.M(maputil.Autotype(query))
 
 		return query, nil
 	} else {

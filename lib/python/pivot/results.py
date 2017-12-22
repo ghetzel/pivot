@@ -46,7 +46,7 @@ class RecordSet(object):
 
     @property
     def records(self):
-        return self.response.get('records', [])
+        return self.response.get('records') or []
 
     def __iter__(self):
         self._results_iter = iter(self.records)
