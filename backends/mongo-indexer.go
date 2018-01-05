@@ -2,6 +2,7 @@ package backends
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
@@ -154,14 +155,22 @@ func (self *MongoBackend) filterToNative(collection *dal.Collection, flt *filter
 		flt,
 	); err == nil {
 		var query bson.M
-		querylog.Debugf("[%T] query: %v", self, string(data))
 
 		if err := json.Unmarshal(data, &query); err != nil {
 			return nil, err
 		}
 
-		query = bson.M(maputil.Autotype(query))
+		query = bson.M(maputil.Apply(query, func(key []string, value interface{}) (interface{}, bool) {
+			vS := fmt.Sprintf("%v", value)
 
+			if key[0] == MongoIdentityField && bson.IsObjectIdHex(vS) {
+				return bson.ObjectIdHex(vS), true
+			} else {
+				return nil, false
+			}
+		}))
+
+		querylog.Debugf("[%T] query: %v", self, string(data))
 		return query, nil
 	} else {
 		return nil, err
