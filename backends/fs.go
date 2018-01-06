@@ -94,6 +94,8 @@ func (self *FilesystemBackend) Initialize() error {
 		} else {
 			return err
 		}
+	} else {
+		self.root = `/` + self.root
 	}
 
 	// absolutify the path
@@ -488,7 +490,9 @@ func (self *FilesystemBackend) readObject(collection *dal.Collection, id string,
 
 	if dataRoot, err := self.getDataRoot(collection.Name, isData); err == nil {
 		if filename := self.makeFilename(collection, id, isData); filename != `` {
-			if file, err := os.Open(filepath.Join(dataRoot, filename)); err == nil {
+			objPath := filepath.Join(dataRoot, filename)
+
+			if file, err := os.Open(objPath); err == nil {
 				defer file.Close()
 				querylog.Debugf("[%T] Record %v/%v read from disk", self, collection.Name, id)
 
@@ -516,7 +520,11 @@ func (self *FilesystemBackend) readObject(collection *dal.Collection, id string,
 					defer search.IndexRemove(collection.Name, []interface{}{id})
 				}
 
-				return fmt.Errorf("Record %v does not exist", id)
+				if isData {
+					return fmt.Errorf("Record %q does not exist", id)
+				} else {
+					return fmt.Errorf("File %q does not exist", objPath)
+				}
 			} else {
 				return err
 			}
