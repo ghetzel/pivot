@@ -19,13 +19,24 @@ type ConnectionString struct {
 }
 
 func (self *ConnectionString) String() string {
-	return fmt.Sprintf(
-		"%s://%s/%s%s",
-		self.URI.Scheme,
-		self.URI.Host,
-		strings.TrimPrefix(self.URI.Path, `/`),
-		stringutil.PrefixIf(self.URI.RawQuery, `?`),
-	)
+	if self.URI != nil {
+		backend, protocol := self.Scheme()
+		scheme := backend
+
+		if protocol != `` {
+			scheme += `+` + protocol
+		}
+
+		return fmt.Sprintf(
+			"%s://%s/%s/%s",
+			scheme,
+			self.Host(),
+			self.Dataset(),
+			stringutil.PrefixIf(self.URI.RawQuery, `?`),
+		)
+	} else {
+		return ``
+	}
 }
 
 func (self *ConnectionString) Scheme() (string, string) {

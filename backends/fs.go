@@ -144,7 +144,7 @@ func (self *FilesystemBackend) Insert(collectionName string, recordset *dal.Reco
 }
 
 func (self *FilesystemBackend) Exists(name string, id interface{}) bool {
-	if collection, ok := self.registeredCollections[name]; ok {
+	if collection, err := self.GetCollection(name); err == nil {
 		if dataRoot, err := self.getDataRoot(collection.Name, true); err == nil {
 			if filename := self.makeFilename(collection, fmt.Sprintf("%v", id), true); filename != `` {
 				if stat, err := os.Stat(filepath.Join(dataRoot, filename)); err == nil {
@@ -159,8 +159,8 @@ func (self *FilesystemBackend) Exists(name string, id interface{}) bool {
 	return false
 }
 
-func (self *FilesystemBackend) Retrieve(collectionName string, id interface{}, fields ...string) (*dal.Record, error) {
-	if collection, ok := self.registeredCollections[collectionName]; ok {
+func (self *FilesystemBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
+	if collection, err := self.GetCollection(name); err == nil {
 		var record dal.Record
 
 		if err := self.readObject(collection, fmt.Sprintf("%v", id), true, &record); err == nil {
@@ -169,19 +169,19 @@ func (self *FilesystemBackend) Retrieve(collectionName string, id interface{}, f
 			}
 
 			// add/touch item in cache for rapid readback if necessary
-			self.recordCache.Add(fmt.Sprintf("%v|%v", collectionName, record.ID), &record)
+			self.recordCache.Add(fmt.Sprintf("%v|%v", collection.Name, record.ID), &record)
 
 			return &record, nil
 		} else {
 			return nil, err
 		}
 	} else {
-		return nil, dal.CollectionNotFound
+		return nil, err
 	}
 }
 
-func (self *FilesystemBackend) Update(collectionName string, recordset *dal.RecordSet, target ...string) error {
-	if collection, ok := self.registeredCollections[collectionName]; ok {
+func (self *FilesystemBackend) Update(name string, recordset *dal.RecordSet, target ...string) error {
+	if collection, err := self.GetCollection(name); err == nil {
 		for _, record := range recordset.Records {
 			if r, err := collection.MakeRecord(record); err == nil {
 				record = r
@@ -194,7 +194,7 @@ func (self *FilesystemBackend) Update(collectionName string, recordset *dal.Reco
 			}
 
 			// add/touch item in cache for rapid readback if necessary
-			self.recordCache.Add(fmt.Sprintf("%v|%v", collectionName, record.ID), record)
+			self.recordCache.Add(fmt.Sprintf("%v|%v", name, record.ID), record)
 		}
 
 		if search := self.WithSearch(collection.Name); search != nil {
@@ -205,12 +205,12 @@ func (self *FilesystemBackend) Update(collectionName string, recordset *dal.Reco
 
 		return nil
 	} else {
-		return dal.CollectionNotFound
+		return err
 	}
 }
 
-func (self *FilesystemBackend) Delete(collectionName string, ids ...interface{}) error {
-	if collection, ok := self.registeredCollections[collectionName]; ok {
+func (self *FilesystemBackend) Delete(name string, ids ...interface{}) error {
+	if collection, err := self.GetCollection(name); err == nil {
 		// remove documents from index
 		if search := self.WithSearch(collection.Name); search != nil {
 			defer search.IndexRemove(collection.Name, ids)
@@ -223,7 +223,7 @@ func (self *FilesystemBackend) Delete(collectionName string, ids ...interface{})
 				}
 
 				// explicitly remove item from cache
-				self.recordCache.Remove(fmt.Sprintf("%v|%v", collectionName, id))
+				self.recordCache.Remove(fmt.Sprintf("%v|%v", name, id))
 			}
 
 			return nil
@@ -231,7 +231,7 @@ func (self *FilesystemBackend) Delete(collectionName string, ids ...interface{})
 			return err
 		}
 	} else {
-		return dal.CollectionNotFound
+		return err
 	}
 }
 
@@ -249,6 +249,7 @@ func (self *FilesystemBackend) ListCollections() ([]string, error) {
 
 		for _, entry := range entries {
 			if entry.IsDir() {
+
 				if collection, err := self.readSchemaFromDisk(entry.Name()); err == nil {
 					schemata = append(schemata, collection.Name)
 
@@ -271,9 +272,9 @@ func (self *FilesystemBackend) CreateCollection(definition *dal.Collection) erro
 	}
 }
 
-func (self *FilesystemBackend) DeleteCollection(collectionName string) error {
-	if _, ok := self.registeredCollections[collectionName]; ok {
-		if datadir, err := self.getDataRoot(collectionName, false); err == nil {
+func (self *FilesystemBackend) DeleteCollection(name string) error {
+	if _, err := self.GetCollection(name); err == nil {
+		if datadir, err := self.getDataRoot(name, false); err == nil {
 			if _, err := os.Stat(datadir); os.IsNotExist(err) {
 				return nil
 			}
@@ -319,6 +320,8 @@ func (self *FilesystemBackend) Flush() error {
 
 func (self *FilesystemBackend) readSchemaFromDisk(name string) (*dal.Collection, error) {
 	schemaDesc := filepath.Join(self.root, name, `schema.json`)
+
+	querylog.Debugf("[%T] Read schema definition at %v", self, schemaDesc)
 
 	if file, err := os.Open(schemaDesc); err == nil {
 		defer file.Close()

@@ -55,7 +55,7 @@ func (self *FilesystemBackend) QueryFunc(collectionName string, filter *filter.F
 			}
 		}
 	} else {
-		if collection, ok := self.registeredCollections[collectionName]; ok {
+		if collection, err := self.GetCollection(collectionName); err == nil {
 			if ids, err := self.listObjectIdsInCollection(collection); err == nil {
 				page := 1
 				processed := 0
@@ -106,7 +106,7 @@ func (self *FilesystemBackend) QueryFunc(collectionName string, filter *filter.F
 				return err
 			}
 		} else {
-			return dal.CollectionNotFound
+			return err
 		}
 	}
 
@@ -118,7 +118,7 @@ func (self *FilesystemBackend) Query(collection string, f *filter.Filter, result
 }
 
 func (self *FilesystemBackend) ListValues(collectionName string, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
-	if collection, ok := self.registeredCollections[collectionName]; ok {
+	if collection, err := self.GetCollection(collectionName); err == nil {
 		values := make(map[string][]interface{})
 
 		if err := self.QueryFunc(collectionName, f, func(record *dal.Record, err error, page IndexPage) error {
@@ -158,7 +158,7 @@ func (self *FilesystemBackend) ListValues(collectionName string, fields []string
 			return values, err
 		}
 	} else {
-		return nil, dal.CollectionNotFound
+		return nil, err
 	}
 }
 

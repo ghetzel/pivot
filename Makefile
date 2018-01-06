@@ -26,3 +26,6 @@ test:
 
 build: deps fmt
 	test -d pivot && go build --tags json1 -o bin/`basename ${PWD}` pivot/*.go
+
+quickbuild: deps fmt
+	test -d pivot && go build -o bin/`basename ${PWD}` pivot/*.go
