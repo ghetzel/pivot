@@ -299,11 +299,15 @@ func (self *FilesystemBackend) GetCollection(name string) (*dal.Collection, erro
 	} else if c, err := self.readSchemaFromDisk(name); err == nil {
 		collection = c
 		self.registeredCollections[name] = collection
+	} else if dal.IsCollectionNotFoundErr(err) {
+		return nil, err
 	}
 
 	if collection != nil {
 		if err := self.readObject(collection, `schema`, false, v); err == nil {
 			return collection, nil
+		} else if strings.HasSuffix(err.Error(), ` does not exist`) {
+			return nil, dal.CollectionNotFound
 		} else {
 			return nil, err
 		}
@@ -334,6 +338,8 @@ func (self *FilesystemBackend) readSchemaFromDisk(name string) (*dal.Collection,
 		} else {
 			return nil, err
 		}
+	} else if os.IsNotExist(err) {
+		return nil, dal.CollectionNotFound
 	} else {
 		return nil, err
 	}
