@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/jbenet/go-base58"
-	"github.com/satori/go.uuid"
 )
 
 type EncoderFunc func([]byte) (string, error) //{}
@@ -37,7 +37,7 @@ func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error) {
 	}
 
 	if typeutil.IsZero(value) {
-		value = uuid.NewV4().String()
+		value = stringutil.UUID().String()
 	}
 
 	return value, nil
@@ -50,7 +50,7 @@ func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc {
 		}
 
 		if typeutil.IsZero(value) {
-			if v, err := encoder(uuid.NewV4().Bytes()); err == nil {
+			if v, err := encoder(stringutil.UUID().Bytes()); err == nil {
 				if typeutil.IsZero(v) {
 					return value, fmt.Errorf("UUID encoder produced a zero-length result")
 				}
