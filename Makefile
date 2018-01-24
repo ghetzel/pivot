@@ -25,7 +25,7 @@ test:
 	go test -i --tags json1 $(PKGS)
 
 build: deps fmt
-	test -d pivot && go build --tags json1 -o bin/`basename ${PWD}` pivot/*.go
+	test -d pivot && go build --tags json1 -i -o bin/`basename ${PWD}` pivot/*.go
 
 quickbuild: deps fmt
 	test -d pivot && go build -i -o bin/`basename ${PWD}` pivot/*.go

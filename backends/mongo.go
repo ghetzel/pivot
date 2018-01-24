@@ -131,7 +131,7 @@ func (self *MongoBackend) Insert(name string, records *dal.RecordSet) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		for _, record := range records.Records {
 			if _, err := collection.MakeRecord(record); err == nil {
-				self.prepRecordToSave(record)
+				self.normalizeRecordValues(record)
 
 				data := record.Fields
 				data[MongoIdentityField] = self.getId(record.ID)
@@ -154,7 +154,7 @@ func (self *MongoBackend) Update(name string, records *dal.RecordSet, target ...
 	if collection, err := self.GetCollection(name); err == nil {
 		for _, record := range records.Records {
 			if _, err := collection.MakeRecord(record); err == nil {
-				self.prepRecordToSave(record)
+				self.normalizeRecordValues(record)
 
 				if err := self.db.C(collection.Name).UpdateId(self.getId(record.ID), record.Fields); err != nil {
 					return err
@@ -242,7 +242,7 @@ func (self *MongoBackend) Flush() error {
 	return nil
 }
 
-func (self *MongoBackend) prepRecordToSave(record *dal.Record) {
+func (self *MongoBackend) normalizeRecordValues(record *dal.Record) {
 	for name, value := range record.Fields {
 		switch value.(type) {
 		case bson.ObjectId:
@@ -273,6 +273,8 @@ func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[
 		if err := record.Populate(record, collection); err != nil {
 			return nil, fmt.Errorf("error populating record: %v", err)
 		}
+
+		self.normalizeRecordValues(record)
 
 		return record, nil
 	} else {
