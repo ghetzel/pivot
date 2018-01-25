@@ -3,9 +3,50 @@ package dal
 import (
 	"fmt"
 
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 )
+
+func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error) {
+	validators := make([]FieldValidatorFunc, 0)
+
+	for name, defn := range in {
+		if validator, err := GetValidator(name, defn); err == nil {
+			validators = append(validators, validator)
+		} else {
+			return nil, fmt.Errorf("Invalid validator configuration %v: %v", name, err)
+		}
+	}
+
+	return ValidateAll(validators), nil
+}
+
+func GetValidator(name string, args interface{}) (FieldValidatorFunc, error) {
+	switch name {
+	case `one-of`:
+		if typeutil.IsArray(args) {
+			return ValidateIsOneOf(sliceutil.Sliceify(args)...), nil
+		} else {
+			return nil, fmt.Errorf("Must specify an array of values for validator 'one-of'")
+		}
+
+	case `not-zero`:
+		return ValidateNonZero, nil
+
+	case `not-empty`:
+		return ValidateNotEmpty, nil
+
+	case `positive-integer`:
+		return ValidatePositiveInteger, nil
+
+	case `positive-or-zero-integer`:
+		return ValidatePositiveOrZeroInteger, nil
+
+	default:
+		return nil, fmt.Errorf("Unknown validator %q", name)
+	}
+}
 
 func ValidateAll(validators []FieldValidatorFunc) FieldValidatorFunc {
 	return func(value interface{}) error {

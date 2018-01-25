@@ -99,11 +99,11 @@ func mongoCriterionOperatorPattern(gen *MongoDB, opname string, criterion filter
 
 			switch opname {
 			case `contains`:
-				valueClause = fmt.Sprintf(".*%s.*", value)
+				valueClause = fmt.Sprintf(".*%v.*", value)
 			case `prefix`:
-				valueClause = fmt.Sprintf("^%s.*", value)
+				valueClause = fmt.Sprintf("^%v.*", value)
 			case `suffix`:
-				valueClause = fmt.Sprintf(".*%s$", value)
+				valueClause = fmt.Sprintf(".*%v$", value)
 			case `like`, `unlike`:
 				valueClause = rxCharFilter.ReplaceAllString(fmt.Sprintf("%v", value), `.`)
 			default:

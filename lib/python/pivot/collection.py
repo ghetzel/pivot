@@ -106,8 +106,8 @@ class Collection(object):
         """
         return [Field(**f) for f in self.definition.get('fields', [])]
 
-    def all(self):
-        return self.query('all')
+    def all(self, **kwargs):
+        return self.query('all', **kwargs)
 
     def query(self, filterstring, limit=None, offset=None, sort=None, fields=None):
         """
@@ -122,6 +122,9 @@ class Collection(object):
             sort = []
         if not isinstance(sort, list):
             sort = [sort]
+
+        if limit is False:
+            limit = 4294967295
 
         results = self.client.request(
             'get',

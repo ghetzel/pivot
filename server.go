@@ -5,12 +5,15 @@ package pivot
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"path"
 	"strings"
 	"time"
 
 	"github.com/ghetzel/diecast"
 	"github.com/ghetzel/go-stockutil/httputil"
+	"github.com/ghetzel/go-stockutil/pathutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -46,7 +49,17 @@ func NewServer(connectionString ...string) *Server {
 }
 
 func (self *Server) AddSchemaDefinition(filename string) {
-	self.schemaDefs = append(self.schemaDefs, filename)
+	if pathutil.DirExists(filename) {
+		if entries, err := ioutil.ReadDir(filename); err == nil {
+			for _, entry := range entries {
+				if entry.Mode().IsRegular() {
+					self.schemaDefs = append(self.schemaDefs, path.Join(filename, entry.Name()))
+				}
+			}
+		}
+	} else if pathutil.FileExists(filename) {
+		self.schemaDefs = append(self.schemaDefs, filename)
+	}
 }
 
 func (self *Server) ListenAndServe() error {

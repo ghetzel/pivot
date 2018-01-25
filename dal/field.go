@@ -12,22 +12,24 @@ import (
 )
 
 type Field struct {
-	Name               string             `json:"name"`
-	Description        string             `json:"description,omitempty"`
-	Type               Type               `json:"type"`
-	KeyType            Type               `json:"keytype,omitempty"`
-	Subtype            Type               `json:"subtype,omitempty"`
-	Length             int                `json:"length,omitempty"`
-	Precision          int                `json:"precision,omitempty"`
-	Identity           bool               `json:"identity,omitempty"`
-	Key                bool               `json:"key,omitempty"`
-	Required           bool               `json:"required,omitempty"`
-	Unique             bool               `json:"unique,omitempty"`
-	DefaultValue       interface{}        `json:"default,omitempty"`
-	NativeType         string             `json:"native_type,omitempty"`
-	ValidateOnPopulate bool               `json:"validate_on_populate,omitempty"`
-	Validator          FieldValidatorFunc `json:"-"`
-	Formatter          FieldFormatterFunc `json:"-"`
+	Name               string                 `json:"name"`
+	Description        string                 `json:"description,omitempty"`
+	Type               Type                   `json:"type"`
+	KeyType            Type                   `json:"keytype,omitempty"`
+	Subtype            Type                   `json:"subtype,omitempty"`
+	Length             int                    `json:"length,omitempty"`
+	Precision          int                    `json:"precision,omitempty"`
+	Identity           bool                   `json:"identity,omitempty"`
+	Key                bool                   `json:"key,omitempty"`
+	Required           bool                   `json:"required,omitempty"`
+	Unique             bool                   `json:"unique,omitempty"`
+	DefaultValue       interface{}            `json:"default,omitempty"`
+	NativeType         string                 `json:"native_type,omitempty"`
+	ValidateOnPopulate bool                   `json:"validate_on_populate,omitempty"`
+	Validator          FieldValidatorFunc     `json:"-"`
+	Formatter          FieldFormatterFunc     `json:"-"`
+	FormatterConfig    map[string]interface{} `json:"formatters,omitempty"`
+	ValidatorConfig    map[string]interface{} `json:"validators,omitempty"`
 }
 
 func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
@@ -229,6 +231,8 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 func (self *Field) MarshalJSON() ([]byte, error) {
 	type Alias Field
 
+	// this is a small pile or horrors that prevents infinite MarshalJSON stack
+	// overflow recursion sadness
 	if data, err := json.Marshal(&struct {
 		*Alias
 	}{
@@ -243,5 +247,37 @@ func (self *Field) MarshalJSON() ([]byte, error) {
 			DefaultValue: nil,
 			Alias:        (*Alias)(self),
 		})
+	}
+}
+
+func (self *Field) UnmarshalJSON(b []byte) error {
+	type Alias Field
+
+	// this is a small pile or horrors that prevents infinite UnmarshalJSON stack
+	// overflow recursion sadness
+	if err := json.Unmarshal(b, &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(self),
+	}); err == nil {
+		if len(self.FormatterConfig) > 0 {
+			if formatter, err := FormatterFromMap(self.FormatterConfig); err == nil {
+				self.Formatter = formatter
+			} else {
+				return fmt.Errorf("formatter error: %v", err)
+			}
+		}
+
+		if len(self.ValidatorConfig) > 0 {
+			if validator, err := ValidatorFromMap(self.ValidatorConfig); err == nil {
+				self.Validator = validator
+			} else {
+				return fmt.Errorf("validator error: %v", err)
+			}
+		}
+
+		return nil
+	} else {
+		return err
 	}
 }

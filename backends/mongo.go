@@ -260,6 +260,8 @@ func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[
 		)
 
 		for k, v := range data {
+			v = self.fromId(v)
+
 			if _, ok := collection.GetField(k); ok || len(collection.Fields) == 0 {
 				if len(fields) == 0 || sliceutil.ContainsString(fields, k) {
 					record.Set(k, v)
@@ -294,6 +296,7 @@ func (self *MongoBackend) getId(in interface{}) interface{} {
 }
 
 func (self *MongoBackend) fromId(in interface{}) interface{} {
+
 	switch in.(type) {
 	case bson.ObjectId:
 		return in.(bson.ObjectId).Hex()
