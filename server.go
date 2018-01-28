@@ -383,21 +383,47 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 	router.Post(`/api/schema`,
 		func(w http.ResponseWriter, req *http.Request) {
-			var collection dal.Collection
+			var collections []dal.Collection
 
-			if err := json.NewDecoder(req.Body).Decode(&collection); err == nil {
+			if body, err := ioutil.ReadAll(req.Body); err == nil {
+				var collection dal.Collection
+
+				if err := json.Unmarshal(body, &collection); err == nil {
+					collections = append(collections, collection)
+				} else if strings.Contains(err.Error(), `cannot unmarshal array `) {
+					if err := json.Unmarshal(body, &collections); err != nil {
+						httputil.RespondJSON(w, err, http.StatusBadRequest)
+						return
+					}
+				} else {
+					httputil.RespondJSON(w, err, http.StatusBadRequest)
+				}
+			} else {
+				httputil.RespondJSON(w, err, http.StatusBadRequest)
+				return
+			}
+
+			var errors []error
+
+			for _, collection := range collections {
 				if err := self.backend.CreateCollection(&collection); err == nil {
 					httputil.RespondJSON(w, collection, http.StatusCreated)
 
-				} else if dal.IsExistError(err) {
-					httputil.RespondJSON(w, err, http.StatusConflict)
+				} else if len(collections) == 1 {
+					if dal.IsExistError(err) {
+						httputil.RespondJSON(w, err, http.StatusConflict)
+					} else {
+						httputil.RespondJSON(w, err)
+					}
 
+					return
 				} else {
-					httputil.RespondJSON(w, err)
+					errors = append(errors, err)
 				}
+			}
 
-			} else {
-				httputil.RespondJSON(w, err, http.StatusBadRequest)
+			if len(errors) > 0 {
+				httputil.RespondJSON(w, errors, http.StatusBadRequest)
 			}
 		})
 
@@ -407,6 +433,17 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 			if collection, err := self.backend.GetCollection(name); err == nil {
 				httputil.RespondJSON(w, collection)
+			} else {
+				httputil.RespondJSON(w, err, http.StatusBadRequest)
+			}
+		})
+
+	router.Delete(`/api/schema/:collection`,
+		func(w http.ResponseWriter, req *http.Request) {
+			name := vestigo.Param(req, `collection`)
+
+			if err := self.backend.DeleteCollection(name); err == nil {
+				httputil.RespondJSON(w, nil)
 			} else {
 				httputil.RespondJSON(w, err, http.StatusBadRequest)
 			}

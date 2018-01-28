@@ -134,7 +134,12 @@ func (self *MongoBackend) Insert(name string, records *dal.RecordSet) error {
 				self.normalizeRecordValues(record)
 
 				data := record.Fields
-				data[MongoIdentityField] = self.getId(record.ID)
+
+				if record.ID != nil {
+					data[MongoIdentityField] = self.getId(record.ID)
+				} else {
+					delete(data, MongoIdentityField)
+				}
 
 				if err := self.db.C(collection.Name).Insert(&data); err != nil {
 					return err
@@ -156,8 +161,12 @@ func (self *MongoBackend) Update(name string, records *dal.RecordSet, target ...
 			if _, err := collection.MakeRecord(record); err == nil {
 				self.normalizeRecordValues(record)
 
-				if err := self.db.C(collection.Name).UpdateId(self.getId(record.ID), record.Fields); err != nil {
-					return err
+				if record.ID == nil {
+					return fmt.Errorf("Cannot update record without an ID")
+				} else {
+					if err := self.db.C(collection.Name).UpdateId(self.getId(record.ID), record.Fields); err != nil {
+						return err
+					}
 				}
 			} else {
 				return err

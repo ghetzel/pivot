@@ -81,9 +81,10 @@ class Client(object):
             'fields':              fields,
         })
 
-        import json
-        print('{}'.format(json.dumps(body, indent=4)))
-
         self.request('post', '/api/schema', body).json()
 
         return Collection(name, client=self)
+
+    def delete_collection(self, name):
+        self.request('delete', '/api/schema/' + name)
+        return True
