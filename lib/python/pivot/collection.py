@@ -124,7 +124,7 @@ class Collection(object):
             sort = [sort]
 
         if limit is False:
-            limit = 4294967295
+            limit = 2147483647
 
         results = self.client.request(
             'get',
