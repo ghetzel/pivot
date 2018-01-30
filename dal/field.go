@@ -155,7 +155,7 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 			//  DefaultValue:
 			//		this is a value that is interpreted by the backend and may not be retrievable after definition
 			//
-			case `NativeType`, `Description`, `DefaultValue`, `Validator`, `Formatter`:
+			case `NativeType`, `Description`, `DefaultValue`, `Validator`, `Formatter`, `FormatterConfig`, `ValidatorConfig`:
 				continue
 			case `Length`:
 				if myV, ok := myField.Value().(int); ok {
