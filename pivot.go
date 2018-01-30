@@ -46,11 +46,13 @@ func NewDatabaseWithOptions(connection string, options backends.ConnectOptions) 
 
 			// TODO: add MultiIndexer if AdditionalIndexers is present
 
-			if err := backend.Initialize(); err == nil {
-				return backend, nil
-			} else {
-				return nil, err
+			if !options.SkipInitialize {
+				if err := backend.Initialize(); err != nil {
+					return nil, err
+				}
 			}
+
+			return backend, nil
 		} else {
 			return nil, err
 		}
