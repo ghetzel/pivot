@@ -39,29 +39,41 @@ func (self *ConnectionString) String() string {
 	}
 }
 
+// Returns the backend and protocol components of the string.
 func (self *ConnectionString) Scheme() (string, string) {
 	backend, protocol := stringutil.SplitPair(self.URI.Scheme, `+`)
 	return backend, strings.Trim(protocol, `/`)
 }
 
+// Returns the backend component of the string.
 func (self *ConnectionString) Backend() string {
 	backend, _ := self.Scheme()
 	return backend
 }
 
+// Returns the protocol component of the string.
 func (self *ConnectionString) Protocol() string {
 	_, protocol := self.Scheme()
 	return protocol
 }
 
+// Returns the host component of the string.
 func (self *ConnectionString) Host() string {
 	return self.URI.Host
 }
 
+// Returns the dataset component of the string.
 func (self *ConnectionString) Dataset() string {
 	return strings.TrimPrefix(self.URI.Path, `/`)
 }
 
+// Explicitly set username and password on this connection string
+func (self *ConnectionString) SetCredentials(username string, password string) {
+	self.URI.User = url.UserPassword(username, password)
+}
+
+// Reads a .netrc-style file and loads the appropriate credentials.  The host component of
+// this connection string is matched with the netrc "machine" field.
 func (self *ConnectionString) LoadCredentialsFromNetrc(filename string) error {
 	if u := self.URI.User; u == nil && filename != `` {
 		if netrcFile, err := netrc.Parse(filename); err == nil {
@@ -83,6 +95,8 @@ func (self *ConnectionString) LoadCredentialsFromNetrc(filename string) error {
 	return nil
 }
 
+// Return the credentials (if any) associated with this string, and whether they
+// were present or not.
 func (self *ConnectionString) Credentials() (string, string, bool) {
 	if userinfo := self.URI.User; userinfo != nil {
 		pw, _ := userinfo.Password()
