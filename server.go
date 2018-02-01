@@ -283,6 +283,8 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 			if record, err := self.backend.Retrieve(name, id, fields...); err == nil {
 				httputil.RespondJSON(w, record)
+			} else if strings.HasSuffix(err.Error(), `does not exist`) {
+				httputil.RespondJSON(w, err, http.StatusNotFound)
 			} else {
 				httputil.RespondJSON(w, err)
 			}

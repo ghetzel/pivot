@@ -119,6 +119,8 @@ func (self *MongoBackend) Retrieve(name string, id interface{}, fields ...string
 
 		if err := self.db.C(collection.Name).FindId(self.getId(id)).One(&data); err == nil {
 			return self.recordFromResult(collection, data, fields...)
+		} else if err == mgo.ErrNotFound {
+			return nil, fmt.Errorf("Record %v does not exist", id)
 		} else {
 			return nil, err
 		}
