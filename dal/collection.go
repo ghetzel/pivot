@@ -29,16 +29,19 @@ type Instantiator interface {
 }
 
 type Collection struct {
-	Name                   string                  `json:"name"`
-	IndexName              string                  `json:"index_name"`
-	Fields                 []Field                 `json:"fields"`
-	IdentityField          string                  `json:"identity_field,omitempty"`
-	IdentityFieldType      Type                    `json:"identity_field_type,omitempty"`
-	IdentityFieldFormatter FieldFormatterFunc      `json:"-"`
-	IdentityFieldValidator FieldValidatorFunc      `json:"-"`
-	PreSaveValidator       CollectionValidatorFunc `json:"-"`
-	recordType             reflect.Type
-	instanceInitializer    InitializerFunc
+	Name                     string                  `json:"name"`
+	IndexName                string                  `json:"index_name,omitempty"`
+	IndexCompoundFields      []string                `json:"index_compound_fields,omitempty"`
+	IndexCompoundFieldJoiner string                  `json:"index_compound_field_joiner,omitempty"`
+	SkipIndexPersistence     bool                    `json:"skip_index_persistence,omitempty"`
+	Fields                   []Field                 `json:"fields"`
+	IdentityField            string                  `json:"identity_field,omitempty"`
+	IdentityFieldType        Type                    `json:"identity_field_type,omitempty"`
+	IdentityFieldFormatter   FieldFormatterFunc      `json:"-"`
+	IdentityFieldValidator   FieldValidatorFunc      `json:"-"`
+	PreSaveValidator         CollectionValidatorFunc `json:"-"`
+	recordType               reflect.Type
+	instanceInitializer      InitializerFunc
 }
 
 func NewCollection(name string) *Collection {

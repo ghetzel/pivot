@@ -165,6 +165,8 @@ func (self *DynamoBackend) Delete(name string, ids ...interface{}) error {
 	for _, id := range ids {
 		if op, err := self.getSingleRecordDelete(name, id); err == nil {
 			op.Run()
+
+			// TODO: call IndexRemove here
 		} else {
 			return err
 		}
@@ -198,11 +200,11 @@ func (self *DynamoBackend) GetCollection(name string) (*dal.Collection, error) {
 	return self.cacheTable(name)
 }
 
-func (self *DynamoBackend) WithSearch(name string, filters ...*filter.Filter) Indexer {
+func (self *DynamoBackend) WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer {
 	return self.indexer
 }
 
-func (self *DynamoBackend) WithAggregator(name string) Aggregator {
+func (self *DynamoBackend) WithAggregator(collection *dal.Collection) Aggregator {
 	return nil
 }
 
@@ -329,6 +331,8 @@ func (self *DynamoBackend) getSingleRecordQuery(name string, id interface{}, fie
 				query.Consistent(self.cs.OptBool(`readsConsistent`, true))
 				query.Limit(int64(flt.Limit))
 
+				querylog.Debugf("[%T] retrieve: %v %v", self, collection.Name, id)
+
 				if rangeKey != nil {
 					if rV, ok := flt.GetValues(rangeKey.Name); ok {
 						query.Range(rangeKey.Name, dynamo.Equal, rV...)
@@ -418,6 +422,14 @@ func (self *DynamoBackend) upsertRecords(collection *dal.Collection, records *da
 
 		if err := op.Run(); err != nil {
 			return err
+		}
+	}
+
+	if !collection.SkipIndexPersistence {
+		if search := self.WithSearch(collection); search != nil {
+			if err := search.Index(collection, records); err != nil {
+				return err
+			}
 		}
 	}
 

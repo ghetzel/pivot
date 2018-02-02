@@ -241,11 +241,11 @@ func (self *MongoBackend) GetCollection(name string) (*dal.Collection, error) {
 	}
 }
 
-func (self *MongoBackend) WithSearch(collection string, filters ...*filter.Filter) Indexer {
+func (self *MongoBackend) WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer {
 	return self.indexer
 }
 
-func (self *MongoBackend) WithAggregator(collection string) Aggregator {
+func (self *MongoBackend) WithAggregator(collection *dal.Collection) Aggregator {
 	return self
 }
 

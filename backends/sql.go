@@ -203,8 +203,8 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 			// commit transaction
 			if err := tx.Commit(); err == nil {
-				if search := self.WithSearch(collection.Name); search != nil {
-					if err := search.Index(collection.Name, recordset); err != nil {
+				if search := self.WithSearch(collection); search != nil {
+					if err := search.Index(collection, recordset); err != nil {
 						querylog.Debugf("[%T] index error %v", self, err)
 					} else {
 						return err
@@ -285,8 +285,8 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 								return self.scanFnValueToRecord(queryGen, collection, columns, reflect.ValueOf(rows.Scan), fields)
 							} else {
 								// if it doesn't exist, make sure it's not indexed
-								if search := self.WithSearch(collection.Name); search != nil {
-									defer search.IndexRemove(collection.Name, []interface{}{id})
+								if search := self.WithSearch(collection); search != nil {
+									defer search.IndexRemove(collection, []interface{}{id})
 								}
 
 								return nil, fmt.Errorf("Record %v does not exist", id)
@@ -382,8 +382,8 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 			}
 
 			if err := tx.Commit(); err == nil {
-				if search := self.WithSearch(collection.Name); search != nil {
-					if err := search.Index(collection.Name, recordset); err != nil {
+				if search := self.WithSearch(collection); search != nil {
+					if err := search.Index(collection, recordset); err != nil {
 						return err
 					}
 				}
@@ -403,8 +403,8 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
 		// remove documents from index
-		if search := self.WithSearch(collection.Name); search != nil {
-			defer search.IndexRemove(collection.Name, ids)
+		if search := self.WithSearch(collection); search != nil {
+			defer search.IndexRemove(collection, ids)
 		}
 
 		f := filter.New()
@@ -445,12 +445,12 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 	}
 }
 
-func (self *SqlBackend) WithSearch(collectionName string, filters ...*filter.Filter) Indexer {
+func (self *SqlBackend) WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer {
 	return self.indexer
 }
 
-func (self *SqlBackend) WithAggregator(collectionName string) Aggregator {
-	if aggregator, ok := self.aggregator[collectionName]; ok {
+func (self *SqlBackend) WithAggregator(collection *dal.Collection) Aggregator {
+	if aggregator, ok := self.aggregator[collection.GetAggregatorName()]; ok {
 		return aggregator
 	}
 

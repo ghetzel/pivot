@@ -3,6 +3,7 @@ package backends
 import (
 	"fmt"
 	"math"
+	"strings"
 
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -10,6 +11,7 @@ import (
 
 var IndexerPageSize int = 100
 var MaxFacetCardinality int = 10000
+var DefaultCompoundJoiner = `:`
 
 type IndexPage struct {
 	Page         int
@@ -24,15 +26,16 @@ type IndexResultFunc func(record *dal.Record, err error, page IndexPage) error /
 type Indexer interface {
 	IndexConnectionString() *dal.ConnectionString
 	IndexInitialize(Backend) error
-	IndexExists(index string, id interface{}) bool
-	IndexRetrieve(index string, id interface{}) (*dal.Record, error)
-	IndexRemove(index string, ids []interface{}) error
-	Index(index string, records *dal.RecordSet) error
-	QueryFunc(index string, filter *filter.Filter, resultFn IndexResultFunc) error
-	Query(index string, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
-	ListValues(index string, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
-	DeleteQuery(index string, f *filter.Filter) error
+	IndexExists(collection *dal.Collection, id interface{}) bool
+	IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+	IndexRemove(collection *dal.Collection, ids []interface{}) error
+	Index(collection *dal.Collection, records *dal.RecordSet) error
+	QueryFunc(collection *dal.Collection, filter *filter.Filter, resultFn IndexResultFunc) error
+	Query(collection *dal.Collection, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
+	ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
+	DeleteQuery(collection *dal.Collection, f *filter.Filter) error
 	FlushIndex() error
+	GetBackend() Backend
 }
 
 func MakeIndexer(connection dal.ConnectionString) (Indexer, error) {
@@ -76,25 +79,72 @@ func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f *filter.Filter, pa
 	}
 }
 
-func DefaultQueryImplementation(indexer Indexer, collection string, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
+	indexName := collection.GetIndexName()
 
-	if err := indexer.QueryFunc(collection, f, func(record *dal.Record, err error, page IndexPage) error {
+	if err := indexer.QueryFunc(collection, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
 		defer PopulateRecordSetPageDetails(recordset, f, page)
+
+		parent := indexer.GetBackend()
+
+		// index compound field processing
+		if parent != nil {
+			if len(collection.IndexCompoundFields) > 1 {
+				joiner := collection.IndexCompoundFieldJoiner
+
+				if joiner == `` {
+					joiner = DefaultCompoundJoiner
+				}
+
+				values := strings.Split(fmt.Sprintf("%v", indexRecord.ID), joiner)
+
+				if len(values) != len(collection.IndexCompoundFields) {
+					return fmt.Errorf(
+						"Index item %v: expected %d compound field components, got %d",
+						indexRecord.ID,
+						len(collection.IndexCompoundFields),
+						len(values),
+					)
+				}
+
+				for i, field := range collection.IndexCompoundFields {
+					if i == 0 {
+						indexRecord.ID = values[i]
+					} else {
+						indexRecord.Set(field, values[i])
+					}
+				}
+			}
+		} else {
+			fmt.Printf("====DEBUG: no parent\n")
+		}
+
+		emptyRecord := dal.NewRecord(indexRecord.ID)
 
 		if len(resultFns) > 0 {
 			resultFn := resultFns[0]
 
 			if f.IdOnly() {
-				return resultFn(dal.NewRecord(record.ID), err, page)
+				return resultFn(emptyRecord, err, page)
+			} else if parent != nil {
+				if record, err := parent.Retrieve(indexName, indexRecord.ID, f.Fields...); err == nil {
+					return resultFn(record, err, page)
+				} else {
+					return resultFn(emptyRecord, err, page)
+				}
 			} else {
-				return resultFn(record, err, page)
+				return resultFn(indexRecord, err, page)
 			}
 		} else {
 			if f.IdOnly() {
-				recordset.Records = append(recordset.Records, dal.NewRecord(record.ID))
+				recordset.Records = append(recordset.Records, dal.NewRecord(indexRecord.ID))
+			} else if parent != nil {
+				if record, err := parent.Retrieve(indexName, indexRecord.ID, f.Fields...); err == nil {
+					recordset.Records = append(recordset.Records, record)
+				}
 			} else {
-				recordset.Records = append(recordset.Records, record)
+				recordset.Records = append(recordset.Records, indexRecord)
 			}
 
 			return nil

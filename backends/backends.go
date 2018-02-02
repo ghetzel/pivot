@@ -28,8 +28,8 @@ type Backend interface {
 	DeleteCollection(collection string) error
 	ListCollections() ([]string, error)
 	GetCollection(collection string) (*dal.Collection, error)
-	WithSearch(collection string, filters ...*filter.Filter) Indexer
-	WithAggregator(collection string) Aggregator
+	WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
+	WithAggregator(collection *dal.Collection) Aggregator
 	Flush() error
 }
 
@@ -45,7 +45,6 @@ var backendMap = map[string]BackendFunc{
 	`mysql`:    NewSqlBackend,
 	`postgres`: NewSqlBackend,
 	`sqlite`:   NewSqlBackend,
-	`tiedot`:   NewTiedotBackend,
 }
 
 func RegisterBackend(name string, fn BackendFunc) {

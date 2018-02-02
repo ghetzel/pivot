@@ -124,13 +124,17 @@ func (self *MultiIndex) IndexInitialize(backend Backend) error {
 	return nil
 }
 
-func (self *MultiIndex) IndexExists(collection string, id interface{}) bool {
+func (self *MultiIndex) GetBackend() Backend {
+	return self.backend
+}
+
+func (self *MultiIndex) IndexExists(collection *dal.Collection, id interface{}) bool {
 	exists := false
 
 	if err := self.EachSelectedIndex(collection, InspectionOperation, func(indexer Indexer, _ int, _ int) error {
 		if !indexer.IndexExists(collection, id) {
 			exists = false
-			querylog.Debugf("MultiIndex: Indexer %v/%v does not exist", indexer, collection)
+			querylog.Debugf("MultiIndex: Indexer %v/%v does not exist", indexer, collection.GetIndexName())
 			return IndexerResultsStop
 		} else {
 			exists = true
@@ -143,7 +147,7 @@ func (self *MultiIndex) IndexExists(collection string, id interface{}) bool {
 	return exists
 }
 
-func (self *MultiIndex) IndexRetrieve(collection string, id interface{}) (*dal.Record, error) {
+func (self *MultiIndex) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
 	var record *dal.Record
 
 	if err := self.EachSelectedIndex(collection, RetrieveOperation, func(indexer Indexer, _ int, _ int) error {
@@ -164,7 +168,7 @@ func (self *MultiIndex) IndexRetrieve(collection string, id interface{}) (*dal.R
 	return record, nil
 }
 
-func (self *MultiIndex) IndexRemove(collection string, ids []interface{}) error {
+func (self *MultiIndex) IndexRemove(collection *dal.Collection, ids []interface{}) error {
 	var indexErr error
 
 	if err := self.EachSelectedIndex(collection, DeleteOperation, func(indexer Indexer, _ int, _ int) error {
@@ -181,7 +185,7 @@ func (self *MultiIndex) IndexRemove(collection string, ids []interface{}) error 
 	return indexErr
 }
 
-func (self *MultiIndex) Index(collection string, records *dal.RecordSet) error {
+func (self *MultiIndex) Index(collection *dal.Collection, records *dal.RecordSet) error {
 	var indexErr error
 
 	if err := self.EachSelectedIndex(collection, PersistOperation, func(indexer Indexer, _ int, _ int) error {
@@ -198,7 +202,7 @@ func (self *MultiIndex) Index(collection string, records *dal.RecordSet) error {
 	return indexErr
 }
 
-func (self *MultiIndex) QueryFunc(collection string, filter *filter.Filter, resultFn IndexResultFunc) error {
+func (self *MultiIndex) QueryFunc(collection *dal.Collection, filter *filter.Filter, resultFn IndexResultFunc) error {
 	var indexErr error
 
 	if err := self.EachSelectedIndex(collection, RetrieveOperation, func(indexer Indexer, _ int, _ int) error {
@@ -221,7 +225,7 @@ func (self *MultiIndex) QueryFunc(collection string, filter *filter.Filter, resu
 	return indexErr
 }
 
-func (self *MultiIndex) Query(collection string, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+func (self *MultiIndex) Query(collection *dal.Collection, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
 	var indexErr error
 
@@ -248,7 +252,7 @@ func (self *MultiIndex) Query(collection string, filter *filter.Filter, resultFn
 	return recordset, indexErr
 }
 
-func (self *MultiIndex) ListValues(collection string, fields []string, filter *filter.Filter) (map[string][]interface{}, error) {
+func (self *MultiIndex) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error) {
 	values := make(map[string][]interface{})
 	var indexErr error
 
@@ -281,7 +285,7 @@ func (self *MultiIndex) ListValues(collection string, fields []string, filter *f
 	return values, indexErr
 }
 
-func (self *MultiIndex) DeleteQuery(collection string, f *filter.Filter) error {
+func (self *MultiIndex) DeleteQuery(collection *dal.Collection, f *filter.Filter) error {
 	var indexErr error
 
 	if err := self.EachSelectedIndex(collection, DeleteOperation, func(indexer Indexer, _ int, _ int) error {
@@ -322,7 +326,7 @@ func (self *MultiIndex) FlushIndex() error {
 	}
 }
 
-func (self *MultiIndex) EachSelectedIndex(collection string, operation IndexOperation, resultFn IndexerResultFunc) error {
+func (self *MultiIndex) EachSelectedIndex(collection *dal.Collection, operation IndexOperation, resultFn IndexerResultFunc) error {
 	lastIndexer := -1
 
 	for {
@@ -349,7 +353,7 @@ func (self *MultiIndex) EachSelectedIndex(collection string, operation IndexOper
 	return nil
 }
 
-func (self *MultiIndex) SelectIndex(collection string, operation IndexOperation, lastIndexer int) ([]IndexerResult, error) {
+func (self *MultiIndex) SelectIndex(collection *dal.Collection, operation IndexOperation, lastIndexer int) ([]IndexerResult, error) {
 	var strategy IndexSelectionStrategy
 
 	switch operation {
