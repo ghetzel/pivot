@@ -285,16 +285,41 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 								} else {
 									// last-ditch effort to handle weird edge cases
 									switch field.ReflectField.Type().String() {
-									case `time.Time`:
+									case `time.Time`, `*time.Time`:
+										isPtr := strings.HasPrefix(field.ReflectField.Type().String(), `*`)
+
 										if v, err := stringutil.ConvertToTime(value); err == nil {
-											field.ReflectField.Set(reflect.ValueOf(v))
+											if isPtr {
+												field.Field.Set(&v)
+											} else {
+												field.Field.Set(v)
+											}
 										} else if v, err := stringutil.ConvertToInteger(value); err == nil {
-											field.ReflectField.Set(reflect.ValueOf(time.Unix(0, v)))
+											var vT time.Time
+
+											// guess at whether we're dealing with epoch seconds or nanoseconds
+											if v <= 4294967296 {
+												vT = time.Unix(v, 0)
+											} else {
+												vT = time.Unix(0, v)
+											}
+
+											if isPtr {
+												field.Field.Set(&vT)
+											} else {
+												field.Field.Set(vT)
+											}
 										} else {
 											return err
 										}
 									default:
-										return fmt.Errorf("Field '%s' cannot be set to %v", field.Field.Name(), value)
+										log.Warningf(
+											"Field '%s' (type: %v) cannot be set to %v (type: %T)",
+											field.Field.Name(),
+											field.ReflectField.Type(),
+											value,
+											value,
+										)
 									}
 								}
 							} else {
