@@ -346,7 +346,7 @@ func (self *ElasticsearchIndexer) QueryFunc(name string, f *filter.Filter, resul
 								}
 
 								// totalPages = ceil(result count / page size)
-								totalPages := int(math.Ceil(float64(results.Total) / float64(f.Limit)))
+								totalPages := int(math.Ceil(float64(results.Total) / float64(limit)))
 
 								if totalPages <= 0 {
 									totalPages = 1
@@ -357,7 +357,7 @@ func (self *ElasticsearchIndexer) QueryFunc(name string, f *filter.Filter, resul
 									if err := resultFn(dal.NewRecord(hit.ID).SetFields(hit.Source), nil, IndexPage{
 										Page:         page,
 										TotalPages:   totalPages,
-										Limit:        f.Limit,
+										Limit:        limit,
 										Offset:       f.Offset,
 										TotalResults: int64(results.Total),
 									}); err != nil {
@@ -367,8 +367,8 @@ func (self *ElasticsearchIndexer) QueryFunc(name string, f *filter.Filter, resul
 									processed += 1
 
 									// if we have a limit set and we're at or beyond it
-									if f.Limit > 0 && processed >= f.Limit {
-										querylog.Debugf("[%T] %d at or beyond limit %d, returning results", self, processed, f.Limit)
+									if limit > 0 && processed >= limit {
+										querylog.Debugf("[%T] %d at or beyond limit %d, returning results", self, processed, limit)
 										return nil
 									}
 								}
