@@ -653,7 +653,6 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 			backends.IndexerPageSize = old
 		}()
 
-
 		c.IdentityFieldType = dal.StringType
 		err := backend.CreateCollection(c)
 
@@ -867,21 +866,21 @@ func TestObjectType(t *testing.T) {
 func TestAggregators(t *testing.T) {
 	assert := require.New(t)
 	collection := dal.NewCollection(`TestAggregators`).
-			AddFields(dal.Field{
-				Name: `color`,
-				Type: dal.StringType,
-			}, dal.Field{
-				Name:     `inventory`,
-				Type:     dal.IntType,
-				Required: true,
-			}, dal.Field{
-				Name:     `factor`,
-				Type:     dal.FloatType,
-				Required: true,
-			}, dal.Field{
-				Name: `created_at`,
-				Type: dal.TimeType,
-			})
+		AddFields(dal.Field{
+			Name: `color`,
+			Type: dal.StringType,
+		}, dal.Field{
+			Name:     `inventory`,
+			Type:     dal.IntType,
+			Required: true,
+		}, dal.Field{
+			Name:     `factor`,
+			Type:     dal.FloatType,
+			Required: true,
+		}, dal.Field{
+			Name: `created_at`,
+			Type: dal.TimeType,
+		})
 
 	err := backend.CreateCollection(collection)
 

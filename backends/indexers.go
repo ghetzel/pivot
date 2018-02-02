@@ -81,7 +81,6 @@ func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f *filter.Filter, pa
 
 func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
-	indexName := collection.GetIndexName()
 
 	if err := indexer.QueryFunc(collection, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
 		defer PopulateRecordSetPageDetails(recordset, f, page)
@@ -110,14 +109,12 @@ func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *
 
 				for i, field := range collection.IndexCompoundFields {
 					if i == 0 {
-						indexRecord.ID = values[i]
+						indexRecord.ID = values
 					} else {
 						indexRecord.Set(field, values[i])
 					}
 				}
 			}
-		} else {
-			fmt.Printf("====DEBUG: no parent\n")
 		}
 
 		emptyRecord := dal.NewRecord(indexRecord.ID)
@@ -128,7 +125,7 @@ func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *
 			if f.IdOnly() {
 				return resultFn(emptyRecord, err, page)
 			} else if parent != nil {
-				if record, err := parent.Retrieve(indexName, indexRecord.ID, f.Fields...); err == nil {
+				if record, err := parent.Retrieve(collection.Name, indexRecord.ID, f.Fields...); err == nil {
 					return resultFn(record, err, page)
 				} else {
 					return resultFn(emptyRecord, err, page)
@@ -140,7 +137,7 @@ func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *
 			if f.IdOnly() {
 				recordset.Records = append(recordset.Records, dal.NewRecord(indexRecord.ID))
 			} else if parent != nil {
-				if record, err := parent.Retrieve(indexName, indexRecord.ID, f.Fields...); err == nil {
+				if record, err := parent.Retrieve(collection.Name, indexRecord.ID, f.Fields...); err == nil {
 					recordset.Records = append(recordset.Records, record)
 				}
 			} else {
