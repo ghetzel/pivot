@@ -94,7 +94,7 @@ func (self *FilesystemBackend) Initialize() error {
 		} else {
 			return err
 		}
-	} else {
+	} else if !strings.HasPrefix(self.root, `.`) {
 		self.root = `/` + self.root
 	}
 

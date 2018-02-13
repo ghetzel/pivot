@@ -64,7 +64,10 @@ func (self *ConnectionString) Host() string {
 
 // Returns the dataset component of the string.
 func (self *ConnectionString) Dataset() string {
-	return strings.TrimPrefix(self.URI.Path, `/`)
+	dataset := self.URI.Path
+	dataset = strings.TrimPrefix(dataset, `/`)
+	dataset = strings.TrimSuffix(dataset, `/`)
+	return dataset
 }
 
 // Explicitly set username and password on this connection string

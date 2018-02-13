@@ -169,8 +169,11 @@ func (self *SqlBackend) ListValues(collection *dal.Collection, fields []string, 
 	for _, field := range fields {
 		f.Fields = []string{field}
 		f.Options[`Distinct`] = true
+		f.Options[`ForceIndexRecord`] = true
 
 		if results, err := self.Query(collection, f); err == nil {
+			querylog.Debugf("sql-ListValues(): %+v", results)
+
 			var values []interface{}
 
 			if v, ok := output[field]; ok {

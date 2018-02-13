@@ -143,14 +143,10 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	var dsn string
 
 	switch dataset {
-	case `/memory`:
+	case `memory`:
 		return `sqlite3`, `:memory:`, nil
 	default:
-		if strings.HasPrefix(dataset, `/.`) {
-			dataset = strings.TrimPrefix(dataset, `/`)
-		} else if strings.HasPrefix(dataset, `/~`) {
-			dataset = strings.TrimPrefix(dataset, `/`)
-
+		if strings.HasPrefix(dataset, `~`) {
 			if v, err := pathutil.ExpandUser(dataset); err == nil {
 				dataset = v
 			} else {

@@ -86,6 +86,17 @@ func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *
 		defer PopulateRecordSetPageDetails(recordset, f, page)
 
 		parent := indexer.GetBackend()
+		var forceIndexRecord bool
+
+		// look for a filter option that specifies that we should explicitly NOT attempt to retrieve the
+		// record from the parent by ID, but rather always use the index record as-is.
+		if f != nil {
+			if vI, ok := f.Options[`ForceIndexRecord`]; ok {
+				if v, ok := vI.(bool); ok {
+					forceIndexRecord = v
+				}
+			}
+		}
 
 		// index compound field processing
 		if parent != nil {
@@ -118,13 +129,14 @@ func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *
 		}
 
 		emptyRecord := dal.NewRecord(indexRecord.ID)
+		emptyRecord.Error = err
 
 		if len(resultFns) > 0 {
 			resultFn := resultFns[0]
 
 			if f.IdOnly() {
 				return resultFn(emptyRecord, err, page)
-			} else if parent != nil {
+			} else if parent != nil && !forceIndexRecord {
 				if record, err := parent.Retrieve(collection.Name, indexRecord.ID, f.Fields...); err == nil {
 					return resultFn(record, err, page)
 				} else {
@@ -136,9 +148,13 @@ func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *
 		} else {
 			if f.IdOnly() {
 				recordset.Records = append(recordset.Records, dal.NewRecord(indexRecord.ID))
-			} else if parent != nil {
+
+			} else if parent != nil && !forceIndexRecord {
 				if record, err := parent.Retrieve(collection.Name, indexRecord.ID, f.Fields...); err == nil {
 					recordset.Records = append(recordset.Records, record)
+
+				} else {
+					recordset.Records = append(recordset.Records, dal.NewRecordErr(indexRecord.ID, err))
 				}
 			} else {
 				recordset.Records = append(recordset.Records, indexRecord)
