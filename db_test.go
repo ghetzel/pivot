@@ -637,7 +637,7 @@ func TestSearchQueryOffset(t *testing.T) {
 		record, ok := recordset.GetRecord(0)
 		assert.True(ok)
 		assert.NotNil(record)
-		assert.EqualValues(20, record.ID)
+		assert.EqualValues(`20`, record.ID)
 	}
 }
 

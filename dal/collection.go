@@ -295,7 +295,7 @@ func (self *Collection) GetField(name string) (Field, bool) {
 		}
 	}
 
-	if name == self.IdentityField {
+	if name == self.IdentityField || (self.IdentityField == `` && name == DefaultIdentityField) {
 		return Field{
 			Name:     self.IdentityField,
 			Type:     self.IdentityFieldType,

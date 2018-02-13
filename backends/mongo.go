@@ -265,7 +265,7 @@ func (self *MongoBackend) normalizeRecordValues(record *dal.Record) {
 func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[string]interface{}, fields ...string) (*dal.Record, error) {
 	if dataId, ok := data[MongoIdentityField]; ok {
 		record := dal.NewRecord(
-			collection.ConvertValue(MongoIdentityField, stringutil.Autotype(
+			collection.ConvertValue(dal.DefaultIdentityField, stringutil.Autotype(
 				self.fromId(dataId),
 			)),
 		)

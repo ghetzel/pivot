@@ -91,8 +91,12 @@ func (self *MongoBackend) QueryFunc(collection *dal.Collection, flt *filter.Filt
 }
 
 func (self *MongoBackend) Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
-	if f.IdentityField == `` {
-		f.IdentityField = MongoIdentityField
+	if f != nil {
+		if f.IdentityField == `` {
+			f.IdentityField = MongoIdentityField
+		}
+
+		f.Options[`ForceIndexRecord`] = true
 	}
 
 	return DefaultQueryImplementation(self, collection, f, resultFns...)
