@@ -115,6 +115,10 @@ func main() {
 					indexer = config.Indexer
 				}
 
+				if backend == `` {
+					log.Fatalf("Must specify a backend to connect to.")
+				}
+
 				server := pivot.NewServer(backend)
 				server.Address = c.String(`address`)
 				server.UiDirectory = c.String(`ui-dir`)

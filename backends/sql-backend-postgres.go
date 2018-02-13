@@ -112,7 +112,7 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 							}
 
 							// set default value if it's not NULL
-							if defaultValue.Valid {
+							if defaultValue.Valid && !stringutil.IsSurroundedBy(defaultValue.String, `nextval(`, `)`) {
 								field.DefaultValue = stringutil.Autotype(defaultValue.String)
 							}
 

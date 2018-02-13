@@ -27,13 +27,18 @@ func (self *ConnectionString) String() string {
 			scheme += `+` + protocol
 		}
 
-		return fmt.Sprintf(
-			"%s://%s/%s/%s",
+		str := fmt.Sprintf(
+			"%s://%s/%s",
 			scheme,
 			self.Host(),
 			self.Dataset(),
-			stringutil.PrefixIf(self.URI.RawQuery, `?`),
 		)
+
+		if qs := self.URI.RawQuery; qs != `` {
+			str += `?` + qs
+		}
+
+		return str
 	} else {
 		return ``
 	}
