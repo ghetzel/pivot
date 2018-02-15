@@ -148,6 +148,8 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			name := vestigo.Param(req, `collection`)
 
 			if collection, err := self.backend.GetCollection(name); err == nil {
+				collection = injectRequestParamsIntoCollection(req, collection)
+
 				httputil.RespondJSON(w, collection)
 			} else {
 				httputil.RespondJSON(w, err, http.StatusNotFound)
@@ -161,6 +163,8 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 			if f, err := filterFromRequest(req, query, int64(DefaultResultLimit)); err == nil {
 				if collection, err := self.backend.GetCollection(name); err == nil {
+					collection = injectRequestParamsIntoCollection(req, collection)
+
 					if search := self.backend.WithSearch(collection); search != nil {
 						if recordset, err := search.Query(collection, f); err == nil {
 							httputil.RespondJSON(w, recordset)
@@ -188,6 +192,8 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 			if f, err := filterFromRequest(req, httputil.Q(req, `q`, `all`), 0); err == nil {
 				if collection, err := self.backend.GetCollection(name); err == nil {
+					collection = injectRequestParamsIntoCollection(req, collection)
+
 					if aggregator := self.backend.WithAggregator(collection); aggregator != nil {
 						results := make(map[string]interface{})
 
@@ -246,6 +252,8 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 			if f, err := filterFromRequest(req, httputil.Q(req, `q`, `all`), 0); err == nil {
 				if collection, err := self.backend.GetCollection(name); err == nil {
+					collection = injectRequestParamsIntoCollection(req, collection)
+
 					if search := self.backend.WithSearch(collection); search != nil {
 						fields := strings.TrimPrefix(fieldNames, `/`)
 
@@ -452,6 +460,8 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			name := vestigo.Param(req, `collection`)
 
 			if collection, err := self.backend.GetCollection(name); err == nil {
+				collection = injectRequestParamsIntoCollection(req, collection)
+
 				httputil.RespondJSON(w, collection)
 			} else {
 				httputil.RespondJSON(w, err, http.StatusBadRequest)
@@ -470,6 +480,26 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		})
 
 	return nil
+}
+
+func injectRequestParamsIntoCollection(req *http.Request, collection *dal.Collection) *dal.Collection {
+	// shallow copy the collection so we can screw with it
+	c := *collection
+	collection = &c
+
+	if v := httputil.Q(req, `index`); v != `` {
+		collection.IndexName = v
+	}
+
+	if v := httputil.Q(req, `keys`); v != `` {
+		collection.IndexCompoundFields = strings.Split(v, `,`)
+	}
+
+	if v := httputil.Q(req, `joiner`); v != `` {
+		collection.IndexCompoundFieldJoiner = v
+	}
+
+	return collection
 }
 
 func filterFromRequest(req *http.Request, filterStr string, defaultLimit int64) (*filter.Filter, error) {

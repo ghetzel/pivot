@@ -205,6 +205,12 @@ func (self *DynamoBackend) WithSearch(collection *dal.Collection, filters ...*fi
 }
 
 func (self *DynamoBackend) WithAggregator(collection *dal.Collection) Aggregator {
+	if self.indexer != nil {
+		if agg, ok := self.indexer.(Aggregator); ok {
+			return agg
+		}
+	}
+
 	return nil
 }
 
