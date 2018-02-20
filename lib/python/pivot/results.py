@@ -48,6 +48,9 @@ class RecordSet(object):
     def records(self):
         return self.response.get('records') or []
 
+    def __len__(self):
+        return len(self.records)
+
     def __iter__(self):
         self._results_iter = iter(self.records)
         return self
