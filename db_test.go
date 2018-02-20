@@ -429,14 +429,14 @@ func TestIdFormattersIdFromFieldValues(t *testing.T) {
 
 func TestSearchQuery(t *testing.T) {
 	assert := require.New(t)
+	collection := dal.NewCollection(`TestSearchQuery`).
+		AddFields(dal.Field{
+			Name: `name`,
+			Type: dal.StringType,
+		})
 
-	if search := backend.WithSearch(`TestSearchQuery`); search != nil {
-		err := backend.CreateCollection(
-			dal.NewCollection(`TestSearchQuery`).
-				AddFields(dal.Field{
-					Name: `name`,
-					Type: dal.StringType,
-				}))
+	if search := backend.WithSearch(collection); search != nil {
+		err := backend.CreateCollection(collection)
 
 		defer func() {
 			assert.Nil(backend.DeleteCollection(`TestSearchQuery`))
@@ -460,7 +460,7 @@ func TestSearchQuery(t *testing.T) {
 			t.Logf("Querying (want 2 results): %q\n", qs)
 			f, err := filter.Parse(qs)
 			assert.Nil(err)
-			recordset, err = search.Query(`TestSearchQuery`, f)
+			recordset, err = search.Query(collection, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
 			assert.EqualValues(2, recordset.ResultCount)
@@ -481,7 +481,7 @@ func TestSearchQuery(t *testing.T) {
 			t.Logf("Querying (want 1 result): %q\n", qs)
 			f, err := filter.Parse(qs)
 			assert.Nil(err)
-			recordset, err = search.Query(`TestSearchQuery`, f)
+			recordset, err = search.Query(collection, f)
 			assert.Nil(err)
 			assert.NotNil(recordset, qs)
 			assert.EqualValues(1, recordset.ResultCount, "%v", recordset.Records)
@@ -499,7 +499,7 @@ func TestSearchQuery(t *testing.T) {
 			t.Logf("Querying (want 0 results): %q\n", qs)
 			f, err := filter.Parse(qs)
 			assert.Nil(err)
-			recordset, err = search.Query(`TestSearchQuery`, f)
+			recordset, err = search.Query(collection, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
 			assert.EqualValues(0, recordset.ResultCount)
@@ -510,12 +510,13 @@ func TestSearchQuery(t *testing.T) {
 
 func TestSearchQueryPaginated(t *testing.T) {
 	assert := require.New(t)
+	collection := dal.NewCollection(`TestSearchQueryPaginated`)
 
 	// set the global page size at the package level for this test
 	backends.IndexerPageSize = 5
 
-	if search := backend.WithSearch(`TestSearchQueryPaginated`); search != nil {
-		err := backend.CreateCollection(dal.NewCollection(`TestSearchQueryPaginated`))
+	if search := backend.WithSearch(collection); search != nil {
+		err := backend.CreateCollection(collection)
 
 		defer func() {
 			assert.Nil(backend.DeleteCollection(`TestSearchQueryPaginated`))
@@ -536,7 +537,7 @@ func TestSearchQueryPaginated(t *testing.T) {
 		f := filter.All()
 		f.Limit = 25
 
-		recordset, err := search.Query(`TestSearchQueryPaginated`, f)
+		recordset, err := search.Query(collection, f)
 		assert.Nil(err)
 
 		assert.NotNil(recordset)
@@ -552,9 +553,9 @@ func TestSearchQueryPaginated(t *testing.T) {
 func TestSearchQueryLimit(t *testing.T) {
 	assert := require.New(t)
 	backends.IndexerPageSize = 100
+	c := dal.NewCollection(`TestSearchQueryLimit`)
 
-	if search := backend.WithSearch(`TestSearchQueryLimit`); search != nil {
-		c := dal.NewCollection(`TestSearchQueryLimit`)
+	if search := backend.WithSearch(c); search != nil {
 		c.IdentityFieldType = dal.StringType
 		err := backend.CreateCollection(c)
 
@@ -577,7 +578,7 @@ func TestSearchQueryLimit(t *testing.T) {
 
 		f.Limit = 9
 
-		recordset, err := search.Query(`TestSearchQueryLimit`, f)
+		recordset, err := search.Query(c, f)
 		assert.Nil(err)
 		assert.NotNil(recordset)
 
@@ -598,9 +599,9 @@ func TestSearchQueryLimit(t *testing.T) {
 func TestSearchQueryOffset(t *testing.T) {
 	assert := require.New(t)
 	backends.IndexerPageSize = 100
+	c := dal.NewCollection(`TestSearchQueryOffset`)
 
-	if search := backend.WithSearch(`TestSearchQueryOffset`); search != nil {
-		c := dal.NewCollection(`TestSearchQueryOffset`)
+	if search := backend.WithSearch(c); search != nil {
 		c.IdentityFieldType = dal.StringType
 		err := backend.CreateCollection(c)
 
@@ -623,7 +624,7 @@ func TestSearchQueryOffset(t *testing.T) {
 
 		f.Offset = 20
 
-		recordset, err := search.Query(`TestSearchQueryOffset`, f)
+		recordset, err := search.Query(c, f)
 		assert.Nil(err)
 		assert.NotNil(recordset)
 		assert.Equal(1, len(recordset.Records))
@@ -636,14 +637,15 @@ func TestSearchQueryOffset(t *testing.T) {
 		record, ok := recordset.GetRecord(0)
 		assert.True(ok)
 		assert.NotNil(record)
-		assert.EqualValues(20, record.ID)
+		assert.EqualValues(`20`, record.ID)
 	}
 }
 
 func TestSearchQueryOffsetLimit(t *testing.T) {
 	assert := require.New(t)
+	c := dal.NewCollection(`TestSearchQueryOffsetLimit`)
 
-	if search := backend.WithSearch(`TestSearchQueryOffsetLimit`); search != nil {
+	if search := backend.WithSearch(c); search != nil {
 		old := backends.IndexerPageSize
 		backends.IndexerPageSize = 3
 
@@ -651,7 +653,6 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 			backends.IndexerPageSize = old
 		}()
 
-		c := dal.NewCollection(`TestSearchQueryOffsetLimit`)
 		c.IdentityFieldType = dal.StringType
 		err := backend.CreateCollection(c)
 
@@ -675,7 +676,7 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 		f.Offset = 3
 		f.Limit = 9
 
-		recordset, err := search.Query(`TestSearchQueryOffsetLimit`, f)
+		recordset, err := search.Query(c, f)
 		assert.Nil(err)
 		assert.NotNil(recordset)
 		assert.Equal(9, len(recordset.Records))
@@ -694,17 +695,17 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 
 func TestListValues(t *testing.T) {
 	assert := require.New(t)
+	collection := dal.NewCollection(`TestListValues`).
+		AddFields(dal.Field{
+			Name: `name`,
+			Type: dal.StringType,
+		}, dal.Field{
+			Name: `group`,
+			Type: dal.StringType,
+		})
 
-	if search := backend.WithSearch(`TestListValues`); search != nil {
-		err := backend.CreateCollection(
-			dal.NewCollection(`TestListValues`).
-				AddFields(dal.Field{
-					Name: `name`,
-					Type: dal.StringType,
-				}, dal.Field{
-					Name: `group`,
-					Type: dal.StringType,
-				}))
+	if search := backend.WithSearch(collection); search != nil {
+		err := backend.CreateCollection(collection)
 
 		defer func() {
 			assert.Nil(backend.DeleteCollection(`TestListValues`))
@@ -726,28 +727,28 @@ func TestListValues(t *testing.T) {
 				`group`: `blues`,
 			}))))
 
-		keyValues, err := search.ListValues(`TestListValues`, []string{`name`}, filter.All())
+		keyValues, err := search.ListValues(collection, []string{`name`}, filter.All())
 		assert.Nil(err)
 		assert.Equal(1, len(keyValues))
 		v, ok := keyValues[`name`]
 		assert.True(ok)
 		assert.Equal([]interface{}{`first`, `second`, `third`}, v)
 
-		keyValues, err = search.ListValues(`TestListValues`, []string{`group`}, filter.All())
+		keyValues, err = search.ListValues(collection, []string{`group`}, filter.All())
 		assert.Nil(err)
 		assert.Equal(1, len(keyValues))
 		v, ok = keyValues[`group`]
 		assert.True(ok)
 		assert.Equal([]interface{}{`reds`, `blues`}, v)
 
-		keyValues, err = search.ListValues(`TestListValues`, []string{`id`}, filter.All())
+		keyValues, err = search.ListValues(collection, []string{`id`}, filter.All())
 		assert.Nil(err)
 		assert.Equal(1, len(keyValues))
 		v, ok = keyValues[`id`]
 		assert.True(ok)
 		assert.Equal([]interface{}{int64(1), int64(2), int64(3)}, v)
 
-		keyValues, err = search.ListValues(`TestListValues`, []string{`id`, `group`}, filter.All())
+		keyValues, err = search.ListValues(collection, []string{`id`, `group`}, filter.All())
 		assert.Nil(err)
 		assert.Equal(2, len(keyValues))
 
@@ -763,17 +764,17 @@ func TestListValues(t *testing.T) {
 
 func TestSearchAnalysis(t *testing.T) {
 	assert := require.New(t)
+	collection := dal.NewCollection(`TestSearchAnalysis`).
+		AddFields(dal.Field{
+			Name: `single`,
+			Type: dal.StringType,
+		}, dal.Field{
+			Name: `char_filter_test`,
+			Type: dal.StringType,
+		})
 
-	if search := backend.WithSearch(`TestSearchAnalysis`); search != nil {
-		err := backend.CreateCollection(
-			dal.NewCollection(`TestSearchAnalysis`).
-				AddFields(dal.Field{
-					Name: `single`,
-					Type: dal.StringType,
-				}, dal.Field{
-					Name: `char_filter_test`,
-					Type: dal.StringType,
-				}))
+	if search := backend.WithSearch(collection); search != nil {
+		err := backend.CreateCollection(collection)
 
 		defer func() {
 			assert.Nil(backend.DeleteCollection(`TestSearchAnalysis`))
@@ -804,7 +805,7 @@ func TestSearchAnalysis(t *testing.T) {
 			t.Logf("Querying (want 3 results): %q\n", qs)
 			f, err := filter.Parse(qs)
 			assert.Nil(err)
-			recordset, err := search.Query(`TestSearchAnalysis`, f)
+			recordset, err := search.Query(collection, f)
 			assert.Nil(err)
 			assert.NotNil(recordset)
 			assert.EqualValues(3, recordset.ResultCount, "%v", recordset.Records)
@@ -864,24 +865,24 @@ func TestObjectType(t *testing.T) {
 
 func TestAggregators(t *testing.T) {
 	assert := require.New(t)
+	collection := dal.NewCollection(`TestAggregators`).
+		AddFields(dal.Field{
+			Name: `color`,
+			Type: dal.StringType,
+		}, dal.Field{
+			Name:     `inventory`,
+			Type:     dal.IntType,
+			Required: true,
+		}, dal.Field{
+			Name:     `factor`,
+			Type:     dal.FloatType,
+			Required: true,
+		}, dal.Field{
+			Name: `created_at`,
+			Type: dal.TimeType,
+		})
 
-	err := backend.CreateCollection(
-		dal.NewCollection(`TestAggregators`).
-			AddFields(dal.Field{
-				Name: `color`,
-				Type: dal.StringType,
-			}, dal.Field{
-				Name:     `inventory`,
-				Type:     dal.IntType,
-				Required: true,
-			}, dal.Field{
-				Name:     `factor`,
-				Type:     dal.FloatType,
-				Required: true,
-			}, dal.Field{
-				Name: `created_at`,
-				Type: dal.TimeType,
-			}))
+	err := backend.CreateCollection(collection)
 
 	defer func() {
 		assert.NoError(backend.DeleteCollection(`TestAggregators`))
@@ -889,7 +890,7 @@ func TestAggregators(t *testing.T) {
 
 	assert.NoError(err)
 
-	if agg := backend.WithAggregator(`TestAggregators`); agg != nil {
+	if agg := backend.WithAggregator(collection); agg != nil {
 		// Insert and Retrieve
 		// --------------------------------------------------------------------------------------------
 		assert.NoError(backend.Insert(`TestAggregators`, dal.NewRecordSet(
@@ -901,27 +902,27 @@ func TestAggregators(t *testing.T) {
 			dal.NewRecord(6).Set(`color`, `gold`).Set(`inventory`, 19).Set(`factor`, float64(4.67)).Set(`created_at`, time.Now()),
 		)))
 
-		vui, err := agg.Count(`TestAggregators`, filter.All())
+		vui, err := agg.Count(collection, filter.All())
 		assert.NoError(err)
 		assert.Equal(uint64(6), vui)
 
-		vf, err := agg.Sum(`TestAggregators`, `inventory`, filter.All())
+		vf, err := agg.Sum(collection, `inventory`, filter.All())
 		assert.NoError(err)
 		assert.Equal(float64(322), vf)
 
-		vf, err = agg.Minimum(`TestAggregators`, `inventory`, filter.All())
+		vf, err = agg.Minimum(collection, `inventory`, filter.All())
 		assert.NoError(err)
 		assert.Equal(float64(0), vf)
 
-		vf, err = agg.Minimum(`TestAggregators`, `factor`, filter.All())
+		vf, err = agg.Minimum(collection, `factor`, filter.All())
 		assert.NoError(err)
 		assert.Equal(float64(0), vf)
 
-		vf, err = agg.Maximum(`TestAggregators`, `inventory`, filter.All())
+		vf, err = agg.Maximum(collection, `inventory`, filter.All())
 		assert.NoError(err)
 		assert.Equal(float64(123), vf)
 
-		vf, err = agg.Maximum(`TestAggregators`, `factor`, filter.All())
+		vf, err = agg.Maximum(collection, `factor`, filter.All())
 		assert.NoError(err)
 		assert.Equal(float64(9.8), vf)
 	}

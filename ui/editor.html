@@ -1,0 +1,80 @@
+---
+bindings:
+- name:     schema
+  resource: '/api/schema/{{ qs `collection` }}'
+
+- name:     record
+  resource: '/api/collections/{{ qs `collection` }}/records/{{ qs `record` }}'
+  optional: true
+  fallback: {}
+---
+<form class="container" id="editor">
+    <h2>Editing {{ .bindings.schema.name }} {{ if (qs `record`) }}{{ qs `record` }}{{ end }}</h2>
+
+    {{ range .bindings.schema.fields }}
+    {{   if eqx .name `id` }}
+    {{     var `value` $.bindings.record.id }}
+    {{   else }}
+    {{     var `value` (get $.bindings.record.fields .name) }}
+    {{   end }}
+    <div class="form-group row">
+        <label class="
+            col-sm-4
+            col-form-label
+            {{ if .identity }} text-danger{{ end }}
+            {{ if .required }} font-weight-bold{{ end }}
+        ">
+            {{ .name }}
+        </label>
+        <div class="col-sm-8">
+            {{ if eqx .type `bool` }}
+            <select
+                name="{{ .name }}"
+                class="form-control form-control-sm"
+                {{ if .required }}required{{ end }}
+                {{ if (and .identity $.vars.value) }}readonly{{ end }}
+            >
+                <option value="true"{{ if $.vars.value }} selected{{ end }}>True</option>
+                <option value="false"{{ if not $.vars.value }} selected{{ end }}>False</option>
+            </select>
+            {{ else if eqx .type `int` }}
+            <input
+                class="form-control form-control-sm"
+                type="number"
+                name="{{ .name }}"
+                value="{{ $.vars.value }}"
+                {{ if .required }}required{{ end }}
+                {{ if (and .identity $.vars.value) }}readonly{{ end }}
+            ></input>
+            {{ else }}
+            <input
+                class="form-control form-control-sm"
+                type="text"
+                name="{{ .name }}"
+                value="{{ $.vars.value }}"
+                {{ if .required }}required{{ end }}
+                {{ if (and .identity $.vars.value) }}readonly{{ end }}
+            ></input>
+            {{ end }}
+
+            {{ if .description }}
+            <small class="text-muted">{{ .description }}</small>
+            {{ end }}
+        </div>
+    </div>
+    {{ end }}
+
+    <div class="form-group row">
+
+    </div>
+</form>
+
+<script type="text/javascript">
+    $(function(){
+        var form = $('#editor');
+
+        form.on('submit', function(e){
+            e.preventDefault();
+        });
+    });
+</script>

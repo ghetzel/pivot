@@ -3,6 +3,7 @@ package backends
 import (
 	"fmt"
 	"math"
+	"strings"
 
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -10,6 +11,7 @@ import (
 
 var IndexerPageSize int = 100
 var MaxFacetCardinality int = 10000
+var DefaultCompoundJoiner = `:`
 
 type IndexPage struct {
 	Page         int
@@ -24,15 +26,16 @@ type IndexResultFunc func(record *dal.Record, err error, page IndexPage) error /
 type Indexer interface {
 	IndexConnectionString() *dal.ConnectionString
 	IndexInitialize(Backend) error
-	IndexExists(index string, id interface{}) bool
-	IndexRetrieve(index string, id interface{}) (*dal.Record, error)
-	IndexRemove(index string, ids []interface{}) error
-	Index(index string, records *dal.RecordSet) error
-	QueryFunc(index string, filter *filter.Filter, resultFn IndexResultFunc) error
-	Query(index string, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
-	ListValues(index string, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
-	DeleteQuery(index string, f *filter.Filter) error
+	IndexExists(collection *dal.Collection, id interface{}) bool
+	IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+	IndexRemove(collection *dal.Collection, ids []interface{}) error
+	Index(collection *dal.Collection, records *dal.RecordSet) error
+	QueryFunc(collection *dal.Collection, filter *filter.Filter, resultFn IndexResultFunc) error
+	Query(collection *dal.Collection, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
+	ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
+	DeleteQuery(collection *dal.Collection, f *filter.Filter) error
 	FlushIndex() error
+	GetBackend() Backend
 }
 
 func MakeIndexer(connection dal.ConnectionString) (Indexer, error) {
@@ -76,25 +79,85 @@ func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f *filter.Filter, pa
 	}
 }
 
-func DefaultQueryImplementation(indexer Indexer, collection string, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	recordset := dal.NewRecordSet()
 
-	if err := indexer.QueryFunc(collection, f, func(record *dal.Record, err error, page IndexPage) error {
+	if err := indexer.QueryFunc(collection, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
 		defer PopulateRecordSetPageDetails(recordset, f, page)
+
+		parent := indexer.GetBackend()
+		var forceIndexRecord bool
+
+		// look for a filter option that specifies that we should explicitly NOT attempt to retrieve the
+		// record from the parent by ID, but rather always use the index record as-is.
+		if f != nil {
+			if vI, ok := f.Options[`ForceIndexRecord`]; ok {
+				if v, ok := vI.(bool); ok {
+					forceIndexRecord = v
+				}
+			}
+		}
+
+		// index compound field processing
+		if parent != nil {
+			if len(collection.IndexCompoundFields) > 1 {
+				joiner := collection.IndexCompoundFieldJoiner
+
+				if joiner == `` {
+					joiner = DefaultCompoundJoiner
+				}
+
+				values := strings.Split(fmt.Sprintf("%v", indexRecord.ID), joiner)
+
+				if len(values) != len(collection.IndexCompoundFields) {
+					return fmt.Errorf(
+						"Index item %v: expected %d compound field components, got %d",
+						indexRecord.ID,
+						len(collection.IndexCompoundFields),
+						len(values),
+					)
+				}
+
+				for i, field := range collection.IndexCompoundFields {
+					if i == 0 {
+						indexRecord.ID = values
+					} else {
+						indexRecord.Set(field, values[i])
+					}
+				}
+			}
+		}
+
+		emptyRecord := dal.NewRecord(indexRecord.ID)
+		emptyRecord.Error = err
 
 		if len(resultFns) > 0 {
 			resultFn := resultFns[0]
 
 			if f.IdOnly() {
-				return resultFn(dal.NewRecord(record.ID), err, page)
+				return resultFn(emptyRecord, err, page)
+			} else if parent != nil && !forceIndexRecord {
+				if record, err := parent.Retrieve(collection.Name, indexRecord.ID, f.Fields...); err == nil {
+					return resultFn(record, err, page)
+				} else {
+					return resultFn(emptyRecord, err, page)
+				}
 			} else {
-				return resultFn(record, err, page)
+				return resultFn(indexRecord, err, page)
 			}
 		} else {
 			if f.IdOnly() {
-				recordset.Records = append(recordset.Records, dal.NewRecord(record.ID))
+				recordset.Records = append(recordset.Records, dal.NewRecord(indexRecord.ID))
+
+			} else if parent != nil && !forceIndexRecord {
+				if record, err := parent.Retrieve(collection.Name, indexRecord.ID, f.Fields...); err == nil {
+					recordset.Records = append(recordset.Records, record)
+
+				} else {
+					recordset.Records = append(recordset.Records, dal.NewRecordErr(indexRecord.ID, err))
+				}
 			} else {
-				recordset.Records = append(recordset.Records, record)
+				recordset.Records = append(recordset.Records, indexRecord)
 			}
 
 			return nil

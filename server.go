@@ -136,7 +136,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 				`backend`: self.backend.GetConnectionString().String(),
 			}
 
-			if indexer := self.backend.WithSearch(``, nil); indexer != nil {
+			if indexer := self.backend.WithSearch(nil, nil); indexer != nil {
 				status[`indexer`] = indexer.IndexConnectionString().String()
 			}
 
@@ -148,6 +148,8 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			name := vestigo.Param(req, `collection`)
 
 			if collection, err := self.backend.GetCollection(name); err == nil {
+				collection = injectRequestParamsIntoCollection(req, collection)
+
 				httputil.RespondJSON(w, collection)
 			} else {
 				httputil.RespondJSON(w, err, http.StatusNotFound)
@@ -160,14 +162,22 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			query := vestigo.Param(req, `_name`)
 
 			if f, err := filterFromRequest(req, query, int64(DefaultResultLimit)); err == nil {
-				if search := self.backend.WithSearch(name); search != nil {
-					if recordset, err := search.Query(name, f); err == nil {
-						httputil.RespondJSON(w, recordset)
+				if collection, err := self.backend.GetCollection(name); err == nil {
+					collection = injectRequestParamsIntoCollection(req, collection)
+
+					if search := self.backend.WithSearch(collection); search != nil {
+						if recordset, err := search.Query(collection, f); err == nil {
+							httputil.RespondJSON(w, recordset)
+						} else {
+							httputil.RespondJSON(w, err)
+						}
 					} else {
-						httputil.RespondJSON(w, err)
+						httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support complex queries.", self.backend), http.StatusBadRequest)
 					}
+				} else if dal.IsCollectionNotFoundErr(err) {
+					httputil.RespondJSON(w, err, http.StatusNotFound)
 				} else {
-					httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support complex queries.", self.backend), http.StatusBadRequest)
+					httputil.RespondJSON(w, err)
 				}
 			} else {
 				httputil.RespondJSON(w, err, http.StatusBadRequest)
@@ -181,46 +191,54 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			aggregations := strings.Split(httputil.Q(req, `fn`, `count`), `,`)
 
 			if f, err := filterFromRequest(req, httputil.Q(req, `q`, `all`), 0); err == nil {
-				if aggregator := self.backend.WithAggregator(name); aggregator != nil {
-					results := make(map[string]interface{})
+				if collection, err := self.backend.GetCollection(name); err == nil {
+					collection = injectRequestParamsIntoCollection(req, collection)
 
-					for _, field := range fields {
-						fieldResults := make(map[string]interface{})
+					if aggregator := self.backend.WithAggregator(collection); aggregator != nil {
+						results := make(map[string]interface{})
 
-						for _, aggregation := range aggregations {
-							var value interface{}
-							var err error
+						for _, field := range fields {
+							fieldResults := make(map[string]interface{})
 
-							switch aggregation {
-							case `count`:
-								value, err = aggregator.Count(name, f)
-							case `sum`:
-								value, err = aggregator.Sum(name, field, f)
-							case `min`:
-								value, err = aggregator.Minimum(name, field, f)
-							case `max`:
-								value, err = aggregator.Maximum(name, field, f)
-							case `avg`:
-								value, err = aggregator.Average(name, field, f)
-							default:
-								httputil.RespondJSON(w, fmt.Errorf("Unsupported aggregator '%s'", aggregation), http.StatusBadRequest)
-								return
+							for _, aggregation := range aggregations {
+								var value interface{}
+								var err error
+
+								switch aggregation {
+								case `count`:
+									value, err = aggregator.Count(collection, f)
+								case `sum`:
+									value, err = aggregator.Sum(collection, field, f)
+								case `min`:
+									value, err = aggregator.Minimum(collection, field, f)
+								case `max`:
+									value, err = aggregator.Maximum(collection, field, f)
+								case `avg`:
+									value, err = aggregator.Average(collection, field, f)
+								default:
+									httputil.RespondJSON(w, fmt.Errorf("Unsupported aggregator '%s'", aggregation), http.StatusBadRequest)
+									return
+								}
+
+								if err != nil {
+									httputil.RespondJSON(w, err)
+									return
+								}
+
+								fieldResults[aggregation] = value
 							}
 
-							if err != nil {
-								httputil.RespondJSON(w, err)
-								return
-							}
-
-							fieldResults[aggregation] = value
+							results[field] = fieldResults
 						}
 
-						results[field] = fieldResults
+						httputil.RespondJSON(w, results)
+					} else {
+						httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support aggregations.", self.backend), http.StatusBadRequest)
 					}
-
-					httputil.RespondJSON(w, results)
+				} else if dal.IsCollectionNotFoundErr(err) {
+					httputil.RespondJSON(w, err, http.StatusNotFound)
 				} else {
-					httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support aggregations.", self.backend), http.StatusBadRequest)
+					httputil.RespondJSON(w, err)
 				}
 			} else {
 				httputil.RespondJSON(w, err, http.StatusBadRequest)
@@ -233,16 +251,24 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			fieldNames := vestigo.Param(req, `_name`)
 
 			if f, err := filterFromRequest(req, httputil.Q(req, `q`, `all`), 0); err == nil {
-				if search := self.backend.WithSearch(name); search != nil {
-					fields := strings.TrimPrefix(fieldNames, `/`)
+				if collection, err := self.backend.GetCollection(name); err == nil {
+					collection = injectRequestParamsIntoCollection(req, collection)
 
-					if recordset, err := search.ListValues(name, strings.Split(fields, `/`), f); err == nil {
-						httputil.RespondJSON(w, recordset)
+					if search := self.backend.WithSearch(collection); search != nil {
+						fields := strings.TrimPrefix(fieldNames, `/`)
+
+						if recordset, err := search.ListValues(collection, strings.Split(fields, `/`), f); err == nil {
+							httputil.RespondJSON(w, recordset)
+						} else {
+							httputil.RespondJSON(w, err)
+						}
 					} else {
-						httputil.RespondJSON(w, err)
+						httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support complex queries.", self.backend), http.StatusBadRequest)
 					}
+				} else if dal.IsCollectionNotFoundErr(err) {
+					httputil.RespondJSON(w, err, http.StatusNotFound)
 				} else {
-					httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support complex queries.", self.backend), http.StatusBadRequest)
+					httputil.RespondJSON(w, err)
 				}
 			} else {
 				httputil.RespondJSON(w, err, http.StatusBadRequest)
@@ -434,6 +460,8 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			name := vestigo.Param(req, `collection`)
 
 			if collection, err := self.backend.GetCollection(name); err == nil {
+				collection = injectRequestParamsIntoCollection(req, collection)
+
 				httputil.RespondJSON(w, collection)
 			} else {
 				httputil.RespondJSON(w, err, http.StatusBadRequest)
@@ -452,6 +480,26 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		})
 
 	return nil
+}
+
+func injectRequestParamsIntoCollection(req *http.Request, collection *dal.Collection) *dal.Collection {
+	// shallow copy the collection so we can screw with it
+	c := *collection
+	collection = &c
+
+	if v := httputil.Q(req, `index`); v != `` {
+		collection.IndexName = v
+	}
+
+	if v := httputil.Q(req, `keys`); v != `` {
+		collection.IndexCompoundFields = strings.Split(v, `,`)
+	}
+
+	if v := httputil.Q(req, `joiner`); v != `` {
+		collection.IndexCompoundFieldJoiner = v
+	}
+
+	return collection
 }
 
 func filterFromRequest(req *http.Request, filterStr string, defaultLimit int64) (*filter.Filter, error) {

@@ -6,9 +6,6 @@ LOCALS=`find . -type f -name '*.go' -not -path "./vendor/*"`
 all: deps fmt test build
 
 deps:
-	@go list github.com/mjibson/esc || go get github.com/mjibson/esc/...
-	@go list golang.org/x/tools/cmd/goimports || go get golang.org/x/tools/cmd/goimports
-	go generate -x ./...
 	go get ./...
 
 clean-bundle:
@@ -18,13 +15,16 @@ clean:
 	-rm -rf bin
 
 fmt:
+	@go list github.com/mjibson/esc || go get github.com/mjibson/esc/...
+	@go list golang.org/x/tools/cmd/goimports || go get golang.org/x/tools/cmd/goimports
+	go generate -x ./...
 	goimports -w $(LOCALS)
 	go vet $(PKGS)
 
 test:
-	go test -i --tags json1 $(PKGS)
+	go test --tags json1 $(PKGS)
 
-build: deps fmt
+build: fmt
 	test -d pivot && go build --tags json1 -i -o bin/`basename ${PWD}` pivot/*.go
 
 quickbuild: deps fmt

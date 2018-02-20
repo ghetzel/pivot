@@ -115,6 +115,10 @@ func main() {
 					indexer = config.Indexer
 				}
 
+				if backend == `` {
+					log.Fatalf("Must specify a backend to connect to.")
+				}
+
 				server := pivot.NewServer(backend)
 				server.Address = c.String(`address`)
 				server.UiDirectory = c.String(`ui-dir`)
@@ -188,8 +192,8 @@ func main() {
 				log.Debugf("Copying %d collections", len(collections))
 
 				for _, name := range collections {
-					if indexer := source.WithSearch(name); indexer != nil {
-						if collection, err := source.GetCollection(name); err == nil {
+					if collection, err := source.GetCollection(name); err == nil {
+						if indexer := source.WithSearch(collection); indexer != nil {
 							var destCollection *dal.Collection
 
 							if dc, err := destination.GetCollection(name); err == nil {
@@ -237,10 +241,10 @@ func main() {
 								}
 							}
 						} else {
-							log.Errorf("Cannot export source collection %q: %v", name, err)
+							log.Errorf("Cannot export source collection %q: collection is not enumerable", name)
 						}
 					} else {
-						log.Errorf("Cannot export source collection %q: collection is not enumerable", name)
+						log.Errorf("Cannot export source collection %q: %v", name, err)
 					}
 				}
 			},

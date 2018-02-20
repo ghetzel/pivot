@@ -57,7 +57,11 @@ func (self *BleveIndexer) IndexInitialize(parent Backend) error {
 	return nil
 }
 
-func (self *BleveIndexer) IndexRetrieve(collection string, id interface{}) (*dal.Record, error) {
+func (self *BleveIndexer) GetBackend() Backend {
+	return self.parent
+}
+
+func (self *BleveIndexer) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
 	defer stats.NewTiming().Send(`pivot.indexers.bleve.retrieve_time`)
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
@@ -78,7 +82,7 @@ func (self *BleveIndexer) IndexRetrieve(collection string, id interface{}) (*dal
 	}
 }
 
-func (self *BleveIndexer) IndexExists(collection string, id interface{}) bool {
+func (self *BleveIndexer) IndexExists(collection *dal.Collection, id interface{}) bool {
 	if _, err := self.IndexRetrieve(collection, id); err == nil {
 		return true
 	}
@@ -86,20 +90,21 @@ func (self *BleveIndexer) IndexExists(collection string, id interface{}) bool {
 	return false
 }
 
-func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error {
+func (self *BleveIndexer) Index(collection *dal.Collection, records *dal.RecordSet) error {
 	defer stats.NewTiming().Send(`pivot.indexers.bleve.index_time`)
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
+		name := collection.GetIndexName()
 
 		var batch *bleve.Batch
 
-		d, ok := self.indexDeferredBatch.Get(collection)
+		d, ok := self.indexDeferredBatch.Get(name)
 
 		if ok {
 			batch = d.(*bleveDeferredBatch).batch
 		} else {
 			batch = index.NewBatch()
-			self.indexDeferredBatch.Set(collection, &bleveDeferredBatch{
+			self.indexDeferredBatch.Set(name, &bleveDeferredBatch{
 				batch:     batch,
 				lastFlush: time.Now(),
 			})
@@ -122,7 +127,7 @@ func (self *BleveIndexer) Index(collection string, records *dal.RecordSet) error
 
 func (self *BleveIndexer) checkAndFlushBatches(forceFlush bool) {
 	for item := range self.indexDeferredBatch.Iter() {
-		collection := item.Key
+		name := item.Key
 		deferred := item.Val.(*bleveDeferredBatch)
 
 		if deferred.batch != nil {
@@ -143,9 +148,9 @@ func (self *BleveIndexer) checkAndFlushBatches(forceFlush bool) {
 			if shouldFlush {
 				defer stats.NewTiming().Send(`pivot.indexers.bleve.deferred_batch_flush`)
 
-				if index, err := self.getIndexForCollection(collection); err == nil {
+				if index, err := self.getIndexForCollection(dal.NewCollection(name)); err == nil {
 
-					querylog.Debugf("[%T] Indexing %d records to %s", self, deferred.batch.Size(), collection)
+					querylog.Debugf("[%T] Indexing %d records to %s", self, deferred.batch.Size(), name)
 
 					if err := index.Batch(deferred.batch); err == nil {
 						deferred.batch = index.NewBatch()
@@ -157,7 +162,7 @@ func (self *BleveIndexer) checkAndFlushBatches(forceFlush bool) {
 							}
 						}()
 					} else {
-						log.Errorf("[%T] error indexing %d records to %s: %v", self, deferred.batch.Size(), collection, err)
+						log.Errorf("[%T] error indexing %d records to %s: %v", self, deferred.batch.Size(), name, err)
 					}
 				}
 			}
@@ -165,7 +170,7 @@ func (self *BleveIndexer) checkAndFlushBatches(forceFlush bool) {
 	}
 }
 
-func (self *BleveIndexer) QueryFunc(collection string, f *filter.Filter, resultFn IndexResultFunc) error {
+func (self *BleveIndexer) QueryFunc(collection *dal.Collection, f *filter.Filter, resultFn IndexResultFunc) error {
 	defer stats.NewTiming().Send(`pivot.indexers.bleve.query_time`)
 
 	if f.IdentityField == `` {
@@ -255,48 +260,15 @@ func (self *BleveIndexer) QueryFunc(collection string, f *filter.Filter, resultF
 	}
 }
 
-func (self *BleveIndexer) Query(collection string, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
-	recordset := dal.NewRecordSet()
-
+func (self *BleveIndexer) Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	if f.IdentityField == `` {
 		f.IdentityField = BleveIdentityField
 	}
 
-	if err := self.QueryFunc(collection, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
-		PopulateRecordSetPageDetails(recordset, f, page)
-		emptyRecord := dal.NewRecord(indexRecord.ID)
-
-		if len(resultFns) > 0 {
-			resultFn := resultFns[0]
-
-			if f.IdOnly() {
-				return resultFn(emptyRecord, err, page)
-			} else {
-				if record, err := self.parent.Retrieve(collection, indexRecord.ID, f.Fields...); err == nil {
-					return resultFn(record, err, page)
-				} else {
-					return resultFn(emptyRecord, err, page)
-				}
-			}
-		} else {
-			if f.IdOnly() {
-				recordset.Records = append(recordset.Records, emptyRecord)
-			} else {
-				if record, err := self.parent.Retrieve(collection, indexRecord.ID, f.Fields...); err == nil {
-					recordset.Records = append(recordset.Records, record)
-				}
-			}
-
-			return nil
-		}
-	}); err != nil {
-		return nil, err
-	}
-
-	return recordset, nil
+	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 
-func (self *BleveIndexer) IndexRemove(collection string, ids []interface{}) error {
+func (self *BleveIndexer) IndexRemove(collection *dal.Collection, ids []interface{}) error {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 
 		batch := index.NewBatch()
@@ -311,7 +283,7 @@ func (self *BleveIndexer) IndexRemove(collection string, ids []interface{}) erro
 	}
 }
 
-func (self *BleveIndexer) ListValues(collection string, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
+func (self *BleveIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 
 		if bq, err := self.filterToBleveQuery(index, f); err == nil {
@@ -372,15 +344,15 @@ func (self *BleveIndexer) ListValues(collection string, fields []string, f *filt
 	}
 }
 
-func (self *BleveIndexer) DeleteQuery(name string, f *filter.Filter) error {
+func (self *BleveIndexer) DeleteQuery(collection *dal.Collection, f *filter.Filter) error {
 	f.Fields = []string{BleveIdentityField}
 	var ids []interface{}
 
-	if err := self.QueryFunc(name, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
+	if err := self.QueryFunc(collection, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
 		ids = append(ids, indexRecord.ID)
 		return nil
 	}); err == nil {
-		return self.parent.Delete(name, ids)
+		return self.parent.Delete(collection.Name, ids)
 	} else {
 		return err
 	}
@@ -391,10 +363,11 @@ func (self *BleveIndexer) FlushIndex() error {
 	return nil
 }
 
-func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index, error) {
+func (self *BleveIndexer) getIndexForCollection(collection *dal.Collection) (bleve.Index, error) {
 	defer stats.NewTiming().Send(`pivot.indexers.bleve.retrieve_index`)
+	name := collection.GetIndexName()
 
-	if v, ok := self.indexCache[collection]; ok {
+	if v, ok := self.indexCache[name]; ok {
 		return v, nil
 	} else {
 		var index bleve.Index
@@ -412,7 +385,7 @@ func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index,
 			}
 		default:
 			indexBaseDir := self.conn.Dataset()
-			indexPath := path.Join(indexBaseDir, collection)
+			indexPath := path.Join(indexBaseDir, name)
 
 			if ix, err := bleve.Open(indexPath); err == nil {
 				index = ix
@@ -423,7 +396,7 @@ func (self *BleveIndexer) getIndexForCollection(collection string) (bleve.Index,
 			}
 		}
 
-		self.indexCache[collection] = index
+		self.indexCache[name] = index
 		return index, nil
 	}
 }

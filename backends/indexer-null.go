@@ -16,35 +16,39 @@ func (self *NullIndexer) IndexInitialize(Backend) error {
 	return NotImplementedError
 }
 
-func (self *NullIndexer) IndexExists(collection string, id interface{}) bool {
+func (self *NullIndexer) GetBackend() Backend {
+	return nil
+}
+
+func (self *NullIndexer) IndexExists(collection *dal.Collection, id interface{}) bool {
 	return false
 }
 
-func (self *NullIndexer) IndexRetrieve(collection string, id interface{}) (*dal.Record, error) {
+func (self *NullIndexer) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
 	return nil, NotImplementedError
 }
 
-func (self *NullIndexer) IndexRemove(collection string, ids []interface{}) error {
+func (self *NullIndexer) IndexRemove(collection *dal.Collection, ids []interface{}) error {
 	return NotImplementedError
 }
 
-func (self *NullIndexer) Index(collection string, records *dal.RecordSet) error {
+func (self *NullIndexer) Index(collection *dal.Collection, records *dal.RecordSet) error {
 	return NotImplementedError
 }
 
-func (self *NullIndexer) QueryFunc(collection string, filter filter.Filter, resultFn IndexResultFunc) error {
+func (self *NullIndexer) QueryFunc(collection *dal.Collection, filter filter.Filter, resultFn IndexResultFunc) error {
 	return NotImplementedError
 }
 
-func (self *NullIndexer) Query(collection string, filter filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+func (self *NullIndexer) Query(collection *dal.Collection, filter filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	return nil, NotImplementedError
 }
 
-func (self *NullIndexer) ListValues(collection string, fields []string, filter filter.Filter) (map[string][]interface{}, error) {
+func (self *NullIndexer) ListValues(collection *dal.Collection, fields []string, filter filter.Filter) (map[string][]interface{}, error) {
 	return nil, NotImplementedError
 }
 
-func (self *NullIndexer) DeleteQuery(collection string, f filter.Filter) error {
+func (self *NullIndexer) DeleteQuery(collection *dal.Collection, f filter.Filter) error {
 	return NotImplementedError
 }
 

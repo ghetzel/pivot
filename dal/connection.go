@@ -27,13 +27,18 @@ func (self *ConnectionString) String() string {
 			scheme += `+` + protocol
 		}
 
-		return fmt.Sprintf(
-			"%s://%s/%s/%s",
+		str := fmt.Sprintf(
+			"%s://%s/%s",
 			scheme,
 			self.Host(),
 			self.Dataset(),
-			stringutil.PrefixIf(self.URI.RawQuery, `?`),
 		)
+
+		if qs := self.URI.RawQuery; qs != `` {
+			str += `?` + qs
+		}
+
+		return str
 	} else {
 		return ``
 	}
@@ -64,7 +69,10 @@ func (self *ConnectionString) Host() string {
 
 // Returns the dataset component of the string.
 func (self *ConnectionString) Dataset() string {
-	return strings.TrimPrefix(self.URI.Path, `/`)
+	dataset := self.URI.Path
+	dataset = strings.TrimPrefix(dataset, `/`)
+	dataset = strings.TrimSuffix(dataset, `/`)
+	return dataset
 }
 
 // Explicitly set username and password on this connection string

@@ -19,12 +19,21 @@ type Record struct {
 	ID     interface{}            `json:"id"`
 	Fields map[string]interface{} `json:"fields,omitempty"`
 	Data   []byte                 `json:"data,omitempty"`
+	Error  error                  `json:"error,omitempty"`
 }
 
 func NewRecord(id interface{}) *Record {
 	return &Record{
 		ID:     id,
 		Fields: make(map[string]interface{}),
+	}
+}
+
+func NewRecordErr(id interface{}, err error) *Record {
+	return &Record{
+		ID:     id,
+		Fields: make(map[string]interface{}),
+		Error:  err,
 	}
 }
 

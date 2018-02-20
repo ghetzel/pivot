@@ -94,7 +94,7 @@ func (self *FilesystemBackend) Initialize() error {
 		} else {
 			return err
 		}
-	} else {
+	} else if !strings.HasPrefix(self.root, `.`) {
 		self.root = `/` + self.root
 	}
 
@@ -199,8 +199,8 @@ func (self *FilesystemBackend) Update(name string, recordset *dal.RecordSet, tar
 			self.recordCache.Add(fmt.Sprintf("%v|%v", name, record.ID), record)
 		}
 
-		if search := self.WithSearch(collection.Name); search != nil {
-			if err := search.Index(collection.Name, recordset); err != nil {
+		if search := self.WithSearch(collection); search != nil {
+			if err := search.Index(collection, recordset); err != nil {
 				return err
 			}
 		}
@@ -214,8 +214,8 @@ func (self *FilesystemBackend) Update(name string, recordset *dal.RecordSet, tar
 func (self *FilesystemBackend) Delete(name string, ids ...interface{}) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		// remove documents from index
-		if search := self.WithSearch(collection.Name); search != nil {
-			defer search.IndexRemove(collection.Name, ids)
+		if search := self.WithSearch(collection); search != nil {
+			defer search.IndexRemove(collection, ids)
 		}
 
 		if dataRoot, err := self.getDataRoot(collection.Name, true); err == nil {
@@ -237,11 +237,11 @@ func (self *FilesystemBackend) Delete(name string, ids ...interface{}) error {
 	}
 }
 
-func (self *FilesystemBackend) WithSearch(collectionName string, filters ...*filter.Filter) Indexer {
+func (self *FilesystemBackend) WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer {
 	return self.indexer
 }
 
-func (self *FilesystemBackend) WithAggregator(collectionName string) Aggregator {
+func (self *FilesystemBackend) WithAggregator(collection *dal.Collection) Aggregator {
 	return nil
 }
 
@@ -522,8 +522,8 @@ func (self *FilesystemBackend) readObject(collection *dal.Collection, id string,
 				}
 			} else if os.IsNotExist(err) {
 				// if it doesn't exist, make sure it's not indexed
-				if search := self.WithSearch(collection.Name); search != nil {
-					defer search.IndexRemove(collection.Name, []interface{}{id})
+				if search := self.WithSearch(collection); search != nil {
+					defer search.IndexRemove(collection, []interface{}{id})
 				}
 
 				if isData {

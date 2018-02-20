@@ -193,14 +193,17 @@ func (self *ElasticsearchIndexer) IndexConnectionString() *dal.ConnectionString 
 
 func (self *ElasticsearchIndexer) IndexInitialize(parent Backend) error {
 	self.parent = parent
-
 	return nil
 }
 
-func (self *ElasticsearchIndexer) IndexRetrieve(name string, id interface{}) (*dal.Record, error) {
+func (self *ElasticsearchIndexer) GetBackend() Backend {
+	return self.parent
+}
+
+func (self *ElasticsearchIndexer) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
 	defer stats.NewTiming().Send(`pivot.indexers.elasticsearch.retrieve_time`)
 
-	if index, err := self.getIndexForCollection(name); err == nil {
+	if index, err := self.getIndexForCollection(collection); err == nil {
 		if req, err := self.newRequest(`GET`, fmt.Sprintf(
 			"/%v/%v/%v",
 			index.Name,
@@ -230,7 +233,7 @@ func (self *ElasticsearchIndexer) IndexRetrieve(name string, id interface{}) (*d
 	}
 }
 
-func (self *ElasticsearchIndexer) IndexExists(collection string, id interface{}) bool {
+func (self *ElasticsearchIndexer) IndexExists(collection *dal.Collection, id interface{}) bool {
 	if _, err := self.IndexRetrieve(collection, id); err == nil {
 		return true
 	}
@@ -238,10 +241,10 @@ func (self *ElasticsearchIndexer) IndexExists(collection string, id interface{})
 	return false
 }
 
-func (self *ElasticsearchIndexer) Index(name string, records *dal.RecordSet) error {
+func (self *ElasticsearchIndexer) Index(collection *dal.Collection, records *dal.RecordSet) error {
 	defer stats.NewTiming().Send(`pivot.indexers.elasticsearch.index_time`)
 
-	if index, err := self.getIndexForCollection(name); err == nil {
+	if index, err := self.getIndexForCollection(collection); err == nil {
 		for _, record := range records.Records {
 			querylog.Debugf("[%T] Adding %v to batch", self, record)
 
@@ -301,14 +304,14 @@ func (self *ElasticsearchIndexer) checkAndFlushBatches(forceFlush bool) {
 	}
 }
 
-func (self *ElasticsearchIndexer) QueryFunc(name string, f *filter.Filter, resultFn IndexResultFunc) error {
+func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filter.Filter, resultFn IndexResultFunc) error {
 	defer stats.NewTiming().Send(`pivot.indexers.elasticsearch.query_time`)
 
 	if f.IdentityField == `` {
 		f.IdentityField = ElasticsearchIdentityField
 	}
 
-	if index, err := self.getIndexForCollection(name); err == nil {
+	if index, err := self.getIndexForCollection(collection); err == nil {
 		limit := f.Limit
 
 		if limit == 0 || limit > IndexerPageSize {
@@ -415,16 +418,16 @@ func (self *ElasticsearchIndexer) QueryFunc(name string, f *filter.Filter, resul
 	}
 }
 
-func (self *ElasticsearchIndexer) Query(name string, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+func (self *ElasticsearchIndexer) Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
 	if f.IdentityField == `` {
 		f.IdentityField = ElasticsearchIdentityField
 	}
 
-	return DefaultQueryImplementation(self, name, f, resultFns...)
+	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 
-func (self *ElasticsearchIndexer) IndexRemove(name string, ids []interface{}) error {
-	if index, err := self.getIndexForCollection(name); err == nil {
+func (self *ElasticsearchIndexer) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+	if index, err := self.getIndexForCollection(collection); err == nil {
 		for _, id := range ids {
 			if req, err := self.newRequest(
 				`DELETE`,
@@ -441,7 +444,7 @@ func (self *ElasticsearchIndexer) IndexRemove(name string, ids []interface{}) er
 	}
 }
 
-func (self *ElasticsearchIndexer) ListValues(collection string, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
+func (self *ElasticsearchIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
 	if _, err := self.getIndexForCollection(collection); err == nil {
 		return nil, fmt.Errorf("Not Implemented")
 	} else {
@@ -449,15 +452,15 @@ func (self *ElasticsearchIndexer) ListValues(collection string, fields []string,
 	}
 }
 
-func (self *ElasticsearchIndexer) DeleteQuery(name string, f *filter.Filter) error {
+func (self *ElasticsearchIndexer) DeleteQuery(collection *dal.Collection, f *filter.Filter) error {
 	f.Fields = []string{ElasticsearchIdentityField}
 	var ids []interface{}
 
-	if err := self.QueryFunc(name, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
+	if err := self.QueryFunc(collection, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
 		ids = append(ids, indexRecord.ID)
 		return nil
 	}); err == nil {
-		return self.parent.Delete(name, ids)
+		return self.parent.Delete(collection.Name, ids)
 	} else {
 		return err
 	}
@@ -505,8 +508,9 @@ func (self *ElasticsearchIndexer) newRequest(method string, urlpath string, body
 	}
 }
 
-func (self *ElasticsearchIndexer) getIndexForCollection(name string) (*elasticsearchIndex, error) {
+func (self *ElasticsearchIndexer) getIndexForCollection(collection *dal.Collection) (*elasticsearchIndex, error) {
 	defer stats.NewTiming().Send(`pivot.indexers.elasticsearch.retrieve_index`)
+	name := collection.GetIndexName()
 
 	if v, ok := self.indexCache[name]; ok {
 		return v, nil
