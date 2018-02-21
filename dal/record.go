@@ -287,54 +287,39 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 								}
 							}
 
-							// set (via reflect) if we can
-							if vValue.IsValid() {
-								if vValue.Type().AssignableTo(field.ReflectField.Type()) {
-									field.ReflectField.Set(vValue)
-								} else {
-									// last-ditch effort to handle weird edge cases
-									switch field.ReflectField.Type().String() {
-									case `time.Time`, `*time.Time`:
-										isPtr := strings.HasPrefix(field.ReflectField.Type().String(), `*`)
+							// last-ditch effort to handle weird edge cases
+							switch field.ReflectField.Type().String() {
+							case `time.Time`, `*time.Time`:
+								isPtr := strings.HasPrefix(field.ReflectField.Type().String(), `*`)
 
-										if v, err := stringutil.ConvertToTime(value); err == nil {
-											if isPtr {
-												field.Field.Set(&v)
-											} else {
-												field.Field.Set(v)
-											}
-										} else if v, err := stringutil.ConvertToInteger(value); err == nil {
-											var vT time.Time
-
-											// guess at whether we're dealing with epoch seconds or nanoseconds
-											if v <= 4294967296 {
-												vT = time.Unix(v, 0)
-											} else {
-												vT = time.Unix(0, v)
-											}
-
-											if isPtr {
-												field.Field.Set(&vT)
-											} else {
-												field.Field.Set(vT)
-											}
-										} else {
-											return err
-										}
-									default:
-										log.Warningf(
-											"Field '%s' (type: %v) cannot be set to %v (type: %T)",
-											field.Field.Name(),
-											field.ReflectField.Type(),
-											value,
-											value,
-										)
+								if v, err := stringutil.ConvertToTime(value); err == nil {
+									if isPtr {
+										value = &v
+									} else {
+										value = v
 									}
-								}
-							} else {
-								if err := field.Field.Set(value); err != nil {
+								} else if v, err := stringutil.ConvertToInteger(value); err == nil {
+									var vT time.Time
+
+									// guess at whether we're dealing with epoch seconds or nanoseconds
+									if v <= 4294967296 {
+										vT = time.Unix(v, 0)
+									} else {
+										vT = time.Unix(0, v)
+									}
+
+									if isPtr {
+										value = &vT
+									} else {
+										value = vT
+									}
+								} else {
 									return err
 								}
+							}
+
+							if err := typeutil.SetValue(field.ReflectField, value); err != nil {
+								log.Warningf("Failed to set field %s:", field.Field.Name(), err)
 							}
 						}
 					}
@@ -344,7 +329,7 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 			}
 
 			// get the underlying field from the struct we're outputting to
-			if idField, ok := instanceStruct.FieldOk(idFieldName); ok {
+			if _, ok := instanceStruct.FieldOk(idFieldName); ok {
 				// if possible, format and validate the record ID first.
 				// this lets us create (for example) random IDs
 				if collection != nil {
@@ -357,9 +342,6 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 
 				if self.ID != nil {
 					id := self.ID
-
-					// we need to use reflect directly because structs Field.Set() involves
-					// a type check that's too restrictive for us here
 					reflectField := reflect.ValueOf(into)
 
 					if reflectField.Kind() == reflect.Ptr {
@@ -368,23 +350,8 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 
 					reflectField = reflectField.FieldByName(idFieldName)
 
-					fType := reflect.TypeOf(idField.Value())
-					vValue := reflect.ValueOf(id)
-
-					if fType != nil {
-						// convert the value to the field's type if necessary
-						if !vValue.Type().AssignableTo(fType) {
-							if vValue.Type().ConvertibleTo(fType) {
-								vValue = vValue.Convert(fType)
-							}
-						}
-					}
-
-					// set (via reflect) is we can
-					if vValue.Type().AssignableTo(reflectField.Type()) {
-						reflectField.Set(vValue)
-					} else {
-						return fmt.Errorf("Field '%s' is not settable", idFieldName)
+					if err := typeutil.SetValue(reflectField, id); err != nil {
+						return fmt.Errorf("Field '%s' is not settable: %v", idFieldName, err)
 					}
 				}
 			}

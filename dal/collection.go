@@ -210,9 +210,7 @@ func (self *Collection) NewInstance(initializers ...InitializerFunc) interface{}
 			zeroValue = field.GetDefaultValue()
 		}
 
-		zeroV := reflect.ValueOf(zeroValue)
-
-		if zeroV.IsValid() {
+		if zeroV := reflect.ValueOf(zeroValue); zeroV.IsValid() {
 			switch instanceV.Kind() {
 			case reflect.Map:
 				mapKeyT := instanceV.Type().Key()
@@ -243,17 +241,7 @@ func (self *Collection) NewInstance(initializers ...InitializerFunc) interface{}
 			case reflect.Struct:
 				if structFields != nil {
 					if fieldDescr, ok := structFields[field.Name]; ok {
-						fieldT := fieldDescr.ReflectField.Type()
-
-						if !zeroV.Type().AssignableTo(fieldT) {
-							if zeroV.Type().ConvertibleTo(fieldT) {
-								zeroV = zeroV.Convert(fieldT)
-							} else {
-								continue
-							}
-						}
-
-						fieldDescr.Field.Set(zeroV.Interface())
+						typeutil.SetValue(fieldDescr.ReflectField, zeroValue)
 					}
 				}
 			}
@@ -449,7 +437,10 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 						record.Set(tagName, value)
 
 						// make sure the corresponding value in the input struct matches
-						fieldDescr.Field.Set(value)
+						typeutil.SetValue(
+							fieldDescr.ReflectField,
+							value,
+						)
 					}
 				}
 			}
@@ -492,7 +483,7 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 
 			// make sure the corresponding ID in the input struct matches
 			if fieldDescr, ok := fields[idFieldName]; ok {
-				if err := fieldDescr.Field.Set(idI); err != nil {
+				if err := typeutil.SetValue(fieldDescr.ReflectField, idI); err != nil {
 					return nil, fmt.Errorf("failed to writeback value to %q: %v", idFieldName, err)
 				}
 			}
