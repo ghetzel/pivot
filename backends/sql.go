@@ -1,11 +1,13 @@
 package backends
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"reflect"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
@@ -148,6 +150,21 @@ func (self *SqlBackend) Initialize() error {
 	self.aggregator[``] = self
 
 	return nil
+}
+
+func (self *SqlBackend) Ping(timeout time.Duration) error {
+	if self.db == nil {
+		return fmt.Errorf("Backend not initialized")
+	} else {
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+
+		if err := self.db.PingContext(ctx); err == nil {
+			return nil
+		} else {
+			return fmt.Errorf("Backend unavailable: %v", err)
+		}
+	}
 }
 
 func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {

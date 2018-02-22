@@ -1,6 +1,7 @@
 package backends
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"sync"
@@ -9,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
@@ -46,6 +48,24 @@ func NewDynamoBackend(connection dal.ConnectionString) Backend {
 
 func (self *DynamoBackend) GetConnectionString() *dal.ConnectionString {
 	return &self.cs
+}
+
+func (self *DynamoBackend) Ping(timeout time.Duration) error {
+	if self.db == nil {
+		return fmt.Errorf("Backend not initialized")
+	} else {
+		in := &dynamodb.ListTablesInput{}
+		in = in.SetLimit(1)
+
+		ctx, cancel := context.WithTimeout(aws.BackgroundContext(), timeout)
+		defer cancel()
+
+		if _, err := self.db.Client().ListTablesWithContext(ctx, in); err != nil {
+			return fmt.Errorf("Backend unavailable: %v", err)
+		}
+	}
+
+	return nil
 }
 
 func (self *DynamoBackend) SetIndexer(indexConnString dal.ConnectionString) error {

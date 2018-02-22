@@ -58,6 +58,26 @@ func (self *FilesystemBackend) GetConnectionString() *dal.ConnectionString {
 	return &self.conn
 }
 
+func (self *FilesystemBackend) Ping(timeout time.Duration) error {
+	errchan := make(chan error)
+
+	go func() {
+		if tmp, err := ioutil.TempFile(self.root, `.fs-ping-`); err == nil {
+			defer os.Remove(tmp.Name())
+			errchan <- nil
+		} else {
+			errchan <- fmt.Errorf("Backend unavailable: %v", err)
+		}
+	}()
+
+	select {
+	case err := <-errchan:
+		return err
+	case <-time.After(timeout):
+		return fmt.Errorf("Backend unavailable: timed out after waiting %v", timeout)
+	}
+}
+
 func (self *FilesystemBackend) RegisterCollection(collection *dal.Collection) {
 	self.registeredCollections[collection.Name] = collection
 }

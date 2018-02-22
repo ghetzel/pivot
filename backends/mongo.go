@@ -103,6 +103,29 @@ func (self *MongoBackend) GetConnectionString() *dal.ConnectionString {
 	return self.conn
 }
 
+func (self *MongoBackend) Ping(timeout time.Duration) error {
+	if self.session == nil || self.db == nil {
+		return fmt.Errorf("Backend not initialized")
+	} else {
+		errchan := make(chan error)
+
+		go func() {
+			if err := self.session.Ping(); err == nil {
+				errchan <- nil
+			} else {
+				errchan <- fmt.Errorf("Backend unavailable: %v", err)
+			}
+		}()
+
+		select {
+		case err := <-errchan:
+			return err
+		case <-time.After(timeout):
+			return fmt.Errorf("Backend unavailable: timed out after waiting %v", timeout)
+		}
+	}
+}
+
 func (self *MongoBackend) Exists(name string, id interface{}) bool {
 	if collection, err := self.GetCollection(name); err == nil {
 		if n, err := self.db.C(collection.Name).FindId(self.getId(id)).Count(); err == nil && n == 1 {

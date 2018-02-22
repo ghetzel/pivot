@@ -2,6 +2,7 @@ package backends
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/alexcesaro/statsd"
 	"github.com/ghetzel/pivot/dal"
@@ -31,6 +32,7 @@ type Backend interface {
 	WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
 	WithAggregator(collection *dal.Collection) Aggregator
 	Flush() error
+	Ping(time.Duration) error
 }
 
 var NotImplementedError = fmt.Errorf("Not Implemented")
