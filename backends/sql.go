@@ -18,6 +18,7 @@ import (
 )
 
 var objectFieldHintLength = 131071
+var InitialPingTimeout = time.Duration(10) * time.Second
 
 type sqlTableDetails struct {
 	Index        int
@@ -133,7 +134,7 @@ func (self *SqlBackend) Initialize() error {
 	}
 
 	// actually verify database connectivity at this time
-	if err := self.db.Ping(); err != nil {
+	if err := self.Ping(InitialPingTimeout); err != nil {
 		return err
 	}
 

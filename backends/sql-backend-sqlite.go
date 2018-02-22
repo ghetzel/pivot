@@ -3,6 +3,7 @@ package backends
 import (
 	"database/sql"
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/ghetzel/go-stockutil/maputil"
@@ -152,6 +153,16 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 			} else {
 				return ``, ``, err
 			}
+		} else if strings.HasPrefix(dataset, `.`) {
+			if v, err := filepath.Abs(dataset); err == nil {
+				dataset = v
+			} else {
+				return ``, ``, err
+			}
+		}
+
+		if !strings.HasPrefix(dataset, `/`) {
+			dataset = `/` + dataset
 		}
 
 		dsn = dataset
