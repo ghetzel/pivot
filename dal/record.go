@@ -319,7 +319,7 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 							}
 
 							if err := typeutil.SetValue(field.ReflectField, value); err != nil {
-								log.Warningf("Failed to set field %s:", field.Field.Name(), err)
+								log.Warningf("Failed to set field %s: %v", field.Field.Name(), err)
 							}
 						}
 					}
