@@ -139,9 +139,7 @@ func (self *SqlBackend) QueryFunc(collection *dal.Collection, f *filter.Filter, 
 						return err
 					}
 				} else {
-					if err := resultFn(nil, err, IndexPage{}); err != nil {
-						return err
-					}
+					return err
 				}
 
 			} else {
