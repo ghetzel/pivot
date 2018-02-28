@@ -737,9 +737,9 @@ func (self *Sql) populateGroupBy() {
 }
 
 func (self *Sql) populateOrderBy(f *filter.Filter) {
-	if len(f.Sort) > 0 {
+	if sortFields := sliceutil.CompactString(f.Sort); len(sortFields) > 0 {
 		self.Push([]byte(` ORDER BY `))
-		orderByFields := make([]string, len(f.Sort))
+		orderByFields := make([]string, len(sortFields))
 
 		for i, sortBy := range f.GetSort() {
 			v := self.ToFieldName(sortBy.Field)
