@@ -116,9 +116,9 @@ func (self *DynamoBackend) Initialize() error {
 		return err
 	}
 
-	// if self.indexer == nil {
-	// 	self.indexer = self
-	// }
+	if self.indexer == nil {
+		self.indexer = self
+	}
 
 	if self.indexer != nil {
 		if err := self.indexer.IndexInitialize(self); err != nil {
@@ -221,6 +221,13 @@ func (self *DynamoBackend) GetCollection(name string) (*dal.Collection, error) {
 }
 
 func (self *DynamoBackend) WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer {
+	// if this is a query we _can_ handle, then use ourself as the indexer
+	if len(filters) > 0 {
+		if err := self.validateFilter(collection, filters[0]); err == nil {
+			return self
+		}
+	}
+
 	return self.indexer
 }
 
