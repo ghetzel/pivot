@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
@@ -783,7 +784,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 
 					switch field.Type {
 					case dal.ObjectType:
-						if err := generators.SqlObjectTypeDecode([]byte(v[:]), &dest); err == nil {
+						if err := generators.SqlObjectTypeDecode([]byte(v), &dest); err == nil {
 							value = dest
 						} else {
 							value = string(v[:])
@@ -796,14 +797,28 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 						// blindly attempt to load the data as if it were an object, then
 						// fallback to using the raw byte array
 						//
-						if err := generators.SqlObjectTypeDecode([]byte(v[:]), &dest); err == nil {
+						if err := generators.SqlObjectTypeDecode([]byte(v), &dest); err == nil {
 							value = dest
 						} else {
-							value = []byte(v[:])
+							value = []byte(v)
 						}
 
 					default:
-						value = string(v[:])
+						value = nil
+
+						if vStr := string(v); len(vStr) > 0 {
+							var normalized []rune
+
+							for _, r := range vStr {
+								if unicode.IsGraphic(r) {
+									normalized = append(normalized, r)
+								}
+							}
+
+							if nS := string(normalized); nS != `` {
+								value = nS
+							}
+						}
 					}
 				case sql.NullString:
 					v := output[i].(sql.NullString)
