@@ -320,7 +320,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			var recordset dal.RecordSet
 
-			if err := httputil.ParseJSON(req.Body, &recordset); err == nil {
+			if err := httputil.ParseRequest(req, &recordset); err == nil {
 				name := vestigo.Param(req, `collection`)
 
 				if err := self.backend.Insert(name, &recordset); err == nil {
@@ -337,7 +337,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			var recordset dal.RecordSet
 
-			if err := httputil.ParseJSON(req.Body, &recordset); err == nil {
+			if err := httputil.ParseRequest(req, &recordset); err == nil {
 				name := vestigo.Param(req, `collection`)
 
 				if err := self.backend.Update(name, &recordset); err == nil {
