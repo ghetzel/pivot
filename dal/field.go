@@ -33,28 +33,19 @@ type Field struct {
 }
 
 func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
-	if typeutil.IsZero(in) {
-		// non-required zero valued inputs are nilable, so return nil
-		if self.Required {
-			return self.GetTypeInstance(), nil
-		} else {
-			return nil, nil
-		}
-	}
-
 	var convertType stringutil.ConvertType
 
 	switch self.Type {
 	case StringType:
 		convertType = stringutil.String
 	case BooleanType:
-		if fmt.Sprintf("%v", in) == `1` {
-			return true, nil
-		} else if fmt.Sprintf("%v", in) == `0` {
-			return false, nil
-		}
-
 		convertType = stringutil.Boolean
+
+		if fmt.Sprintf("%v", in) == `1` {
+			in = true
+		} else if fmt.Sprintf("%v", in) == `0` {
+			in = false
+		}
 	case IntType:
 		convertType = stringutil.Integer
 	case FloatType:
@@ -63,18 +54,40 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 		// parse incoming int64s as epoch or epoch milliseconds
 		if inInt64, ok := in.(int64); ok {
 			if inInt64 < 4294967296 {
-				return time.Unix(inInt64, 0), nil
+				in = time.Unix(inInt64, 0)
 			} else {
-				return time.Unix(0, inInt64), nil
+				in = time.Unix(0, inInt64)
 			}
 		}
 
 		convertType = stringutil.Time
-	default:
-		return in, nil
 	}
 
-	return stringutil.ConvertTo(convertType, in)
+	if convertType != stringutil.Invalid {
+		if v, err := stringutil.ConvertTo(convertType, in); err == nil {
+			in = v
+		} else {
+			return nil, err
+		}
+	}
+
+	// decide what to do with the now-normalized type
+	if typeutil.IsZero(in) {
+		if self.DefaultValue != nil {
+			return self.GetDefaultValue(), nil
+
+		} else if self.Type == BooleanType && in != nil {
+			return false, nil
+
+		} else if self.Required {
+			return self.GetTypeInstance(), nil
+
+		} else {
+			return nil, nil
+		}
+	} else {
+		return in, nil
+	}
 }
 
 func (self *Field) GetDefaultValue() interface{} {

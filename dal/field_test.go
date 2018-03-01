@@ -24,3 +24,220 @@ func TestFieldValidators(t *testing.T) {
 	assert.Nil(field1.Validate(`test`))
 	assert.Error(field1.Validate(`not-test`))
 }
+
+func TestFieldConvertValueString(t *testing.T) {
+	assert := require.New(t)
+	var field *Field
+	var value interface{}
+	var err error
+
+	field = &Field{
+		Type: StringType,
+	}
+
+	// not required, no default
+	// -------------------------------------------------------------------------
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.Nil(value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Nil(value)
+
+	value, err = field.ConvertValue(`things`)
+	assert.NoError(err)
+	assert.Equal(`things`, value)
+
+	// required, no default
+	// -------------------------------------------------------------------------
+	field.Required = true
+
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.Equal(``, value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(``, value)
+
+	value, err = field.ConvertValue(`things`)
+	assert.NoError(err)
+	assert.Equal(`things`, value)
+
+	// required, with default
+	// -------------------------------------------------------------------------
+	field.DefaultValue = `test`
+
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.Equal(`test`, value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(`test`, value)
+
+	value, err = field.ConvertValue(`things`)
+	assert.NoError(err)
+	assert.Equal(`things`, value)
+}
+
+func TestFieldConvertValueBool(t *testing.T) {
+	assert := require.New(t)
+	var field *Field
+	var value interface{}
+	var err error
+
+	field = &Field{
+		Type: BooleanType,
+	}
+
+	// not required, no default
+	// -------------------------------------------------------------------------
+	for _, v := range []interface{}{
+		true,
+		`true`,
+		`True`,
+		`TRUE`,
+		`yes`,
+		`on`,
+		`YES`,
+		`ON`,
+		1,
+	} {
+		value, err = field.ConvertValue(v)
+		assert.NoError(err)
+		assert.Equal(true, value, fmt.Sprintf("output: %T(%v) -> %T(%v)", v, v, value, value))
+	}
+
+	for _, v := range []interface{}{
+		false,
+		`false`,
+		`False`,
+		`FALSE`,
+		`no`,
+		`off`,
+		`NO`,
+		`OFF`,
+		0,
+	} {
+		value, err = field.ConvertValue(v)
+		assert.NoError(err)
+		assert.Equal(false, value, fmt.Sprintf("output: %T(%v) -> %T(%v)", v, v, value, value))
+	}
+
+	for _, noes := range []interface{}{
+		-4,
+		3.14,
+		42,
+		`dennis`,
+	} {
+		value, err = field.ConvertValue(noes)
+		assert.Error(err)
+	}
+
+	// required, no default
+	// -------------------------------------------------------------------------
+	field.Required = true
+
+	for _, v := range []interface{}{
+		true,
+		`true`,
+		`True`,
+		`TRUE`,
+		`yes`,
+		`on`,
+		`YES`,
+		`ON`,
+		1,
+	} {
+		value, err = field.ConvertValue(v)
+		assert.NoError(err)
+		assert.Equal(true, value, fmt.Sprintf("output: %T(%v) -> %T(%v)", v, v, value, value))
+	}
+
+	for _, v := range []interface{}{
+		false,
+		`false`,
+		`False`,
+		`FALSE`,
+		`no`,
+		`off`,
+		`NO`,
+		`OFF`,
+		nil,
+		0,
+	} {
+		value, err = field.ConvertValue(v)
+		assert.NoError(err)
+		assert.Equal(false, value, fmt.Sprintf("output: %T(%v) -> %T(%v)", v, v, value, value))
+	}
+
+	for _, noes := range []interface{}{
+		-4,
+		3.14,
+		42,
+		`dennis`,
+	} {
+		value, err = field.ConvertValue(noes)
+		assert.Error(err)
+	}
+
+	// required, with default
+	// -------------------------------------------------------------------------
+	field.DefaultValue = true
+
+	for _, v := range []interface{}{
+		true,
+		`true`,
+		`True`,
+		`TRUE`,
+		`yes`,
+		`on`,
+		`YES`,
+		`ON`,
+		1,
+	} {
+		value, err = field.ConvertValue(v)
+		assert.NoError(err)
+		assert.Equal(true, value, fmt.Sprintf("output: %T(%v) -> %T(%v)", v, v, value, value))
+	}
+
+	for _, v := range []interface{}{
+		false,
+		`false`,
+		`False`,
+		`FALSE`,
+		`no`,
+		`off`,
+		`NO`,
+		`OFF`,
+		nil,
+		0,
+	} {
+		value, err = field.ConvertValue(v)
+		assert.NoError(err)
+		assert.Equal(true, value, fmt.Sprintf("output: %T(%v) -> %T(%v)", v, v, value, value))
+	}
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(true, value, fmt.Sprintf("output: nil -> %T(%v)", value, value))
+
+	for _, noes := range []interface{}{
+		-4,
+		3.14,
+		42,
+		`dennis`,
+	} {
+		value, err = field.ConvertValue(noes)
+		assert.Error(err)
+	}
+}
+
+// TODO: basically the *worst* thing you can write in a file full of tests
+// func TestFieldConvertValueInteger(t *testing.T) {}
+// func TestFieldConvertValueFloat(t *testing.T) {}
+// func TestFieldConvertValueTime(t *testing.T) {}
+// func TestFieldConvertValueObject(t *testing.T) {}
+// func TestFieldConvertValueRaw(t *testing.T) {}
