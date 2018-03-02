@@ -44,7 +44,13 @@ class RecordSet(object):
 
     @property
     def records(self):
-        return self.response.get('records') or []
+        _results = self.response.get('records') or []
+        out = []
+
+        for result in _results:
+            out.append(Record(result))
+
+        return out
 
     def __len__(self):
         return len(self.records)
