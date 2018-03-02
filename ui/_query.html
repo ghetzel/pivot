@@ -19,6 +19,7 @@ bindings:
                 <tr>
                     <th>ID</th>
                     <th>Fields</th>
+                    <th>&nbsp;</th>
                 </tr>
             </thead>
             <tbody>
@@ -60,6 +61,11 @@ bindings:
                             {{ end }}
                             </tbody>
                         </table>
+                    </td>
+                    <td>
+                        <a href="/editor?collection={{ qs `id` }}&record={{ $record.id }}">
+                            <i class="fa fa-pencil"></i>
+                        </a>
                     </td>
                 </tr>
             {{ end }}

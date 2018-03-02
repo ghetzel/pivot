@@ -291,13 +291,13 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			}
 		})
 
-	router.Get(`/api/collections/:collection/records/*id`,
+	router.Get(`/api/collections/:collection/records/:id`,
 		func(w http.ResponseWriter, req *http.Request) {
 			var id interface{}
 			var fields []string
 			name := vestigo.Param(req, `collection`)
 
-			if ids := strings.Split(vestigo.Param(req, `_name`), `/`); len(ids) == 1 {
+			if ids := strings.Split(vestigo.Param(req, `id`), `/`); len(ids) == 1 {
 				id = ids[0]
 			} else {
 				id = ids
@@ -313,6 +313,31 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 				httputil.RespondJSON(w, err, http.StatusNotFound)
 			} else {
 				httputil.RespondJSON(w, err)
+			}
+		})
+
+	router.Post(`/api/collections/:collection/records/:id`,
+		func(w http.ResponseWriter, req *http.Request) {
+			var record dal.Record
+
+			if err := httputil.ParseRequest(req, &record); err == nil {
+				recordset := dal.NewRecordSet(&record)
+				name := vestigo.Param(req, `collection`)
+				var err error
+
+				if self.backend.Exists(name, record.ID) {
+					err = self.backend.Update(name, recordset)
+				} else {
+					err = self.backend.Insert(name, recordset)
+				}
+
+				if err == nil {
+					httputil.RespondJSON(w, &record)
+				} else {
+					httputil.RespondJSON(w, err)
+				}
+			} else {
+				httputil.RespondJSON(w, err, http.StatusBadRequest)
 			}
 		})
 

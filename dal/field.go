@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/fatih/structs"
@@ -68,6 +69,11 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 			in = v
 		} else {
 			return nil, err
+		}
+	} else {
+		switch strings.ToLower(fmt.Sprintf("%v", in)) {
+		case `null`, `nil`:
+			in = nil
 		}
 	}
 

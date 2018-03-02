@@ -8,8 +8,17 @@ bindings:
   optional: true
   fallback: {}
 ---
-<form class="container" id="editor">
+<form
+    id="editor"
+    class="container"
+    method="post"
+    action="/api/collections/{{ qs `collection` }}/records/{{ qs `record` }}"
+>
     <h2>Editing {{ .bindings.schema.name }} {{ if (qs `record`) }}{{ qs `record` }}{{ end }}</h2>
+
+    {{ if $.bindings.record.id }}
+    <input type="hidden" name="id" value="{{ $.bindings.record.id }}">
+    {{ end }}
 
     {{ range .bindings.schema.fields }}
     {{   if eqx .name `id` }}
@@ -18,18 +27,21 @@ bindings:
     {{     var `value` (get $.bindings.record.fields .name) }}
     {{   end }}
     <div class="form-group row">
-        <label class="
-            col-sm-4
-            col-form-label
-            {{ if .identity }} text-danger{{ end }}
-            {{ if .required }} font-weight-bold{{ end }}
-        ">
+        <label
+            for="fields.{{ .name }}"
+            class="
+                col-sm-4
+                col-form-label
+                {{ if .identity }} text-danger{{ end }}
+                {{ if .required }} font-weight-bold{{ end }}
+            "
+        >
             {{ .name }}
         </label>
         <div class="col-sm-8">
             {{ if eqx .type `bool` }}
             <select
-                name="{{ .name }}"
+                name="fields.{{ .name }}"
                 class="form-control form-control-sm"
                 {{ if .required }}required{{ end }}
                 {{ if (and .identity $.vars.value) }}readonly{{ end }}
@@ -41,7 +53,7 @@ bindings:
             <input
                 class="form-control form-control-sm"
                 type="number"
-                name="{{ .name }}"
+                name="fields.{{ .name }}"
                 value="{{ $.vars.value }}"
                 {{ if .required }}required{{ end }}
                 {{ if (and .identity $.vars.value) }}readonly{{ end }}
@@ -50,7 +62,7 @@ bindings:
             <input
                 class="form-control form-control-sm"
                 type="text"
-                name="{{ .name }}"
+                name="fields.{{ .name }}"
                 value="{{ $.vars.value }}"
                 {{ if .required }}required{{ end }}
                 {{ if (and .identity $.vars.value) }}readonly{{ end }}
@@ -65,16 +77,8 @@ bindings:
     {{ end }}
 
     <div class="form-group row">
-
+        <button type="submit" class="btn btn-lg btn-primary">
+            Save Record
+        </button>
     </div>
 </form>
-
-<script type="text/javascript">
-    $(function(){
-        var form = $('#editor');
-
-        form.on('submit', function(e){
-            e.preventDefault();
-        });
-    });
-</script>
