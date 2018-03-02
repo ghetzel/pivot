@@ -4,6 +4,9 @@ from .utils import dotdict, mutate_dict, compact, uu
 
 class Record(dotdict):
     def __init__(self, record):
+        if isinstance(record, Record):
+            raise ValueError("Record cannot be given another Record")
+
         _record = record.get('fields', {})
         _record['id'] = record['id']
 
@@ -61,9 +64,9 @@ class RecordSet(object):
 
     def __next__(self):
         if '__next__' in dir(self._results_iter):
-            return Record(self._results_iter.__next__())
+            return self._results_iter.__next__()
         else:
-            return Record(self._results_iter.next())
+            return self._results_iter.next()
 
     def next(self):
         return self.__next__()
