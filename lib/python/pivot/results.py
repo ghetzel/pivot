@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from .utils import dotdict, mutate_dict, compact
+from .utils import dotdict, mutate_dict, compact, uu
 
 
 class Record(dotdict):
@@ -18,9 +18,7 @@ class Record(dotdict):
         )
 
     def keyfn(self, key, **kwargs):
-        if isinstance(key, unicode):
-            return str(key.encode('utf-8'))
-        return key
+        return uu(key)
 
     def valuefn(self, value):
         if isinstance(value, dict) and not isinstance(value, dotdict):

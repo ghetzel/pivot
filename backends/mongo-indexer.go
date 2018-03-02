@@ -159,7 +159,7 @@ func (self *MongoBackend) filterToNative(collection *dal.Collection, flt *filter
 		query = bson.M(maputil.Apply(query, func(key []string, value interface{}) (interface{}, bool) {
 			vS := fmt.Sprintf("%v", value)
 
-			if key[0] == MongoIdentityField && bson.IsObjectIdHex(vS) {
+			if bson.IsObjectIdHex(vS) {
 				return bson.ObjectIdHex(vS), true
 			} else {
 				return nil, false

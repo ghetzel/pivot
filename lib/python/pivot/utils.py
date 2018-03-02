@@ -10,6 +10,16 @@ class dotdict(dict):
     __delattr__ = dict.__delitem__
 
 
+def uu(input):
+    try:
+        if type(input) != unicode:
+            input = input.decode('utf-8')
+    except NameError:
+        pass
+
+    return input
+
+
 def mutate_dict(inValue,
                 keyFn=lambda k: k,
                 valueFn=lambda v: v,

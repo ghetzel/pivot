@@ -9,10 +9,28 @@ bindings:
     fields: '{{ qs `fields` }}'
 ---
 <div class="container-fluid">
-    <h3 class="browser-header">{{ qs `id` }}</h3>
+    <nav class="nav browser-header">
+        <div class="navbar-brand">{{ qs `id` }}</div class="nav-brand">
+
+        <form class="ml-auto w-50" action="/">
+            <input type="hidden" name="collection" value="{{ qs `id` }}">
+            <div class="input-group">
+                <input class="form-control" type="text" name="q" value="{{ qs `q` }}">
+
+                <div class="input-group-append">
+                    <button
+                        type="submit"
+                        class="btn btn-secondary"
+                    >
+                        <i class="fa fa-fw fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </nav>
 
     <div class="browser-view">
-        <h6 class="mb-4">{{ thousandify .bindings.results.result_count }} records</h6>
+        <h6 class="mb-4">{{ thousandify .bindings.results.result_count }} results</h6>
 
         <table class="table">
             <thead>
