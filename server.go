@@ -13,7 +13,9 @@ import (
 
 	"github.com/ghetzel/diecast"
 	"github.com/ghetzel/go-stockutil/httputil"
+	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/pathutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -156,33 +158,54 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			}
 		})
 
-	router.Get(`/api/collections/:collection/where/*urlquery`,
-		func(w http.ResponseWriter, req *http.Request) {
-			name := vestigo.Param(req, `collection`)
-			query := vestigo.Param(req, `_name`)
+	queryHandler := func(w http.ResponseWriter, req *http.Request) {
+		var query interface{}
 
-			if f, err := filterFromRequest(req, query, int64(DefaultResultLimit)); err == nil {
-				if collection, err := self.backend.GetCollection(name); err == nil {
-					collection = injectRequestParamsIntoCollection(req, collection)
+		name := vestigo.Param(req, `collection`)
 
-					if search := self.backend.WithSearch(collection); search != nil {
-						if recordset, err := search.Query(collection, f); err == nil {
-							httputil.RespondJSON(w, recordset)
-						} else {
-							httputil.RespondJSON(w, err)
-						}
-					} else {
-						httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support complex queries.", self.backend), http.StatusBadRequest)
-					}
-				} else if dal.IsCollectionNotFoundErr(err) {
-					httputil.RespondJSON(w, err, http.StatusNotFound)
-				} else {
-					httputil.RespondJSON(w, err)
-				}
+		switch req.Method {
+		case `GET`:
+			if q := vestigo.Param(req, `_name`); q != `` {
+				query = q
+			}
+
+		case `POST`:
+			fMap := make(map[string]interface{})
+
+			if err := httputil.ParseRequest(req, &fMap); err == nil {
+				query = fMap
 			} else {
 				httputil.RespondJSON(w, err, http.StatusBadRequest)
+				return
 			}
-		})
+		}
+
+		if f, err := filterFromRequest(req, query, int64(DefaultResultLimit)); err == nil {
+			if collection, err := self.backend.GetCollection(name); err == nil {
+				collection = injectRequestParamsIntoCollection(req, collection)
+
+				if search := self.backend.WithSearch(collection); search != nil {
+					if recordset, err := search.Query(collection, f); err == nil {
+						httputil.RespondJSON(w, recordset)
+					} else {
+						httputil.RespondJSON(w, err)
+					}
+				} else {
+					httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support complex queries.", self.backend), http.StatusBadRequest)
+				}
+			} else if dal.IsCollectionNotFoundErr(err) {
+				httputil.RespondJSON(w, err, http.StatusNotFound)
+			} else {
+				httputil.RespondJSON(w, err)
+			}
+		} else {
+			httputil.RespondJSON(w, err, http.StatusBadRequest)
+		}
+	}
+
+	router.Post(`/api/collections/:collection/query/`, queryHandler)
+	router.Get(`/api/collections/:collection/query/`, queryHandler)
+	router.Get(`/api/collections/:collection/where/*urlquery`, queryHandler)
 
 	router.Get(`/api/collections/:collection/aggregate/:fields`,
 		func(w http.ResponseWriter, req *http.Request) {
@@ -527,24 +550,47 @@ func injectRequestParamsIntoCollection(req *http.Request, collection *dal.Collec
 	return collection
 }
 
-func filterFromRequest(req *http.Request, filterStr string, defaultLimit int64) (*filter.Filter, error) {
+func filterFromRequest(req *http.Request, filterIn interface{}, defaultLimit int64) (*filter.Filter, error) {
 	limit := int(httputil.QInt(req, `limit`, defaultLimit))
 	offset := int(httputil.QInt(req, `offset`))
+	var f *filter.Filter
 
-	if f, err := filter.Parse(filterStr); err == nil {
-		f.Limit = limit
-		f.Offset = offset
-
-		if v := httputil.Q(req, `sort`); v != `` {
-			f.Sort = strings.Split(v, `,`)
+	switch filterIn.(type) {
+	case string:
+		if flt, err := filter.Parse(filterIn.(string)); err == nil {
+			f = flt
+		} else {
+			return nil, err
 		}
+	case *filter.Filter:
+		f = filterIn.(*filter.Filter)
 
-		if v := httputil.Q(req, `fields`); v != `` {
-			f.Fields = strings.Split(v, `,`)
+	default:
+		if typeutil.IsMap(filterIn) {
+			if fMap, err := maputil.Compact(maputil.Autotype(filterIn)); err == nil {
+				if flt, err := filter.FromMap(fMap); err == nil {
+					f = flt
+				} else {
+					return nil, fmt.Errorf("filter parse error: %v", err)
+				}
+			} else {
+				return nil, fmt.Errorf("map error: %v", err)
+			}
+		} else {
+			return nil, fmt.Errorf("Unsupported filter input type %T", filterIn)
 		}
-
-		return f, nil
-	} else {
-		return nil, err
 	}
+
+	f.Limit = limit
+	f.Offset = offset
+
+	if v := httputil.Q(req, `sort`); v != `` {
+		f.Sort = strings.Split(v, `,`)
+	}
+
+	if v := httputil.Q(req, `fields`); v != `` {
+		f.Fields = strings.Split(v, `,`)
+	}
+
+	return f, nil
 }
