@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/require"
 )
 
@@ -351,9 +351,9 @@ func TestIdFormattersRandomId(t *testing.T) {
 	assert.Equal(3, len(recordset.Records))
 	assert.Nil(backend.Insert(`TestIdFormattersRandomId`, recordset))
 
-	assert.NotNil(uuid.FromStringOrNil(fmt.Sprintf("%v", recordset.Records[0].ID)))
-	assert.NotNil(uuid.FromStringOrNil(fmt.Sprintf("%v", recordset.Records[1].ID)))
-	assert.NotNil(uuid.FromStringOrNil(fmt.Sprintf("%v", recordset.Records[2].ID)))
+	assert.NotNil(stringutil.MustUUID(fmt.Sprintf("%v", recordset.Records[0].ID)))
+	assert.NotNil(stringutil.MustUUID(fmt.Sprintf("%v", recordset.Records[1].ID)))
+	assert.NotNil(stringutil.MustUUID(fmt.Sprintf("%v", recordset.Records[2].ID)))
 
 	record, err := backend.Retrieve(`TestIdFormattersRandomId`, recordset.Records[0].ID)
 	assert.NoError(err)

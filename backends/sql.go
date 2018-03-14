@@ -94,7 +94,18 @@ func (self *SqlBackend) RegisterCollection(collection *dal.Collection) {
 
 func (self *SqlBackend) SetIndexer(indexConnString dal.ConnectionString) error {
 	if indexer, err := MakeIndexer(indexConnString); err == nil {
-		self.indexer = indexer
+		if indexConnString.OptBool(`fallbackToBackend`, false) {
+			log.Debugf("Indexer fallback to backend %T", self)
+
+			multi := NewMultiIndex()
+			multi.AddIndexer(indexer)
+			multi.AddIndexer(self)
+
+			self.indexer = multi
+		} else {
+			self.indexer = indexer
+		}
+
 		return nil
 	} else {
 		return err

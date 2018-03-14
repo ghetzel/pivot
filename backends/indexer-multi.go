@@ -134,7 +134,7 @@ func (self *MultiIndex) IndexExists(collection *dal.Collection, id interface{}) 
 	if err := self.EachSelectedIndex(collection, InspectionOperation, func(indexer Indexer, _ int, _ int) error {
 		if !indexer.IndexExists(collection, id) {
 			exists = false
-			querylog.Debugf("MultiIndex: Indexer %v/%v does not exist", indexer, collection.GetIndexName())
+			querylog.Debugf("MultiIndex: Indexer %T/%v does not exist", indexer, collection.GetIndexName())
 			return IndexerResultsStop
 		} else {
 			exists = true
@@ -173,7 +173,7 @@ func (self *MultiIndex) IndexRemove(collection *dal.Collection, ids []interface{
 
 	if err := self.EachSelectedIndex(collection, DeleteOperation, func(indexer Indexer, _ int, _ int) error {
 		if err := indexer.IndexRemove(collection, ids); err != nil {
-			querylog.Debugf("MultiIndex: Failed to remove IDs from %v from indexer %v: %v", collection, indexer, err)
+			querylog.Debugf("MultiIndex: Failed to remove IDs from %v from indexer %T: %v", collection, indexer, err)
 			indexErr = err
 		}
 
@@ -190,7 +190,7 @@ func (self *MultiIndex) Index(collection *dal.Collection, records *dal.RecordSet
 
 	if err := self.EachSelectedIndex(collection, PersistOperation, func(indexer Indexer, _ int, _ int) error {
 		if err := indexer.Index(collection, records); err != nil {
-			querylog.Debugf("MultiIndex: Failed to persist records in indexer %v: %v", indexer, err)
+			querylog.Debugf("MultiIndex: Failed to persist records in indexer %T: %v", indexer, err)
 			indexErr = err
 		}
 
@@ -214,7 +214,7 @@ func (self *MultiIndex) QueryFunc(collection *dal.Collection, filter *filter.Fil
 			}
 		} else {
 			indexErr = err
-			querylog.Debugf("MultiIndex: Indexer query to %v/%v failed: %v", indexer, collection, err)
+			querylog.Debugf("MultiIndex: Indexer query to %T/%v failed: %v", indexer, collection.GetIndexName(), err)
 		}
 
 		return nil
@@ -241,7 +241,7 @@ func (self *MultiIndex) Query(collection *dal.Collection, filter *filter.Filter,
 			}
 		} else {
 			indexErr = err
-			querylog.Debugf("MultiIndex: Indexer query to %v/%v failed: %v", indexer, collection, err)
+			querylog.Debugf("MultiIndex: Indexer query to %T/%v failed: %v", indexer, collection.GetIndexName(), err)
 		}
 
 		return nil
@@ -332,11 +332,13 @@ func (self *MultiIndex) EachSelectedIndex(collection *dal.Collection, operation 
 	for {
 		if results, err := self.SelectIndex(collection, operation, lastIndexer); err == nil {
 			for _, result := range results {
-				if err := resultFn(result.Indexer, result.Index, lastIndexer); err != nil {
-					if err == IndexerResultsStop {
-						return nil
-					} else {
-						return err
+				if result.Indexer.IndexExists(collection, collection.GetIndexName()) {
+					if err := resultFn(result.Indexer, result.Index, lastIndexer); err != nil {
+						if err == IndexerResultsStop {
+							return nil
+						} else {
+							return err
+						}
 					}
 				}
 
