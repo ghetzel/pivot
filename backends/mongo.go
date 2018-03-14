@@ -157,8 +157,7 @@ func (self *MongoBackend) Insert(name string, records *dal.RecordSet) error {
 		for _, record := range records.Records {
 			if _, err := collection.MakeRecord(record); err == nil {
 				self.normalizeRecordValues(record)
-
-				data := record.Fields
+				data := self.prepareValuesForWrite(record.Fields)
 
 				if record.ID != nil {
 					data[MongoIdentityField] = self.getId(record.ID)
@@ -185,11 +184,12 @@ func (self *MongoBackend) Update(name string, records *dal.RecordSet, target ...
 		for _, record := range records.Records {
 			if _, err := collection.MakeRecord(record); err == nil {
 				self.normalizeRecordValues(record)
+				data := self.prepareValuesForWrite(record.Fields)
 
 				if record.ID == nil {
 					return fmt.Errorf("Cannot update record without an ID")
 				} else {
-					if err := self.db.C(collection.Name).UpdateId(self.getId(record.ID), record.Fields); err != nil {
+					if err := self.db.C(collection.Name).UpdateId(self.getId(record.ID), data); err != nil {
 						return err
 					}
 				}
@@ -283,6 +283,23 @@ func (self *MongoBackend) normalizeRecordValues(record *dal.Record) {
 			record.Fields[name] = value.(bson.ObjectId).Hex()
 		}
 	}
+}
+
+func (self *MongoBackend) prepareValuesForWrite(data map[string]interface{}) map[string]interface{} {
+	output := make(map[string]interface{})
+
+	// ObjectId-ify any data that _looks_ like an ObjectId
+	for k, v := range data {
+		vS := fmt.Sprintf("%v", v)
+
+		if bson.IsObjectIdHex(vS) {
+			output[k] = bson.ObjectIdHex(vS)
+		} else {
+			output[k] = v
+		}
+	}
+
+	return output
 }
 
 func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[string]interface{}, fields ...string) (*dal.Record, error) {

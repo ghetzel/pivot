@@ -6,6 +6,7 @@ import (
 
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
@@ -166,7 +167,7 @@ func (self *MongoBackend) filterToNative(collection *dal.Collection, flt *filter
 			}
 		}))
 
-		querylog.Debugf("[%T] query: %v", self, string(data))
+		querylog.Debugf("[%T] query: %v", self, typeutil.Dump(query))
 		return query, nil
 	} else {
 		return nil, err
