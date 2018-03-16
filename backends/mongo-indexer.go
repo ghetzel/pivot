@@ -6,6 +6,7 @@ import (
 
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
@@ -157,11 +158,17 @@ func (self *MongoBackend) filterToNative(collection *dal.Collection, flt *filter
 			return nil, err
 		}
 
+		// handle type-specific processing of values; nuances that get lost in the JSON-to-Map serialization
+		// process.  I *wanted* to just serialize to BSON directly from the query generator interface, but
+		// that turned into a messy time-wasting boondoggle #neat.
+		//
 		query = bson.M(maputil.Apply(query, func(key []string, value interface{}) (interface{}, bool) {
 			vS := fmt.Sprintf("%v", value)
 
 			if bson.IsObjectIdHex(vS) {
 				return bson.ObjectIdHex(vS), true
+			} else if vT, err := stringutil.ConvertToTime(value); err == nil {
+				return vT, true
 			} else {
 				return nil, false
 			}
