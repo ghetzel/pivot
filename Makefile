@@ -6,7 +6,7 @@ LOCALS=`find . -type f -name '*.go' -not -path "./vendor/*"`
 all: deps fmt test build
 
 deps:
-	go get ./...
+	dep ensure
 
 clean-bundle:
 	-rm -rf public
