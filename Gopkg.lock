@@ -106,8 +106,8 @@
 [[projects]]
   name = "github.com/ghetzel/diecast"
   packages = ["."]
-  revision = "bb7ce69ceebafea632ee7a147916f6b86b4a6f0e"
-  version = "1.8.2"
+  revision = "fe209cf2fe75b4b0f4b58504c60e25bd223b3f8f"
+  version = "1.8.3"
 
 [[projects]]
   name = "github.com/ghetzel/go-stockutil"
@@ -223,10 +223,10 @@
   version = "v1.1"
 
 [[projects]]
+  branch = "master"
   name = "github.com/kelvins/sunrisesunset"
   packages = ["."]
-  revision = "1efe1a3fca443b2cd1161b66c284ad60918398e0"
-  version = "v1.0"
+  revision = "14f1915ad4b4fc68cdf3c144e39293993e21c67c"
 
 [[projects]]
   branch = "master"
@@ -369,6 +369,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ba38941f220009995e35efee3f7c10854477819438b61270864346ff0e931336"
+  inputs-digest = "7a0499c4dbe770b2277cd35bc2629a5fcecda0eb451980bbdbeae2c0556555f6"
   solver-name = "gps-cdcl"
   solver-version = 1
