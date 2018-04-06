@@ -37,10 +37,10 @@ func (self *Elasticsearch) Initialize(collectionName string) error {
 	return nil
 }
 
-func (self *Elasticsearch) Finalize(filter *filter.Filter) error {
+func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
 	var query map[string]interface{}
 
-	if filter.Spec == `all` {
+	if flt.Spec == `all` {
 		query = map[string]interface{}{
 			`match_all`: map[string]interface{}{},
 		}
@@ -50,9 +50,17 @@ func (self *Elasticsearch) Finalize(filter *filter.Filter) error {
 		}
 	}
 
-	if data, err := json.MarshalIndent(map[string]interface{}{
+	payload := map[string]interface{}{
 		`filter`: query,
-	}, ``, `    `); err == nil {
+		`size`:   flt.Limit,
+		`from`:   flt.Offset,
+	}
+
+	if len(flt.Fields) > 0 {
+		payload[`fields`] = flt.Fields
+	}
+
+	if data, err := json.MarshalIndent(payload, ``, `    `); err == nil {
 		self.Push(data)
 	} else {
 		return err

@@ -13,7 +13,7 @@ var rxCharFilter = regexp.MustCompile(`[\W\s]`)
 func mongoCriterionOperatorIs(gen *MongoDB, criterion filter.Criterion) (map[string]interface{}, error) {
 	c := make(map[string]interface{})
 
-	if len(criterion.Values) == 1 && criterion.Values[0] == `null` {
+	if len(criterion.Values) == 1 && criterion.Values[0] == nil {
 		gen.values = append(gen.values, nil)
 
 		c[`$or`] = []map[string]interface{}{
@@ -52,7 +52,7 @@ func mongoCriterionOperatorNot(gen *MongoDB, criterion filter.Criterion) (map[st
 	if len(criterion.Values) == 0 {
 		return c, fmt.Errorf("The not criterion must have at least one value")
 
-	} else if len(criterion.Values) == 1 && criterion.Values[0] == `null` {
+	} else if len(criterion.Values) == 1 && criterion.Values[0] == nil {
 		gen.values = append(gen.values, nil)
 
 		c[`$and`] = []map[string]interface{}{

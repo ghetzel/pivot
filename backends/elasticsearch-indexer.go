@@ -312,16 +312,17 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 	}
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
-		limit := f.Limit
+		originalLimit := f.Limit
 
-		if limit == 0 || limit > IndexerPageSize {
-			limit = IndexerPageSize
+		if f.Limit == 0 || f.Limit > IndexerPageSize {
+			f.Limit = IndexerPageSize
 		}
 
 		originalOffset := f.Offset
 
 		defer func() {
 			f.Offset = originalOffset
+			f.Limit = originalLimit
 		}()
 
 		page := 1
@@ -349,7 +350,7 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 								}
 
 								// totalPages = ceil(result count / page size)
-								totalPages := int(math.Ceil(float64(results.Total) / float64(limit)))
+								totalPages := int(math.Ceil(float64(results.Total) / float64(f.Limit)))
 
 								if totalPages <= 0 {
 									totalPages = 1
@@ -360,7 +361,7 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 									if err := resultFn(dal.NewRecord(hit.ID).SetFields(hit.Source), nil, IndexPage{
 										Page:         page,
 										TotalPages:   totalPages,
-										Limit:        limit,
+										Limit:        originalLimit,
 										Offset:       f.Offset,
 										TotalResults: int64(results.Total),
 									}); err != nil {
@@ -370,8 +371,8 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 									processed += 1
 
 									// if we have a limit set and we're at or beyond it
-									if limit > 0 && processed >= limit {
-										querylog.Debugf("[%T] %d at or beyond limit %d, returning results", self, processed, limit)
+									if originalLimit > 0 && processed >= originalLimit {
+										querylog.Debugf("[%T] %d at or beyond limit %d, returning results", self, processed, originalLimit)
 										return nil
 									}
 								}
