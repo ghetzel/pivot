@@ -198,7 +198,7 @@ func (self *DynamoBackend) FlushIndex() error {
 
 func (self *DynamoBackend) validateFilter(collection *dal.Collection, flt *filter.Filter) error {
 	if flt != nil {
-		for _, field := range flt.Fields {
+		for _, field := range flt.CriteriaFields() {
 			if collection.IsIdentityField(field) {
 				continue
 			}
