@@ -51,9 +51,15 @@ type hits struct {
 }
 
 type elasticsearchSearchResult struct {
-	Hits     hits `json:"hits"`
-	TimedOut bool `json:"timed_out"`
-	Took     int  `json:"took"`
+	Hits     hits   `json:"hits"`
+	TimedOut bool   `json:"timed_out"`
+	Took     int    `json:"took"`
+	ScrollId string `json:"_scroll_id,omitempty"`
+}
+
+type elasticsearchScrollRequest struct {
+	ScrollLifetime string `json:"scroll"`
+	ScrollId       string `json:"scroll_id"`
 }
 
 type bulkOpType string
@@ -313,12 +319,19 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		originalLimit := f.Limit
+		originalOffset := f.Offset
+		useScrollApi := false
+		isFirstScrollRequest := true
+		lastScrollId := ``
 
-		if f.Limit == 0 || f.Limit > IndexerPageSize {
+		// unbounded requests, or bounded ones exceeding 10k results, need to use the Scroll API
+		// see: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
+		if f.Limit == 0 || f.Limit > 10000 {
+			f.Limit = IndexerPageSize
+			useScrollApi = true
+		} else if f.Limit > IndexerPageSize {
 			f.Limit = IndexerPageSize
 		}
-
-		originalOffset := f.Offset
 
 		defer func() {
 			f.Offset = originalOffset
@@ -335,77 +348,103 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 				index.Name,
 				f,
 			); err == nil {
-				if req, err := self.newRequest(`GET`, fmt.Sprintf("/%s/_search", index.Name), string(query)); err == nil {
-					if response, err := self.client.Do(req); err == nil {
-						if response.StatusCode < 400 {
-							var searchResult elasticsearchSearchResult
+				var req *http.Request
 
-							if err := json.NewDecoder(response.Body).Decode(&searchResult); err == nil {
-								results := searchResult.Hits
-
-								querylog.Debugf("[%T] Got %d/%d results", self, len(results.Hits), results.Total)
-
-								if len(results.Hits) == 0 {
-									return nil
-								}
-
-								// totalPages = ceil(result count / page size)
-								totalPages := int(math.Ceil(float64(results.Total) / float64(f.Limit)))
-
-								if totalPages <= 0 {
-									totalPages = 1
-								}
-
-								// call the resultFn for each hit on this page
-								for _, hit := range results.Hits {
-									if err := resultFn(dal.NewRecord(hit.ID).SetFields(hit.Source), nil, IndexPage{
-										Page:         page,
-										TotalPages:   totalPages,
-										Limit:        originalLimit,
-										Offset:       f.Offset,
-										TotalResults: int64(results.Total),
-									}); err != nil {
-										return err
-									}
-
-									processed += 1
-
-									// if we have a limit set and we're at or beyond it
-									if originalLimit > 0 && processed >= originalLimit {
-										querylog.Debugf("[%T] %d at or beyond limit %d, returning results", self, processed, originalLimit)
-										return nil
-									}
-								}
-
-								// increment offset by the page size we just processed
-								page += 1
-								f.Offset += len(results.Hits)
-
-								// if the offset is now beyond the total results count
-								if int64(processed) >= results.Total {
-									querylog.Debugf("[%T] %d at or beyond total %d, returning results", self, processed, results.Total)
-									return nil
-								}
-
-							} else {
-								return err
-							}
-						} else {
-							var errbody map[string]interface{}
-							json.NewDecoder(response.Body).Decode(&errbody)
-							reason := strings.Join(
-								sliceutil.Stringify(
-									maputil.Pluck(maputil.DeepGet(errbody, []string{
-										`error`, `root_cause`,
-									}), []string{`reason`}),
-								),
-								`; `,
-							)
-
-							return fmt.Errorf("%v: %s", response.Status, sliceutil.Or(reason, `Unknown Error`))
-						}
+				// build the search request; either the initial Scroll API query, Scroll paging query,
+				// or just a regular old Search API query.
+				if useScrollApi && isFirstScrollRequest {
+					if r, err := self.newRequest(`GET`, fmt.Sprintf("/%s/_search?scroll=1m", index.Name), string(query)); err == nil {
+						req = r
+						isFirstScrollRequest = false
 					} else {
 						return err
+					}
+				} else if useScrollApi {
+					if r, err := self.newRequest(`GET`, `/_search/scroll`, &elasticsearchScrollRequest{
+						ScrollLifetime: `1m`,
+						ScrollId:       lastScrollId,
+					}); err == nil {
+						req = r
+					} else {
+						return err
+					}
+				} else {
+					if r, err := self.newRequest(`GET`, fmt.Sprintf("/%s/_search", index.Name), string(query)); err == nil {
+						req = r
+					} else {
+						return err
+					}
+				}
+
+				// perform request, read response
+				if response, err := self.client.Do(req); err == nil {
+					if response.StatusCode < 400 {
+						var searchResult elasticsearchSearchResult
+
+						if err := json.NewDecoder(response.Body).Decode(&searchResult); err == nil {
+							results := searchResult.Hits
+							lastScrollId = searchResult.ScrollId
+
+							querylog.Debugf("[%T] Got %d/%d results", self, len(results.Hits), results.Total)
+
+							if len(results.Hits) == 0 {
+								return nil
+							}
+
+							// totalPages = ceil(result count / page size)
+							totalPages := int(math.Ceil(float64(results.Total) / float64(f.Limit)))
+
+							if totalPages <= 0 {
+								totalPages = 1
+							}
+
+							// call the resultFn for each hit on this page
+							for _, hit := range results.Hits {
+								if err := resultFn(dal.NewRecord(hit.ID).SetFields(hit.Source), nil, IndexPage{
+									Page:         page,
+									TotalPages:   totalPages,
+									Limit:        originalLimit,
+									Offset:       f.Offset,
+									TotalResults: int64(results.Total),
+								}); err != nil {
+									return err
+								}
+
+								processed += 1
+
+								// if we have a limit set and we're at or beyond it
+								if originalLimit > 0 && processed >= originalLimit {
+									querylog.Debugf("[%T] %d at or beyond limit %d, returning results", self, processed, originalLimit)
+									return nil
+								}
+							}
+
+							// increment offset by the page size we just processed
+							page += 1
+							f.Offset += len(results.Hits)
+
+							// if the offset is now beyond the total results count
+							if int64(processed) >= results.Total {
+								querylog.Debugf("[%T] %d at or beyond total %d, returning results", self, processed, results.Total)
+								return nil
+							}
+
+						} else {
+							return err
+						}
+					} else {
+						var errbody map[string]interface{}
+						json.NewDecoder(response.Body).Decode(&errbody)
+						reason := strings.Join(
+							sliceutil.Stringify(
+								maputil.Pluck(maputil.DeepGet(errbody, []string{
+									`error`, `root_cause`,
+								}), []string{`reason`}),
+							),
+							`; `,
+						)
+
+						return fmt.Errorf("%v: %s", response.Status, sliceutil.Or(reason, `Unknown Error`))
 					}
 				} else {
 					return err
