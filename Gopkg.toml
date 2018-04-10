@@ -24,7 +24,7 @@
 
 [[constraint]]
   name = "github.com/ghetzel/go-stockutil"
-  version = ">=1.4.8"
+  version = ">=1.5.4"
 
 [[constraint]]
   name = "github.com/ghodss/yaml"
@@ -61,10 +61,6 @@
 [[constraint]]
   name = "github.com/mattn/go-sqlite3"
   version = "1.6.0"
-
-[[constraint]]
-  name = "github.com/op/go-logging"
-  branch = "master"
 
 [[constraint]]
   branch = "master"

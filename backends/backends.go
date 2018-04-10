@@ -5,13 +5,12 @@ import (
 	"time"
 
 	"github.com/alexcesaro/statsd"
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"github.com/op/go-logging"
 )
 
-var log = logging.MustGetLogger(`pivot/backends`)
-var querylog = logging.MustGetLogger(`pivot/querylog`)
+var querylog = log.Logger()
 var stats, _ = statsd.New()
 var DefaultAutoregister = false
 

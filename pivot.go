@@ -11,10 +11,8 @@ import (
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghodss/yaml"
-	"github.com/op/go-logging"
 )
 
-var log = logging.MustGetLogger(`pivot`)
 var MonitorCheckInterval = time.Duration(10) * time.Second
 var NetrcFile = ``
 
