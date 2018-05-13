@@ -152,6 +152,15 @@ func (self *SqlBackend) QueryFunc(collection *dal.Collection, f *filter.Filter, 
 }
 
 func (self *SqlBackend) Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+	if f != nil {
+		if f.IdentityField == `` {
+			f.IdentityField = MongoIdentityField
+		}
+
+		// use the record that comes back from the QueryFunc as-is
+		f.Options[`ForceIndexRecord`] = true
+	}
+
 	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 

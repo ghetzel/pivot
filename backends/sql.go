@@ -738,8 +738,6 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 					output[i] = make([]byte, 0)
 				}
 			}
-		} else {
-			querylog.Warningf("[%T] Collection '%s' does not have a field called '%s'", self, collection.Name, baseColumn)
 		}
 	}
 
@@ -897,8 +895,6 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 							fields = newFields
 						}
 					}
-				} else {
-					querylog.Warningf("[%T] Collection %s: field %v: %v", self, collection.Name, baseColumn, err)
 				}
 			}
 		}
