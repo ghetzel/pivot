@@ -945,6 +945,10 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 // }
 
 func (self *SqlBackend) refreshAllCollections() error {
+	if !self.conn.OptBool(`autoregister`, DefaultAutoregister) {
+		return nil
+	}
+
 	if rows, err := self.db.Query(self.listAllTablesQuery); err == nil {
 		defer rows.Close()
 		knownTables := make([]string, 0)
@@ -971,16 +975,14 @@ func (self *SqlBackend) refreshAllCollections() error {
 			}
 		}
 
-		if !self.conn.OptBool(`autoregister`, DefaultAutoregister) {
-			// purge from cache any tables that the list all query didn't return
-			self.registeredCollections.Range(func(key, value interface{}) bool {
-				if !sliceutil.ContainsString(knownTables, key.(string)) {
-					self.registeredCollections.Delete(key)
-				}
+		// purge from cache any tables that the list all query didn't return
+		self.registeredCollections.Range(func(key, value interface{}) bool {
+			if !sliceutil.ContainsString(knownTables, key.(string)) {
+				self.registeredCollections.Delete(key)
+			}
 
-				return true
-			})
-		}
+			return true
+		})
 
 		return rows.Err()
 	} else {
