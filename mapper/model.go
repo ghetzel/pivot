@@ -374,71 +374,16 @@ func (self *Model) filterFromInterface(in interface{}) (*filter.Filter, error) {
 }
 
 func (self *Model) populateOutputParameter(f *filter.Filter, recordset *dal.RecordSet, into interface{}) error {
-	vInto := reflect.ValueOf(into)
-
-	// get value pointed to if we were given a pointer
-	if vInto.Kind() == reflect.Ptr {
-		vInto = vInto.Elem()
-	} else {
-		return fmt.Errorf("Output argument must be a pointer")
-	}
-
-	// we're going to fill arrays or slices
-	switch vInto.Type().Kind() {
-	case reflect.Array, reflect.Slice:
-		indirectResult := true
-
-		// get the type of the underlying slice element
-		sliceType := vInto.Type().Elem()
-
-		// get the type pointed to
-		if sliceType.Kind() == reflect.Ptr {
-			sliceType = sliceType.Elem()
-			indirectResult = false
-		}
-
-		// for each resulting record...
-		for _, record := range recordset.Records {
-			if len(f.Fields) > 0 {
-				for k, _ := range record.Fields {
-					if !sliceutil.ContainsString(f.Fields, k) {
-						delete(record.Fields, k)
-					}
+	// for each resulting record...
+	for _, record := range recordset.Records {
+		if len(f.Fields) > 0 {
+			for k, _ := range record.Fields {
+				if !sliceutil.ContainsString(f.Fields, k) {
+					delete(record.Fields, k)
 				}
 			}
-
-			// make a new zero-valued instance of the slice type
-			elem := reflect.New(sliceType)
-
-			// if we have a registered collection, use its
-			if self.collection != nil && self.collection.HasRecordType() {
-				elem = reflect.ValueOf(self.collection.NewInstance())
-			}
-
-			// populate that type with data from this record
-			if err := record.Populate(elem.Interface(), self.collection); err == nil {
-				// if the slice elements are pointers, we can append the pointer we just created as-is
-				// otherwise, we need to indirect the value and append a copy
-
-				if indirectResult {
-					vInto.Set(reflect.Append(vInto, reflect.Indirect(elem)))
-				} else {
-					vInto.Set(reflect.Append(vInto, elem))
-				}
-			} else {
-				return err
-			}
 		}
-
-		return nil
-	case reflect.Struct:
-		if rs, ok := into.(*dal.RecordSet); ok {
-			*rs = *recordset
-			return nil
-		}
-
-		fallthrough
-	default:
-		return fmt.Errorf("model can only populate results into slice or array, got %T", into)
 	}
+
+	return recordset.PopulateFromRecords(into, self.collection)
 }

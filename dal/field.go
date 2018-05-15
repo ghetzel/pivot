@@ -59,6 +59,8 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 			} else {
 				in = time.Unix(0, inInt64)
 			}
+		} else if in == nil {
+			in = time.Time{}
 		}
 
 		convertType = stringutil.Time
