@@ -18,6 +18,7 @@ type ResultFunc func(ptrToInstance interface{}, err error) // {}
 type Mapper interface {
 	NewInstance(inits ...dal.InitializerFunc) interface{}
 	GetBackend() backends.Backend
+	GetCollection() *dal.Collection
 	Migrate() error
 	Drop() error
 	Exists(id interface{}) bool
@@ -83,6 +84,10 @@ func (self *Model) NewInstance(inits ...dal.InitializerFunc) interface{} {
 
 func (self *Model) GetBackend() backends.Backend {
 	return self.db
+}
+
+func (self *Model) GetCollection() *dal.Collection {
+	return self.collection
 }
 
 func (self *Model) Migrate() error {
