@@ -19,7 +19,7 @@ func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error) {
 		}
 	}
 
-	return ValidateAll(validators), nil
+	return ValidateAll(validators...), nil
 }
 
 func GetValidator(name string, args interface{}) (FieldValidatorFunc, error) {
@@ -48,7 +48,7 @@ func GetValidator(name string, args interface{}) (FieldValidatorFunc, error) {
 	}
 }
 
-func ValidateAll(validators []FieldValidatorFunc) FieldValidatorFunc {
+func ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc {
 	return func(value interface{}) error {
 		for _, validator := range validators {
 			if err := validator(value); err != nil {
