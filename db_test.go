@@ -166,15 +166,17 @@ func TestMain(m *testing.M) {
 		}
 	}
 
-	// setupTestMysql(run)
-	// setupTestTiedot(run)
-	setupTestMongo(run)
-	setupTestSqlite(run)
-	setupTestSqliteWithBleveIndexer(run)
-	setupTestSqliteWithAdditionalBleveIndexer(run)
-	setupTestFilesystemDefault(run)
-	setupTestFilesystemYaml(run)
-	setupTestFilesystemJson(run)
+	if typeutil.V(os.Getenv(`INTEGRATION`)).Bool() {
+		setupTestMysql(run)
+		setupTestTiedot(run)
+		setupTestMongo(run)
+		setupTestSqlite(run)
+		setupTestSqliteWithBleveIndexer(run)
+		setupTestSqliteWithAdditionalBleveIndexer(run)
+		setupTestFilesystemDefault(run)
+		setupTestFilesystemYaml(run)
+		setupTestFilesystemJson(run)
+	}
 }
 
 func makeBackend(conn string, options ...backends.ConnectOptions) (backends.Backend, error) {

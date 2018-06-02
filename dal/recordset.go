@@ -1,5 +1,10 @@
 package dal
 
+import (
+	"fmt"
+	"reflect"
+)
+
 type RecordSet struct {
 	ResultCount    int64                  `json:"result_count"`
 	Page           int                    `json:"page,omitempty"`
@@ -55,4 +60,67 @@ func (self *RecordSet) IsEmpty() bool {
 	} else {
 		return false
 	}
+}
+
+// Takes a slice of structs or maps and fills it with instances populated by the records in this RecordSet
+// in accordance with the types specified in the given collection definition, as well as which
+// fields are available in the given struct.
+func (self *RecordSet) PopulateFromRecords(into interface{}, schema *Collection) error {
+	vInto := reflect.ValueOf(into)
+
+	// get value pointed to if we were given a pointer
+	if vInto.Kind() == reflect.Ptr {
+		vInto = vInto.Elem()
+	} else {
+		return fmt.Errorf("Output argument must be a pointer")
+	}
+
+	// we're going to fill arrays or slices
+	switch vInto.Type().Kind() {
+	case reflect.Array, reflect.Slice:
+		indirectResult := true
+
+		// get the type of the underlying slice element
+		sliceType := vInto.Type().Elem()
+
+		// get the type pointed to
+		if sliceType.Kind() == reflect.Ptr {
+			sliceType = sliceType.Elem()
+			indirectResult = false
+		}
+
+		// for each resulting record...
+		for _, record := range self.Records {
+			// make a new zero-valued instance of the slice type
+			elem := reflect.New(sliceType)
+
+			// if we have a registered collection, use its
+			if schema != nil && schema.HasRecordType() {
+				elem = reflect.ValueOf(schema.NewInstance())
+			}
+
+			// populate that type with data from this record
+			if err := record.Populate(elem.Interface(), schema); err == nil {
+				// if the slice elements are pointers, we can append the pointer we just created as-is
+				// otherwise, we need to indirect the value and append a copy
+
+				if indirectResult {
+					vInto.Set(reflect.Append(vInto, reflect.Indirect(elem)))
+				} else {
+					vInto.Set(reflect.Append(vInto, elem))
+				}
+			} else {
+				return err
+			}
+		}
+
+		return nil
+	case reflect.Struct:
+		if rs, ok := into.(*RecordSet); ok {
+			*rs = *self
+			return nil
+		}
+	}
+
+	return fmt.Errorf("RecordSet can only populate records into slice or array, got %T", into)
 }

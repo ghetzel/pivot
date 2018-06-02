@@ -323,7 +323,7 @@ func (self *FilesystemBackend) GetCollection(name string) (*dal.Collection, erro
 		return nil, err
 	}
 
-	if collection != nil {
+	if collection == nil {
 		if err := self.readObject(collection, `schema`, false, v); err == nil {
 			return collection, nil
 		} else if strings.HasSuffix(err.Error(), ` does not exist`) {
