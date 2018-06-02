@@ -6,10 +6,12 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/go-stockutil/timeutil"
 	"github.com/ghetzel/pivot/dal"
 )
 
@@ -281,7 +283,28 @@ func Parse(spec string) (*Filter, error) {
 				}
 
 				for _, v := range strings.Split(vValue, ValueSeparator) {
-					criterion.Values = append(criterion.Values, v)
+					var value interface{}
+
+					value = v
+
+					// do some extra processing for time types to make them
+					// more flexible as filter criteria
+					if criterion.Type == dal.TimeType {
+						factor := 1
+
+						if strings.HasPrefix(v, `-`) {
+							v = v[1:]
+							factor = -1
+						}
+
+						if delta, err := timeutil.ParseDuration(v); err == nil {
+							value = time.Now().Add(time.Duration(factor) * delta)
+						} else if tm, err := stringutil.ConvertToTime(v); err == nil {
+							value = tm
+						}
+					}
+
+					criterion.Values = append(criterion.Values, value)
 				}
 
 				if QueryUnescapeValues {

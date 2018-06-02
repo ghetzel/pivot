@@ -60,6 +60,26 @@ func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
 		payload[`fields`] = flt.Fields
 	}
 
+	if len(flt.Sort) > 0 {
+		sorts := make([]interface{}, 0)
+
+		for _, sort := range flt.Sort {
+			if len(sort) > 1 && sort[0] == '-' {
+				sorts = append(sorts, map[string]interface{}{
+					sort[1:]: `desc`,
+				})
+			} else {
+				sorts = append(sorts, map[string]interface{}{
+					sort: `asc`,
+				})
+			}
+		}
+
+		payload[`sort`] = sorts
+	} else {
+		payload[`sort`] = []string{`_doc`}
+	}
+
 	if data, err := json.MarshalIndent(payload, ``, `    `); err == nil {
 		self.Push(data)
 	} else {
