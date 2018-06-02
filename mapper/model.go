@@ -212,7 +212,6 @@ func (self *Model) Find(flt interface{}, into interface{}) error {
 //
 func (self *Model) FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error {
 	if f, err := self.filterFromInterface(flt); err == nil {
-		f.Limit = 0
 		f.IdentityField = self.collection.IdentityField
 
 		if search := self.db.WithSearch(self.collection, f); search != nil {
