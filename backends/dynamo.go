@@ -297,10 +297,16 @@ func (self *DynamoBackend) cacheTable(name string) (*dal.Collection, error) {
 	}
 }
 
-func (self *DynamoBackend) toRecordKeyFilter(collection *dal.Collection, id interface{}, allowMissingRangeKey bool) (*filter.Filter, *dal.Field, error) {
+func (self *DynamoBackend) toRecordKeyFilter(collection *dal.Collection, id interface{}) (*filter.Filter, *dal.Field, error) {
 	var rangeKey *dal.Field
 	var hashValue interface{}
 	var rangeValue interface{}
+	var allowMissingRangeKey bool
+
+	// detect if the collection has a range key (i.e.: sort key)
+	if _, ok := collection.GetFirstNonIdentityKeyField(); !ok {
+		allowMissingRangeKey = true
+	}
 
 	for _, field := range collection.Fields {
 		if f := field; f.Key {
@@ -358,7 +364,7 @@ func (self *DynamoBackend) toRecordKeyFilter(collection *dal.Collection, id inte
 
 func (self *DynamoBackend) getSingleRecordQuery(name string, id interface{}, fields ...string) (*filter.Filter, *dynamo.Query, error) {
 	if collection, err := self.GetCollection(name); err == nil {
-		if flt, rangeKey, err := self.toRecordKeyFilter(collection, id, false); err == nil {
+		if flt, rangeKey, err := self.toRecordKeyFilter(collection, id); err == nil {
 			if hashKeyValue, ok := flt.GetIdentityValue(); ok {
 				query := self.db.Table(collection.Name).Get(flt.IdentityField, hashKeyValue)
 
@@ -389,7 +395,7 @@ func (self *DynamoBackend) getSingleRecordQuery(name string, id interface{}, fie
 
 func (self *DynamoBackend) getSingleRecordDelete(name string, id interface{}) (*dynamo.Delete, error) {
 	if collection, err := self.GetCollection(name); err == nil {
-		if flt, rangeKey, err := self.toRecordKeyFilter(collection, id, false); err == nil {
+		if flt, rangeKey, err := self.toRecordKeyFilter(collection, id); err == nil {
 			if hashKeyValue, ok := flt.GetIdentityValue(); ok {
 				deleteOp := self.db.Table(collection.Name).Delete(flt.IdentityField, hashKeyValue)
 

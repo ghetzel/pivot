@@ -363,7 +363,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			var fields []string
 			name := vestigo.Param(req, `collection`)
 
-			if ids := strings.Split(vestigo.Param(req, `id`), `/`); len(ids) == 1 {
+			if ids := strings.Split(vestigo.Param(req, `id`), `:`); len(ids) == 1 {
 				id = ids[0]
 			} else {
 				id = ids
