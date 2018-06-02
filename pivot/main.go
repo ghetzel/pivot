@@ -7,15 +7,13 @@ import (
 	"path/filepath"
 
 	"github.com/ghetzel/cli"
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/pivot"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/mapper"
 	"github.com/ghetzel/pivot/util"
-	"github.com/op/go-logging"
 )
-
-var log = logging.MustGetLogger(`main`)
 
 func main() {
 	app := cli.NewApp()
@@ -55,20 +53,7 @@ func main() {
 	}
 
 	app.Before = func(c *cli.Context) error {
-		logging.SetFormatter(logging.MustStringFormatter(`%{color}%{level:.4s}%{color:reset}[%{id:04d}] %{message}`))
-
-		if level, err := logging.LogLevel(c.String(`log-level`)); err == nil {
-			logging.SetLevel(level, ``)
-		} else {
-			return err
-		}
-
-		if c.Bool(`log-queries`) {
-			logging.SetLevel(logging.DEBUG, `pivot/querylog`)
-		} else {
-			logging.SetLevel(logging.CRITICAL, `pivot/querylog`)
-		}
-
+		log.SetLevelString(c.String(`log-level`))
 		populateNetrc(c)
 
 		return nil

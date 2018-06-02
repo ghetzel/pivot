@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
@@ -54,7 +55,9 @@ func (self *Record) Copy(other *Record) {
 func (self *Record) Get(key string, fallback ...interface{}) interface{} {
 	self.init()
 
-	if v, ok := self.Fields[key]; ok {
+	if key == DefaultIdentityField {
+		return self.ID
+	} else if v, ok := self.Fields[key]; ok {
 		return v
 	} else {
 		return self.GetNested(key, fallback...)

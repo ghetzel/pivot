@@ -13,8 +13,10 @@ import (
 
 	"github.com/ghetzel/diecast"
 	"github.com/ghetzel/go-stockutil/httputil"
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/pathutil"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
@@ -160,8 +162,23 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 	queryHandler := func(w http.ResponseWriter, req *http.Request) {
 		var query interface{}
+		var name string
+		var leftField string
+		var rightName string
+		var rightField string
 
-		name := vestigo.Param(req, `collection`)
+		collections := strings.Split(vestigo.Param(req, `collection`), `:`)
+
+		switch len(collections) {
+		case 1:
+			name = collections[0]
+		case 2:
+			name, leftField = stringutil.SplitPair(collections[0], `.`)
+			rightName, rightField = stringutil.SplitPair(collections[1], `.`)
+		default:
+			httputil.RespondJSON(w, fmt.Errorf("Only two (2) joined collections are supported"), http.StatusBadRequest)
+			return
+		}
 
 		switch req.Method {
 		case `GET`:
@@ -184,8 +201,34 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			if collection, err := self.backend.GetCollection(name); err == nil {
 				collection = injectRequestParamsIntoCollection(req, collection)
 
+				var queryInterface backends.Indexer
+
 				if search := self.backend.WithSearch(collection); search != nil {
-					if recordset, err := search.Query(collection, f); err == nil {
+					if rightName == `` {
+						queryInterface = search
+					} else {
+						if rightCollection, err := self.backend.GetCollection(rightName); err == nil {
+							// leaving this here, though a little redundant, for when we support heterogeneous backends
+							if rightSearch := self.backend.WithSearch(rightCollection); rightSearch != nil {
+								queryInterface = backends.NewMetaIndex(
+									search,
+									collection,
+									leftField,
+									rightSearch,
+									rightCollection,
+									rightField,
+								)
+							} else {
+								httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support complex queries.", self.backend), http.StatusBadRequest)
+								return
+							}
+						} else {
+							httputil.RespondJSON(w, fmt.Errorf("right-side: %v", err))
+							return
+						}
+					}
+
+					if recordset, err := queryInterface.Query(collection, f); err == nil {
 						httputil.RespondJSON(w, recordset)
 					} else {
 						httputil.RespondJSON(w, err)

@@ -153,6 +153,12 @@
   version = "v1.1.0"
 
 [[projects]]
+  name = "github.com/deckarep/golang-set"
+  packages = ["."]
+  revision = "1d4478f51bed434f1dadf96dcd9b43aabac66795"
+  version = "v1.7"
+
+[[projects]]
   branch = "master"
   name = "github.com/dustin/go-humanize"
   packages = ["."]
@@ -199,6 +205,7 @@
   packages = [
     "colorutil",
     "httputil",
+    "log",
     "maputil",
     "mathutil",
     "pathutil",
@@ -209,8 +216,8 @@
     "typeutil",
     "utils"
   ]
-  revision = "597ae3dc47adc60bf45e8eee83d4fa31fd710c4f"
-  version = "1.4.8"
+  revision = "e05a70817d9d10b5483c75738acbcab40baf38a7"
+  version = "1.5.4"
 
 [[projects]]
   branch = "master"
@@ -584,6 +591,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "63574ae1993604551618a5bda4ae9787ae5840aa35c99947efb4a8878c2507e2"
+  inputs-digest = "2280eaa5df9b3d8a134c2bf7f46872dc0e2fabe3fe7eeda467d8666655075674"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/jdxcode/netrc"
 )
