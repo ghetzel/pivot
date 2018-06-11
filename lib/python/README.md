@@ -22,7 +22,7 @@ Here are some examples for working with data using this module:
 
 ### Query data from an existing collection
 
-```
+```python
 import pivot
 
 # Connect to a local Pivot instance running at http://localhost:29029
@@ -41,7 +41,7 @@ for user in users.all(limit=False, sort):
 
 ### Create a new record in the "orders" collection
 
-```
+```python
 import pivot
 
 # Connect to a local Pivot instance running at http://localhost:29029
