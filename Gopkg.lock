@@ -160,6 +160,16 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/dsnet/compress"
+  packages = [
+    "brotli",
+    "internal",
+    "internal/errors"
+  ]
+  revision = "cc9eb1d7ad760af14e8f918698f745e80377af4f"
+
+[[projects]]
+  branch = "master"
   name = "github.com/dustin/go-humanize"
   packages = ["."]
   revision = "bb3d318650d48840a39aa21a027c6630e198e626"
@@ -216,8 +226,8 @@
     "typeutil",
     "utils"
   ]
-  revision = "e05a70817d9d10b5483c75738acbcab40baf38a7"
-  version = "1.5.4"
+  revision = "72734343d290b6d3db24617e1c182cff44b9eb65"
+  version = "1.5.17"
 
 [[projects]]
   branch = "master"
@@ -308,6 +318,18 @@
     "internal/exprs"
   ]
   revision = "e38c48c566f44b8dbaa18ec7c429e43194f7233a"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/hashicorp/errwrap"
+  packages = ["."]
+  revision = "7554cd9344cec97297fa6649b055a8c98c2a1e55"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/hashicorp/go-multierror"
+  packages = ["."]
+  revision = "b7773ae218740a7be65057fc60b366a49b538a44"
 
 [[projects]]
   branch = "master"
@@ -591,6 +613,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2280eaa5df9b3d8a134c2bf7f46872dc0e2fabe3fe7eeda467d8666655075674"
+  inputs-digest = "f9d138c9f9e8c8f6236950f5debce0f0392ed35a50ce6b2506089c7f3537d488"
   solver-name = "gps-cdcl"
   solver-version = 1
