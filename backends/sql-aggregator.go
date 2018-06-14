@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"reflect"
 
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
@@ -18,7 +19,13 @@ func (self *SqlBackend) Sum(collection *dal.Collection, field string, f ...*filt
 }
 
 func (self *SqlBackend) Count(collection *dal.Collection, f ...*filter.Filter) (uint64, error) {
-	v, err := self.aggregateFloat(collection, filter.Count, `*`, f)
+	whatToCount := collection.IdentityField
+
+	if typeutil.IsZero(whatToCount) {
+		whatToCount = `1`
+	}
+
+	v, err := self.aggregateFloat(collection, filter.Count, whatToCount, f)
 	return uint64(v), err
 }
 
