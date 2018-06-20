@@ -38,6 +38,12 @@ func (self *Elasticsearch) Initialize(collectionName string) error {
 }
 
 func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
+	conjunction := `and`
+
+	if flt.Conjunction == filter.OrConjunction {
+		conjunction = `or`
+	}
+
 	var query map[string]interface{}
 
 	if flt.Spec == `all` {
@@ -46,7 +52,7 @@ func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
 		}
 	} else {
 		query = map[string]interface{}{
-			`and`: self.criteria,
+			conjunction: self.criteria,
 		}
 	}
 

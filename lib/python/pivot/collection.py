@@ -109,7 +109,7 @@ class Collection(object):
     def all(self, **kwargs):
         return self.query('all', **kwargs)
 
-    def query(self, filterstring, limit=None, offset=None, sort=None, fields=None):
+    def query(self, filterstring, limit=None, offset=None, sort=None, fields=None, conjunction=None):
         """
         Return a RecordSet of Records matching the given query against this collection.
         """
@@ -130,10 +130,11 @@ class Collection(object):
             'get',
             '/api/collections/{}/where/{}'.format(self.name, filterstring),
             params=compact({
-                'limit':  limit,
-                'offset': offset,
-                'sort':   ','.join(sort),
-                'fields': ','.join(fields),
+                'limit':       limit,
+                'offset':      offset,
+                'sort':        ','.join(sort),
+                'fields':      ','.join(fields),
+                'conjunction': conjunction,
             })
         ).json()
 

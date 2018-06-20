@@ -635,5 +635,16 @@ func filterFromRequest(req *http.Request, filterIn interface{}, defaultLimit int
 		f.Fields = strings.Split(v, `,`)
 	}
 
+	if v := httputil.Q(req, `conjunction`); v != `` {
+		switch v {
+		case `and`:
+			f.Conjunction = filter.AndConjunction
+		case `or`:
+			f.Conjunction = filter.OrConjunction
+		default:
+			return nil, fmt.Errorf("Unsupported conjunction operator '%s'", v)
+		}
+	}
+
 	return f, nil
 }

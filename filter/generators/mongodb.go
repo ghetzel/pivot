@@ -38,16 +38,22 @@ func (self *MongoDB) Initialize(collectionName string) error {
 	return nil
 }
 
-func (self *MongoDB) Finalize(filter *filter.Filter) error {
+func (self *MongoDB) Finalize(f *filter.Filter) error {
+	conjunction := `$and`
+
 	var query map[string]interface{}
 
-	if filter.Spec == `all` {
+	if f.Conjunction == filter.OrConjunction {
+		conjunction = `$or`
+	}
+
+	if f.Spec == `all` {
 		query = map[string]interface{}{}
 	} else if len(self.criteria) == 1 {
 		query = self.criteria[0]
 	} else {
 		query = map[string]interface{}{
-			`$and`: self.criteria,
+			conjunction: self.criteria,
 		}
 	}
 

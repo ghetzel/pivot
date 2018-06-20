@@ -12,14 +12,13 @@ import (
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/mapper"
-	"github.com/ghetzel/pivot/util"
 )
 
 func main() {
 	app := cli.NewApp()
-	app.Name = util.ApplicationName
-	app.Usage = util.ApplicationSummary
-	app.Version = util.ApplicationVersion
+	app.Name = pivot.ApplicationName
+	app.Usage = pivot.ApplicationSummary
+	app.Version = pivot.ApplicationVersion
 	app.EnableBashCompletion = false
 
 	app.Flags = []cli.Flag{

@@ -140,6 +140,7 @@ type Sql struct {
 	values                []interface{}
 	groupBy               []string
 	aggregateBy           []filter.Aggregate
+	conjunction           filter.ConjunctionType
 }
 
 func NewSqlGenerator() *Sql {
@@ -168,12 +169,17 @@ func (self *Sql) Initialize(collectionName string) error {
 	self.criteria = make([]string, 0)
 	self.inputValues = make([]interface{}, 0)
 	self.values = make([]interface{}, 0)
+	self.conjunction = filter.AndConjunction
 
 	return nil
 }
 
 // Takes all the information collected so far and generates a SQL statement from it
 func (self *Sql) Finalize(f *filter.Filter) error {
+	if f != nil {
+		self.conjunction = f.Conjunction
+	}
+
 	switch self.Type {
 	case SqlSelectStatement:
 		self.Push([]byte(`SELECT `))
@@ -344,6 +350,8 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 	if len(self.criteria) == 0 {
 		criterionStr = `WHERE (`
+	} else if self.conjunction == filter.OrConjunction {
+		criterionStr = `OR (`
 	} else {
 		criterionStr = `AND (`
 	}

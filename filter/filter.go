@@ -60,6 +60,13 @@ const (
 	Count
 )
 
+type ConjunctionType string
+
+const (
+	AndConjunction ConjunctionType = ``
+	OrConjunction                  = `or`
+)
+
 type Aggregate struct {
 	Aggregation Aggregation
 	Field       string
@@ -111,6 +118,7 @@ type Filter struct {
 	Paginate      bool
 	IdentityField string
 	Normalizer    NormalizerFunc
+	Conjunction   ConjunctionType
 }
 
 func New() *Filter {
@@ -186,14 +194,6 @@ func All() *Filter {
 }
 
 // Filter syntax definition
-//
-// filter     ::= ([sort]field/value | [sort]type:field/value | [sort]type:field/comparator:value)+
-// sort       ::= ASCII plus (+), minus (-)
-// field      ::= ? US-ASCII field name ?;
-// value      ::= ? UTF-8 field value ?;
-// type       ::= str | bool | int | float | date
-// comparator :=  is | not | gt | gte | lt | lte | prefix | suffix | regex
-//
 func Parse(spec string) (*Filter, error) {
 	var criterion Criterion
 
@@ -498,6 +498,10 @@ func (self *Filter) NewFromSpec(specs ...string) (*Filter, error) {
 }
 
 func (self *Filter) MatchesRecord(record *dal.Record) bool {
+	if self.Conjunction == OrConjunction {
+		panic("OR conjunction is not yet supported in filter.MatchesRecord()")
+	}
+
 	if self.IsMatchAll() {
 		return true
 	}
