@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 setup(
     name='pivot-client',
     description='Client library for integrating with the Pivot database abstraction service.',
-    version='0.1.1',
+    version='0.1.2',
     author='Gary Hetzel',
     author_email='garyhetzel+pivot@gmail.com',
     url='https://github.com/ghetzel/pivot',
