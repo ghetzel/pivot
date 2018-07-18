@@ -1,7 +1,6 @@
 package backends
 
 import (
-	"context"
 	"fmt"
 	"strings"
 	"sync"
@@ -10,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
@@ -54,16 +52,6 @@ func (self *DynamoBackend) GetConnectionString() *dal.ConnectionString {
 func (self *DynamoBackend) Ping(timeout time.Duration) error {
 	if self.db == nil {
 		return fmt.Errorf("Backend not initialized")
-	} else {
-		in := &dynamodb.ListTablesInput{}
-		in = in.SetLimit(1)
-
-		ctx, cancel := context.WithTimeout(aws.BackgroundContext(), timeout)
-		defer cancel()
-
-		if _, err := self.db.Client().ListTablesWithContext(ctx, in); err != nil {
-			return fmt.Errorf("Backend unavailable: %v", err)
-		}
 	}
 
 	return nil
@@ -106,15 +94,17 @@ func (self *DynamoBackend) Initialize() error {
 		},
 	)
 
-	// retrieve each table once as a cache warming mechanism
-	if tables, err := self.db.ListTables().All(); err == nil {
-		for _, tableName := range tables {
-			if _, err := self.GetCollection(tableName); err != nil {
-				return err
+	if self.cs.OptBool(`autoregister`, true) {
+		// retrieve each table once as a cache warming mechanism
+		if tables, err := self.db.ListTables().All(); err == nil {
+			for _, tableName := range tables {
+				if _, err := self.GetCollection(tableName); err != nil {
+					return err
+				}
 			}
+		} else {
+			return err
 		}
-	} else {
-		return err
 	}
 
 	if self.indexer == nil {
