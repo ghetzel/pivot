@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/ghetzel/go-stockutil/log"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 )
@@ -108,15 +109,31 @@ func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *
 					joiner = DefaultCompoundJoiner
 				}
 
-				values := strings.Split(fmt.Sprintf("%v", indexRecord.ID), joiner)
+				var values []interface{}
+
+				values = sliceutil.Sliceify(
+					strings.Split(fmt.Sprintf("%v", indexRecord.ID), joiner),
+				)
 
 				if len(values) != len(collection.IndexCompoundFields) {
-					return fmt.Errorf(
-						"Index item %v: expected %d compound field components, got %d",
-						indexRecord.ID,
-						len(collection.IndexCompoundFields),
-						len(values),
-					)
+					// if the index record's ID isn't holding _all_ of the field components,
+					// attempt to retrieve the rest of the values from the record itself.
+					if diff := len(collection.IndexCompoundFields) - len(values); diff >= 1 {
+						for _, cf := range collection.IndexCompoundFields[diff:] {
+							if v := indexRecord.Get(cf); v != nil {
+								values = append(values, v)
+							}
+						}
+					}
+
+					if len(values) != len(collection.IndexCompoundFields) {
+						return fmt.Errorf(
+							"Index item %v: expected %d compound field components, got %d",
+							indexRecord.ID,
+							len(collection.IndexCompoundFields),
+							len(values),
+						)
+					}
 				}
 
 				for i, field := range collection.IndexCompoundFields {
