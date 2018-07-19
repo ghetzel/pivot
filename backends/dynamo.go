@@ -439,12 +439,7 @@ func (self *DynamoBackend) upsertRecords(collection *dal.Collection, records *da
 
 			if rangeKey, ok := collection.GetFirstNonIdentityKeyField(); ok {
 				expr = append(expr, `attribute_not_exists($)`)
-
-				if v := record.Get(rangeKey.Name); v != nil {
-					exprValues = append(exprValues, v)
-				} else {
-					return fmt.Errorf("Cannot create record: missing range key")
-				}
+				exprValues = append(exprValues, rangeKey.Name)
 			}
 
 			op.If(strings.Join(expr, ` AND `), exprValues...)
