@@ -62,6 +62,8 @@ func validatePtrToStructType(instance interface{}) error {
 
 		if vInstance.Kind() == reflect.Struct {
 			return nil
+		} else {
+			return fmt.Errorf("invalid value %T; expected Struct, got %v", instance, vInstance.Kind())
 		}
 	} else {
 		return fmt.Errorf("invalid value %T", instance)
