@@ -63,13 +63,11 @@ func validatePtrToStructType(instance interface{}) error {
 		if vInstance.Kind() == reflect.Struct {
 			return nil
 		} else {
-			return fmt.Errorf("invalid value %T; expected Struct, got %v", instance, vInstance.Kind())
+			return fmt.Errorf("Can only operate on pointer to struct, got %T", instance)
 		}
 	} else {
 		return fmt.Errorf("invalid value %T", instance)
 	}
-
-	return fmt.Errorf("Can only operate on pointer to struct, got %T", instance)
 }
 
 func getFieldsForStruct(instance interface{}) (map[string]fieldDescription, error) {
