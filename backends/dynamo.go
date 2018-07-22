@@ -514,32 +514,19 @@ func (self *DynamoBackend) upsertRecords(collection *dal.Collection, records *da
 			// if this is a create statement, we need to add conditions to the PutItem call that
 			// ensures that an existing record with these id(s) doesn't exist.
 			if isCreate {
-				expr := []string{`#HashKey <> :hashKey`}
+				expr := []string{`attribute_not_exists(#HashKey)`}
 				attrNames := map[string]*string{
 					`#HashKey`: aws.String(collection.IdentityField),
 				}
 
-				attrValues := map[string]interface{}{
-					`:hashKey`: record.ID,
-				}
-
-				attrFieldMap := map[string]string{
-					`:hashKey`: collection.IdentityField,
-				}
-
 				// if there's a range key, we gotta add that to the conditional expression too
 				if rangeKey, ok := collection.GetFirstNonIdentityKeyField(); ok {
-					expr = append(expr, `#RangeKey <> :rangeKey`)
+					expr = append(expr, `attribute_not_exists(#RangeKey)`)
 					attrNames[`#RangeKey`] = aws.String(rangeKey.Name)
-					attrValues[`:rangeKey`] = record.Get(rangeKey.Name)
-					attrFieldMap[`:rangeKey`] = rangeKey.Name
 				}
 
 				op = op.SetConditionalOperator(strings.Join(expr, ` AND `))
 				op = op.SetExpressionAttributeNames(attrNames)
-				op = op.SetExpressionAttributeValues(
-					dynamoToDynamoAttributes(collection, attrValues, attrFieldMap),
-				)
 			}
 
 			// perform the call
