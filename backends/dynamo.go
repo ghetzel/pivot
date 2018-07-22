@@ -525,7 +525,7 @@ func (self *DynamoBackend) upsertRecords(collection *dal.Collection, records *da
 					attrNames[`#RangeKey`] = aws.String(rangeKey.Name)
 				}
 
-				op = op.SetConditionalOperator(strings.Join(expr, ` AND `))
+				op = op.SetConditionExpression(strings.Join(expr, ` AND `))
 				op = op.SetExpressionAttributeNames(attrNames)
 			}
 
