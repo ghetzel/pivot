@@ -62,7 +62,6 @@
     "private/protocol/xml/xmlutil",
     "service/dynamodb",
     "service/dynamodb/dynamodbattribute",
-    "service/dynamodb/dynamodbiface",
     "service/sts"
   ]
   revision = "5a33d0a4f5d9c27e6cd10b4c156e85b46c4501d7"
@@ -129,12 +128,6 @@
   name = "github.com/boltdb/bolt"
   packages = ["."]
   revision = "9da31745363232bc1e27dbab3569e77383a51585"
-
-[[projects]]
-  name = "github.com/cenkalti/backoff"
-  packages = ["."]
-  revision = "2ea60e5f094469f9e65adb9cd103795b73ae743e"
-  version = "v2.0.0"
 
 [[projects]]
   branch = "master"
@@ -309,15 +302,6 @@
   name = "github.com/grokify/html-strip-tags-go"
   packages = ["."]
   revision = "2e24dd3c29e5fe86a6ac41c713f2e2840b3062e6"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/guregu/dynamo"
-  packages = [
-    ".",
-    "internal/exprs"
-  ]
-  revision = "e38c48c566f44b8dbaa18ec7c429e43194f7233a"
 
 [[projects]]
   branch = "master"
@@ -613,6 +597,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "58f64254963258d2c1a2ef26727223b0bb74adb6479b65b57d25552fb4763053"
+  inputs-digest = "b43688f734df3d4c829f41b1e4143ca77e678304a652adc9d91ea45dd5dbe159"
   solver-name = "gps-cdcl"
   solver-version = 1

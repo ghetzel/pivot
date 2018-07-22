@@ -127,21 +127,20 @@ func setupTestFilesystemJson(run func()) {
 	}
 }
 
-func setupTestTiedot(run func()) {
-	if root, err := ioutil.TempDir(``, `pivot-backend-tiedot-`); err == nil {
-		defer os.RemoveAll(root)
+func setupTestDynamoDB(run func()) {
+	if b, err := makeBackend(fmt.Sprintf(
+		"dynamodb://%s:%s@%s",
+		os.Getenv(`AWS_ACCESS_KEY_ID`),
+		os.Getenv(`AWS_SECRET_ACCESS_KEY`),
+		`us-east-1`,
+	)); err == nil {
+		backend = b
 
-		if b, err := makeBackend(fmt.Sprintf("tiedot://%s/", root)); err == nil {
-			backend = b
-
-			testCrudIdSet = []interface{}{nil, nil, nil}
-			run()
-			testCrudIdSet = defaultTestCrudIdSet
-		} else {
-			fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
-		}
+		testCrudIdSet = []interface{}{nil, nil, nil}
+		run()
+		testCrudIdSet = defaultTestCrudIdSet
 	} else {
-		panic(err.Error())
+		panic(fmt.Sprintf("Failed to create backend: %v\n", err))
 	}
 }
 
@@ -167,15 +166,15 @@ func TestMain(m *testing.M) {
 	}
 
 	if typeutil.V(os.Getenv(`INTEGRATION`)).Bool() {
-		setupTestMysql(run)
-		setupTestTiedot(run)
-		setupTestMongo(run)
-		setupTestSqlite(run)
-		setupTestSqliteWithBleveIndexer(run)
-		setupTestSqliteWithAdditionalBleveIndexer(run)
+		setupTestDynamoDB(run)
 		setupTestFilesystemDefault(run)
-		setupTestFilesystemYaml(run)
 		setupTestFilesystemJson(run)
+		setupTestFilesystemYaml(run)
+		setupTestMongo(run)
+		setupTestMysql(run)
+		setupTestSqlite(run)
+		setupTestSqliteWithAdditionalBleveIndexer(run)
+		setupTestSqliteWithBleveIndexer(run)
 	}
 }
 

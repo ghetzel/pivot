@@ -36,10 +36,6 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/guregu/dynamo"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/hashicorp/golang-lru"
 
 [[constraint]]

@@ -2,11 +2,13 @@ package backends
 
 import (
 	"fmt"
+	"math"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
-	"github.com/guregu/dynamo"
 )
 
 func (self *DynamoBackend) IndexConnectionString() *dal.ConnectionString {
@@ -42,138 +44,111 @@ func (self *DynamoBackend) QueryFunc(collection *dal.Collection, flt *filter.Fil
 		return err
 	}
 
+	ctx := aws.BackgroundContext()
+	pageNumber := 0
+	var processed int
+
 	// NOTE: we use the DynamoDB table name instead of .GetIndexName() because we only partially
 	// support querying (range scans only), so we're regularly going to be dealing with
-	// external indices with potentially-different names.
-	table := self.db.Table(collection.Name)
+	// external indices with potentially-different names.  If this function is being called, that means
+	// we're using DynamoDB as an indexer and we want the underlying name intact.
 
 	if flt == nil || flt.IsMatchAll() {
-		scan := table.Scan()
+		scan := &dynamodb.ScanInput{
+			TableName: aws.String(collection.Name),
+			Select:    aws.String(`ALL_ATTRIBUTES`),
+		}
 
 		if flt.Limit > 0 {
-			scan.Limit(int64(flt.Limit))
+			scan.SetLimit(int64(flt.Limit))
 		}
 
-		iter := scan.SearchLimit(1).Iter()
-		result := make(map[string]interface{})
+		return self.db.ScanPagesWithContext(ctx, scan, func(page *dynamodb.ScanOutput, lastPage bool) bool {
+			pageNumber += 1
 
-		for {
-			if proceed := iter.Next(&result); proceed {
-				if err := iter.Err(); err == nil {
-					if proceed, err := self.iterResult(result, collection, flt, resultFn); err == nil {
-						if !proceed {
-							break
-						}
-					} else {
-						return err
-					}
-				} else {
-					return err
-				}
-
-				result = nil
-
-				if lastKey := iter.LastEvaluatedKey(); len(lastKey) > 0 {
-					iter = scan.StartFrom(lastKey).SearchLimit(1).Iter()
-				} else {
-					break
-				}
-			} else {
-				break
-			}
-		}
+			return self.iterResult(
+				collection,
+				flt,
+				page.Items,
+				processed,
+				*page.Count,
+				pageNumber,
+				lastPage,
+				resultFn,
+			)
+		})
 
 	} else {
-		var query *dynamo.Query
+		query := &dynamodb.QueryInput{
+			TableName: aws.String(collection.Name),
+			Select:    aws.String(`ALL_ATTRIBUTES`),
+		}
 
-	IdentityLoop:
+		if kcond, _, attrNames, attrValues, attrFieldMap, err := self.exprFromFilter(collection, flt); err == nil {
+			query = query.SetKeyConditionExpression(strings.Join(kcond, ` AND `))
+			query = query.SetExpressionAttributeNames(attrNames)
+			query = query.SetExpressionAttributeValues(
+				self.toDynamoAttributes(collection, attrValues, attrFieldMap),
+			)
+
+			return self.db.QueryPagesWithContext(ctx, query, func(page *dynamodb.QueryOutput, lastPage bool) bool {
+				pageNumber += 1
+
+				return self.iterResult(
+					collection,
+					flt,
+					page.Items,
+					processed,
+					*page.Count,
+					pageNumber,
+					lastPage,
+					resultFn,
+				)
+			})
+		} else {
+			return err
+		}
+	}
+}
+
+func (self *DynamoBackend) exprFromFilter(collection *dal.Collection, flt *filter.Filter) ([]string, []string, map[string]*string, map[string]interface{}, map[string]string, error) {
+	fieldId := 0
+	valId := 0
+	keyCondExpr := []string{}
+	condExpr := []string{}
+	attrNames := map[string]*string{}
+	attrValues := map[string]interface{}{}
+	attrFieldMap := map[string]string{}
+
+	if flt != nil {
 		for _, criterion := range flt.Criteria {
-			if query == nil && collection.IsIdentityField(criterion.Field) {
-				switch len(criterion.Values) {
-				case 1:
-					query = table.Get(criterion.Field, criterion.Values[0])
-					break IdentityLoop
-				default:
-					return fmt.Errorf("Only one primary key value is supported when querying DynamoDB at this time")
-				}
-			}
-		}
+			if op := self.toNativeOp(&criterion); op != `` {
+				ors := make([]string, 0)
 
-		if query == nil {
-			return fmt.Errorf("Could not generate DynamoDB query from filter %v", flt)
-		}
-
-		for _, criterion := range flt.Criteria {
-			if !collection.IsIdentityField(criterion.Field) {
-				values := make([]interface{}, 0)
-				orFilters := make([]string, 0)
-
-				for _, v := range criterion.Values {
-					nativeOp := self.toNativeOp(&criterion)
-
-					if nativeOp == `` {
-						return fmt.Errorf("Unsupported operator '%v' when querying DynamoDB", criterion.Operator)
-					}
-
-					orFilters = append(
-						orFilters,
-						fmt.Sprintf("$ %s ?", nativeOp),
-					)
-
-					values = append(values, criterion.Field)
-					values = append(values, v)
+				for _, value := range criterion.Values {
+					ors = append(ors, fmt.Sprintf("#F%d %v :v%d", fieldId, op, valId))
+					attrValues[fmt.Sprintf(":v%d", valId)] = value
+					attrFieldMap[fmt.Sprintf(":v%d", valId)] = criterion.Field
+					valId += 1
 				}
 
-				var filterExpr string
+				attrNames[fmt.Sprintf("#F%d", fieldId)] = aws.String(criterion.Field)
 
-				if len(orFilters) == 1 {
-					filterExpr = orFilters[0]
-				} else if len(orFilters) > 1 {
-					filterExpr = `(` + strings.Join(orFilters, ` OR `) + `)`
+				// key conditions
+				if collection.IsIdentityField(criterion.Field) || collection.IsKeyField(criterion.Field) {
+					keyCondExpr = append(keyCondExpr, `(`+strings.Join(ors, ` OR `)+`)`)
 				} else {
-					continue
+					condExpr = append(condExpr, `(`+strings.Join(ors, ` OR `)+`)`)
 				}
 
-				querylog.Debugf("[%T] Table: %v; FILTER: %v %+v", self, collection.Name, filterExpr, values)
-				query = query.Filter(filterExpr, values...)
-			}
-		}
-
-		if flt.Limit > 0 {
-			query.Limit(int64(flt.Limit))
-		}
-
-		iter := query.SearchLimit(1).Iter()
-		result := make(map[string]interface{})
-
-		for {
-			if proceed := iter.Next(&result); proceed {
-				if err := iter.Err(); err == nil {
-					if proceed, err := self.iterResult(result, collection, flt, resultFn); err == nil {
-						if !proceed {
-							break
-						}
-					} else {
-						return err
-					}
-				} else {
-					return err
-				}
-
-				result = nil
-
-				if lastKey := iter.LastEvaluatedKey(); len(lastKey) > 0 {
-					iter = query.StartFrom(lastKey).SearchLimit(1).Iter()
-				} else {
-					break
-				}
+				fieldId += 1
 			} else {
-				break
+				return nil, nil, nil, nil, nil, fmt.Errorf("Unsupported operator '%v'", criterion.Operator)
 			}
 		}
 	}
 
-	return nil
+	return keyCondExpr, condExpr, attrNames, attrValues, attrFieldMap, nil
 }
 
 func (self *DynamoBackend) Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
@@ -233,22 +208,30 @@ func (self *DynamoBackend) toNativeOp(criterion *filter.Criterion) string {
 	}
 }
 
-func (self *DynamoBackend) iterResult(result map[string]interface{}, collection *dal.Collection, flt *filter.Filter, resultFn IndexResultFunc) (bool, error) {
-	record := dal.NewRecord(nil)
+func (self *DynamoBackend) iterResult(collection *dal.Collection, flt *filter.Filter, items []map[string]*dynamodb.AttributeValue, processed int, totalResults int64, pageNumber int, lastPage bool, resultFn IndexResultFunc) bool {
+	if len(items) > 0 {
+		for _, item := range items {
+			record, err := self.recordFromItem(collection, item)
 
-	for k, v := range result {
-		if collection.IsIdentityField(k) {
-			record.ID = v
-		} else {
-			record.Fields[k] = v
+			// fire off the result handler
+			if err := resultFn(record, err, IndexPage{
+				Page:         pageNumber,
+				TotalPages:   int(math.Ceil(float64(totalResults) / float64(25))),
+				Limit:        flt.Limit,
+				Offset:       (pageNumber - 1) * 25,
+				TotalResults: totalResults,
+			}); err != nil {
+				return false
+			}
+
+			// perform bounds checking
+			if processed += 1; flt.Limit > 0 && processed >= flt.Limit {
+				return false
+			}
 		}
-	}
 
-	if err := resultFn(record, nil, IndexPage{
-		Limit: flt.Limit,
-	}); err != nil {
-		return false, err
+		return !lastPage
+	} else {
+		return false
 	}
-
-	return true, nil
 }
