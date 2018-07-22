@@ -155,7 +155,7 @@ func (self *DynamoBackend) Retrieve(name string, id interface{}, fields ...strin
 				Key:            keys,
 			}); err == nil {
 				// return the record
-				return self.recordFromItem(collection, out.Item)
+				return dynamoRecordFromItem(collection, out.Item)
 			} else if aerr, ok := err.(awserr.Error); ok {
 				switch aerr.Code() {
 				case dynamodb.ErrCodeResourceNotFoundException:
@@ -339,7 +339,7 @@ func (self *DynamoBackend) cacheTable(name string) (*dal.Collection, error) {
 	}
 }
 
-func (self *DynamoBackend) recordFromItem(collection *dal.Collection, item map[string]*dynamodb.AttributeValue) (*dal.Record, error) {
+func dynamoRecordFromItem(collection *dal.Collection, item map[string]*dynamodb.AttributeValue) (*dal.Record, error) {
 	// build the record we're returning
 	data := make(map[string]interface{})
 	record := dal.NewRecord(nil)
@@ -369,7 +369,15 @@ func (self *DynamoBackend) recordFromItem(collection *dal.Collection, item map[s
 	}
 }
 
-func (self *DynamoBackend) toRecordKeyFilter(collection *dal.Collection, id interface{}) (*filter.Filter, *dal.Field, error) {
+func dynamoRecordToItem(collection *dal.Collection, record *dal.Record) (map[string]*dynamodb.AttributeValue, error) {
+	if data, err := collection.MapFromRecord(record); err == nil {
+		return dynamodbattribute.MarshalMap(data)
+	} else {
+		return nil, err
+	}
+}
+
+func dynamoToRecordKeyFilter(collection *dal.Collection, id interface{}) (*filter.Filter, *dal.Field, error) {
 	var rangeKey *dal.Field
 	var hashValue interface{}
 	var rangeValue interface{}
@@ -434,7 +442,7 @@ func (self *DynamoBackend) toRecordKeyFilter(collection *dal.Collection, id inte
 	}
 }
 
-func (self *DynamoBackend) toDynamoAttributes(collection *dal.Collection, values map[string]interface{}, fieldMap map[string]string) map[string]*dynamodb.AttributeValue {
+func dynamoToDynamoAttributes(collection *dal.Collection, values map[string]interface{}, fieldMap map[string]string) map[string]*dynamodb.AttributeValue {
 	rv := make(map[string]*dynamodb.AttributeValue)
 
 	for k, v := range values {
@@ -467,7 +475,7 @@ func (self *DynamoBackend) toDynamoAttributes(collection *dal.Collection, values
 
 func (self *DynamoBackend) getKeyAttributes(name string, id interface{}) (*filter.Filter, map[string]*dynamodb.AttributeValue, error) {
 	if collection, err := self.GetCollection(name); err == nil {
-		if flt, rangeKey, err := self.toRecordKeyFilter(collection, id); err == nil {
+		if flt, rangeKey, err := dynamoToRecordKeyFilter(collection, id); err == nil {
 			if hashKeyValue, ok := flt.GetIdentityValue(); ok {
 				keys := map[string]interface{}{
 					flt.IdentityField: hashKeyValue,
@@ -483,7 +491,7 @@ func (self *DynamoBackend) getKeyAttributes(name string, id interface{}) (*filte
 
 				querylog.Debugf("[%T] retrieve: %v %v", self, collection.Name, id)
 
-				return flt, self.toDynamoAttributes(collection, keys, nil), nil
+				return flt, dynamoToDynamoAttributes(collection, keys, nil), nil
 			} else {
 				return nil, nil, fmt.Errorf("Could not determine hash key value")
 			}
@@ -497,70 +505,60 @@ func (self *DynamoBackend) getKeyAttributes(name string, id interface{}) (*filte
 
 func (self *DynamoBackend) upsertRecords(collection *dal.Collection, records *dal.RecordSet, isCreate bool) error {
 	for _, record := range records.Records {
-		item := make(map[string]interface{})
-
-		for k, v := range record.Fields {
-			if typeutil.IsZero(v) {
-				continue
+		if item, err := dynamoRecordToItem(collection, record); err == nil {
+			op := &dynamodb.PutItemInput{
+				TableName: aws.String(collection.Name),
+				Item:      item,
 			}
 
-			switch v.(type) {
-			case *time.Time:
-				item[k] = v.(*time.Time).Format(time.RFC3339Nano)
-			case time.Time:
-				item[k] = v.(time.Time).Format(time.RFC3339Nano)
-			default:
-				item[k] = v
-			}
-		}
-
-		item[collection.IdentityField] = record.ID
-
-		op := &dynamodb.PutItemInput{
-			TableName: aws.String(collection.Name),
-		}
-
-		if isCreate {
-			expr := []string{`#HashKey <> :hashKey`}
-			attrNames := map[string]*string{
-				`#HashKey`: aws.String(collection.IdentityField),
-			}
-
-			attrValues := map[string]interface{}{
-				`:hashKey`: record.ID,
-			}
-
-			attrFieldMap := map[string]string{
-				`:hashKey`: collection.IdentityField,
-			}
-
-			if rangeKey, ok := collection.GetFirstNonIdentityKeyField(); ok {
-				expr = append(expr, `#RangeKey <> :rangeKey`)
-				attrNames[`#RangeKey`] = aws.String(rangeKey.Name)
-				attrValues[`:rangeKey`] = record.Get(rangeKey.Name)
-				attrFieldMap[`:rangeKey`] = rangeKey.Name
-			}
-
-			op = op.SetConditionalOperator(strings.Join(expr, ` AND `))
-			op = op.SetExpressionAttributeNames(attrNames)
-			op = op.SetExpressionAttributeValues(
-				self.toDynamoAttributes(collection, attrValues, attrFieldMap),
-			)
-		}
-
-		if _, err := self.db.PutItem(op); err != nil {
-			if aerr, ok := err.(awserr.Error); ok {
-				switch aerr.Code() {
-				case dynamodb.ErrCodeConditionalCheckFailedException:
-					return fmt.Errorf("Record already exists")
-				case dynamodb.ErrCodeProvisionedThroughputExceededException:
-					return fmt.Errorf("Throughput exceeded")
-				default:
-					return aerr
+			// if this is a create statement, we need to add conditions to the PutItem call that
+			// ensures that an existing record with these id(s) doesn't exist.
+			if isCreate {
+				expr := []string{`#HashKey <> :hashKey`}
+				attrNames := map[string]*string{
+					`#HashKey`: aws.String(collection.IdentityField),
 				}
-			} else {
-				return err
+
+				attrValues := map[string]interface{}{
+					`:hashKey`: record.ID,
+				}
+
+				attrFieldMap := map[string]string{
+					`:hashKey`: collection.IdentityField,
+				}
+
+				// if there's a range key, we gotta add that to the conditional expression too
+				if rangeKey, ok := collection.GetFirstNonIdentityKeyField(); ok {
+					expr = append(expr, `#RangeKey <> :rangeKey`)
+					attrNames[`#RangeKey`] = aws.String(rangeKey.Name)
+					attrValues[`:rangeKey`] = record.Get(rangeKey.Name)
+					attrFieldMap[`:rangeKey`] = rangeKey.Name
+				}
+
+				op = op.SetConditionalOperator(strings.Join(expr, ` AND `))
+				op = op.SetExpressionAttributeNames(attrNames)
+				op = op.SetExpressionAttributeValues(
+					dynamoToDynamoAttributes(collection, attrValues, attrFieldMap),
+				)
 			}
+
+			// perform the call
+			if _, err := self.db.PutItem(op); err != nil {
+				if aerr, ok := err.(awserr.Error); ok {
+					switch aerr.Code() {
+					case dynamodb.ErrCodeConditionalCheckFailedException:
+						return fmt.Errorf("Record already exists")
+					case dynamodb.ErrCodeProvisionedThroughputExceededException:
+						return fmt.Errorf("Throughput exceeded")
+					default:
+						return aerr
+					}
+				} else {
+					return err
+				}
+			}
+		} else {
+			return err
 		}
 	}
 

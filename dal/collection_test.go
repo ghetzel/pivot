@@ -142,3 +142,42 @@ func TestCollectionValidator(t *testing.T) {
 	assert.Error(collection.ValidateRecord(NewRecord(`two`), PersistOperation))
 	assert.NoError(collection.ValidateRecord(NewRecord(`three`), PersistOperation))
 }
+
+func TestCollectionMapFromRecord(t *testing.T) {
+	assert := require.New(t)
+
+	collection := NewCollection(`TestCollectionMakeRecord`)
+	collection.IdentityFieldFormatter = func(id interface{}, op FieldOperation) (interface{}, error) {
+		if record, ok := id.(*Record); ok {
+			id = record.ID
+		}
+
+		return fmt.Sprintf("ID<%v>", id), nil
+	}
+
+	collection.AddFields([]Field{
+		{
+			Name: `name`,
+			Type: StringType,
+		}, {
+			Name:         `enabled`,
+			Type:         BooleanType,
+			DefaultValue: true,
+		}, {
+			Name: `age`,
+			Type: IntType,
+		},
+	}...)
+
+	rv, err := collection.MapFromRecord(
+		NewRecord(`test`).Set(`name`, `tester`).Set(`age`, 42),
+	)
+
+	assert.NoError(err)
+	assert.EqualValues(map[string]interface{}{
+		`id`:      `ID<test>`,
+		`name`:    `tester`,
+		`enabled`: true,
+		`age`:     42,
+	}, rv)
+}

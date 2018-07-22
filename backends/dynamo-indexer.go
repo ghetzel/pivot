@@ -84,11 +84,11 @@ func (self *DynamoBackend) QueryFunc(collection *dal.Collection, flt *filter.Fil
 			Select:    aws.String(`ALL_ATTRIBUTES`),
 		}
 
-		if kcond, _, attrNames, attrValues, attrFieldMap, err := self.exprFromFilter(collection, flt); err == nil {
+		if kcond, _, attrNames, attrValues, attrFieldMap, err := dynamoExprFromFilter(collection, flt); err == nil {
 			query = query.SetKeyConditionExpression(strings.Join(kcond, ` AND `))
 			query = query.SetExpressionAttributeNames(attrNames)
 			query = query.SetExpressionAttributeValues(
-				self.toDynamoAttributes(collection, attrValues, attrFieldMap),
+				dynamoToDynamoAttributes(collection, attrValues, attrFieldMap),
 			)
 
 			return self.db.QueryPagesWithContext(ctx, query, func(page *dynamodb.QueryOutput, lastPage bool) bool {
@@ -111,7 +111,7 @@ func (self *DynamoBackend) QueryFunc(collection *dal.Collection, flt *filter.Fil
 	}
 }
 
-func (self *DynamoBackend) exprFromFilter(collection *dal.Collection, flt *filter.Filter) ([]string, []string, map[string]*string, map[string]interface{}, map[string]string, error) {
+func dynamoExprFromFilter(collection *dal.Collection, flt *filter.Filter) ([]string, []string, map[string]*string, map[string]interface{}, map[string]string, error) {
 	fieldId := 0
 	valId := 0
 	keyCondExpr := []string{}
@@ -122,7 +122,7 @@ func (self *DynamoBackend) exprFromFilter(collection *dal.Collection, flt *filte
 
 	if flt != nil {
 		for _, criterion := range flt.Criteria {
-			if op := self.toNativeOp(&criterion); op != `` {
+			if op := dynamoToNativeOp(&criterion); op != `` {
 				ors := make([]string, 0)
 
 				for _, value := range criterion.Values {
@@ -189,7 +189,7 @@ func (self *DynamoBackend) validateFilter(collection *dal.Collection, flt *filte
 	return nil
 }
 
-func (self *DynamoBackend) toNativeOp(criterion *filter.Criterion) string {
+func dynamoToNativeOp(criterion *filter.Criterion) string {
 	switch criterion.Operator {
 	case `not`:
 		return `<>`
@@ -211,7 +211,7 @@ func (self *DynamoBackend) toNativeOp(criterion *filter.Criterion) string {
 func (self *DynamoBackend) iterResult(collection *dal.Collection, flt *filter.Filter, items []map[string]*dynamodb.AttributeValue, processed int, totalResults int64, pageNumber int, lastPage bool, resultFn IndexResultFunc) bool {
 	if len(items) > 0 {
 		for _, item := range items {
-			record, err := self.recordFromItem(collection, item)
+			record, err := dynamoRecordFromItem(collection, item)
 
 			// fire off the result handler
 			if err := resultFn(record, err, IndexPage{

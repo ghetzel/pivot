@@ -283,9 +283,9 @@ func (self *Collection) GetField(name string) (Field, bool) {
 		}
 	}
 
-	if name == self.IdentityField || (self.IdentityField == `` && name == DefaultIdentityField) {
+	if name == self.GetIdentityFieldName() {
 		return Field{
-			Name:     self.IdentityField,
+			Name:     name,
 			Type:     self.IdentityFieldType,
 			Identity: true,
 			Key:      true,
@@ -294,6 +294,14 @@ func (self *Collection) GetField(name string) (Field, bool) {
 	}
 
 	return Field{}, false
+}
+
+func (self *Collection) GetIdentityFieldName() string {
+	if self.IdentityField == `` {
+		return DefaultIdentityField
+	} else {
+		return self.IdentityField
+	}
 }
 
 func (self *Collection) IsIdentityField(name string) bool {
@@ -450,7 +458,7 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 		// our identity field name
 		if record.ID == nil {
 			for tagName, fieldDescr := range fields {
-				if tagName == self.IdentityField {
+				if tagName == self.GetIdentityFieldName() {
 					if fieldDescr.Field.IsExported() {
 						// skip fields containing a zero value
 						if !typeutil.IsZero(fieldDescr.Field) {
@@ -502,6 +510,34 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 	}
 }
 
+func (self *Collection) MapFromRecord(record *Record) (map[string]interface{}, error) {
+	rv := make(map[string]interface{})
+
+	for _, field := range self.Fields {
+		if dv := field.GetDefaultValue(); dv != nil {
+			rv[field.Name] = dv
+		}
+	}
+
+	if record != nil {
+		if record.ID != nil {
+			if id, err := self.formatAndValidateId(record.ID, RetrieveOperation, record); err == nil {
+				rv[self.GetIdentityFieldName()] = id
+			} else {
+				return nil, err
+			}
+		}
+
+		for _, field := range self.Fields {
+			if v := record.Get(field.Name); v != nil {
+				rv[field.Name] = v
+			}
+		}
+	}
+
+	return rv, nil
+}
+
 func (self *Collection) ValidateRecord(record *Record, op FieldOperation) error {
 	switch op {
 	case PersistOperation:
@@ -530,7 +566,7 @@ func (self *Collection) Diff(actual *Collection) []SchemaDelta {
 		})
 	}
 
-	if self.IdentityField != actual.IdentityField {
+	if self.GetIdentityFieldName() != actual.GetIdentityFieldName() {
 		differences = append(
 			differences,
 			SchemaDelta{
@@ -539,8 +575,8 @@ func (self *Collection) Diff(actual *Collection) []SchemaDelta {
 				Message:    `does not match`,
 				Collection: self.Name,
 				Parameter:  `IdentityField`,
-				Desired:    self.IdentityField,
-				Actual:     actual.IdentityField,
+				Desired:    self.GetIdentityFieldName(),
+				Actual:     actual.GetIdentityFieldName(),
 			},
 		)
 	}
