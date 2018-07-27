@@ -507,7 +507,7 @@ func (self *FilesystemBackend) readObject(collection *dal.Collection, id string,
 			if cacheRecordI, ok := self.recordCache.Get(fmt.Sprintf("%v|%v", collection.Name, id)); ok {
 				if cacheRecord, ok := cacheRecordI.(*dal.Record); ok && cacheRecord != nil {
 					record.Copy(cacheRecord)
-					querylog.Debugf("[%T] Record %v/%v read from cache", self, collection.Name, id)
+					// querylog.Debugf("[%T] Record %v/%v read from cache", self, collection.Name, id)
 					return nil
 				}
 			}
@@ -520,7 +520,7 @@ func (self *FilesystemBackend) readObject(collection *dal.Collection, id string,
 
 			if file, err := os.Open(objPath); err == nil {
 				defer file.Close()
-				querylog.Debugf("[%T] Record %v/%v read from disk", self, collection.Name, id)
+				// querylog.Debugf("[%T] Record %v/%v read from disk", self, collection.Name, id)
 
 				if data, err := ioutil.ReadAll(file); err == nil {
 					switch self.format {
