@@ -219,8 +219,8 @@
     "typeutil",
     "utils"
   ]
-  revision = "72734343d290b6d3db24617e1c182cff44b9eb65"
-  version = "1.5.17"
+  revision = "57203f9efc80fe016a5b7d6b18f6eaff933f7ff0"
+  version = "1.5.39"
 
 [[projects]]
   branch = "master"
@@ -357,6 +357,12 @@
   revision = "0b12d6b5"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/juliangruber/go-intersect"
+  packages = ["."]
+  revision = "b60b3a5b35ade098834e63cf9e094108650641a2"
+
+[[projects]]
   name = "github.com/julienschmidt/httprouter"
   packages = ["."]
   revision = "8c199fb6259ffc1af525cc3ad52ee60ba8359669"
@@ -458,6 +464,12 @@
   name = "github.com/microcosm-cc/bluemonday"
   packages = ["."]
   revision = "995366fdf961d03629cd17361bddd32745718e2c"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mitchellh/mapstructure"
+  packages = ["."]
+  revision = "f15292f7a699fcc1a38a80977f80a046874ba8ac"
 
 [[projects]]
   name = "github.com/montanaflynn/stats"
@@ -597,6 +609,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b43688f734df3d4c829f41b1e4143ca77e678304a652adc9d91ea45dd5dbe159"
+  inputs-digest = "5ba1ba18dd4199f9a96a8936850dd5a312223d23c3b307f75023802861e9e416"
   solver-name = "gps-cdcl"
   solver-version = 1

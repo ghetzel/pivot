@@ -5,9 +5,11 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/jbenet/go-base58"
@@ -69,6 +71,12 @@ func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error) {
 	case `trim-space`:
 		return TrimSpace, nil
 
+	case `change-case`:
+		return ChangeCase(sliceutil.Stringify(args)), nil
+
+	case `replace`:
+		return Replace(sliceutil.Sliceify(args)), nil
+
 	// case `fields`:
 	// 	if typeutil.IsMap(args) {
 
@@ -95,6 +103,70 @@ func FormatAll(formatters []FieldFormatterFunc) FieldFormatterFunc {
 		}
 
 		return value, nil
+	}
+}
+
+func ChangeCase(cases []string) FieldFormatterFunc {
+	return func(value interface{}, _ FieldOperation) (interface{}, error) {
+		if record, ok := value.(*Record); ok {
+			value = record.ID
+		}
+
+		if vStr, err := stringutil.ToString(value); err == nil {
+			for _, c := range cases {
+				switch c {
+				case `upper`:
+					vStr = strings.ToUpper(vStr)
+				case `lower`:
+					vStr = strings.ToLower(vStr)
+				case `camelize`:
+					vStr = stringutil.Camelize(vStr)
+				case `hyphenate`:
+					vStr = stringutil.Hyphenate(vStr)
+				case `underscore`:
+					vStr = stringutil.Underscore(vStr)
+				case `title`:
+					vStr = strings.Title(vStr)
+				default:
+					return nil, fmt.Errorf("Unsupported case '%s'", c)
+				}
+			}
+
+			return vStr, nil
+		} else {
+			return value, err
+		}
+	}
+}
+
+func Replace(pairs []interface{}) FieldFormatterFunc {
+	return func(value interface{}, _ FieldOperation) (interface{}, error) {
+		if vStr, err := stringutil.ToString(value); err == nil {
+			for _, pair := range pairs {
+				p := sliceutil.Stringify(pair)
+
+				if len(p) != 2 {
+					return nil, fmt.Errorf("'replace' formatter requires an argument of [[FINDPATTERN, REPLACEWITH], ..]")
+				} else {
+					find := p[0]
+					replace := p[1]
+
+					if record, ok := value.(*Record); ok {
+						value = record.ID
+					}
+
+					if rx, err := regexp.Compile(find); err == nil {
+						vStr = rx.ReplaceAllString(vStr, replace)
+					} else {
+						return value, fmt.Errorf("invalid find pattern: %v", err)
+					}
+				}
+			}
+
+			return vStr, nil
+		} else {
+			return value, err
+		}
 	}
 }
 

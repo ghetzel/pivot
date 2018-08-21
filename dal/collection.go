@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 )
 
@@ -29,19 +30,22 @@ type Instantiator interface {
 }
 
 type Collection struct {
-	Name                     string                  `json:"name"`
-	IndexName                string                  `json:"index_name,omitempty"`
-	IndexCompoundFields      []string                `json:"index_compound_fields,omitempty"`
-	IndexCompoundFieldJoiner string                  `json:"index_compound_field_joiner,omitempty"`
-	SkipIndexPersistence     bool                    `json:"skip_index_persistence,omitempty"`
-	Fields                   []Field                 `json:"fields"`
-	IdentityField            string                  `json:"identity_field,omitempty"`
-	IdentityFieldType        Type                    `json:"identity_field_type,omitempty"`
-	IdentityFieldFormatter   FieldFormatterFunc      `json:"-"`
-	IdentityFieldValidator   FieldValidatorFunc      `json:"-"`
-	PreSaveValidator         CollectionValidatorFunc `json:"-"`
-	recordType               reflect.Type
-	instanceInitializer      InitializerFunc
+	Name                        string                  `json:"name"`
+	IndexName                   string                  `json:"index_name,omitempty"`
+	IndexCompoundFields         []string                `json:"index_compound_fields,omitempty"`
+	IndexCompoundFieldJoiner    string                  `json:"index_compound_field_joiner,omitempty"`
+	SkipIndexPersistence        bool                    `json:"skip_index_persistence,omitempty"`
+	Fields                      []Field                 `json:"fields"`
+	IdentityField               string                  `json:"identity_field,omitempty"`
+	IdentityFieldType           Type                    `json:"identity_field_type,omitempty"`
+	EmbeddedCollections         []Relationship          `json:"embed,omitempty"`
+	ExportedFields              []string                `json:"export,omitempty"`
+	AllowMissingEmbeddedRecords bool                    `json:"allow_missing_embedded_records"`
+	IdentityFieldFormatter      FieldFormatterFunc      `json:"-"`
+	IdentityFieldValidator      FieldValidatorFunc      `json:"-"`
+	PreSaveValidator            CollectionValidatorFunc `json:"-"`
+	recordType                  reflect.Type
+	instanceInitializer         InitializerFunc
 }
 
 func NewCollection(name string) *Collection {
@@ -510,10 +514,14 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 	}
 }
 
-func (self *Collection) MapFromRecord(record *Record) (map[string]interface{}, error) {
+func (self *Collection) MapFromRecord(record *Record, fields ...string) (map[string]interface{}, error) {
 	rv := make(map[string]interface{})
 
 	for _, field := range self.Fields {
+		if len(fields) > 0 && !sliceutil.ContainsString(fields, field.Name) {
+			continue
+		}
+
 		if dv := field.GetDefaultValue(); dv != nil {
 			rv[field.Name] = dv
 		}
@@ -530,6 +538,10 @@ func (self *Collection) MapFromRecord(record *Record) (map[string]interface{}, e
 
 		for _, field := range self.Fields {
 			if v := record.Get(field.Name); v != nil {
+				if len(fields) > 0 && !sliceutil.ContainsString(fields, field.Name) {
+					continue
+				}
+
 				rv[field.Name] = v
 			}
 		}

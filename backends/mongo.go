@@ -337,6 +337,8 @@ func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[
 }
 
 func (self *MongoBackend) getId(in interface{}) interface{} {
+	in = self.fromId(in)
+
 	switch in.(type) {
 	case string:
 		if bson.IsObjectIdHex(in.(string)) {

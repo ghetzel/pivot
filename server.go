@@ -136,11 +136,13 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 	router.Get(`/api/status`,
 		func(w http.ResponseWriter, req *http.Request) {
+			backend := backendForRequest(req, self.backend)
+
 			status := map[string]interface{}{
-				`backend`: self.backend.GetConnectionString().String(),
+				`backend`: backend.GetConnectionString().String(),
 			}
 
-			if indexer := self.backend.WithSearch(nil, nil); indexer != nil {
+			if indexer := backend.WithSearch(nil, nil); indexer != nil {
 				status[`indexer`] = indexer.IndexConnectionString().String()
 			}
 
@@ -150,8 +152,9 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Get(`/api/collections/:collection`,
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)
+			backend := backendForRequest(req, self.backend)
 
-			if collection, err := self.backend.GetCollection(name); err == nil {
+			if collection, err := backend.GetCollection(name); err == nil {
 				collection = injectRequestParamsIntoCollection(req, collection)
 
 				httputil.RespondJSON(w, collection)
@@ -197,19 +200,21 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			}
 		}
 
+		backend := backendForRequest(req, self.backend)
+
 		if f, err := filterFromRequest(req, query, int64(DefaultResultLimit)); err == nil {
-			if collection, err := self.backend.GetCollection(name); err == nil {
+			if collection, err := backend.GetCollection(name); err == nil {
 				collection = injectRequestParamsIntoCollection(req, collection)
 
 				var queryInterface backends.Indexer
 
-				if search := self.backend.WithSearch(collection); search != nil {
+				if search := backend.WithSearch(collection); search != nil {
 					if rightName == `` {
 						queryInterface = search
 					} else {
-						if rightCollection, err := self.backend.GetCollection(rightName); err == nil {
+						if rightCollection, err := backend.GetCollection(rightName); err == nil {
 							// leaving this here, though a little redundant, for when we support heterogeneous backends
-							if rightSearch := self.backend.WithSearch(rightCollection); rightSearch != nil {
+							if rightSearch := backend.WithSearch(rightCollection); rightSearch != nil {
 								queryInterface = backends.NewMetaIndex(
 									search,
 									collection,
@@ -255,12 +260,13 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			name := vestigo.Param(req, `collection`)
 			fields := strings.Split(vestigo.Param(req, `fields`), `,`)
 			aggregations := strings.Split(httputil.Q(req, `fn`, `count`), `,`)
+			backend := backendForRequest(req, self.backend)
 
 			if f, err := filterFromRequest(req, httputil.Q(req, `q`, `all`), 0); err == nil {
-				if collection, err := self.backend.GetCollection(name); err == nil {
+				if collection, err := backend.GetCollection(name); err == nil {
 					collection = injectRequestParamsIntoCollection(req, collection)
 
-					if aggregator := self.backend.WithAggregator(collection); aggregator != nil {
+					if aggregator := backend.WithAggregator(collection); aggregator != nil {
 						results := make(map[string]interface{})
 
 						for _, field := range fields {
@@ -315,12 +321,13 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)
 			fieldNames := vestigo.Param(req, `_name`)
+			backend := backendForRequest(req, self.backend)
 
 			if f, err := filterFromRequest(req, httputil.Q(req, `q`, `all`), 0); err == nil {
-				if collection, err := self.backend.GetCollection(name); err == nil {
+				if collection, err := backend.GetCollection(name); err == nil {
 					collection = injectRequestParamsIntoCollection(req, collection)
 
-					if search := self.backend.WithSearch(collection); search != nil {
+					if search := backend.WithSearch(collection); search != nil {
 						fields := strings.TrimPrefix(fieldNames, `/`)
 
 						if recordset, err := search.ListValues(collection, strings.Split(fields, `/`), f); err == nil {
@@ -345,9 +352,10 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)
 			query := vestigo.Param(req, `_name`)
+			backend := backendForRequest(req, self.backend)
 
 			if f, err := filter.Parse(query); err == nil {
-				if err := self.backend.Delete(name, f); err == nil {
+				if err := backend.Delete(name, f); err == nil {
 					httputil.RespondJSON(w, nil)
 				} else {
 					httputil.RespondJSON(w, err, http.StatusBadRequest)
@@ -361,7 +369,9 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			var id interface{}
 			var fields []string
+
 			name := vestigo.Param(req, `collection`)
+			backend := backendForRequest(req, self.backend)
 
 			if ids := strings.Split(vestigo.Param(req, `id`), `:`); len(ids) == 1 {
 				id = ids[0]
@@ -373,7 +383,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 				fields = strings.Split(v, `,`)
 			}
 
-			if record, err := self.backend.Retrieve(name, id, fields...); err == nil {
+			if record, err := backend.Retrieve(name, id, fields...); err == nil {
 				httputil.RespondJSON(w, record)
 			} else if strings.HasSuffix(err.Error(), `does not exist`) {
 				httputil.RespondJSON(w, err, http.StatusNotFound)
@@ -386,15 +396,17 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			var record dal.Record
 
+			backend := backendForRequest(req, self.backend)
+
 			if err := httputil.ParseRequest(req, &record); err == nil {
 				recordset := dal.NewRecordSet(&record)
 				name := vestigo.Param(req, `collection`)
 				var err error
 
-				if self.backend.Exists(name, record.ID) {
-					err = self.backend.Update(name, recordset)
+				if backend.Exists(name, record.ID) {
+					err = backend.Update(name, recordset)
 				} else {
-					err = self.backend.Insert(name, recordset)
+					err = backend.Insert(name, recordset)
 				}
 
 				if err == nil {
@@ -411,10 +423,12 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			var recordset dal.RecordSet
 
+			backend := backendForRequest(req, self.backend)
+
 			if err := httputil.ParseRequest(req, &recordset); err == nil {
 				name := vestigo.Param(req, `collection`)
 
-				if err := self.backend.Insert(name, &recordset); err == nil {
+				if err := backend.Insert(name, &recordset); err == nil {
 					httputil.RespondJSON(w, &recordset)
 				} else {
 					httputil.RespondJSON(w, err)
@@ -428,10 +442,12 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			var recordset dal.RecordSet
 
+			backend := backendForRequest(req, self.backend)
+
 			if err := httputil.ParseRequest(req, &recordset); err == nil {
 				name := vestigo.Param(req, `collection`)
 
-				if err := self.backend.Update(name, &recordset); err == nil {
+				if err := backend.Update(name, &recordset); err == nil {
 					httputil.RespondJSON(w, nil)
 				} else {
 					httputil.RespondJSON(w, err)
@@ -444,7 +460,9 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Delete(`/api/collections/:collection/records/*id`,
 		func(w http.ResponseWriter, req *http.Request) {
 			var id interface{}
+
 			name := vestigo.Param(req, `collection`)
+			backend := backendForRequest(req, self.backend)
 
 			if ids := strings.Split(vestigo.Param(req, `_name`), `/`); len(ids) == 1 {
 				id = ids[0]
@@ -452,7 +470,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 				id = ids
 			}
 
-			if err := self.backend.Delete(name, id); err == nil {
+			if err := backend.Delete(name, id); err == nil {
 				httputil.RespondJSON(w, nil)
 			} else {
 				httputil.RespondJSON(w, err)
@@ -462,10 +480,12 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Post(`/api/collections/:collection`,
 		func(w http.ResponseWriter, req *http.Request) {
 			var recordset dal.RecordSet
+
 			name := vestigo.Param(req, `collection`)
+			backend := backendForRequest(req, self.backend)
 
 			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
-				if err := self.backend.Insert(name, &recordset); err == nil {
+				if err := backend.Insert(name, &recordset); err == nil {
 					httputil.RespondJSON(w, nil)
 				} else {
 					httputil.RespondJSON(w, err)
@@ -478,10 +498,12 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Put(`/api/collections/:collection`,
 		func(w http.ResponseWriter, req *http.Request) {
 			var recordset dal.RecordSet
+
 			name := vestigo.Param(req, `collection`)
+			backend := backendForRequest(req, self.backend)
 
 			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
-				if err := self.backend.Update(name, &recordset); err == nil {
+				if err := backend.Update(name, &recordset); err == nil {
 					httputil.RespondJSON(w, nil)
 				} else {
 					httputil.RespondJSON(w, err)
@@ -493,7 +515,9 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 	router.Get(`/api/schema`,
 		func(w http.ResponseWriter, req *http.Request) {
-			if names, err := self.backend.ListCollections(); err == nil {
+			backend := backendForRequest(req, self.backend)
+
+			if names, err := backend.ListCollections(); err == nil {
 				httputil.RespondJSON(w, names)
 			} else {
 				httputil.RespondJSON(w, err)
@@ -503,6 +527,8 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Post(`/api/schema`,
 		func(w http.ResponseWriter, req *http.Request) {
 			var collections []dal.Collection
+
+			backend := backendForRequest(req, self.backend)
 
 			if body, err := ioutil.ReadAll(req.Body); err == nil {
 				var collection dal.Collection
@@ -525,7 +551,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			var errors []error
 
 			for _, collection := range collections {
-				if err := self.backend.CreateCollection(&collection); err == nil {
+				if err := backend.CreateCollection(&collection); err == nil {
 					httputil.RespondJSON(w, collection, http.StatusCreated)
 
 				} else if len(collections) == 1 {
@@ -549,8 +575,9 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Get(`/api/schema/:collection`,
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)
+			backend := backendForRequest(req, self.backend)
 
-			if collection, err := self.backend.GetCollection(name); err == nil {
+			if collection, err := backend.GetCollection(name); err == nil {
 				collection = injectRequestParamsIntoCollection(req, collection)
 
 				httputil.RespondJSON(w, collection)
@@ -562,8 +589,9 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Delete(`/api/schema/:collection`,
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)
+			backend := backendForRequest(req, self.backend)
 
-			if err := self.backend.DeleteCollection(name); err == nil {
+			if err := backend.DeleteCollection(name); err == nil {
 				httputil.RespondJSON(w, nil)
 			} else {
 				httputil.RespondJSON(w, err, http.StatusBadRequest)
@@ -647,4 +675,16 @@ func filterFromRequest(req *http.Request, filterIn interface{}, defaultLimit int
 	}
 
 	return f, nil
+}
+
+func backendForRequest(req *http.Request, backend backends.Backend) backends.Backend {
+	if !httputil.QBool(req, `nocache`) {
+		backend = backends.NewCachingBackend(backend)
+	}
+
+	if !httputil.QBool(req, `noexpand`) {
+		backend = backends.NewEmbeddedRecordBackend(backend)
+	}
+
+	return backend
 }
