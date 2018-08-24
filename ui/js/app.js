@@ -3,6 +3,7 @@
 var Pivot = Stapes.subclass({
     constructor: function(options){
         this.options = (options || {});
+        this.query = this.splitQuery(URI(decodeURIComponent(location.href)).search(true).q || '');
 
         $(document).on('click', function(e) {
             if (e.button == 0) {
@@ -59,17 +60,16 @@ var Pivot = Stapes.subclass({
         // });
     },
 
-    formatQueryField: function() {
-        var value = $('input[name="q"]').val();
-        var criteria = $('.filter-criteria');
+    splitQuery: function(querystring) {
+        if ($.isArray(querystring)) {
+            querystring = $.grep(querystring, function(q, i) {
+                return (q.length > 0);
+            }).join('/');
+        }
 
-        criteria.empty();
-
-        if (value) {
-            var parts = value.split('/');
-            var fixed = [];
-
-            // console.debug('parts', parts)
+        if (querystring) {
+            var parts = querystring.split('/');
+            var out = [];
 
             for(var i = 0; i < parts.length; i+=2) {
                 if (i+1 < parts.length) {
@@ -85,29 +85,57 @@ var Pivot = Stapes.subclass({
                         value = opValue[1];
                     }
 
-                    var criterion = $('<span></span>');
-                    criterion.addClass('criterion');
-
-                    criterion.append(
-                        $('<span></span>').addClass('criterion-field').text(field)
-                    );
-
-                    criterion.append(
-                        $('<span></span>').addClass('criterion-operator').text(op)
-                    );
-
-                    criterion.append(
-                        $('<span></span>').addClass('criterion-value').text(value)
-                    );
-
-                    criteria.append(criterion);
-                    fixed.push(field + '/' + op + ':' + value);
+                    out.push({
+                        'field': field,
+                        'operator': op,
+                        'value': value,
+                    });
                 }
             }
 
-            $('input[name="q"]').val(fixed.join('/').trim());
+            return out;
+        } else {
+            return [];
+        }
+    },
 
-            // console.debug('fixed', $('input[name="q"]').val());
+    joinQuery: function(queryset) {
+        var out = [];
+
+        $.each(queryset, function(i, q) {
+            out.push(q.field + '/' + (q.operator || 'is') + ':' + q.value.toString());
+        });
+
+        return out.join('/');
+    },
+
+    formatQueryField: function() {
+        var value = this.query;
+        var criteria = $('.filter-criteria');
+
+        criteria.empty();
+
+        if (value) {
+            console.debug('formatting query', this.query)
+
+            $.each(this.query, function(i, q) {
+                var criterion = $('<span></span>');
+                criterion.addClass('criterion');
+
+                criterion.append(
+                    $('<span></span>').addClass('criterion-field').text(q.field)
+                );
+
+                criterion.append(
+                    $('<span></span>').addClass('criterion-operator').text(q.operator)
+                );
+
+                criterion.append(
+                    $('<span></span>').addClass('criterion-value').text(q.value)
+                );
+
+                criteria.append(criterion);
+            }.bind(this));
         }
     },
 
@@ -126,14 +154,7 @@ var Pivot = Stapes.subclass({
             $('input[name="value"]').val(value);
         }
 
-        var q = $('input[name="q"]').val();
-        var rx = new RegExp(field + '/' + op + ':' + value + '/?');
-
-        q = q.replace(rx, '');
-        q = q.trim();
-
-        $('input[name="q"]').val(q);
-
+        this.removeCriterion(field, op, value);
         this.formatQueryField();
 
         if (remove) {
@@ -141,31 +162,40 @@ var Pivot = Stapes.subclass({
         }
     },
 
+    removeCriterion: function(field, op, value) {
+        this.query = $.grep(this.query, function(q) {
+            if(q.field == field && q.operator == op && q.value == value) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+    },
+
     appendCriterion: function() {
-        var q = $('input[name="q"]').val().trim();
         var field = $('input[name="field"]').val();
         var operator = $('select[name="operator"]').val();
         var value = $('input[name="value"]').val();
 
         if (field.length && operator.length && value.length) {
-            if (q.length) {
-                q += '/';
-            }
+            this.query.push({
+                'field':    field,
+                'operator': operator,
+                'value':    value,
+            });
 
-            q += field;
-            q += '/';
-            q += operator;
-            q += ':';
-            q += value;
-
-            $('input[name="q"]').val(q);
-            this.formatQueryField();
             this.updateQuery();
         }
     },
 
     updateQuery: function() {
-        location.href = location.href.replace(/([\?\&])q=[^\&]*/, '$1q=' + $('input[name="q"]').val());
+        var joined = this.joinQuery(this.query);
+
+        if (joined.length) {
+            window.location.href = URI(window.location.href).setSearch('q', joined).normalizeSearch();
+        } else {
+            window.location.href = URI(window.location.href).removeSearch('q').normalizeSearch();
+        }
     },
 });
 

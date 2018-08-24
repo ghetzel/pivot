@@ -94,13 +94,22 @@
 
 .filter-criteria > .criterion {
     user-select: none;
-    margin-right: 0.5em;
+    padding: 0.125em 0.25em;
+}
+
+.filter-criteria > .criterion:after {
+    content: 'AND';
+    margin-left: 0.5em;
+}
+
+.filter-criteria > .criterion:last-child:after {
+    content: '';
 }
 
 .filter-criteria > .criterion > * {
-    background-color: #888888;
+    background-color: dodgerblue;
     border-radius: 4px;
-    padding: 0.125em 0.25em;
+    padding: 0.125em 0.2em;
     color: white;
     cursor: pointer;
 }
@@ -108,18 +117,21 @@
 .filter-criteria > .criterion .criterion-field {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    background-color: dodgerblue;
+}
+
+.filter-criteria > .criterion .criterion-field:after {
+    content: ' /';
 }
 
 .filter-criteria > .criterion .criterion-operator {
-    background-color: #579900;
     border-radius: 0;
-    padding-right: 0.0625em;
+}
+
+.filter-criteria > .criterion .criterion-operator:after {
+    content: ' :';
 }
 
 .filter-criteria > .criterion .criterion-value {
-    background-color: #cf6f00;
-    padding-left: 0.25em;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
