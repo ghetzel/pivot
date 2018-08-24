@@ -10,20 +10,53 @@ bindings:
 ---
 <div class="container-fluid">
     <nav class="nav browser-header">
-        <div class="navbar-brand">{{ qs `id` }}</div class="nav-brand">
+        <div class="navbar-brand w-100">{{ qs `id` }}</div class="nav-brand">
 
-        <form class="ml-auto w-50" action="/">
+        <form class="w-100" action="/">
             <input type="hidden" name="collection" value="{{ qs `id` }}">
-            <div class="input-group">
-                <input class="form-control" type="text" name="q" value="{{ qs `q` }}">
 
-                <div class="input-group-append">
-                    <button
-                        type="submit"
-                        class="btn btn-secondary"
-                    >
-                        <i class="fa fa-fw fa-search"></i>
-                    </button>
+            <div class="form-group row">
+                <div class="col-6">
+                    <div class="input-group">
+                        <input class="form-control" type="text" name="field" placeholder="field">
+
+                        <select class="form-control" name="operator">
+                            <option value="is" selected>exactly</option>
+                            <option value="not">not exactly</option>
+                            <option value="contains">contains</option>
+                            <option value="prefix">starts with</option>
+                            <option value="suffix">ends with</option>
+                            <option value="like">like</option>
+                            <option value="unlike">not like</option>
+                            <option value="lt">less than</option>
+                            <option value="lte">less than or equal to</option>
+                            <option value="gt">greater than</option>
+                            <option value="gte">greater than or equal to</option>
+                        </select>
+
+                        <input class="form-control" type="text" name="value" placeholder="value">
+
+                        <div class="input-group-btn">
+                            <button
+                                type="button"
+                                name="add"
+                                class="btn btn-success"
+                                onclick="pivot.appendCriterion()"
+                            >
+                                <i class="fa fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <input class="form-control" type="hidden" name="q" value="{{ qs `q` }}">
+                    <div class="form-control filter-criteria"></div>
+                    <script>
+                    $(function(){
+                        pivot.formatQueryField();
+                    });
+                    </script>
                 </div>
             </div>
         </form>
