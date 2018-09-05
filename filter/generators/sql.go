@@ -16,6 +16,15 @@ import (
 	"github.com/ghetzel/pivot/filter"
 )
 
+type sqlRangeValue struct {
+	lower interface{}
+	upper interface{}
+}
+
+func (self sqlRangeValue) String() string {
+	return fmt.Sprintf("%v:%v", self.lower, self.upper)
+}
+
 var SqlObjectTypeEncode = func(in interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	err := json.NewEncoder(&buf).Encode(in)
@@ -382,129 +391,141 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 		}
 	}
 
+	// range queries are particular about the number of values
+	if criterion.Operator == `range` {
+		if len(criterion.Values) != 2 {
+			return fmt.Errorf("The 'range' operator must be given exactly two values")
+		}
+
+		if lowerValue, err := self.valueToNativeRepresentation(criterion.Type, criterion.Values[0]); err == nil {
+			if upperValue, err := self.valueToNativeRepresentation(criterion.Type, criterion.Values[1]); err == nil {
+				criterion.Values = []interface{}{
+					sqlRangeValue{
+						lower: lowerValue,
+						upper: upperValue,
+					},
+				}
+			} else {
+				return fmt.Errorf("invalid range upper bound: %v", err)
+			}
+		} else {
+			return fmt.Errorf("invalid range lower bound: %v", err)
+		}
+
+	}
+
 	// for each value being tested in this criterion
 	for _, vI := range criterion.Values {
-		var typedValue interface{}
+		if value, err := stringutil.ToString(vI); err == nil {
+			if typedValue, err := self.valueToNativeRepresentation(criterion.Type, vI); err == nil {
+				if rangepair, ok := vI.(sqlRangeValue); ok {
+					typedValue = rangepair
+					self.values = append(self.values, rangepair.lower)
+					self.values = append(self.values, rangepair.upper)
+				} else {
+					// these operators use a LIKE statement, so we need to add in the right LIKE syntax
+					switch criterion.Operator {
+					case `prefix`:
+						typedValue = fmt.Sprintf("%v", typedValue) + `%%`
+					case `contains`:
+						typedValue = `%%` + fmt.Sprintf("%v", typedValue) + `%%`
+					case `suffix`:
+						typedValue = `%%` + fmt.Sprintf("%v", typedValue)
+					}
 
-		value := fmt.Sprintf("%v", vI)
+					self.values = append(self.values, typedValue)
+				}
 
-		// convert the value string into the appropriate language-native type
-		if vI == nil || strings.ToUpper(value) == `NULL` {
-			value = strings.ToUpper(value)
-			typedValue = nil
+				// get the syntax-appropriate representation of the value, wrapped in normalization functions
+				// if this field is (or should be treated as) a string.
+				switch strings.ToUpper(value) {
+				case `NULL`:
+					value = strings.ToUpper(value)
+				default:
+					value = self.GetPlaceholder(criterion.Field, len(self.criteria))
+				}
 
+				outVal := ``
+
+				if !useInStatement {
+					outFieldName = self.ToFieldName(criterion.Field)
+					outVal = outFieldName
+				}
+
+				switch criterion.Operator {
+				case `is`, ``, `like`:
+					if value == `NULL` {
+						outVal = outVal + ` IS NULL`
+					} else {
+
+						if useInStatement {
+							if criterion.Operator == `like` {
+								outVal = outVal + self.ApplyNormalizer(criterion.Field, fmt.Sprintf("%s", value))
+							} else {
+								outVal = outVal + fmt.Sprintf("%s", value)
+							}
+						} else {
+							if criterion.Operator == `like` {
+								outVal = self.ApplyNormalizer(criterion.Field, outVal)
+								outVal = outVal + fmt.Sprintf(" = %s", self.ApplyNormalizer(criterion.Field, value))
+							} else {
+								outVal = outVal + fmt.Sprintf(" = %s", value)
+							}
+						}
+					}
+				case `not`, `unlike`:
+					if value == `NULL` {
+						outVal = outVal + ` IS NOT NULL`
+					} else {
+						if useInStatement {
+							if criterion.Operator == `unlike` {
+								outVal = outVal + self.ApplyNormalizer(criterion.Field, fmt.Sprintf("%s", value))
+							} else {
+								outVal = outVal + fmt.Sprintf("%s", value)
+							}
+						} else {
+							if criterion.Operator == `unlike` {
+								outVal = self.ApplyNormalizer(criterion.Field, outVal)
+								outVal = outVal + fmt.Sprintf(" <> %s", self.ApplyNormalizer(criterion.Field, value))
+							} else {
+								outVal = outVal + fmt.Sprintf(" <> %s", value)
+							}
+						}
+					}
+				case `contains`, `prefix`, `suffix`:
+					// wrap the field in any string normalizing functions (the same thing
+					// will happen to the values being compared)
+					outVal = self.ApplyNormalizer(criterion.Field, outVal) + fmt.Sprintf(` LIKE %s`, self.ApplyNormalizer(criterion.Field, value))
+
+				case `gt`:
+					outVal = outVal + fmt.Sprintf(" > %s", value)
+				case `gte`:
+					outVal = outVal + fmt.Sprintf(" >= %s", value)
+				case `lt`:
+					outVal = outVal + fmt.Sprintf(" < %s", value)
+				case `lte`:
+					outVal = outVal + fmt.Sprintf(" <= %s", value)
+				case `range`:
+					if _, ok := typedValue.(sqlRangeValue); ok {
+						outVal = outVal + fmt.Sprintf(
+							" BETWEEN %v AND %v",
+							self.ApplyNormalizer(criterion.Field, value),
+							self.ApplyNormalizer(criterion.Field, value),
+						)
+					} else {
+						return fmt.Errorf("Invalid value for 'range' operator")
+					}
+				default:
+					return fmt.Errorf("Unimplemented operator '%s'", criterion.Operator)
+				}
+
+				outValues = append(outValues, outVal)
+			} else {
+				return err
+			}
 		} else {
-			var convertErr error
-
-			// type conversion/normalization for values extracted from the criterion
-			switch criterion.Type {
-			case dal.StringType:
-				typedValue, convertErr = stringutil.ConvertTo(stringutil.String, value)
-			case dal.FloatType:
-				typedValue, convertErr = stringutil.ConvertTo(stringutil.Float, value)
-			case dal.IntType:
-				typedValue, convertErr = stringutil.ConvertTo(stringutil.Integer, value)
-			case dal.BooleanType:
-				typedValue, convertErr = stringutil.ConvertTo(stringutil.Boolean, value)
-			case dal.TimeType:
-				typedValue, convertErr = stringutil.ConvertTo(stringutil.Time, value)
-			case dal.ObjectType:
-				typedValue, convertErr = SqlObjectTypeEncode(value)
-			default:
-				typedValue = stringutil.Autotype(value)
-			}
-
-			if convertErr != nil {
-				return convertErr
-			}
+			return err
 		}
-
-		// these operators use a LIKE statement, so we need to add in the right LIKE syntax
-		switch criterion.Operator {
-		case `prefix`:
-			typedValue = fmt.Sprintf("%v", typedValue) + `%%`
-		case `contains`:
-			typedValue = `%%` + fmt.Sprintf("%v", typedValue) + `%%`
-		case `suffix`:
-			typedValue = `%%` + fmt.Sprintf("%v", typedValue)
-		}
-
-		self.values = append(self.values, typedValue)
-
-		// get the syntax-appropriate representation of the value, wrapped in normalization functions
-		// if this field is (or should be treated as) a string.
-		switch strings.ToUpper(value) {
-		case `NULL`:
-			value = strings.ToUpper(value)
-		default:
-			value = self.GetPlaceholder(criterion.Field, len(self.criteria))
-		}
-
-		outVal := ``
-
-		if !useInStatement {
-			outFieldName = self.ToFieldName(criterion.Field)
-			outVal = outFieldName
-		}
-
-		switch criterion.Operator {
-		case `is`, ``, `like`:
-			if value == `NULL` {
-				outVal = outVal + ` IS NULL`
-			} else {
-
-				if useInStatement {
-					if criterion.Operator == `like` {
-						outVal = outVal + self.ApplyNormalizer(criterion.Field, fmt.Sprintf("%s", value))
-					} else {
-						outVal = outVal + fmt.Sprintf("%s", value)
-					}
-				} else {
-					if criterion.Operator == `like` {
-						outVal = self.ApplyNormalizer(criterion.Field, outVal)
-						outVal = outVal + fmt.Sprintf(" = %s", self.ApplyNormalizer(criterion.Field, value))
-					} else {
-						outVal = outVal + fmt.Sprintf(" = %s", value)
-					}
-				}
-			}
-		case `not`, `unlike`:
-			if value == `NULL` {
-				outVal = outVal + ` IS NOT NULL`
-			} else {
-				if useInStatement {
-					if criterion.Operator == `unlike` {
-						outVal = outVal + self.ApplyNormalizer(criterion.Field, fmt.Sprintf("%s", value))
-					} else {
-						outVal = outVal + fmt.Sprintf("%s", value)
-					}
-				} else {
-					if criterion.Operator == `unlike` {
-						outVal = self.ApplyNormalizer(criterion.Field, outVal)
-						outVal = outVal + fmt.Sprintf(" <> %s", self.ApplyNormalizer(criterion.Field, value))
-					} else {
-						outVal = outVal + fmt.Sprintf(" <> %s", value)
-					}
-				}
-			}
-		case `contains`, `prefix`, `suffix`:
-			// wrap the field in any string normalizing functions (the same thing
-			// will happen to the values being compared)
-			outVal = self.ApplyNormalizer(criterion.Field, outVal) + fmt.Sprintf(` LIKE %s`, self.ApplyNormalizer(criterion.Field, value))
-
-		case `gt`:
-			outVal = outVal + fmt.Sprintf(" > %s", value)
-		case `gte`:
-			outVal = outVal + fmt.Sprintf(" >= %s", value)
-		case `lt`:
-			outVal = outVal + fmt.Sprintf(" < %s", value)
-		case `lte`:
-			outVal = outVal + fmt.Sprintf(" <= %s", value)
-		default:
-			return fmt.Errorf("Unimplemented operator '%s'", criterion.Operator)
-		}
-
-		outValues = append(outValues, outVal)
 	}
 
 	if useInStatement {
@@ -773,4 +794,43 @@ func (self *Sql) populateLimitOffset(f *filter.Filter) {
 			self.Push([]byte(fmt.Sprintf(" OFFSET %d", f.Offset)))
 		}
 	}
+}
+
+func (self *Sql) valueToNativeRepresentation(coerce dal.Type, value interface{}) (interface{}, error) {
+	var typedValue interface{}
+
+	str := fmt.Sprintf("%v", value)
+
+	// convert the value string into the appropriate language-native type
+	if value == nil || strings.ToUpper(str) == `NULL` {
+		str = strings.ToUpper(str)
+		typedValue = nil
+
+	} else {
+		var convertErr error
+
+		// type conversion/normalization for values extracted from the criterion
+		switch coerce {
+		case dal.StringType:
+			typedValue, convertErr = stringutil.ConvertTo(stringutil.String, str)
+		case dal.FloatType:
+			typedValue, convertErr = stringutil.ConvertTo(stringutil.Float, str)
+		case dal.IntType:
+			typedValue, convertErr = stringutil.ConvertTo(stringutil.Integer, str)
+		case dal.BooleanType:
+			typedValue, convertErr = stringutil.ConvertTo(stringutil.Boolean, str)
+		case dal.TimeType:
+			typedValue, convertErr = stringutil.ConvertTo(stringutil.Time, str)
+		case dal.ObjectType:
+			typedValue, convertErr = SqlObjectTypeEncode(str)
+		default:
+			typedValue = stringutil.Autotype(value)
+		}
+
+		if convertErr != nil {
+			return nil, convertErr
+		}
+	}
+
+	return typedValue, nil
 }

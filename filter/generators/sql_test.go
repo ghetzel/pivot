@@ -4,6 +4,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/pivot/filter"
@@ -146,6 +147,17 @@ func TestSqlSelects(t *testing.T) {
 			`age/7/name/ted`: {
 				query:  `SELECT ` + field + ` FROM foo WHERE (age = ?) AND (name = ?)`,
 				values: []interface{}{int64(7), `ted`},
+			},
+			`factor/range:42|55`: {
+				query:  `SELECT ` + field + ` FROM foo WHERE (factor BETWEEN ? AND ?)`,
+				values: []interface{}{int64(42), int64(55)},
+			},
+			`factor/range:2006-01-02T00:00:00Z|2006-01-13T00:00:00Z`: {
+				query: `SELECT ` + field + ` FROM foo WHERE (factor BETWEEN ? AND ?)`,
+				values: []interface{}{
+					time.Date(2006, 1, 2, 0, 0, 0, 0, time.UTC),
+					time.Date(2006, 1, 13, 0, 0, 0, 0, time.UTC),
+				},
 			},
 		}
 
