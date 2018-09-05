@@ -109,7 +109,7 @@ class Collection(object):
     def all(self, **kwargs):
         return self.query('all', **kwargs)
 
-    def query(self, filterstring, limit=None, offset=None, sort=None, fields=None, conjunction=None):
+    def query(self, filterstring, limit=None, offset=None, sort=None, fields=None, conjunction=None, noexpand=None):
         """
         Return a RecordSet of Records matching the given query against this collection.
         """
@@ -135,12 +135,13 @@ class Collection(object):
                 'sort':        ','.join(sort),
                 'fields':      ','.join(fields),
                 'conjunction': conjunction,
+                'noexpand':    noexpand,
             })
         ).json()
 
         return RecordSet(results, client=self.client)
 
-    def get(self, rid, fields=None):
+    def get(self, rid, fields=None, noexpand=None):
         """
         Retrieve a specific record by its ID from this collection.
         """
@@ -155,6 +156,7 @@ class Collection(object):
                 '/api/collections/{}/records/{}'.format(self.name, rid),
                 params=compact({
                     'fields': ','.join(fields),
+                    'noexpand':    noexpand,
                 })
             ).json())
         except exceptions.NotFound:
@@ -194,7 +196,7 @@ class Collection(object):
     def update(self, *records):
         return self.create(*records, update=True)
 
-    def aggregate(self, fields, fns=None, filterstring=None):
+    def aggregate(self, fields, fns=None, filterstring=None, noexpand=None):
         """
         Return a dict of field-aggregates for the given fields, optionally specifying
         additional aggregation functions and a pre-aggregation filter.
@@ -208,52 +210,78 @@ class Collection(object):
             'get',
             '/api/collections/{}/aggregate/{}'.format(self.name, ','.join(fields)),
             params=compact({
-                'fn': ','.join(fns),
-                'q': filterstring,
+                'fn':       ','.join(fns),
+                'q':        filterstring,
+                'noexpand': noexpand,
             })
         ).json()
 
-    def count(self, filterstring=None):
+    def count(self, filterstring=None, noexpand=None):
         """
         Return a count of all records, or just those matching the given filter.
         """
-        return self.aggregate(None, fns=['count'], filterstring=filterstring).get(
+        return self.aggregate(
+            None,
+            fns=['count'],
+            filterstring=filterstring,
+            noexpand=noexpand
+        ).get(
             '_id', {}
         ).get('count', 0)
 
-    def sum(self, field, filterstring=None):
+    def sum(self, field, filterstring=None, noexpand=None):
         """
         Return the sum of all values of the given field, optionally filtered by
         the given filterstring.
         """
-        return float(self.aggregate(field, fns=['sum'], filterstring=filterstring).get(
+        return float(self.aggregate(
+            field,
+            fns=['sum'],
+            filterstring=filterstring,
+            noexpand=noexpand
+        ).get(
             field, {}
         ).get('sum', 0))
 
-    def average(self, field, filterstring=None):
+    def average(self, field, filterstring=None, noexpand=None):
         """
         Return the arithmetic mean of all values of the given field, optionally
         filtered by then given filterstring.
         """
-        return float(self.aggregate(field, fns=['avg'], filterstring=filterstring).get(
+        return float(self.aggregate(
+            field,
+            fns=['avg'],
+            filterstring=filterstring,
+            noexpand=noexpand
+        ).get(
             field, {}
         ).get('avg', 0))
 
-    def minimum(self, field, filterstring=None):
+    def minimum(self, field, filterstring=None, noexpand=None):
         """
         Return the minimum of all values of the given field, optionally
         filtered by then given filterstring.
         """
-        return float(self.aggregate(field, fns=['min'], filterstring=filterstring).get(
+        return float(self.aggregate(
+            field,
+            fns=['min'],
+            filterstring=filterstring,
+            noexpand=noexpand
+        ).get(
             field, {}
         ).get('min', 0))
 
-    def maximum(self, field, filterstring=None):
+    def maximum(self, field, filterstring=None, noexpand=None):
         """
         Return the maximum of all values of the given field, optionally
         filtered by then given filterstring.
         """
-        return float(self.aggregate(field, fns=['max'], filterstring=filterstring).get(
+        return float(self.aggregate(
+            field,
+            fns=['max'],
+            filterstring=filterstring,
+            noexpand=noexpand
+        ).get(
             field, {}
         ).get('max', 0))
 
