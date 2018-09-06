@@ -44,7 +44,7 @@ func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error) {
 		}
 	}
 
-	return FormatAll(formatters), nil
+	return FormatAll(formatters...), nil
 }
 
 func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error) {
@@ -72,7 +72,7 @@ func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error) {
 		return TrimSpace, nil
 
 	case `change-case`:
-		return ChangeCase(sliceutil.Stringify(args)), nil
+		return ChangeCase(sliceutil.Stringify(args)...), nil
 
 	case `replace`:
 		return Replace(sliceutil.Sliceify(args)), nil
@@ -94,11 +94,13 @@ func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error) {
 	}
 }
 
-func FormatAll(formatters []FieldFormatterFunc) FieldFormatterFunc {
+func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc {
 	return func(value interface{}, op FieldOperation) (interface{}, error) {
-		for i, formatter := range formatters {
-			if v, err := formatter(value, op); (i+1) == len(formatters) || err != nil {
-				return v, err
+		for _, formatter := range formatters {
+			if v, err := formatter(value, op); err == nil {
+				value = v
+			} else {
+				return nil, err
 			}
 		}
 
@@ -106,7 +108,7 @@ func FormatAll(formatters []FieldFormatterFunc) FieldFormatterFunc {
 	}
 }
 
-func ChangeCase(cases []string) FieldFormatterFunc {
+func ChangeCase(cases ...string) FieldFormatterFunc {
 	return func(value interface{}, _ FieldOperation) (interface{}, error) {
 		if record, ok := value.(*Record); ok {
 			value = record.ID
