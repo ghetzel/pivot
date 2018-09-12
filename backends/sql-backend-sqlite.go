@@ -19,8 +19,6 @@ import (
 func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	// tell the backend cool details about generating compatible SQL
 	self.queryGenTypeMapping = generators.SqliteTypeMapping
-	self.queryGenTableFormat = "%q"
-	self.queryGenFieldFormat = "%q"
 	self.queryGenNormalizerFormat = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(%v, ':', ' '), '[', ' '), ']', ' '), '*', ' '))"
 	self.listAllTablesQuery = `SELECT name FROM sqlite_master`
 	self.createPrimaryKeyIntFormat = `%s INTEGER NOT NULL PRIMARY KEY ASC`
@@ -48,7 +46,7 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 				if err := options.Scan(&option); err == nil {
 					switch option {
 					case `ENABLE_JSON1`:
-						self.queryGenNestedFieldFormat = "json_extract(%v, '$.%v')"
+						// self.queryGenNestedFieldFormat = "json_extract(%v, '$.%v')"
 						log.Debugf("sqlite: using JSON1 extension")
 					}
 				} else {

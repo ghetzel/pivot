@@ -47,57 +47,101 @@ const (
 )
 
 type SqlTypeMapping struct {
-	StringType         string
-	StringTypeLength   int
-	IntegerType        string
-	FloatType          string
-	FloatTypeLength    int
-	FloatTypePrecision int
-	BooleanType        string
-	BooleanTypeLength  int
-	DateTimeType       string
-	ObjectType         string
-	RawType            string
-	SubtypeFormat      string
-	MultiSubtypeFormat string
+	StringType            string
+	StringTypeLength      int
+	IntegerType           string
+	FloatType             string
+	FloatTypeLength       int
+	FloatTypePrecision    int
+	BooleanType           string
+	BooleanTypeLength     int
+	DateTimeType          string
+	ObjectType            string
+	RawType               string
+	SubtypeFormat         string
+	MultiSubtypeFormat    string
+	PlaceholderFormat     string
+	PlaceholderArgument   string
+	TableNameFormat       string
+	FieldNameFormat       string
+	NestedFieldNameFormat string
+	NestedFieldSeparator  string
+	NestedFieldJoiner     string
 }
 
 var NoTypeMapping = SqlTypeMapping{}
 
+var GenericTypeMapping = SqlTypeMapping{
+	StringType:           `VARCHAR`,
+	StringTypeLength:     255,
+	IntegerType:          `BIGINT`,
+	FloatType:            `DECIMAL`,
+	FloatTypeLength:      10,
+	FloatTypePrecision:   8,
+	BooleanType:          `BOOL`,
+	DateTimeType:         `DATETIME`,
+	ObjectType:           `BLOB`,
+	RawType:              `BLOB`,
+	PlaceholderFormat:    `?`,
+	PlaceholderArgument:  ``,
+	TableNameFormat:      "%s",
+	FieldNameFormat:      "%s",
+	NestedFieldSeparator: `.`,
+	NestedFieldJoiner:    `.`,
+}
+
 var CassandraTypeMapping = SqlTypeMapping{
-	StringType:         `VARCHAR`,
-	IntegerType:        `INT`,
-	FloatType:          `FLOAT`,
-	BooleanType:        `TINYINT`,
-	BooleanTypeLength:  1,
-	DateTimeType:       `DATETIME`,
-	ObjectType:         `MAP`,
-	RawType:            `BLOB`,
-	SubtypeFormat:      `%s<%v>`,
-	MultiSubtypeFormat: `%s<%v,%v>`,
+	StringType:           `VARCHAR`,
+	IntegerType:          `INT`,
+	FloatType:            `FLOAT`,
+	BooleanType:          `TINYINT`,
+	BooleanTypeLength:    1,
+	DateTimeType:         `DATETIME`,
+	ObjectType:           `MAP`,
+	RawType:              `BLOB`,
+	SubtypeFormat:        `%s<%v>`,
+	MultiSubtypeFormat:   `%s<%v,%v>`,
+	PlaceholderFormat:    `TODO`,
+	PlaceholderArgument:  `TODO`,
+	TableNameFormat:      "%s",
+	FieldNameFormat:      "%s",
+	NestedFieldSeparator: `.`,
+	NestedFieldJoiner:    `.`,
 }
 
 var MysqlTypeMapping = SqlTypeMapping{
-	StringType:         `VARCHAR`,
-	StringTypeLength:   255,
-	IntegerType:        `BIGINT`,
-	FloatType:          `DECIMAL`,
-	FloatTypeLength:    10,
-	FloatTypePrecision: 8,
-	BooleanType:        `BOOL`,
-	DateTimeType:       `DATETIME`,
-	ObjectType:         `BLOB`,
-	RawType:            `BLOB`,
+	StringType:           `VARCHAR`,
+	StringTypeLength:     255,
+	IntegerType:          `BIGINT`,
+	FloatType:            `DECIMAL`,
+	FloatTypeLength:      10,
+	FloatTypePrecision:   8,
+	BooleanType:          `BOOL`,
+	DateTimeType:         `DATETIME`,
+	ObjectType:           `BLOB`,
+	RawType:              `BLOB`,
+	PlaceholderFormat:    `?`,
+	PlaceholderArgument:  ``,
+	TableNameFormat:      "`%s`",
+	FieldNameFormat:      "`%s`",
+	NestedFieldSeparator: `.`,
+	NestedFieldJoiner:    `.`,
 }
 
 var PostgresTypeMapping = SqlTypeMapping{
-	StringType:   `TEXT`,
-	IntegerType:  `BIGINT`,
-	FloatType:    `NUMERIC`,
-	BooleanType:  `BOOLEAN`,
-	DateTimeType: `TIMESTAMP`,
-	ObjectType:   `BLOB`,
-	RawType:      `BLOB`,
+	StringType:           `TEXT`,
+	IntegerType:          `BIGINT`,
+	FloatType:            `NUMERIC`,
+	BooleanType:          `BOOLEAN`,
+	DateTimeType:         `TIMESTAMP`,
+	ObjectType:           `BLOB`,
+	RawType:              `BLOB`,
+	PlaceholderFormat:    `$%d`,
+	PlaceholderArgument:  `index1`,
+	TableNameFormat:      "%q",
+	FieldNameFormat:      "%q",
+	NestedFieldSeparator: `.`,
+	NestedFieldJoiner:    `.`,
 }
 
 var PostgresJsonTypeMapping = SqlTypeMapping{
@@ -107,72 +151,80 @@ var PostgresJsonTypeMapping = SqlTypeMapping{
 	BooleanType:  `BOOLEAN`,
 	DateTimeType: `TIMESTAMP`,
 	// ObjectType:   `JSONB`, // TODO: implement the JSONB functionality in PostgreSQL 9.2+
-	ObjectType: `BLOB`,
-	RawType:    `BLOB`,
+	ObjectType:           `BLOB`,
+	RawType:              `BLOB`,
+	PlaceholderFormat:    `$%d`,
+	PlaceholderArgument:  `index1`,
+	TableNameFormat:      "%q",
+	FieldNameFormat:      "%q",
+	NestedFieldSeparator: `.`,
+	NestedFieldJoiner:    `.`,
 }
 
 var SqliteTypeMapping = SqlTypeMapping{
-	StringType:        `TEXT`,
-	IntegerType:       `INTEGER`,
-	FloatType:         `REAL`,
-	BooleanType:       `INTEGER`,
-	BooleanTypeLength: 1,
-	DateTimeType:      `INTEGER`,
-	ObjectType:        `BLOB`,
-	RawType:           `BLOB`,
+	StringType:           `TEXT`,
+	IntegerType:          `INTEGER`,
+	FloatType:            `REAL`,
+	BooleanType:          `INTEGER`,
+	BooleanTypeLength:    1,
+	DateTimeType:         `INTEGER`,
+	ObjectType:           `BLOB`,
+	RawType:              `BLOB`,
+	PlaceholderFormat:    `?`,
+	PlaceholderArgument:  ``,
+	TableNameFormat:      "%q",
+	FieldNameFormat:      "%q",
+	NestedFieldSeparator: `.`,
+	NestedFieldJoiner:    `.`,
 }
 
-var DefaultSqlTypeMapping = MysqlTypeMapping
+var DefaultSqlTypeMapping = GenericTypeMapping
 
 type Sql struct {
 	filter.Generator
-	TableNameFormat       string                 // format string used to wrap table names
-	FieldNameFormat       string                 // format string used to wrap field names
-	NestedFieldNameFormat string                 // map of field name-format strings to wrap fields addressing nested map keys. supercedes FieldNameFormat
-	NestedFieldSeparator  string                 // the string used to denote nesting in a nested field name
-	NestedFieldJoiner     string                 // the string used to re-join all but the first value in a nested field when interpolating into NestedFieldNameFormat
-	FieldWrappers         map[string]string      // map of field name-format strings to wrap specific fields in after FieldNameFormat is applied
-	PlaceholderFormat     string                 // if using placeholders, the format string used to insert them
-	PlaceholderArgument   string                 // if specified, either "index", "index1" or "field"
-	NormalizeFields       []string               // a list of field names that should have the NormalizerFormat applied to them and their corresponding values
-	NormalizerFormat      string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
-	UseInStatement        bool                   // whether multiple values in a criterion should be tested using an IN() statement
-	Distinct              bool                   // whether a DISTINCT clause should be used in SELECT statements
-	Count                 bool                   // whether this query is being used to count rows, which means that SELECT fields are discarded in favor of COUNT(1)
-	TypeMapping           SqlTypeMapping         // provides mapping information between DAL types and native SQL types
-	Type                  SqlStatementType       // what type of SQL statement is being generated
-	InputData             map[string]interface{} // key-value data for statement types that require input data (e.g.: inserts, updates)
-	collection            string
-	fields                []string
-	criteria              []string
-	inputValues           []interface{}
-	values                []interface{}
-	groupBy               []string
-	aggregateBy           []filter.Aggregate
-	conjunction           filter.ConjunctionType
+	// TableNameFormat       string                 // format string used to wrap table names
+	// FieldNameFormat       string                 // format string used to wrap field names
+	// NestedFieldNameFormat string                 // map of field name-format strings to wrap fields addressing nested map keys. supercedes FieldNameFormat
+	// NestedFieldSeparator  string                 // the string used to denote nesting in a nested field name
+	// NestedFieldJoiner     string                 // the string used to re-join all but the first value in a nested field when interpolating into NestedFieldNameFormat
+	FieldWrappers map[string]string // map of field name-format strings to wrap specific fields in after FieldNameFormat is applied
+	// PlaceholderFormat     string                 // if using placeholders, the format string used to insert them
+	// PlaceholderArgument   string                 // if specified, either "index", "index1" or "field"
+	NormalizeFields  []string               // a list of field names that should have the NormalizerFormat applied to them and their corresponding values
+	NormalizerFormat string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
+	UseInStatement   bool                   // whether multiple values in a criterion should be tested using an IN() statement
+	Distinct         bool                   // whether a DISTINCT clause should be used in SELECT statements
+	Count            bool                   // whether this query is being used to count rows, which means that SELECT fields are discarded in favor of COUNT(1)
+	TypeMapping      SqlTypeMapping         // provides mapping information between DAL types and native SQL types
+	Type             SqlStatementType       // what type of SQL statement is being generated
+	InputData        map[string]interface{} // key-value data for statement types that require input data (e.g.: inserts, updates)
+	collection       string
+	fields           []string
+	criteria         []string
+	inputValues      []interface{}
+	values           []interface{}
+	groupBy          []string
+	aggregateBy      []filter.Aggregate
+	conjunction      filter.ConjunctionType
+	placeholderIndex int
 }
 
 func NewSqlGenerator() *Sql {
 	return &Sql{
-		Generator:            filter.Generator{},
-		PlaceholderFormat:    `?`,
-		PlaceholderArgument:  ``,
-		NormalizeFields:      make([]string, 0),
-		NormalizerFormat:     "%s",
-		TableNameFormat:      "%s",
-		FieldNameFormat:      "%s",
-		NestedFieldSeparator: `.`,
-		NestedFieldJoiner:    `.`,
-		FieldWrappers:        make(map[string]string),
-		UseInStatement:       true,
-		TypeMapping:          DefaultSqlTypeMapping,
-		Type:                 SqlSelectStatement,
-		InputData:            make(map[string]interface{}),
+		Generator:        filter.Generator{},
+		NormalizeFields:  make([]string, 0),
+		NormalizerFormat: "%s",
+		FieldWrappers:    make(map[string]string),
+		UseInStatement:   true,
+		TypeMapping:      DefaultSqlTypeMapping,
+		Type:             SqlSelectStatement,
+		InputData:        make(map[string]interface{}),
 	}
 }
 
 func (self *Sql) Initialize(collectionName string) error {
 	self.Reset()
+	self.placeholderIndex = 0
 	self.collection = self.ToTableName(collectionName)
 	self.fields = make([]string, 0)
 	self.criteria = make([]string, 0)
@@ -208,8 +260,8 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 				for _, f := range self.fields {
 					fName := self.ToFieldName(f)
 
-					if strings.Contains(f, self.NestedFieldSeparator) {
-						fName = fmt.Sprintf("%v AS "+self.FieldNameFormat, fName, f)
+					if strings.Contains(f, self.TypeMapping.NestedFieldSeparator) {
+						fName = fmt.Sprintf("%v AS "+self.TypeMapping.FieldNameFormat, fName, f)
 					}
 
 					fieldNames = append(fieldNames, fName)
@@ -224,7 +276,7 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 
 				for _, aggpair := range self.aggregateBy {
 					fName := self.ToAggregatedFieldName(aggpair.Aggregation, aggpair.Field)
-					fName = fmt.Sprintf("%v AS "+self.FieldNameFormat, fName, aggpair.Field)
+					fName = fmt.Sprintf("%v AS "+self.TypeMapping.FieldNameFormat, fName, aggpair.Field)
 					fieldNames = append(fieldNames, fName)
 				}
 
@@ -266,9 +318,9 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 
 		values := make([]string, 0)
 
-		for i, field := range maputil.StringKeys(self.InputData) {
+		for _, field := range maputil.StringKeys(self.InputData) {
 			v, _ := self.InputData[field]
-			values = append(values, self.GetPlaceholder(field, i))
+			values = append(values, self.GetPlaceholder(field))
 
 			if vv, err := self.PrepareInputValue(field, v); err == nil {
 				self.inputValues = append(self.inputValues, vv)
@@ -291,7 +343,6 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 
 		updatePairs := make([]string, 0)
 
-		var i int
 		fieldNames := maputil.StringKeys(self.InputData)
 		sort.Strings(fieldNames)
 
@@ -306,9 +357,7 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 			}
 
 			field := self.ToFieldName(field)
-			updatePairs = append(updatePairs, fmt.Sprintf("%s = %s", field, self.GetPlaceholder(field, i)))
-
-			i += 1
+			updatePairs = append(updatePairs, fmt.Sprintf("%s = %s", field, self.GetPlaceholder(field)))
 		}
 
 		self.Push([]byte(strings.Join(updatePairs, `, `)))
@@ -442,7 +491,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 				case `NULL`:
 					value = strings.ToUpper(value)
 				default:
-					value = self.GetPlaceholder(criterion.Field, len(self.criteria))
+					value = self.GetPlaceholder(criterion.Field)
 				}
 
 				outVal := ``
@@ -546,21 +595,21 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 }
 
 func (self *Sql) ToTableName(table string) string {
-	return fmt.Sprintf(self.TableNameFormat, table)
+	return fmt.Sprintf(self.TypeMapping.TableNameFormat, table)
 }
 
 func (self *Sql) ToFieldName(field string) string {
 	var formattedField string
 
 	if field != `` {
-		if nestFmt := self.NestedFieldNameFormat; nestFmt != `` {
-			if parts := strings.Split(field, self.NestedFieldSeparator); len(parts) > 1 {
-				formattedField = fmt.Sprintf(nestFmt, parts[0], strings.Join(parts[1:], self.NestedFieldJoiner))
+		if nestFmt := self.TypeMapping.NestedFieldNameFormat; nestFmt != `` {
+			if parts := strings.Split(field, self.TypeMapping.NestedFieldSeparator); len(parts) > 1 {
+				formattedField = fmt.Sprintf(nestFmt, parts[0], strings.Join(parts[1:], self.TypeMapping.NestedFieldJoiner))
 			}
 		}
 
 		if formattedField == `` {
-			formattedField = fmt.Sprintf(self.FieldNameFormat, field)
+			formattedField = fmt.Sprintf(self.TypeMapping.FieldNameFormat, field)
 		}
 	}
 
@@ -700,19 +749,24 @@ func (self *Sql) SplitTypeLength(in string) (string, int, int) {
 	return parts[0], length, precision
 }
 
-func (self *Sql) GetPlaceholder(fieldName string, fieldIndex int) string {
+func (self *Sql) GetPlaceholder(fieldName string) string {
 	// support various styles of placeholder
 	// e.g.: ?, $0, $1, :fieldname
 	//
-	switch self.PlaceholderArgument {
+
+	defer func() {
+		self.placeholderIndex += 1
+	}()
+
+	switch self.TypeMapping.PlaceholderArgument {
 	case `index`:
-		return fmt.Sprintf(self.PlaceholderFormat, fieldIndex)
+		return fmt.Sprintf(self.TypeMapping.PlaceholderFormat, self.placeholderIndex)
 	case `index1`:
-		return fmt.Sprintf(self.PlaceholderFormat, fieldIndex+1)
+		return fmt.Sprintf(self.TypeMapping.PlaceholderFormat, self.placeholderIndex+1)
 	case `field`:
-		return fmt.Sprintf(self.PlaceholderFormat, fieldName)
+		return fmt.Sprintf(self.TypeMapping.PlaceholderFormat, fieldName)
 	default:
-		return self.PlaceholderFormat
+		return self.TypeMapping.PlaceholderFormat
 	}
 }
 

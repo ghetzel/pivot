@@ -74,6 +74,10 @@
   branch = "v2"
   name = "gopkg.in/mgo.v2"
 
+[[constraint]]
+  name = "github.com/gomodule/redigo"
+  branch = "master"
+
 [prune]
   go-tests = true
   unused-packages = true

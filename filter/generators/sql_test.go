@@ -12,9 +12,10 @@ import (
 )
 
 type qv struct {
-	query  string
-	values []interface{}
-	input  map[string]interface{}
+	query   string
+	values  []interface{}
+	input   map[string]interface{}
+	mapping SqlTypeMapping
 }
 
 func TestSqlSplitTypeLength(t *testing.T) {
@@ -65,92 +66,114 @@ func TestSqlSelects(t *testing.T) {
 	for _, field := range fieldsets {
 		tests := map[string]qv{
 			`all`: {
-				query:  `SELECT ` + field + ` FROM foo`,
-				values: []interface{}{},
+				query:   `SELECT ` + field + ` FROM foo`,
+				values:  []interface{}{},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`id/1`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (id = ?)`,
-				values: []interface{}{int64(1)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (id = ?)`,
+				values:  []interface{}{int64(1)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`id/not:1`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (id <> ?)`,
-				values: []interface{}{int64(1)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (id <> ?)`,
+				values:  []interface{}{int64(1)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`name/Bob Johnson`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (name = ?)`,
-				values: []interface{}{`Bob Johnson`},
+				query:   `SELECT ` + field + ` FROM foo WHERE (name = ?)`,
+				values:  []interface{}{`Bob Johnson`},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`age/21`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (age = ?)`,
-				values: []interface{}{int64(21)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (age = ?)`,
+				values:  []interface{}{int64(21)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`enabled/true`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (enabled = ?)`,
-				values: []interface{}{true},
+				query:   `SELECT ` + field + ` FROM foo WHERE (enabled = ?)`,
+				values:  []interface{}{true},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`enabled/false`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (enabled = ?)`,
-				values: []interface{}{false},
+				query:   `SELECT ` + field + ` FROM foo WHERE (enabled = ?)`,
+				values:  []interface{}{false},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`enabled/null`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (enabled IS NULL)`,
-				values: []interface{}{nil},
+				query:   `SELECT ` + field + ` FROM foo WHERE (enabled IS NULL)`,
+				values:  []interface{}{nil},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`enabled/not:null`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (enabled IS NOT NULL)`,
-				values: []interface{}{nil},
+				query:   `SELECT ` + field + ` FROM foo WHERE (enabled IS NOT NULL)`,
+				values:  []interface{}{nil},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`age/lt:21`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (age < ?)`,
-				values: []interface{}{int64(21)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (age < ?)`,
+				values:  []interface{}{int64(21)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`age/lte:21`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (age <= ?)`,
-				values: []interface{}{int64(21)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (age <= ?)`,
+				values:  []interface{}{int64(21)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`age/gt:21`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (age > ?)`,
-				values: []interface{}{int64(21)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (age > ?)`,
+				values:  []interface{}{int64(21)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`age/gte:21`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (age >= ?)`,
-				values: []interface{}{int64(21)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (age >= ?)`,
+				values:  []interface{}{int64(21)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`factor/lt:3.141597`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (factor < ?)`,
-				values: []interface{}{float64(3.141597)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (factor < ?)`,
+				values:  []interface{}{float64(3.141597)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`factor/lte:3.141597`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (factor <= ?)`,
-				values: []interface{}{float64(3.141597)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (factor <= ?)`,
+				values:  []interface{}{float64(3.141597)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`factor/gt:3.141597`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (factor > ?)`,
-				values: []interface{}{float64(3.141597)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (factor > ?)`,
+				values:  []interface{}{float64(3.141597)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`factor/gte:3.141597`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (factor >= ?)`,
-				values: []interface{}{float64(3.141597)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (factor >= ?)`,
+				values:  []interface{}{float64(3.141597)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`name/contains:ob`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (name LIKE ?)`,
-				values: []interface{}{`%%ob%%`},
+				query:   `SELECT ` + field + ` FROM foo WHERE (name LIKE ?)`,
+				values:  []interface{}{`%%ob%%`},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`name/prefix:ob`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (name LIKE ?)`,
-				values: []interface{}{`ob%%`},
+				query:   `SELECT ` + field + ` FROM foo WHERE (name LIKE ?)`,
+				values:  []interface{}{`ob%%`},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`name/suffix:ob`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (name LIKE ?)`,
-				values: []interface{}{`%%ob`},
+				query:   `SELECT ` + field + ` FROM foo WHERE (name LIKE ?)`,
+				values:  []interface{}{`%%ob`},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`age/7/name/ted`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (age = ?) AND (name = ?)`,
-				values: []interface{}{int64(7), `ted`},
+				query:   `SELECT ` + field + ` FROM foo WHERE (age = ?) AND (name = ?)`,
+				values:  []interface{}{int64(7), `ted`},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`factor/range:42|55`: {
-				query:  `SELECT ` + field + ` FROM foo WHERE (factor BETWEEN ? AND ?)`,
-				values: []interface{}{int64(42), int64(55)},
+				query:   `SELECT ` + field + ` FROM foo WHERE (factor BETWEEN ? AND ?)`,
+				values:  []interface{}{int64(42), int64(55)},
+				mapping: DefaultSqlTypeMapping,
 			},
 			`factor/range:2006-01-02T00:00:00Z|2006-01-13T00:00:00Z`: {
 				query: `SELECT ` + field + ` FROM foo WHERE (factor BETWEEN ? AND ?)`,
@@ -158,6 +181,12 @@ func TestSqlSelects(t *testing.T) {
 					time.Date(2006, 1, 2, 0, 0, 0, 0, time.UTC),
 					time.Date(2006, 1, 13, 0, 0, 0, 0, time.UTC),
 				},
+				mapping: DefaultSqlTypeMapping,
+			},
+			`name/bob|alice|mary`: {
+				query:   `SELECT ` + field + ` FROM foo WHERE (name IN(?, ?, ?))`,
+				values:  []interface{}{`bob`, `alice`, `mary`},
+				mapping: DefaultSqlTypeMapping,
 			},
 		}
 
@@ -169,6 +198,7 @@ func TestSqlSelects(t *testing.T) {
 			}
 
 			gen := NewSqlGenerator()
+			gen.TypeMapping = expected.mapping
 			actual, err := filter.Render(gen, `foo`, f)
 			assert.Nil(err)
 			assert.Equal(expected.query, string(actual[:]))
@@ -182,48 +212,55 @@ func TestSqlInserts(t *testing.T) {
 
 	tests := []qv{
 		{
-			`INSERT INTO foo (id) VALUES (?)`,
-			nil,
-			map[string]interface{}{
+			query:  `INSERT INTO foo (id) VALUES (?)`,
+			values: nil,
+			input: map[string]interface{}{
 				`id`: 1,
 			},
+			mapping: DefaultSqlTypeMapping,
 		}, {
-			`INSERT INTO foo (name) VALUES (?)`,
-			nil,
-			map[string]interface{}{
+			query:  `INSERT INTO foo (name) VALUES (?)`,
+			values: nil,
+			input: map[string]interface{}{
 				`name`: `Bob Johnson`,
 			},
+			mapping: DefaultSqlTypeMapping,
 		}, {
-			`INSERT INTO foo (age) VALUES (?)`,
-			nil,
-			map[string]interface{}{
+			query:  `INSERT INTO foo (age) VALUES (?)`,
+			values: nil,
+			input: map[string]interface{}{
 				`age`: 21,
 			},
+			mapping: DefaultSqlTypeMapping,
 		}, {
-			`INSERT INTO foo (enabled) VALUES (?)`,
-			nil,
-			map[string]interface{}{
+			query:  `INSERT INTO foo (enabled) VALUES (?)`,
+			values: nil,
+			input: map[string]interface{}{
 				`enabled`: true,
 			},
+			mapping: DefaultSqlTypeMapping,
 		}, {
-			`INSERT INTO foo (enabled) VALUES (?)`,
-			nil,
-			map[string]interface{}{
+			query:  `INSERT INTO foo (enabled) VALUES (?)`,
+			values: nil,
+			input: map[string]interface{}{
 				`enabled`: false,
 			},
+			mapping: DefaultSqlTypeMapping,
 		}, {
-			`INSERT INTO foo (enabled) VALUES (?)`,
-			nil,
-			map[string]interface{}{
+			query:  `INSERT INTO foo (enabled) VALUES (?)`,
+			values: nil,
+			input: map[string]interface{}{
 				`enabled`: nil,
 			},
+			mapping: DefaultSqlTypeMapping,
 		}, {
-			`INSERT INTO foo (age, name) VALUES (?, ?)`,
-			nil,
-			map[string]interface{}{
+			query:  `INSERT INTO foo (age, name) VALUES (?, ?)`,
+			values: nil,
+			input: map[string]interface{}{
 				`name`: `ted`,
 				`age`:  7,
 			},
+			mapping: DefaultSqlTypeMapping,
 		},
 	}
 
@@ -470,17 +507,16 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 
 	// test PostgreSQL compatible
 	gen = NewSqlGenerator()
-	gen.PlaceholderFormat = `$%d`
-	gen.PlaceholderArgument = `index1`
+	gen.TypeMapping = PostgresTypeMapping
 	actual, err = filter.Render(gen, `foo`, f)
 	assert.Nil(err)
-	assert.Equal(`SELECT * FROM foo WHERE (age = $1) AND (name = $2) AND (enabled = $3)`, string(actual[:]))
+	assert.Equal(`SELECT * FROM "foo" WHERE ("age" = $1) AND ("name" = $2) AND ("enabled" = $3)`, string(actual[:]))
 	assert.Equal([]interface{}{int64(7), `ted`, true}, gen.GetValues())
 
 	// test Oracle compatible
 	gen = NewSqlGenerator()
-	gen.PlaceholderFormat = `:%s`
-	gen.PlaceholderArgument = `field`
+	gen.TypeMapping.PlaceholderFormat = `:%s`
+	gen.TypeMapping.PlaceholderArgument = `field`
 	actual, err = filter.Render(gen, `foo`, f)
 	assert.Nil(err)
 	assert.Equal(`SELECT * FROM foo WHERE (age = :age) AND (name = :name) AND (enabled = :enabled)`, string(actual[:]))
@@ -488,8 +524,8 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 
 	// test zero-indexed bracketed wacky fun placeholders
 	gen = NewSqlGenerator()
-	gen.PlaceholderFormat = `<arg%d>`
-	gen.PlaceholderArgument = `index`
+	gen.TypeMapping.PlaceholderFormat = `<arg%d>`
+	gen.TypeMapping.PlaceholderArgument = `index`
 	actual, err = filter.Render(gen, `foo`, f)
 	assert.Nil(err)
 	assert.Equal(`SELECT * FROM foo WHERE (age = <arg0>) AND (name = <arg1>) AND (enabled = <arg2>)`, string(actual[:]))
@@ -518,7 +554,7 @@ func TestSqlTypeMapping(t *testing.T) {
 
 	// test null type mapping
 	gen = NewSqlGenerator()
-	gen.TypeMapping = NoTypeMapping
+	gen.TypeMapping = DefaultSqlTypeMapping
 	actual, err = filter.Render(gen, `foo`, f)
 	assert.Nil(err)
 	assert.Equal(
@@ -537,12 +573,12 @@ func TestSqlTypeMapping(t *testing.T) {
 	actual, err = filter.Render(gen, `foo`, f)
 	assert.Nil(err)
 	assert.Equal(
-		`SELECT * FROM foo `+
-			`WHERE (age = ?) `+
-			`AND (name = ?) `+
-			`AND (enabled = ?) `+
-			`AND (rating = ?) `+
-			`AND (created_at < ?)`,
+		`SELECT * FROM "foo" `+
+			`WHERE ("age" = $1) `+
+			`AND ("name" = $2) `+
+			`AND ("enabled" = $3) `+
+			`AND ("rating" = $4) `+
+			`AND ("created_at" < $5)`,
 		string(actual[:]),
 	)
 
@@ -552,29 +588,29 @@ func TestSqlTypeMapping(t *testing.T) {
 	actual, err = filter.Render(gen, `foo`, f)
 	assert.Nil(err)
 	assert.Equal(
-		`SELECT * FROM foo `+
-			`WHERE (age = ?) `+
-			`AND (name = ?) `+
-			`AND (enabled = ?) `+
-			`AND (rating = ?) `+
-			`AND (created_at < ?)`,
+		`SELECT * FROM "foo" `+
+			`WHERE ("age" = ?) `+
+			`AND ("name" = ?) `+
+			`AND ("enabled" = ?) `+
+			`AND ("rating" = ?) `+
+			`AND ("created_at" < ?)`,
 		string(actual[:]),
 	)
 
 	// test Cassandra/CQL type mapping
-	gen = NewSqlGenerator()
-	gen.TypeMapping = CassandraTypeMapping
-	actual, err = filter.Render(gen, `foo`, f)
-	assert.Nil(err)
-	assert.Equal(
-		`SELECT * FROM foo `+
-			`WHERE (age = ?) `+
-			`AND (name = ?) `+
-			`AND (enabled = ?) `+
-			`AND (rating = ?) `+
-			`AND (created_at < ?)`,
-		string(actual[:]),
-	)
+	// gen = NewSqlGenerator()
+	// gen.TypeMapping = CassandraTypeMapping
+	// actual, err = filter.Render(gen, `foo`, f)
+	// assert.Nil(err)
+	// assert.Equal(
+	// 	`SELECT * FROM foo `+
+	// 		`WHERE (age = ?) `+
+	// 		`AND (name = ?) `+
+	// 		`AND (enabled = ?) `+
+	// 		`AND (rating = ?) `+
+	// 		`AND (created_at < ?)`,
+	// 	string(actual[:]),
+	// )
 }
 
 func TestSqlFieldQuoting(t *testing.T) {
@@ -592,7 +628,7 @@ func TestSqlFieldQuoting(t *testing.T) {
 		gen := NewSqlGenerator()
 
 		if format != `` {
-			gen.FieldNameFormat = format
+			gen.TypeMapping.FieldNameFormat = format
 		}
 
 		actual, err := filter.Render(gen, `foo`, f)
@@ -609,7 +645,7 @@ func TestSqlFieldQuoting(t *testing.T) {
 		gen = NewSqlGenerator()
 
 		if format != `` {
-			gen.FieldNameFormat = format
+			gen.TypeMapping.FieldNameFormat = format
 		}
 
 		gen.Type = SqlInsertStatement
@@ -632,7 +668,7 @@ func TestSqlFieldQuoting(t *testing.T) {
 		gen = NewSqlGenerator()
 
 		if format != `` {
-			gen.FieldNameFormat = format
+			gen.TypeMapping.FieldNameFormat = format
 		}
 
 		gen.Type = SqlUpdateStatement

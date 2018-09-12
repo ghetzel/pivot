@@ -16,10 +16,6 @@ import (
 func (self *SqlBackend) initializePostgres() (string, string, error) {
 	// tell the backend cool details about generating compatible SQL
 	self.queryGenTypeMapping = generators.PostgresTypeMapping
-	self.queryGenPlaceholderFormat = `$%d`
-	self.queryGenPlaceholderArgument = `index1`
-	self.queryGenTableFormat = "%q"
-	self.queryGenFieldFormat = "%q"
 	self.queryGenNormalizerFormat = "regexp_replace(lower(%v), '[\\:\\[\\]\\*]+', ' ')"
 	self.listAllTablesQuery = `SELECT table_name from information_schema.TABLES WHERE table_catalog = CURRENT_CATALOG AND table_schema = 'public'`
 	self.createPrimaryKeyIntFormat = `%s BIGSERIAL PRIMARY KEY`
@@ -85,7 +81,7 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 
 			// make this instance of the query generator use the table name as given because
 			// we need to reference another database (information_schema)
-			queryGen.TableNameFormat = "%s"
+			queryGen.TypeMapping.TableNameFormat = "%s"
 
 			if stmt, err := filter.Render(queryGen, `information_schema.COLUMNS`, f); err == nil {
 				querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())

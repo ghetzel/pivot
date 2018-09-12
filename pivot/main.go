@@ -233,6 +233,22 @@ func main() {
 				}
 			},
 		},
+
+		// {
+		// 	Name:      `filter`,
+		// 	Usage:     `Converts a given filter into the specified nativ query`,
+		// 	ArgsUsage: `FILTER BACKEND`,
+		// 	Action: func(c *cli.Context) {
+		// 		flt := c.Args().Get(1)
+		// 		cs := c.Args().Get(2)
+
+		// 		if f, err := filter.Parse(flt); err == nil {
+		// 			gen := NewSqlGenerator()
+		// 		}else{
+		// 			log.Fatalf("invalid filter: %v", err)
+		// 		}
+		// 	},
+		// }
 	}
 
 	app.Run(os.Args)

@@ -47,35 +47,29 @@ type SqlBackend struct {
 	Backend
 	Indexer
 	Aggregator
-	conn                        *dal.ConnectionString
-	db                          *sql.DB
-	indexer                     Indexer
-	aggregator                  map[string]Aggregator
-	queryGenTypeMapping         generators.SqlTypeMapping
-	queryGenPlaceholderArgument string
-	queryGenPlaceholderFormat   string
-	queryGenTableFormat         string
-	queryGenFieldFormat         string
-	queryGenNestedFieldFormat   string
-	queryGenNormalizerFormat    string
-	listAllTablesQuery          string
-	createPrimaryKeyIntFormat   string
-	createPrimaryKeyStrFormat   string
-	showTableDetailQuery        string
-	refreshCollectionFunc       sqlTableDetailsFunc
-	dropTableQuery              string
-	registeredCollections       sync.Map
-	knownCollections            map[string]bool
+	conn                      *dal.ConnectionString
+	db                        *sql.DB
+	indexer                   Indexer
+	aggregator                map[string]Aggregator
+	queryGenTypeMapping       generators.SqlTypeMapping
+	queryGenNormalizerFormat  string
+	listAllTablesQuery        string
+	createPrimaryKeyIntFormat string
+	createPrimaryKeyStrFormat string
+	showTableDetailQuery      string
+	refreshCollectionFunc     sqlTableDetailsFunc
+	dropTableQuery            string
+	registeredCollections     sync.Map
+	knownCollections          map[string]bool
 }
 
 func NewSqlBackend(connection dal.ConnectionString) Backend {
 	backend := &SqlBackend{
-		conn:                      &connection,
-		queryGenTypeMapping:       generators.DefaultSqlTypeMapping,
-		queryGenPlaceholderFormat: `?`,
-		dropTableQuery:            `DROP TABLE %s`,
-		aggregator:                make(map[string]Aggregator),
-		knownCollections:          make(map[string]bool),
+		conn:                &connection,
+		queryGenTypeMapping: generators.DefaultSqlTypeMapping,
+		dropTableQuery:      `DROP TABLE %s`,
+		aggregator:          make(map[string]Aggregator),
+		knownCollections:    make(map[string]bool),
 	}
 
 	backend.indexer = backend
@@ -660,26 +654,6 @@ func (self *SqlBackend) makeQueryGen(collection *dal.Collection) *generators.Sql
 	queryGen := generators.NewSqlGenerator()
 	queryGen.TypeMapping = self.queryGenTypeMapping
 
-	if v := self.queryGenPlaceholderFormat; v != `` {
-		queryGen.PlaceholderFormat = v
-	}
-
-	if v := self.queryGenPlaceholderArgument; v != `` {
-		queryGen.PlaceholderArgument = v
-	}
-
-	if v := self.queryGenTableFormat; v != `` {
-		queryGen.TableNameFormat = v
-	}
-
-	if v := self.queryGenFieldFormat; v != `` {
-		queryGen.FieldNameFormat = v
-	}
-
-	if v := self.queryGenNestedFieldFormat; v != `` {
-		queryGen.NestedFieldNameFormat = v
-	}
-
 	if collection != nil {
 		// perform string normalization on non-pk, non-key string fields
 		for _, field := range collection.Fields {
@@ -714,7 +688,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 	// put a zero-value instance of each column's type in the result array, which will
 	// serve as a hint to the sql.Scan function as to how to convert the data
 	for i, column := range columns {
-		baseColumn := strings.Split(column, queryGen.NestedFieldSeparator)[0]
+		baseColumn := strings.Split(column, queryGen.TypeMapping.NestedFieldSeparator)[0]
 
 		if field, ok := collection.GetField(baseColumn); ok {
 			if field.DefaultValue != nil {
@@ -777,7 +751,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 
 	ColumnLoop:
 		for i, column := range columns {
-			nestedPath := strings.Split(column, queryGen.NestedFieldSeparator)
+			nestedPath := strings.Split(column, queryGen.TypeMapping.NestedFieldSeparator)
 			baseColumn := nestedPath[0]
 
 			if field, ok := collection.GetField(baseColumn); ok {
@@ -878,7 +852,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 							shouldSkip := true
 
 							for _, wantedField := range wantedFields {
-								parts := strings.Split(wantedField, queryGen.NestedFieldSeparator)
+								parts := strings.Split(wantedField, queryGen.TypeMapping.NestedFieldSeparator)
 
 								if parts[0] == baseColumn {
 									shouldSkip = false
