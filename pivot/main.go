@@ -8,9 +8,12 @@ import (
 
 	"github.com/ghetzel/cli"
 	"github.com/ghetzel/go-stockutil/log"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/filter"
+	"github.com/ghetzel/pivot/filter/generators"
 	"github.com/ghetzel/pivot/mapper"
 )
 
@@ -19,7 +22,6 @@ func main() {
 	app.Name = pivot.ApplicationName
 	app.Usage = pivot.ApplicationSummary
 	app.Version = pivot.ApplicationVersion
-	app.EnableBashCompletion = false
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -232,23 +234,50 @@ func main() {
 					}
 				}
 			},
+		}, {
+			Name:      `filter`,
+			Usage:     `Converts a given filter into the specified native query`,
+			ArgsUsage: `COLLECTION GENERATOR[:SUBTYPE] FILTER`,
+			Action: func(c *cli.Context) {
+				col := c.Args().Get(0)
+				gentype, sub := stringutil.SplitPair(c.Args().Get(1), `:`)
+				flt := c.Args().Get(2)
+
+				if f, err := filter.Parse(flt); err == nil {
+					var gen filter.IGenerator
+
+					switch gentype {
+					case `sql`:
+						g := generators.NewSqlGenerator()
+
+						if mapping, err := generators.GetSqlTypeMapping(sub); err == nil {
+							g.TypeMapping = mapping
+						} else {
+							log.Fatal(err)
+						}
+
+						gen = g
+
+					case `mongodb`:
+						gen = generators.NewMongoDBGenerator()
+
+					case `elasticsearch`, `es`:
+						gen = generators.NewElasticsearchGenerator()
+
+					default:
+						log.Fatalf("Unrecognized query generator %q", gentype)
+					}
+
+					if data, err := filter.Render(gen, col, f); err == nil {
+						fmt.Println(string(data))
+					} else {
+						log.Fatalf("error generating query: %v", err)
+					}
+				} else {
+					log.Fatalf("invalid filter: %v", err)
+				}
+			},
 		},
-
-		// {
-		// 	Name:      `filter`,
-		// 	Usage:     `Converts a given filter into the specified nativ query`,
-		// 	ArgsUsage: `FILTER BACKEND`,
-		// 	Action: func(c *cli.Context) {
-		// 		flt := c.Args().Get(1)
-		// 		cs := c.Args().Get(2)
-
-		// 		if f, err := filter.Parse(flt); err == nil {
-		// 			gen := NewSqlGenerator()
-		// 		}else{
-		// 			log.Fatalf("invalid filter: %v", err)
-		// 		}
-		// 	},
-		// }
 	}
 
 	app.Run(os.Args)

@@ -180,6 +180,25 @@ var SqliteTypeMapping = SqlTypeMapping{
 
 var DefaultSqlTypeMapping = GenericTypeMapping
 
+func GetSqlTypeMapping(name string) (SqlTypeMapping, error) {
+	switch name {
+	case `postgresql`, `pgsql`:
+		return PostgresTypeMapping, nil
+	case `postgresql-json`, `pgsql-json`:
+		return PostgresJsonTypeMapping, nil
+	case `sqlite`:
+		return SqliteTypeMapping, nil
+	case `mysql`:
+		return MysqlTypeMapping, nil
+	case `cassandra`:
+		return CassandraTypeMapping, nil
+	case ``:
+		return DefaultSqlTypeMapping, nil
+	default:
+		return SqlTypeMapping{}, fmt.Errorf("unrecognized SQL mapping type %q", name)
+	}
+}
+
 type Sql struct {
 	filter.Generator
 	// TableNameFormat       string                 // format string used to wrap table names
@@ -240,6 +259,10 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 	if f != nil {
 		self.conjunction = f.Conjunction
 	}
+
+	defer func() {
+		self.placeholderIndex = 0
+	}()
 
 	switch self.Type {
 	case SqlSelectStatement:
