@@ -7,6 +7,7 @@ import (
 
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
@@ -20,6 +21,8 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 	self.listAllTablesQuery = `SELECT table_name from information_schema.TABLES WHERE table_catalog = CURRENT_CATALOG AND table_schema = 'public'`
 	self.createPrimaryKeyIntFormat = `%s BIGSERIAL PRIMARY KEY`
 	self.createPrimaryKeyStrFormat = `%s VARCHAR(255) PRIMARY KEY`
+	self.countEstimateQuery = "SELECT reltuples::bigint AS estimate FROM pg_class WHERE oid = to_regclass('%s')"
+	self.countExactQuery = "SELECT COUNT(*) AS exact FROM (SELECT 1 FROM %s LIMIT %d) t"
 
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
@@ -203,6 +206,9 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 		switch k {
 		case `autoregister`:
 			self.conn.Options[k] = strings.Join(vv, `,`)
+			opts.Del(k)
+		case `autocount`:
+			self.conn.Options[k] = typeutil.V(vv).Bool()
 			opts.Del(k)
 		}
 	}

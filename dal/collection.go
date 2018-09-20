@@ -41,6 +41,8 @@ type Collection struct {
 	EmbeddedCollections         []Relationship          `json:"embed,omitempty"`
 	ExportedFields              []string                `json:"export,omitempty"`
 	AllowMissingEmbeddedRecords bool                    `json:"allow_missing_embedded_records"`
+	TotalRecords                int64                   `json:"total_records,omitempty"`
+	TotalRecordsExact           bool                    `json:"total_records_exact,omitempty"`
 	IdentityFieldFormatter      FieldFormatterFunc      `json:"-"`
 	IdentityFieldValidator      FieldValidatorFunc      `json:"-"`
 	PreSaveValidator            CollectionValidatorFunc `json:"-"`

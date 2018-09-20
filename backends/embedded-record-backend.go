@@ -31,6 +31,10 @@ func (self *EmbeddedRecordBackend) Inflate(collection *dal.Collection, record *d
 	}
 }
 
+func (self *EmbeddedRecordBackend) String() string {
+	return self.backend.String()
+}
+
 func (self *EmbeddedRecordBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
 		if record, err := self.backend.Retrieve(name, id, fields...); err == nil {

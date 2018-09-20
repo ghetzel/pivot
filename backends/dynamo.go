@@ -47,6 +47,10 @@ func NewDynamoBackend(connection dal.ConnectionString) Backend {
 	}
 }
 
+func (self *DynamoBackend) String() string {
+	return `dynamodb`
+}
+
 func (self *DynamoBackend) GetConnectionString() *dal.ConnectionString {
 	return &self.cs
 }
@@ -78,7 +82,7 @@ func (self *DynamoBackend) Initialize() error {
 	}
 
 	if _, err := cred.Get(); err != nil {
-		log.Debugf("%T: failed to retrieve credentials: %v", self, err)
+		querylog.Debugf("[%v] failed to retrieve credentials: %v", self, err)
 	}
 
 	var logLevel aws.LogLevelType

@@ -5,7 +5,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
@@ -35,6 +34,10 @@ func NewMongoBackend(connection dal.ConnectionString) Backend {
 
 	backend.indexer = backend
 	return backend
+}
+
+func (self *MongoBackend) String() string {
+	return `mongodb`
 }
 
 func (self *MongoBackend) Initialize() error {
@@ -96,7 +99,7 @@ func (self *MongoBackend) RegisterCollection(collection *dal.Collection) {
 	if collection != nil {
 		collection.IdentityField = MongoIdentityField
 		self.registeredCollections.Store(collection.Name, collection)
-		log.Debugf("[%T] register collection %v", self, collection.Name)
+		querylog.Debugf("[%v] register collection %v", self, collection.Name)
 	}
 }
 

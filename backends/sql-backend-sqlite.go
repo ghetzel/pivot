@@ -3,6 +3,7 @@ package backends
 import (
 	"database/sql"
 	"fmt"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -139,7 +140,8 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 		}
 	}
 
-	dataset := self.conn.Dataset()
+	dataset := path.Join(self.conn.Dataset(), self.conn.Host())
+
 	var dsn string
 
 	switch dataset {
@@ -158,10 +160,6 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 			} else {
 				return ``, ``, err
 			}
-		}
-
-		if !strings.HasPrefix(dataset, `/`) {
-			dataset = `/` + dataset
 		}
 
 		dsn = dataset

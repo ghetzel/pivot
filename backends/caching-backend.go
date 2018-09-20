@@ -110,3 +110,7 @@ func (self *CachingBackend) Flush() error {
 func (self *CachingBackend) Ping(d time.Duration) error {
 	return self.backend.Ping(d)
 }
+
+func (self *CachingBackend) String() string {
+	return self.backend.String()
+}

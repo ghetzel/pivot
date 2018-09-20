@@ -12,6 +12,7 @@ import (
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 )
@@ -24,6 +25,9 @@ type sqlRangeValue struct {
 func (self sqlRangeValue) String() string {
 	return fmt.Sprintf("%v:%v", self.lower, self.upper)
 }
+
+type SqlObjectTypeEncodeFunc func(in interface{}) ([]byte, error)
+type SqlObjectTypeDecodeFunc func(in []byte, out interface{}) error
 
 var SqlObjectTypeEncode = func(in interface{}) ([]byte, error) {
 	var buf bytes.Buffer
@@ -60,13 +64,15 @@ type SqlTypeMapping struct {
 	RawType               string
 	SubtypeFormat         string
 	MultiSubtypeFormat    string
-	PlaceholderFormat     string
-	PlaceholderArgument   string
-	TableNameFormat       string
-	FieldNameFormat       string
-	NestedFieldNameFormat string
-	NestedFieldSeparator  string
-	NestedFieldJoiner     string
+	PlaceholderFormat     string                  // if using placeholders, the format string used to insert them
+	PlaceholderArgument   string                  // if specified, either "index", "index1" or "field"
+	TableNameFormat       string                  // format string used to wrap table names
+	FieldNameFormat       string                  // format string used to wrap field names
+	NestedFieldNameFormat string                  // map of field name-format strings to wrap fields addressing nested map keys. supercedes FieldNameFormat
+	NestedFieldSeparator  string                  // the string used to denote nesting in a nested field name
+	NestedFieldJoiner     string                  // the string used to re-join all but the first value in a nested field when interpolating into NestedFieldNameFormat
+	ObjectTypeEncodeFunc  SqlObjectTypeEncodeFunc // function used for encoding objects to a native representation
+	ObjectTypeDecodeFunc  SqlObjectTypeDecodeFunc // function used for decoding objects from native into a destination map
 }
 
 var NoTypeMapping = SqlTypeMapping{}
@@ -134,8 +140,8 @@ var PostgresTypeMapping = SqlTypeMapping{
 	FloatType:            `NUMERIC`,
 	BooleanType:          `BOOLEAN`,
 	DateTimeType:         `TIMESTAMP`,
-	ObjectType:           `BLOB`,
-	RawType:              `BLOB`,
+	ObjectType:           `VARCHAR`,
+	RawType:              `BYTEA`,
 	PlaceholderFormat:    `$%d`,
 	PlaceholderArgument:  `index1`,
 	TableNameFormat:      "%q",
@@ -151,8 +157,8 @@ var PostgresJsonTypeMapping = SqlTypeMapping{
 	BooleanType:  `BOOLEAN`,
 	DateTimeType: `TIMESTAMP`,
 	// ObjectType:   `JSONB`, // TODO: implement the JSONB functionality in PostgreSQL 9.2+
-	ObjectType:           `BLOB`,
-	RawType:              `BLOB`,
+	ObjectType:           `VARCHAR`,
+	RawType:              `BYTEA`,
 	PlaceholderFormat:    `$%d`,
 	PlaceholderArgument:  `index1`,
 	TableNameFormat:      "%q",
@@ -201,14 +207,7 @@ func GetSqlTypeMapping(name string) (SqlTypeMapping, error) {
 
 type Sql struct {
 	filter.Generator
-	// TableNameFormat       string                 // format string used to wrap table names
-	// FieldNameFormat       string                 // format string used to wrap field names
-	// NestedFieldNameFormat string                 // map of field name-format strings to wrap fields addressing nested map keys. supercedes FieldNameFormat
-	// NestedFieldSeparator  string                 // the string used to denote nesting in a nested field name
-	// NestedFieldJoiner     string                 // the string used to re-join all but the first value in a nested field when interpolating into NestedFieldNameFormat
-	FieldWrappers map[string]string // map of field name-format strings to wrap specific fields in after FieldNameFormat is applied
-	// PlaceholderFormat     string                 // if using placeholders, the format string used to insert them
-	// PlaceholderArgument   string                 // if specified, either "index", "index1" or "field"
+	FieldWrappers    map[string]string      // map of field name-format strings to wrap specific fields in after FieldNameFormat is applied
 	NormalizeFields  []string               // a list of field names that should have the NormalizerFormat applied to them and their corresponding values
 	NormalizerFormat string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
 	UseInStatement   bool                   // whether multiple values in a criterion should be tested using an IN() statement
@@ -423,7 +422,7 @@ func (self *Sql) AggregateByField(agg filter.Aggregation, field string) error {
 }
 
 func (self *Sql) GetValues() []interface{} {
-	return append(self.inputValues, self.values...)
+	return append(self.values, self.inputValues...)
 }
 
 func (self *Sql) WithCriterion(criterion filter.Criterion) error {
@@ -775,22 +774,21 @@ func (self *Sql) SplitTypeLength(in string) (string, int, int) {
 func (self *Sql) GetPlaceholder(fieldName string) string {
 	// support various styles of placeholder
 	// e.g.: ?, $0, $1, :fieldname
-	//
-
-	defer func() {
-		self.placeholderIndex += 1
-	}()
+	var placeholder string
 
 	switch self.TypeMapping.PlaceholderArgument {
 	case `index`:
-		return fmt.Sprintf(self.TypeMapping.PlaceholderFormat, self.placeholderIndex)
+		placeholder = fmt.Sprintf(self.TypeMapping.PlaceholderFormat, self.placeholderIndex)
 	case `index1`:
-		return fmt.Sprintf(self.TypeMapping.PlaceholderFormat, self.placeholderIndex+1)
+		placeholder = fmt.Sprintf(self.TypeMapping.PlaceholderFormat, self.placeholderIndex+1)
 	case `field`:
-		return fmt.Sprintf(self.TypeMapping.PlaceholderFormat, fieldName)
+		placeholder = fmt.Sprintf(self.TypeMapping.PlaceholderFormat, fieldName)
 	default:
-		return self.TypeMapping.PlaceholderFormat
+		placeholder = self.TypeMapping.PlaceholderFormat
 	}
+
+	self.placeholderIndex += 1
+	return placeholder
 }
 
 func (self *Sql) ApplyNormalizer(fieldName string, in string) string {
@@ -812,6 +810,30 @@ func (self *Sql) PrepareInputValue(f string, value interface{}) (interface{}, er
 		return SqlObjectTypeEncode(value)
 	default:
 		return value, nil
+	}
+}
+
+func (self *Sql) ObjectTypeEncode(in interface{}) ([]byte, error) {
+	if !typeutil.IsMap(typeutil.ResolveValue(in)) {
+		return nil, fmt.Errorf("Can only encode pointer to a map type")
+	}
+
+	if fn := self.TypeMapping.ObjectTypeEncodeFunc; fn != nil {
+		return fn(in)
+	} else {
+		return SqlObjectTypeEncode(in)
+	}
+}
+
+func (self *Sql) ObjectTypeDecode(in []byte, out interface{}) error {
+	if !typeutil.IsMap(typeutil.ResolveValue(out)) {
+		return fmt.Errorf("Can only decode to pointer to a map type")
+	}
+
+	if fn := self.TypeMapping.ObjectTypeDecodeFunc; fn != nil {
+		return fn(in, out)
+	} else {
+		return SqlObjectTypeDecode(in, out)
 	}
 }
 
@@ -899,7 +921,7 @@ func (self *Sql) valueToNativeRepresentation(coerce dal.Type, value interface{})
 		case dal.TimeType:
 			typedValue, convertErr = stringutil.ConvertTo(stringutil.Time, str)
 		case dal.ObjectType:
-			typedValue, convertErr = SqlObjectTypeEncode(str)
+			typedValue, convertErr = self.ObjectTypeEncode(str)
 		default:
 			typedValue = stringutil.Autotype(value)
 		}

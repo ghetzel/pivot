@@ -167,11 +167,13 @@ func (self *MongoBackend) filterToNative(collection *dal.Collection, flt *filter
 
 			if bson.IsObjectIdHex(vS) {
 				return bson.ObjectIdHex(vS), true
-			} else if vT, err := stringutil.ConvertToTime(value); err == nil {
-				return vT, true
-			} else {
-				return nil, false
+			} else if stringutil.IsTime(value) {
+				if vT, err := stringutil.ConvertToTime(value); err == nil {
+					return vT, true
+				}
 			}
+
+			return nil, false
 		}))
 
 		querylog.Debugf("[%T] query: %v", self, typeutil.Dump(query))

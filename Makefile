@@ -24,9 +24,6 @@ fmt:
 test:
 	go test --tags json1 $(PKGS)
 
-integration:
-	INTEGRATION=1 go test --tags json1 $(PKGS)
-
 build:
 	test -d pivot && go build --tags json1 -i -o bin/`basename ${PWD}` pivot/*.go
 
