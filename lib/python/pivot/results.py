@@ -55,6 +55,9 @@ class RecordSet(object):
 
         return out
 
+    def __getitem__(self, key):
+        return self.records.__getitem__(key)
+
     def __len__(self):
         return len(self.records)
 
