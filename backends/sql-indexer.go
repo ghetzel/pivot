@@ -47,7 +47,7 @@ func (self *SqlBackend) QueryFunc(collection *dal.Collection, f *filter.Filter, 
 					// render the count query
 					if stmt, err := filter.Render(prequeryGen, collection.Name, f); err == nil {
 						values := prequeryGen.GetValues()
-						querylog.Debugf("[%T] %s %v", self, string(stmt[:]), values)
+						querylog.Debugf("[%v] %s %v", self, string(stmt[:]), values)
 
 						// perform the count query
 						if rows, err := self.db.Query(string(stmt[:]), values...); err == nil {
@@ -80,7 +80,7 @@ func (self *SqlBackend) QueryFunc(collection *dal.Collection, f *filter.Filter, 
 
 			if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
 				values := queryGen.GetValues()
-				querylog.Debugf("[%T] %s %v", self, string(stmt[:]), values)
+				querylog.Debugf("[%v] %s %v", self, string(stmt[:]), values)
 
 				// perform query
 				if rows, err := self.db.Query(string(stmt[:]), values...); err == nil {
@@ -244,7 +244,7 @@ func (self *SqlBackend) DeleteQuery(collection *dal.Collection, f *filter.Filter
 
 		// generate SQL
 		if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-			querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
+			querylog.Debugf("[%v] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 			// execute SQL
 			if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {

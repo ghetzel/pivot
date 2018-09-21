@@ -24,7 +24,7 @@
 
 [[constraint]]
   name = "github.com/ghetzel/go-stockutil"
-  version = ">=1.5.39"
+  version = ">=1.5.44"
 
 [[constraint]]
   name = "github.com/ghodss/yaml"
@@ -74,6 +74,14 @@
   branch = "v2"
   name = "gopkg.in/mgo.v2"
 
+[[constraint]]
+  name = "github.com/gomodule/redigo"
+  branch = "master"
+
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  branch = "v3"
+  name = "github.com/ory/dockertest"

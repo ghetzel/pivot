@@ -54,6 +54,10 @@ func NewFilesystemBackend(connection dal.ConnectionString) Backend {
 	}
 }
 
+func (self *FilesystemBackend) String() string {
+	return `filesystem`
+}
+
 func (self *FilesystemBackend) GetConnectionString() *dal.ConnectionString {
 	return &self.conn
 }

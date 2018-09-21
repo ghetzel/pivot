@@ -21,6 +21,7 @@ import (
 
 var objectFieldHintLength = 131071
 var InitialPingTimeout = time.Duration(10) * time.Second
+var sqlMaxExactCountRows = 10000
 
 type sqlTableDetails struct {
 	Index        int
@@ -47,39 +48,46 @@ type SqlBackend struct {
 	Backend
 	Indexer
 	Aggregator
-	conn                        *dal.ConnectionString
-	db                          *sql.DB
-	indexer                     Indexer
-	aggregator                  map[string]Aggregator
-	queryGenTypeMapping         generators.SqlTypeMapping
-	queryGenPlaceholderArgument string
-	queryGenPlaceholderFormat   string
-	queryGenTableFormat         string
-	queryGenFieldFormat         string
-	queryGenNestedFieldFormat   string
-	queryGenNormalizerFormat    string
-	listAllTablesQuery          string
-	createPrimaryKeyIntFormat   string
-	createPrimaryKeyStrFormat   string
-	showTableDetailQuery        string
-	refreshCollectionFunc       sqlTableDetailsFunc
-	dropTableQuery              string
-	registeredCollections       sync.Map
-	knownCollections            map[string]bool
+	conn                      *dal.ConnectionString
+	db                        *sql.DB
+	indexer                   Indexer
+	aggregator                map[string]Aggregator
+	queryGenTypeMapping       generators.SqlTypeMapping
+	queryGenNormalizerFormat  string
+	listAllTablesQuery        string
+	createPrimaryKeyIntFormat string
+	createPrimaryKeyStrFormat string
+	showTableDetailQuery      string
+	refreshCollectionFunc     sqlTableDetailsFunc
+	countEstimateQuery        string
+	countExactQuery           string
+	dropTableQuery            string
+	registeredCollections     sync.Map
+	knownCollections          map[string]bool
 }
 
 func NewSqlBackend(connection dal.ConnectionString) Backend {
 	backend := &SqlBackend{
-		conn:                      &connection,
-		queryGenTypeMapping:       generators.DefaultSqlTypeMapping,
-		queryGenPlaceholderFormat: `?`,
-		dropTableQuery:            `DROP TABLE %s`,
-		aggregator:                make(map[string]Aggregator),
-		knownCollections:          make(map[string]bool),
+		conn:                &connection,
+		queryGenTypeMapping: generators.DefaultSqlTypeMapping,
+		dropTableQuery:      `DROP TABLE %s`,
+		aggregator:          make(map[string]Aggregator),
+		knownCollections:    make(map[string]bool),
 	}
 
 	backend.indexer = backend
 	return backend
+}
+
+func (self *SqlBackend) String() string {
+	switch dbtype := self.conn.Backend(); dbtype {
+	case `postgres`, `postgresql`, `psql`:
+		return `postgresql`
+	case `mysql`, `sqlite`:
+		return dbtype
+	default:
+		return ``
+	}
 }
 
 func (self *SqlBackend) GetConnectionString() *dal.ConnectionString {
@@ -89,7 +97,50 @@ func (self *SqlBackend) GetConnectionString() *dal.ConnectionString {
 func (self *SqlBackend) RegisterCollection(collection *dal.Collection) {
 	if collection != nil {
 		self.registeredCollections.Store(collection.Name, collection)
-		log.Debugf("[%T] register collection %v", self, collection.Name)
+		log.Debugf("[%v] register collection %v", self, collection.Name)
+		go self.updateEstimatedCountForTable(collection)
+	}
+}
+
+func (self *SqlBackend) updateEstimatedCountForTable(collection *dal.Collection) {
+	if !self.conn.OptBool(`autocount`, false) {
+		return
+	}
+
+	if collection != nil {
+		if approx := self.countEstimateQuery; approx != `` {
+			row := self.db.QueryRow(fmt.Sprintf(approx, collection.Name))
+			var count int
+
+			if err := row.Scan(&count); err == nil {
+				if count > sqlMaxExactCountRows {
+					collection.TotalRecords = int64(count)
+					if count > 0 {
+						log.Noticef("[%v] collection %v = %d record", self, collection.Name, collection.TotalRecords)
+					}
+					collection.TotalRecordsExact = false
+					return
+				}
+			} else {
+				log.Warningf("%v: error estimating count: %v", collection.Name, err)
+			}
+
+			if exact := self.countExactQuery; exact != `` {
+				row := self.db.QueryRow(fmt.Sprintf(exact, collection.Name, sqlMaxExactCountRows))
+
+				if err := row.Scan(&count); err == nil {
+					collection.TotalRecords = int64(count)
+
+					if count > 0 {
+						log.Noticef("[%v] collection %v = %d record", self, collection.Name, collection.TotalRecords)
+					}
+
+					collection.TotalRecordsExact = true
+				} else {
+					log.Warningf("%v: error counting: %v", collection.Name, err)
+				}
+			}
+		}
 	}
 }
 
@@ -122,12 +173,12 @@ func (self *SqlBackend) Initialize() error {
 	var err error
 
 	// setup driver-specific settings
-	switch backend {
+	switch self.String() {
 	case `sqlite`:
 		name, dsn, err = self.initializeSqlite()
 	case `mysql`:
 		name, dsn, err = self.initializeMysql()
-	case `postgres`, `postgresql`, `psql`:
+	case `postgresql`:
 		name, dsn, err = self.initializePostgres()
 	default:
 		return fmt.Errorf("Unsupported backend %q", backend)
@@ -184,7 +235,7 @@ func (self *SqlBackend) Ping(timeout time.Duration) error {
 func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
 		if tx, err := self.db.Begin(); err == nil {
-			switch self.conn.Backend() {
+			switch self.String() {
 			case `mysql`:
 				// disable zero-means-use-autoincrement for inserts in MySQL
 				if _, err := tx.Exec(`SET sql_mode='NO_AUTO_VALUE_ON_ZERO'`); err != nil {
@@ -219,7 +270,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 				// render the query into the final SQL
 				if stmt, err := filter.Render(queryGen, collection.Name, filter.Null()); err == nil {
-					querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
+					querylog.Debugf("[%v] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 					// execute the SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
@@ -236,7 +287,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 			if err := tx.Commit(); err == nil {
 				if search := self.WithSearch(collection); search != nil {
 					if err := search.Index(collection, recordset); err != nil {
-						querylog.Debugf("[%T] index error %v", self, err)
+						querylog.Debugf("[%v] index error %v", self, err)
 					} else {
 						return err
 					}
@@ -267,29 +318,29 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 
 				if err := queryGen.Initialize(collection.Name); err == nil {
 					if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-						querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
+						querylog.Debugf("[%v] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 						// perform query
 						if rows, err := tx.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
 							defer rows.Close()
 							return rows.Next()
 						} else {
-							querylog.Debugf("[%T] query error %v", self, err)
+							querylog.Debugf("[%v] query error %v", self, err)
 						}
 					} else {
-						querylog.Debugf("[%T] query generator error %v", self, err)
+						querylog.Debugf("[%v] query generator error %v", self, err)
 					}
 				} else {
-					querylog.Debugf("[%T] query generator error %v", self, err)
+					querylog.Debugf("[%v] query generator error %v", self, err)
 				}
 			} else {
-				querylog.Debugf("[%T] filter error %v", self, err)
+				querylog.Debugf("[%v] filter error %v", self, err)
 			}
 		} else {
-			querylog.Debugf("[%T] transaction error %v", self, err)
+			querylog.Debugf("[%v] transaction error %v", self, err)
 		}
 	} else {
-		querylog.Debugf("[%T] cache error %v", self, err)
+		querylog.Debugf("[%v] cache error %v", self, err)
 	}
 
 	return false
@@ -305,7 +356,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 
 			if err := queryGen.Initialize(collection.Name); err == nil {
 				if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-					querylog.Debugf("[%T] %s %v", self, string(stmt[:]), id)
+					querylog.Debugf("[%v] %s %v", self, string(stmt[:]), id)
 
 					// perform query
 					if rows, err := self.db.Query(string(stmt[:]), id); err == nil {
@@ -399,7 +450,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 
 				// generate SQL
 				if stmt, err := filter.Render(queryGen, collection.Name, recordUpdateFilter); err == nil {
-					querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
+					querylog.Debugf("[%v] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 					// execute SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
@@ -451,7 +502,7 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 
 			// generate SQL
 			if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-				querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
+				querylog.Debugf("[%v] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 				// execute SQL
 				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
@@ -590,14 +641,14 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	stmt += `)`
 
 	if tx, err := self.db.Begin(); err == nil {
-		querylog.Debugf("[%T] %s %v", self, string(stmt[:]), values)
+		querylog.Debugf("[%v] %s %v", self, string(stmt[:]), values)
 
 		if _, err := tx.Exec(stmt, values...); err == nil {
 			defer func() {
 				self.RegisterCollection(definition)
 
 				if err := self.refreshCollectionFromDatabase(definition.Name, definition); err != nil {
-					querylog.Debugf("[%T] failed to refresh collection: %v", self, err)
+					querylog.Debugf("[%v] failed to refresh collection: %v", self, err)
 				}
 			}()
 			return tx.Commit()
@@ -616,7 +667,7 @@ func (self *SqlBackend) DeleteCollection(collectionName string) error {
 
 		if tx, err := self.db.Begin(); err == nil {
 			stmt := fmt.Sprintf(self.dropTableQuery, gen.ToTableName(collectionName))
-			querylog.Debugf("[%T] %s", self, string(stmt[:]))
+			querylog.Debugf("[%v] %s", self, string(stmt[:]))
 
 			if _, err := tx.Exec(stmt); err == nil {
 				return tx.Commit()
@@ -660,26 +711,6 @@ func (self *SqlBackend) makeQueryGen(collection *dal.Collection) *generators.Sql
 	queryGen := generators.NewSqlGenerator()
 	queryGen.TypeMapping = self.queryGenTypeMapping
 
-	if v := self.queryGenPlaceholderFormat; v != `` {
-		queryGen.PlaceholderFormat = v
-	}
-
-	if v := self.queryGenPlaceholderArgument; v != `` {
-		queryGen.PlaceholderArgument = v
-	}
-
-	if v := self.queryGenTableFormat; v != `` {
-		queryGen.TableNameFormat = v
-	}
-
-	if v := self.queryGenFieldFormat; v != `` {
-		queryGen.FieldNameFormat = v
-	}
-
-	if v := self.queryGenNestedFieldFormat; v != `` {
-		queryGen.NestedFieldNameFormat = v
-	}
-
 	if collection != nil {
 		// perform string normalization on non-pk, non-key string fields
 		for _, field := range collection.Fields {
@@ -714,7 +745,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 	// put a zero-value instance of each column's type in the result array, which will
 	// serve as a hint to the sql.Scan function as to how to convert the data
 	for i, column := range columns {
-		baseColumn := strings.Split(column, queryGen.NestedFieldSeparator)[0]
+		baseColumn := strings.Split(column, queryGen.TypeMapping.NestedFieldSeparator)[0]
 
 		if field, ok := collection.GetField(baseColumn); ok {
 			if field.DefaultValue != nil {
@@ -777,7 +808,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 
 	ColumnLoop:
 		for i, column := range columns {
-			nestedPath := strings.Split(column, queryGen.NestedFieldSeparator)
+			nestedPath := strings.Split(column, queryGen.TypeMapping.NestedFieldSeparator)
 			baseColumn := nestedPath[0]
 
 			if field, ok := collection.GetField(baseColumn); ok {
@@ -788,53 +819,13 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 				// raw byte arrays will either be strings, blobs, or binary-encoded objects
 				// we need to figure out which
 				case []uint8:
-					v := output[i].([]uint8)
+					value = []byte(output[i].([]uint8))
 
-					var dest map[string]interface{}
-
-					switch field.Type {
-					case dal.ObjectType:
-						if err := generators.SqlObjectTypeDecode([]byte(v), &dest); err == nil {
-							value = dest
-						} else {
-							value = string(v[:])
-						}
-
-					// if this field is a raw type, then it's not a string, which
-					// leaves raw or object
-					//
-					case dal.RawType:
-						// blindly attempt to load the data as if it were an object, then
-						// fallback to using the raw byte array
-						//
-						if err := generators.SqlObjectTypeDecode([]byte(v), &dest); err == nil {
-							value = dest
-						} else {
-							value = []byte(v)
-						}
-
-					default:
-						value = nil
-
-						if vStr := string(v); len(vStr) > 0 {
-							var normalized []rune
-
-							for _, r := range vStr {
-								if unicode.IsGraphic(r) {
-									normalized = append(normalized, r)
-								}
-							}
-
-							if nS := string(normalized); nS != `` {
-								value = nS
-							}
-						}
-					}
 				case sql.NullString:
 					v := output[i].(sql.NullString)
 
 					if v.Valid {
-						value = v.String
+						value = []byte(v.String)
 					} else {
 						value = nil
 					}
@@ -866,7 +857,42 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 						value = nil
 					}
 				default:
-					value = output[i]
+					if vStr, ok := output[i].(string); ok {
+						value = []byte(vStr)
+					} else {
+						value = output[i]
+					}
+				}
+
+				// strings and raw bytes need a little love to determine exactly what they actually are
+				if asBytes, ok := value.([]byte); ok {
+					var dest map[string]interface{}
+
+					switch field.Type {
+					case dal.ObjectType, dal.RawType:
+						if err := queryGen.ObjectTypeDecode(asBytes, &dest); err == nil {
+							value = dest
+						} else {
+							value = asBytes
+						}
+
+					default:
+						value = nil
+
+						if vStr := string(asBytes); len(vStr) > 0 {
+							var normalized []rune
+
+							for _, r := range vStr {
+								if unicode.IsGraphic(r) {
+									normalized = append(normalized, r)
+								}
+							}
+
+							if nS := string(normalized); nS != `` {
+								value = nS
+							}
+						}
+					}
 				}
 
 				// set the appropriate field for the dal.Record
@@ -878,7 +904,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 							shouldSkip := true
 
 							for _, wantedField := range wantedFields {
-								parts := strings.Split(wantedField, queryGen.NestedFieldSeparator)
+								parts := strings.Split(wantedField, queryGen.TypeMapping.NestedFieldSeparator)
 
 								if parts[0] == baseColumn {
 									shouldSkip = false
@@ -959,9 +985,10 @@ func (self *SqlBackend) refreshAllCollections() error {
 			var tableName string
 
 			if err := rows.Scan(&tableName); err == nil {
+				knownTables = append(knownTables, tableName)
+
 				if definitionI, ok := self.registeredCollections.Load(tableName); ok {
 					definition := definitionI.(*dal.Collection)
-					knownTables = append(knownTables, definition.Name)
 
 					if err := self.refreshCollectionFromDatabase(definition.Name, definition); err != nil {
 						log.Errorf("Error refreshing collection %s: %v", definition.Name, err)
@@ -977,13 +1004,12 @@ func (self *SqlBackend) refreshAllCollections() error {
 		}
 
 		// purge from cache any tables that the list all query didn't return
-		self.registeredCollections.Range(func(key, value interface{}) bool {
-			if !sliceutil.ContainsString(knownTables, key.(string)) {
+		for _, key := range maputil.StringKeys(&self.registeredCollections) {
+			if !sliceutil.ContainsString(knownTables, key) {
+				log.Debugf("removing %v from collection cache", key)
 				self.registeredCollections.Delete(key)
 			}
-
-			return true
-		})
+		}
 
 		return rows.Err()
 	} else {

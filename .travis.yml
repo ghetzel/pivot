@@ -1,0 +1,13 @@
+language: go
+
+go:
+- "1.10"
+- "1.11"
+- master
+
+# sudo is required for docker
+sudo: required
+
+# Enable docker
+services:
+- docker

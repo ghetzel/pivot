@@ -3,6 +3,27 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/Azure/go-ansiterm"
+  packages = [
+    ".",
+    "winterm"
+  ]
+  revision = "d6e3b3328b783f23731bc4d058875b0371ff8109"
+
+[[projects]]
+  name = "github.com/Microsoft/go-winio"
+  packages = ["."]
+  revision = "97e4973ce50b2ff5f09635a57e2b88a037aae829"
+  version = "v0.4.11"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/Nvveen/Gotty"
+  packages = ["."]
+  revision = "cd527374f1e5bff4938207604a14f2e38a9cf512"
+
+[[projects]]
+  branch = "master"
   name = "github.com/PuerkitoBio/goquery"
   packages = ["."]
   revision = "ea1bc64a63088ac2bbf1a2edcae38413794a7710"
@@ -130,6 +151,18 @@
   revision = "9da31745363232bc1e27dbab3569e77383a51585"
 
 [[projects]]
+  name = "github.com/cenkalti/backoff"
+  packages = ["."]
+  revision = "2ea60e5f094469f9e65adb9cd103795b73ae743e"
+  version = "v2.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/containerd/continuity"
+  packages = ["pathdriver"]
+  revision = "508d86ade3c25875053b68f5061c20020b3f2894"
+
+[[projects]]
   branch = "master"
   name = "github.com/couchbase/vellum"
   packages = [
@@ -150,6 +183,18 @@
   packages = ["."]
   revision = "1d4478f51bed434f1dadf96dcd9b43aabac66795"
   version = "v1.7"
+
+[[projects]]
+  name = "github.com/docker/go-connections"
+  packages = ["nat"]
+  revision = "3ede32e2033de7505e6500d6c868c2b9ed9f169d"
+  version = "v0.3.0"
+
+[[projects]]
+  name = "github.com/docker/go-units"
+  packages = ["."]
+  revision = "47565b4f722fb6ceae66b95f853feed578a4a51c"
+  version = "v0.3.3"
 
 [[projects]]
   branch = "master"
@@ -219,8 +264,8 @@
     "typeutil",
     "utils"
   ]
-  revision = "57203f9efc80fe016a5b7d6b18f6eaff933f7ff0"
-  version = "1.5.39"
+  revision = "20bafb696ed67fcf54a4faf7fc2bd132f6540aec"
+  version = "1.5.44"
 
 [[projects]]
   branch = "master"
@@ -290,6 +335,15 @@
   name = "github.com/golang/snappy"
   packages = ["."]
   revision = "cef980a12b316c5b7e5bb3a8e168eb43ae999a88"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/gomodule/redigo"
+  packages = [
+    "internal",
+    "redis"
+  ]
+  revision = "2cd21d9966bf7ff9ae091419744f0b3fb0fecace"
 
 [[projects]]
   name = "github.com/gorilla/websocket"
@@ -490,10 +544,63 @@
   revision = "970db520ece77730c7e4724c61121037378659d9"
 
 [[projects]]
+  name = "github.com/opencontainers/go-digest"
+  packages = ["."]
+  revision = "279bed98673dd5bef374d3b6e4b09e2af76183bf"
+  version = "v1.0.0-rc1"
+
+[[projects]]
+  name = "github.com/opencontainers/image-spec"
+  packages = [
+    "specs-go",
+    "specs-go/v1"
+  ]
+  revision = "d60099175f88c47cd379c4738d158884749ed235"
+  version = "v1.0.1"
+
+[[projects]]
+  name = "github.com/opencontainers/runc"
+  packages = ["libcontainer/user"]
+  revision = "4fc53a81fb7c994640722ac585fa9ca548971871"
+  version = "v1.0.0-rc5"
+
+[[projects]]
   branch = "master"
   name = "github.com/orcaman/concurrent-map"
   packages = ["."]
   revision = "a05df785d2dcc16310fb997ee1702100d047cfe1"
+
+[[projects]]
+  name = "github.com/ory/dockertest"
+  packages = [
+    ".",
+    "docker",
+    "docker/opts",
+    "docker/pkg/archive",
+    "docker/pkg/fileutils",
+    "docker/pkg/homedir",
+    "docker/pkg/idtools",
+    "docker/pkg/ioutils",
+    "docker/pkg/jsonmessage",
+    "docker/pkg/longpath",
+    "docker/pkg/mount",
+    "docker/pkg/pools",
+    "docker/pkg/stdcopy",
+    "docker/pkg/system",
+    "docker/pkg/term",
+    "docker/pkg/term/windows",
+    "docker/types",
+    "docker/types/blkiodev",
+    "docker/types/container",
+    "docker/types/filters",
+    "docker/types/mount",
+    "docker/types/network",
+    "docker/types/registry",
+    "docker/types/strslice",
+    "docker/types/versions"
+  ]
+  revision = "9f1141b78507d23603f6be530587664ebb63a8d2"
+  version = "v3.3.2"
 
 [[projects]]
   name = "github.com/phayes/freeport"
@@ -508,6 +615,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
@@ -518,6 +631,12 @@
   packages = ["."]
   revision = "55d61fa8aa702f59229e6cff85793c22e580eaf5"
   version = "v1.5.1"
+
+[[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "3e01752db0189b9157070a0e1668a620f9a85da2"
+  version = "v1.0.6"
 
 [[projects]]
   name = "github.com/spaolacci/murmur3"
@@ -565,6 +684,12 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  revision = "0e37d006457bf46f9e6692014ba72ef82c33022c"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -576,7 +701,10 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = [
+    "unix",
+    "windows"
+  ]
   revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
 
 [[projects]]
@@ -609,6 +737,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5ba1ba18dd4199f9a96a8936850dd5a312223d23c3b307f75023802861e9e416"
+  inputs-digest = "8387bdf2312ba247609af4f7d181a706863a5c83f5013548183bc9115fe66159"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -6,6 +6,7 @@ LOCALS=`find . -type f -name '*.go' -not -path "./vendor/*"`
 all: deps fmt test build
 
 deps:
+	@go list github.com/golang/dep || go get github.com/golang/dep/...
 	dep ensure
 
 clean-bundle:
@@ -23,9 +24,6 @@ fmt:
 
 test:
 	go test --tags json1 $(PKGS)
-
-integration:
-	INTEGRATION=1 go test --tags json1 $(PKGS)
 
 build:
 	test -d pivot && go build --tags json1 -i -o bin/`basename ${PWD}` pivot/*.go

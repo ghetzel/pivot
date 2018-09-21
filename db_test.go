@@ -8,11 +8,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/backends"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
+	"github.com/ory/dockertest"
 	"github.com/stretchr/testify/require"
 )
 
@@ -22,11 +24,52 @@ var TestData = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 var defaultTestCrudIdSet = []interface{}{`1`, `2`, `3`}
 var testCrudIdSet = []interface{}{`1`, `2`, `3`}
 
+func errpanic(err error) {
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+func docker(container string, tag string, env map[string]interface{}, pingFn func(res *dockertest.Resource) error, runFn func()) {
+	pool, err := dockertest.NewPool("")
+	errpanic(err)
+
+	envjoin := make([]string, 0)
+
+	for k, v := range env {
+		envjoin = append(envjoin, fmt.Sprintf("%v=%v", k, v))
+	}
+
+	// pulls an image, creates a container based on it and runs it
+	fmt.Printf("Starting container %v:%v\n", container, tag)
+	resource, err := pool.Run(container, tag, envjoin)
+	errpanic(resource.Expire(120))
+
+	defer pool.Purge(resource)
+
+	errpanic(err)
+	errpanic(pool.Retry(func() error {
+		return pingFn(resource)
+	}))
+
+	fmt.Printf("Ready\n")
+	runFn()
+}
+
 func setupTestSqlite(run func()) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
-	if b, err := makeBackend(`sqlite:///./tmp/db_test/test.db`); err == nil {
+	if b, err := makeBackend(`sqlite://tmp/db_test/test.db`); err == nil {
+		backend = b
+		run()
+	} else {
+		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+	}
+}
+
+func setupTestRedis(run func()) {
+	if b, err := makeBackend(`redis://localhost:6379/testing?autoregister=true`); err == nil {
 		backend = b
 		run()
 	} else {
@@ -38,7 +81,7 @@ func setupTestSqliteWithBleveIndexer(run func()) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
-	if b, err := makeBackend(`sqlite:///./tmp/db_test/test.db`, backends.ConnectOptions{
+	if b, err := makeBackend(`sqlite://tmp/db_test/test.db`, backends.ConnectOptions{
 		Indexer: `bleve:///./tmp/db_test/`,
 	}); err == nil {
 		backend = b
@@ -52,7 +95,7 @@ func setupTestSqliteWithAdditionalBleveIndexer(run func()) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
-	if b, err := makeBackend(`sqlite:///./tmp/db_test/test.db`, backends.ConnectOptions{
+	if b, err := makeBackend(`sqlite://tmp/db_test/test.db`, backends.ConnectOptions{
 		AdditionalIndexers: []string{
 			`bleve:///./tmp/db_test/`,
 		},
@@ -64,22 +107,36 @@ func setupTestSqliteWithAdditionalBleveIndexer(run func()) {
 	}
 }
 
-func setupTestMysql(run func()) {
-	if b, err := makeBackend(`mysql://test:test@db/test`); err == nil {
-		backend = b
-		run()
-	} else {
-		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
-	}
+func setupTestMysql(version string, run func()) {
+	docker(`mysql`, version, map[string]interface{}{
+		`MYSQL_ROOT_PASSWORD`: `pivot`,
+		`MYSQL_DATABASE`:      `pivot`,
+	}, func(res *dockertest.Resource) error {
+		if b, err := makeBackend(
+			fmt.Sprintf("mysql://root:pivot@localhost:%v/pivot", res.GetPort("3306/tcp")),
+		); err == nil {
+			backend = b
+			return b.Ping(time.Second)
+		} else {
+			return err
+		}
+	}, run)
 }
 
-func setupTestPostgres(run func()) {
-	if b, err := makeBackend(`postgres://test:test@db/test`); err == nil {
-		backend = b
-		run()
-	} else {
-		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
-	}
+func setupTestPostgres(version string, run func()) {
+	docker(`postgres`, version, map[string]interface{}{
+		`POSTGRES_PASSWORD`: `pivot`,
+		`POSTGRES_USER`:     `pivot`,
+	}, func(res *dockertest.Resource) error {
+		if b, err := makeBackend(
+			fmt.Sprintf("postgres://pivot:pivot@localhost:%v/pivot", res.GetPort("5432/tcp")),
+		); err == nil {
+			backend = b
+			return b.Ping(time.Second)
+		} else {
+			return err
+		}
+	}, run)
 }
 
 func setupTestFilesystemDefault(run func()) {
@@ -144,18 +201,27 @@ func setupTestDynamoDB(run func()) {
 	}
 }
 
-func setupTestMongo(run func()) {
-	if b, err := makeBackend(`mongodb://localhost/test`); err == nil {
-		backend = b
-		run()
-	} else {
-		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
-		panic(err.Error())
-	}
+func setupTestMongo(version string, run func()) {
+	docker(`mongo`, version, map[string]interface{}{
+		`MONGO_INITDB_ROOT_USERNAME`: `pivot`,
+		`MONGO_INITDB_ROOT_PASSWORD`: `pivot`,
+		`MONGO_INITDB_DATABASE`:      `pivot`,
+	}, func(res *dockertest.Resource) error {
+		if b, err := makeBackend(
+			fmt.Sprintf("mongodb://pivot:pivot@localhost:%v/pivot?authdb=admin", res.GetPort("27017/tcp")),
+		); err == nil {
+			backend = b
+			return b.Ping(time.Second)
+		} else {
+			return err
+		}
+	}, run)
 }
 
 func TestMain(m *testing.M) {
 	var i int
+
+	log.SetLevel(log.DEBUG)
 
 	run := func() {
 		i = m.Run()
@@ -165,13 +231,24 @@ func TestMain(m *testing.M) {
 		}
 	}
 
-	if typeutil.V(os.Getenv(`INTEGRATION`)).Bool() {
-		setupTestDynamoDB(run)
+	if typeutil.V(os.Getenv(`CI`)).Bool() {
+		// setupTestDynamoDB(run)
+		setupTestRedis(run)
 		setupTestFilesystemDefault(run)
 		setupTestFilesystemJson(run)
 		setupTestFilesystemYaml(run)
-		setupTestMongo(run)
-		setupTestMysql(run)
+
+		setupTestMongo(`3.2`, run)
+		setupTestMongo(`3.4`, run)
+		setupTestMongo(`3.6`, run)
+		setupTestMongo(`4.0`, run)
+
+		setupTestPostgres(`9`, run)
+		setupTestPostgres(`10`, run)
+
+		setupTestMysql(`5`, run)
+		// setupTestMysql(`8`, run)
+
 		setupTestSqlite(run)
 		setupTestSqliteWithAdditionalBleveIndexer(run)
 		setupTestSqliteWithBleveIndexer(run)
@@ -733,21 +810,21 @@ func TestListValues(t *testing.T) {
 		assert.Equal(1, len(keyValues))
 		v, ok := keyValues[`name`]
 		assert.True(ok)
-		assert.Equal([]interface{}{`first`, `second`, `third`}, v)
+		assert.ElementsMatch([]interface{}{`first`, `second`, `third`}, v)
 
 		keyValues, err = search.ListValues(collection, []string{`group`}, filter.All())
 		assert.Nil(err)
 		assert.Equal(1, len(keyValues))
 		v, ok = keyValues[`group`]
 		assert.True(ok)
-		assert.Equal([]interface{}{`reds`, `blues`}, v)
+		assert.ElementsMatch([]interface{}{`reds`, `blues`}, v)
 
 		keyValues, err = search.ListValues(collection, []string{`id`}, filter.All())
 		assert.Nil(err)
 		assert.Equal(1, len(keyValues))
 		v, ok = keyValues[`id`]
 		assert.True(ok)
-		assert.Equal([]interface{}{int64(1), int64(2), int64(3)}, v)
+		assert.ElementsMatch([]interface{}{int64(1), int64(2), int64(3)}, v)
 
 		keyValues, err = search.ListValues(collection, []string{`id`, `group`}, filter.All())
 		assert.Nil(err)
@@ -755,11 +832,11 @@ func TestListValues(t *testing.T) {
 
 		v, ok = keyValues[`id`]
 		assert.True(ok)
-		assert.Equal([]interface{}{int64(1), int64(2), int64(3)}, v)
+		assert.ElementsMatch([]interface{}{int64(1), int64(2), int64(3)}, v)
 
 		v, ok = keyValues[`group`]
 		assert.True(ok)
-		assert.Equal([]interface{}{`reds`, `blues`}, v)
+		assert.ElementsMatch([]interface{}{`reds`, `blues`}, v)
 	}
 }
 

@@ -10,7 +10,9 @@ import (
 	"time"
 
 	"github.com/ghetzel/go-stockutil/log"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/jdxcode/netrc"
 )
 
@@ -29,10 +31,12 @@ func (self *ConnectionString) String() string {
 		}
 
 		str := fmt.Sprintf(
-			"%s://%s/%s",
+			"%s://%s",
 			scheme,
-			self.Host(),
-			self.Dataset(),
+			strings.Join(sliceutil.CompactString([]string{
+				self.Host(),
+				self.Dataset(),
+			}), `/`),
 		)
 
 		if qs := self.URI.RawQuery; qs != `` {
@@ -58,9 +62,14 @@ func (self *ConnectionString) Backend() string {
 }
 
 // Returns the protocol component of the string.
-func (self *ConnectionString) Protocol() string {
+func (self *ConnectionString) Protocol(defaults ...string) string {
 	_, protocol := self.Scheme()
-	return protocol
+
+	if protocol == `` && len(defaults) > 0 {
+		return defaults[0]
+	} else {
+		return protocol
+	}
 }
 
 // Returns the host component of the string.
@@ -121,53 +130,51 @@ func (self *ConnectionString) HasOpt(key string) bool {
 }
 
 func (self *ConnectionString) OptString(key string, fallback string) string {
-	if v, ok := self.Options[key]; ok {
-		if vConv, err := stringutil.ConvertToString(v); err == nil {
-			return vConv
-		}
+	if v := typeutil.V(self.Options[key]).String(); v != `` {
+		return v
+	} else {
+		return fallback
 	}
-
-	return fallback
 }
 
 func (self *ConnectionString) OptBool(key string, fallback bool) bool {
-	if v, ok := self.Options[key]; ok {
-		if vConv, err := stringutil.ConvertToBool(v); err == nil {
-			return vConv
-		}
+	if self.HasOpt(key) {
+		return typeutil.V(self.Options[key]).Bool()
 	}
 
 	return fallback
 }
 
 func (self *ConnectionString) OptInt(key string, fallback int64) int64 {
-	if v, ok := self.Options[key]; ok {
-		if vConv, err := stringutil.ConvertToInteger(v); err == nil {
-			return vConv
-		}
+	if v := typeutil.V(self.Options[key]).Int(); v != 0 {
+		return v
+	} else {
+		return fallback
 	}
-
-	return fallback
 }
 
 func (self *ConnectionString) OptFloat(key string, fallback float64) float64 {
-	if v, ok := self.Options[key]; ok {
-		if vConv, err := stringutil.ConvertToFloat(v); err == nil {
-			return vConv
-		}
+	if v := typeutil.V(self.Options[key]).Float(); v != 0 {
+		return v
+	} else {
+		return fallback
 	}
-
-	return fallback
 }
 
 func (self *ConnectionString) OptTime(key string, fallback time.Time) time.Time {
-	if v, ok := self.Options[key]; ok {
-		if vConv, err := stringutil.ConvertToTime(v); err == nil {
-			return vConv
-		}
+	if v := typeutil.V(self.Options[key]).Time(); !v.IsZero() {
+		return v
+	} else {
+		return fallback
 	}
+}
 
-	return fallback
+func (self *ConnectionString) OptDuration(key string, fallback time.Duration) time.Duration {
+	if v := typeutil.V(self.Options[key]).Duration(); v != 0 {
+		return v
+	} else {
+		return fallback
+	}
 }
 
 func ParseConnectionString(conn string) (ConnectionString, error) {

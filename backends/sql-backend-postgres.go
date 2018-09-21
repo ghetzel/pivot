@@ -7,6 +7,7 @@ import (
 
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/ghetzel/pivot/filter/generators"
@@ -16,14 +17,12 @@ import (
 func (self *SqlBackend) initializePostgres() (string, string, error) {
 	// tell the backend cool details about generating compatible SQL
 	self.queryGenTypeMapping = generators.PostgresTypeMapping
-	self.queryGenPlaceholderFormat = `$%d`
-	self.queryGenPlaceholderArgument = `index1`
-	self.queryGenTableFormat = "%q"
-	self.queryGenFieldFormat = "%q"
 	self.queryGenNormalizerFormat = "regexp_replace(lower(%v), '[\\:\\[\\]\\*]+', ' ')"
 	self.listAllTablesQuery = `SELECT table_name from information_schema.TABLES WHERE table_catalog = CURRENT_CATALOG AND table_schema = 'public'`
 	self.createPrimaryKeyIntFormat = `%s BIGSERIAL PRIMARY KEY`
 	self.createPrimaryKeyStrFormat = `%s VARCHAR(255) PRIMARY KEY`
+	self.countEstimateQuery = "SELECT reltuples::bigint AS estimate FROM pg_class WHERE oid = to_regclass('%s')"
+	self.countExactQuery = "SELECT COUNT(*) AS exact FROM (SELECT 1 FROM %s LIMIT %d) t"
 
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
@@ -85,7 +84,7 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 
 			// make this instance of the query generator use the table name as given because
 			// we need to reference another database (information_schema)
-			queryGen.TableNameFormat = "%s"
+			queryGen.TypeMapping.TableNameFormat = "%s"
 
 			if stmt, err := filter.Render(queryGen, `information_schema.COLUMNS`, f); err == nil {
 				querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
@@ -207,6 +206,9 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 		switch k {
 		case `autoregister`:
 			self.conn.Options[k] = strings.Join(vv, `,`)
+			opts.Del(k)
+		case `autocount`:
+			self.conn.Options[k] = typeutil.V(vv).Bool()
 			opts.Del(k)
 		}
 	}

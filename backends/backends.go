@@ -36,6 +36,7 @@ type Backend interface {
 	WithAggregator(collection *dal.Collection) Aggregator
 	Flush() error
 	Ping(time.Duration) error
+	String() string
 }
 
 var NotImplementedError = fmt.Errorf("Not Implemented")
@@ -47,11 +48,13 @@ var backendMap = map[string]BackendFunc{
 	`file`:       NewFilesystemBackend,
 	`fs`:         NewFilesystemBackend,
 	`mongodb`:    NewMongoBackend,
+	`mongo`:      NewMongoBackend,
 	`mysql`:      NewSqlBackend,
 	`postgres`:   NewSqlBackend,
 	`postgresql`: NewSqlBackend,
 	`psql`:       NewSqlBackend,
 	`sqlite`:     NewSqlBackend,
+	`redis`:      NewRedisBackend,
 }
 
 func RegisterBackend(name string, fn BackendFunc) {

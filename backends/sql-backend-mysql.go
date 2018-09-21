@@ -15,10 +15,6 @@ import (
 func (self *SqlBackend) initializeMysql() (string, string, error) {
 	// tell the backend cool details about generating compatible SQL
 	self.queryGenTypeMapping = generators.MysqlTypeMapping
-	self.queryGenPlaceholderFormat = `?`
-	self.queryGenPlaceholderArgument = ``
-	self.queryGenTableFormat = "`%s`"
-	self.queryGenFieldFormat = "`%s`"
 	self.queryGenNormalizerFormat = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(%v, ':', ' '), '[', ' '), ']', ' '), '*', ' '))"
 	self.listAllTablesQuery = `SHOW TABLES`
 	self.createPrimaryKeyIntFormat = `%s INT AUTO_INCREMENT NOT NULL PRIMARY KEY`
@@ -43,7 +39,7 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 
 			// make this instance of the query generator use the table name as given because
 			// we need to reference another database (information_schema)
-			queryGen.TableNameFormat = "%s"
+			queryGen.TypeMapping.TableNameFormat = "%s"
 
 			if stmt, err := filter.Render(queryGen, "`information_schema`.`COLUMNS`", f); err == nil {
 				querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
