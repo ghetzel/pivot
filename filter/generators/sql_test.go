@@ -354,6 +354,7 @@ func TestSqlUpdates(t *testing.T) {
 		assert.Nil(err)
 		assert.Equal(expected, string(actual[:]))
 	}
+
 }
 
 func TestSqlDeletes(t *testing.T) {
@@ -512,6 +513,24 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(`SELECT * FROM "foo" WHERE ("age" = $1) AND ("name" = $2) AND ("enabled" = $3)`, string(actual[:]))
 	assert.Equal([]interface{}{int64(7), `ted`, true}, gen.GetValues())
+
+	// test PostgreSQL compatible
+	pggen := NewSqlGenerator()
+	pggen.TypeMapping = PostgresTypeMapping
+	pggen.Type = SqlUpdateStatement
+	pggen.InputData = map[string]interface{}{
+		`created_at`: time.Date(2006, 1, 2, 0, 0, 0, 0, time.UTC),
+		`name`:       `Tester`,
+	}
+	pgfilter := filter.MustParse(`id/123`)
+	actual, err = filter.Render(pggen, `foo`, pgfilter)
+	assert.Nil(err)
+	assert.Equal(`UPDATE "foo" SET "created_at" = $1, "name" = $2 WHERE ("id" = $3)`, string(actual[:]))
+	assert.Equal([]interface{}{
+		time.Date(2006, 1, 2, 0, 0, 0, 0, time.UTC),
+		`Tester`,
+		int64(123),
+	}, pggen.GetValues())
 
 	// test Oracle compatible
 	gen = NewSqlGenerator()

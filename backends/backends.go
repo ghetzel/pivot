@@ -54,6 +54,7 @@ var backendMap = map[string]BackendFunc{
 	`postgresql`: NewSqlBackend,
 	`psql`:       NewSqlBackend,
 	`sqlite`:     NewSqlBackend,
+	`redis`:      NewRedisBackend,
 }
 
 func RegisterBackend(name string, fn BackendFunc) {

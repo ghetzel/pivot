@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ghetzel/go-stockutil/log"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/jdxcode/netrc"
@@ -30,10 +31,12 @@ func (self *ConnectionString) String() string {
 		}
 
 		str := fmt.Sprintf(
-			"%s://%s/%s",
+			"%s://%s",
 			scheme,
-			self.Host(),
-			self.Dataset(),
+			strings.Join(sliceutil.CompactString([]string{
+				self.Host(),
+				self.Dataset(),
+			}), `/`),
 		)
 
 		if qs := self.URI.RawQuery; qs != `` {
@@ -59,9 +62,14 @@ func (self *ConnectionString) Backend() string {
 }
 
 // Returns the protocol component of the string.
-func (self *ConnectionString) Protocol() string {
+func (self *ConnectionString) Protocol(defaults ...string) string {
 	_, protocol := self.Scheme()
-	return protocol
+
+	if protocol == `` && len(defaults) > 0 {
+		return defaults[0]
+	} else {
+		return protocol
+	}
 }
 
 // Returns the host component of the string.

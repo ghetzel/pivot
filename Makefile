@@ -6,6 +6,7 @@ LOCALS=`find . -type f -name '*.go' -not -path "./vendor/*"`
 all: deps fmt test build
 
 deps:
+	@go list github.com/golang/dep || go get github.com/golang/dep/...
 	dep ensure
 
 clean-bundle:

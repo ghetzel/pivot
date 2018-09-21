@@ -10,12 +10,15 @@ import (
 	"time"
 
 	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/ghetzel/go-stockutil/rxutil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 )
+
+const sqlMaxPlaceholders = 1024
 
 type sqlRangeValue struct {
 	lower interface{}
@@ -342,7 +345,7 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 
 		for _, field := range maputil.StringKeys(self.InputData) {
 			v, _ := self.InputData[field]
-			values = append(values, self.GetPlaceholder(field))
+			values = append(values, fmt.Sprintf("\u2983%s\u2984", field))
 
 			if vv, err := self.PrepareInputValue(field, v); err == nil {
 				self.inputValues = append(self.inputValues, vv)
@@ -379,7 +382,7 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 			}
 
 			field := self.ToFieldName(field)
-			updatePairs = append(updatePairs, fmt.Sprintf("%s = %s", field, self.GetPlaceholder(field)))
+			updatePairs = append(updatePairs, fmt.Sprintf("%s = \u2983%s\u2984", field, field))
 		}
 
 		self.Push([]byte(strings.Join(updatePairs, `, `)))
@@ -394,6 +397,8 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 	default:
 		return fmt.Errorf("Unknown statement type")
 	}
+
+	self.applyPlaceholders()
 
 	return nil
 }
@@ -422,7 +427,38 @@ func (self *Sql) AggregateByField(agg filter.Aggregation, field string) error {
 }
 
 func (self *Sql) GetValues() []interface{} {
-	return append(self.values, self.inputValues...)
+	return append(self.inputValues, self.values...)
+}
+
+// Okay...so.
+//
+// Given the tricky, tricky nature of how values are accumulated vs. how they are exposed to
+// UPDATE queries (kinda backwards), we have this placeholder system.
+//
+// Anywhere in the SQL query where a user input value would appear, the sequence ⦃field⦄ appears
+// (not the use of Unicode characters U+2983 and U+2984 surrounding the field name.)
+//
+// This function goes through the final payload just before it's finalized and replaces these
+// sequences with the syntax-appropriate placeholders for that field.  This ensures that the
+// placeholder order matches the value order (for syntaxes that use numeric placeholders;
+// e.g. PostgreSQL).
+//
+func (self *Sql) applyPlaceholders() {
+	payload := string(self.Payload())
+
+	for i := 0; i < sqlMaxPlaceholders; i++ {
+		if match := rxutil.Match("(?P<field>\xe2\xa6\x83[^\xe2\xa6\x84]+\xe2\xa6\x84)", payload); match != nil {
+			field := match.Group(`field`)
+			field = strings.TrimPrefix(field, "\u2983")
+			field = strings.TrimSuffix(field, "\u2984")
+
+			payload = match.ReplaceGroup(`field`, self.GetPlaceholder(field))
+		} else {
+			break
+		}
+	}
+
+	self.Set([]byte(payload))
 }
 
 func (self *Sql) WithCriterion(criterion filter.Criterion) error {
@@ -513,7 +549,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 				case `NULL`:
 					value = strings.ToUpper(value)
 				default:
-					value = self.GetPlaceholder(criterion.Field)
+					value = fmt.Sprintf("\u2983%s\u2984", criterion.Field)
 				}
 
 				outVal := ``

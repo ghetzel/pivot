@@ -43,7 +43,7 @@ func docker(container string, tag string, env map[string]interface{}, pingFn fun
 	// pulls an image, creates a container based on it and runs it
 	fmt.Printf("Starting container %v:%v\n", container, tag)
 	resource, err := pool.Run(container, tag, envjoin)
-	errpanic(resource.Expire(60))
+	errpanic(resource.Expire(120))
 
 	defer pool.Purge(resource)
 
@@ -61,6 +61,15 @@ func setupTestSqlite(run func()) {
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
 	if b, err := makeBackend(`sqlite://tmp/db_test/test.db`); err == nil {
+		backend = b
+		run()
+	} else {
+		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
+	}
+}
+
+func setupTestRedis(run func()) {
+	if b, err := makeBackend(`redis://localhost:6379/testing?autoregister=true`); err == nil {
 		backend = b
 		run()
 	} else {
@@ -224,6 +233,7 @@ func TestMain(m *testing.M) {
 
 	if typeutil.V(os.Getenv(`CI`)).Bool() {
 		// setupTestDynamoDB(run)
+		setupTestRedis(run)
 		setupTestFilesystemDefault(run)
 		setupTestFilesystemJson(run)
 		setupTestFilesystemYaml(run)
@@ -237,7 +247,7 @@ func TestMain(m *testing.M) {
 		setupTestPostgres(`10`, run)
 
 		setupTestMysql(`5`, run)
-		setupTestMysql(`8`, run)
+		// setupTestMysql(`8`, run)
 
 		setupTestSqlite(run)
 		setupTestSqliteWithAdditionalBleveIndexer(run)

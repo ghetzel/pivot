@@ -22,6 +22,27 @@ func (self Type) String() string {
 	return string(self)
 }
 
+func ParseFieldType(in string) Type {
+	switch in {
+	case `str`:
+		return StringType
+	case `bool`:
+		return BooleanType
+	case `int`:
+		return IntType
+	case `float`:
+		return FloatType
+	case `time`:
+		return TimeType
+	case `object`:
+		return ObjectType
+	case `raw`:
+		return RawType
+	default:
+		return AutoType
+	}
+}
+
 type FieldOperation int
 
 const (

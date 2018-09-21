@@ -1,23 +1,19 @@
 package mapper
 
 import (
-	"io/ioutil"
-	"os"
 	"testing"
 
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/pivot"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/stretchr/testify/require"
 )
 
 func TestModelCRUD(t *testing.T) {
+	log.SetLevel(log.DEBUG)
 	assert := require.New(t)
 
-	tmpfile, err := ioutil.TempFile("", "TestModelCRUD")
-	assert.Nil(err)
-	defer os.Remove(tmpfile.Name())
-
-	db, err := pivot.NewDatabase(`sqlite:///` + tmpfile.Name())
+	db, err := pivot.NewDatabase(`sqlite://`)
 	assert.Nil(err)
 
 	type ModelOne struct {
@@ -81,11 +77,7 @@ func TestModelCRUD(t *testing.T) {
 func TestModelFind(t *testing.T) {
 	assert := require.New(t)
 
-	tmpfile, err := ioutil.TempFile("", "TestModelFind")
-	assert.Nil(err)
-	defer os.Remove(tmpfile.Name())
-
-	db, err := pivot.NewDatabase(`sqlite:///` + tmpfile.Name())
+	db, err := pivot.NewDatabase(`sqlite://`)
 	assert.Nil(err)
 
 	type ModelTwo struct {
@@ -149,12 +141,7 @@ func TestModelFind(t *testing.T) {
 
 func TestModelList(t *testing.T) {
 	assert := require.New(t)
-
-	tmpfile, err := ioutil.TempFile("", "TestModelList")
-	assert.Nil(err)
-	defer os.Remove(tmpfile.Name())
-
-	db, err := pivot.NewDatabase(`sqlite:///` + tmpfile.Name())
+	db, err := pivot.NewDatabase(`sqlite://`)
 	assert.Nil(err)
 
 	type ModelTwo struct {

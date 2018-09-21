@@ -4,6 +4,7 @@ type IGenerator interface {
 	Initialize(string) error
 	Finalize(*Filter) error
 	Push([]byte)
+	Set([]byte)
 	Payload() []byte
 	WithCriterion(Criterion) error
 	OrCriterion(Criterion) error
@@ -53,6 +54,10 @@ func Render(generator IGenerator, collectionName string, filter *Filter) ([]byte
 
 	//  return the payload
 	return generator.Payload(), nil
+}
+
+func (self *Generator) Set(data []byte) {
+	self.payload = data
 }
 
 func (self *Generator) Push(data []byte) {
