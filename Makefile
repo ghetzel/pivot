@@ -1,32 +1,27 @@
 .PHONY: test deps
 
-PKGS=`go list ./... | grep -v /vendor/`
-LOCALS=`find . -type f -name '*.go' -not -path "./vendor/*"`
+LOCALS :=$(shell find . -type f -name '*.go' -not -path "./vendor/*")
+
+.EXPORT_ALL_VARIABLES:
+GO111MODULE           = on
 
 all: deps fmt test build
 
 deps:
-	@go list github.com/golang/dep || go get github.com/golang/dep/...
-	dep ensure
-
-clean-bundle:
-	-rm -rf public
-
-clean:
-	-rm -rf bin
+	go get ./...
 
 fmt:
 	@go list github.com/mjibson/esc || go get github.com/mjibson/esc/...
 	@go list golang.org/x/tools/cmd/goimports || go get golang.org/x/tools/cmd/goimports
 	go generate -x ./...
 	goimports -w $(LOCALS)
-	go vet $(PKGS)
+	go vet ./...
 
 test:
-	go test --tags json1 $(PKGS)
+	go test --tags json1 ./...
 
 build:
-	test -d pivot && go build --tags json1 -i -o bin/`basename ${PWD}` pivot/*.go
+	test -d pivot && go build --tags json1 -i -o bin/pivot pivot/*.go
 
 quickbuild: deps fmt
-	test -d pivot && go build -i -o bin/`basename ${PWD}` pivot/*.go
+	test -d pivot && go build -i -o bin/pivot pivot/*.go
