@@ -60,7 +60,7 @@ func setupTestSqlite(run func()) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
-	if b, err := makeBackend(`sqlite:///./tmp/db_test/test.db`); err == nil {
+	if b, err := makeBackend(`sqlite://tmp/db_test/test.db`); err == nil {
 		backend = b
 		run()
 	} else {
@@ -72,7 +72,7 @@ func setupTestSqliteWithBleveIndexer(run func()) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
-	if b, err := makeBackend(`sqlite:///./tmp/db_test/test.db`, backends.ConnectOptions{
+	if b, err := makeBackend(`sqlite://tmp/db_test/test.db`, backends.ConnectOptions{
 		Indexer: `bleve:///./tmp/db_test/`,
 	}); err == nil {
 		backend = b
@@ -86,7 +86,7 @@ func setupTestSqliteWithAdditionalBleveIndexer(run func()) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
-	if b, err := makeBackend(`sqlite:///./tmp/db_test/test.db`, backends.ConnectOptions{
+	if b, err := makeBackend(`sqlite://tmp/db_test/test.db`, backends.ConnectOptions{
 		AdditionalIndexers: []string{
 			`bleve:///./tmp/db_test/`,
 		},
@@ -98,8 +98,8 @@ func setupTestSqliteWithAdditionalBleveIndexer(run func()) {
 	}
 }
 
-func setupTestMysql(run func()) {
-	docker(`mysql`, `5.7`, map[string]interface{}{
+func setupTestMysql(version string, run func()) {
+	docker(`mysql`, version, map[string]interface{}{
 		`MYSQL_ROOT_PASSWORD`: `pivot`,
 		`MYSQL_DATABASE`:      `pivot`,
 	}, func(res *dockertest.Resource) error {
@@ -114,8 +114,8 @@ func setupTestMysql(run func()) {
 	}, run)
 }
 
-func setupTestPostgres(run func()) {
-	docker(`postgres`, `9.6.8`, map[string]interface{}{
+func setupTestPostgres(version string, run func()) {
+	docker(`postgres`, version, map[string]interface{}{
 		`POSTGRES_PASSWORD`: `pivot`,
 		`POSTGRES_USER`:     `pivot`,
 	}, func(res *dockertest.Resource) error {
@@ -192,8 +192,8 @@ func setupTestDynamoDB(run func()) {
 	}
 }
 
-func setupTestMongo(run func()) {
-	docker(`mongo`, `3.2.21-jessie`, map[string]interface{}{
+func setupTestMongo(version string, run func()) {
+	docker(`mongo`, version, map[string]interface{}{
 		`MONGO_INITDB_ROOT_USERNAME`: `pivot`,
 		`MONGO_INITDB_ROOT_PASSWORD`: `pivot`,
 		`MONGO_INITDB_DATABASE`:      `pivot`,
@@ -227,9 +227,18 @@ func TestMain(m *testing.M) {
 		setupTestFilesystemDefault(run)
 		setupTestFilesystemJson(run)
 		setupTestFilesystemYaml(run)
-		setupTestMongo(run)
-		setupTestPostgres(run)
-		setupTestMysql(run)
+
+		setupTestMongo(`3.2`, run)
+		setupTestMongo(`3.4`, run)
+		setupTestMongo(`3.6`, run)
+		setupTestMongo(`4.0`, run)
+
+		setupTestPostgres(`9`, run)
+		setupTestPostgres(`10`, run)
+
+		setupTestMysql(`5`, run)
+		setupTestMysql(`8`, run)
+
 		setupTestSqlite(run)
 		setupTestSqliteWithAdditionalBleveIndexer(run)
 		setupTestSqliteWithBleveIndexer(run)
