@@ -1,4 +1,4 @@
-# Pivot [![GoDoc](https://godoc.org/github.com/ghetzel/pivot?status.svg)](https://godoc.org/github.com/ghetzel/pivot)
+# Pivot [![GoDoc](https://godoc.org/github.com/ghetzel/pivot?status.svg)](https://godoc.org/github.com/ghetzel/pivot) [![TravisCI](https://travis-ci.org/ghetzel/pivot.svg?branch=master)](https://travis-ci.org/ghetzel/pivot)
 
 Pivot is a library used to access, query, and aggregate data across a variety of database systems, written in Golang.
 
