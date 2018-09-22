@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	"github.com/ghetzel/go-stockutil/log"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/backends"
@@ -17,6 +20,8 @@ import (
 	"github.com/ory/dockertest"
 	"github.com/stretchr/testify/require"
 )
+
+type testRunnerFunc func(backends.Backend)
 
 var backend backends.Backend
 var TestData = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
@@ -30,7 +35,63 @@ func errpanic(err error) {
 	}
 }
 
-func docker(container string, tag string, env map[string]interface{}, pingFn func(res *dockertest.Resource) error, runFn func()) {
+func TestAll(t *testing.T) {
+	log.SetLevel(log.DEBUG)
+
+	run := func(b backends.Backend) {
+		testCollectionManagement(t, b)
+		testBasicCRUD(t, b)
+		testIdFormattersRandomId(t, b)
+		testIdFormattersIdFromFieldValues(t, b)
+		testSearchQuery(t, b)
+		testSearchQueryPaginated(t, b)
+		testSearchQueryLimit(t, b)
+		testSearchQueryOffset(t, b)
+		testSearchQueryOffsetLimit(t, b)
+		testListValues(t, b)
+		testSearchAnalysis(t, b)
+		testObjectType(t, b)
+		testAggregators(t, b)
+	}
+
+	if typeutil.V(os.Getenv(`CI`)).Bool() {
+		runnables := sliceutil.CompactString(strings.Split(os.Getenv(`PIVOT_TEST_BACKENDS`), `,`))
+
+		shouldRun := func(wg *sync.WaitGroup, name string, do func()) {
+			wg.Add(1)
+			defer wg.Done()
+
+			if len(runnables) == 0 || sliceutil.ContainsString(runnables, name) {
+				do()
+			} else {
+				fmt.Printf("Skipping database suite %q\n", name)
+			}
+		}
+
+		var waiter sync.WaitGroup
+
+		// go shouldRun(&waiter, `dynamodb`, func() { setupTestDynamoDB(run) })
+		go shouldRun(&waiter, `redis`, func() { setupTestRedis(run) })
+		go shouldRun(&waiter, `fs`, func() { setupTestFilesystemDefault(run) })
+		go shouldRun(&waiter, `fs`, func() { setupTestFilesystemJson(run) })
+		go shouldRun(&waiter, `fs`, func() { setupTestFilesystemYaml(run) })
+		go shouldRun(&waiter, `mongo`, func() { setupTestMongo(`3.2`, run) })
+		go shouldRun(&waiter, `mongo`, func() { setupTestMongo(`3.4`, run) })
+		go shouldRun(&waiter, `mongo`, func() { setupTestMongo(`3.6`, run) })
+		go shouldRun(&waiter, `mongo`, func() { setupTestMongo(`4.0`, run) })
+		go shouldRun(&waiter, `psql`, func() { setupTestPostgres(`9`, run) })
+		go shouldRun(&waiter, `psql`, func() { setupTestPostgres(`10`, run) })
+		go shouldRun(&waiter, `mysql`, func() { setupTestMysql(`5`, run) })
+		// go shouldRun(&waiter, `mysql`, func() { setupTestMysql(`8`, run) })
+		go shouldRun(&waiter, `sqlite`, func() { setupTestSqlite(run) })
+		go shouldRun(&waiter, `sqlite`, func() { setupTestSqliteWithAdditionalBleveIndexer(run) })
+		go shouldRun(&waiter, `sqlite`, func() { setupTestSqliteWithBleveIndexer(run) })
+
+		waiter.Wait()
+	}
+}
+
+func docker(container string, tag string, env map[string]interface{}, pingFn func(res *dockertest.Resource) (backends.Backend, error), runFn testRunnerFunc) {
 	pool, err := dockertest.NewPool("")
 	errpanic(err)
 
@@ -47,51 +108,59 @@ func docker(container string, tag string, env map[string]interface{}, pingFn fun
 
 	defer pool.Purge(resource)
 
+	var backend backends.Backend
+
 	errpanic(err)
 	errpanic(pool.Retry(func() error {
-		return pingFn(resource)
+		if b, err := pingFn(resource); err == nil {
+			backend = b
+			return nil
+		} else {
+			return err
+		}
 	}))
 
-	fmt.Printf("Ready\n")
-	runFn()
+	if backend != nil {
+		fmt.Printf("Ready\n")
+		runFn(backend)
+	} else {
+		panic(fmt.Sprintf("%v: no backend", container))
+	}
 }
 
-func setupTestSqlite(run func()) {
+func setupTestSqlite(run testRunnerFunc) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
 	if b, err := makeBackend(`sqlite://tmp/db_test/test.db`); err == nil {
-		backend = b
-		run()
+		run(b)
 	} else {
 		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
 	}
 }
 
-func setupTestRedis(run func()) {
+func setupTestRedis(run testRunnerFunc) {
 	if b, err := makeBackend(`redis://localhost:6379/testing?autoregister=true`); err == nil {
-		backend = b
-		run()
+		run(b)
 	} else {
 		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
 	}
 }
 
-func setupTestSqliteWithBleveIndexer(run func()) {
+func setupTestSqliteWithBleveIndexer(run testRunnerFunc) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
 	if b, err := makeBackend(`sqlite://tmp/db_test/test.db`, backends.ConnectOptions{
 		Indexer: `bleve:///./tmp/db_test/`,
 	}); err == nil {
-		backend = b
-		run()
+		run(b)
 	} else {
 		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
 	}
 }
 
-func setupTestSqliteWithAdditionalBleveIndexer(run func()) {
+func setupTestSqliteWithAdditionalBleveIndexer(run testRunnerFunc) {
 	os.RemoveAll(`./tmp/db_test`)
 	os.MkdirAll(`./tmp/db_test`, 0755)
 
@@ -100,52 +169,48 @@ func setupTestSqliteWithAdditionalBleveIndexer(run func()) {
 			`bleve:///./tmp/db_test/`,
 		},
 	}); err == nil {
-		backend = b
-		run()
+		run(b)
 	} else {
 		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
 	}
 }
 
-func setupTestMysql(version string, run func()) {
+func setupTestMysql(version string, run testRunnerFunc) {
 	docker(`mysql`, version, map[string]interface{}{
 		`MYSQL_ROOT_PASSWORD`: `pivot`,
 		`MYSQL_DATABASE`:      `pivot`,
-	}, func(res *dockertest.Resource) error {
+	}, func(res *dockertest.Resource) (backends.Backend, error) {
 		if b, err := makeBackend(
 			fmt.Sprintf("mysql://root:pivot@localhost:%v/pivot", res.GetPort("3306/tcp")),
 		); err == nil {
-			backend = b
-			return b.Ping(time.Second)
+			return b, b.Ping(time.Second)
 		} else {
-			return err
+			return nil, err
 		}
 	}, run)
 }
 
-func setupTestPostgres(version string, run func()) {
+func setupTestPostgres(version string, run testRunnerFunc) {
 	docker(`postgres`, version, map[string]interface{}{
 		`POSTGRES_PASSWORD`: `pivot`,
 		`POSTGRES_USER`:     `pivot`,
-	}, func(res *dockertest.Resource) error {
+	}, func(res *dockertest.Resource) (backends.Backend, error) {
 		if b, err := makeBackend(
 			fmt.Sprintf("postgres://pivot:pivot@localhost:%v/pivot", res.GetPort("5432/tcp")),
 		); err == nil {
-			backend = b
-			return b.Ping(time.Second)
+			return b, b.Ping(time.Second)
 		} else {
-			return err
+			return nil, err
 		}
 	}, run)
 }
 
-func setupTestFilesystemDefault(run func()) {
+func setupTestFilesystemDefault(run testRunnerFunc) {
 	if root, err := ioutil.TempDir(``, `pivot-backend-fs-default-`); err == nil {
 		defer os.RemoveAll(root)
 
 		if b, err := makeBackend(fmt.Sprintf("fs://%s/", root)); err == nil {
-			backend = b
-			run()
+			run(b)
 		} else {
 			fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
 		}
@@ -154,13 +219,12 @@ func setupTestFilesystemDefault(run func()) {
 	}
 }
 
-func setupTestFilesystemYaml(run func()) {
+func setupTestFilesystemYaml(run testRunnerFunc) {
 	if root, err := ioutil.TempDir(``, `pivot-backend-fs-yaml-`); err == nil {
 		defer os.RemoveAll(root)
 
 		if b, err := makeBackend(fmt.Sprintf("fs+yaml://%s/", root)); err == nil {
-			backend = b
-			run()
+			run(b)
 		} else {
 			fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
 		}
@@ -169,13 +233,12 @@ func setupTestFilesystemYaml(run func()) {
 	}
 }
 
-func setupTestFilesystemJson(run func()) {
+func setupTestFilesystemJson(run testRunnerFunc) {
 	if root, err := ioutil.TempDir(``, `pivot-backend-fs-json-`); err == nil {
 		defer os.RemoveAll(root)
 
 		if b, err := makeBackend(fmt.Sprintf("fs+json://%s/", root)); err == nil {
-			backend = b
-			run()
+			run(b)
 		} else {
 			fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
 		}
@@ -184,75 +247,35 @@ func setupTestFilesystemJson(run func()) {
 	}
 }
 
-func setupTestDynamoDB(run func()) {
+func setupTestDynamoDB(run testRunnerFunc) {
 	if b, err := makeBackend(fmt.Sprintf(
 		"dynamodb://%s:%s@%s",
 		os.Getenv(`AWS_ACCESS_KEY_ID`),
 		os.Getenv(`AWS_SECRET_ACCESS_KEY`),
 		`us-east-1`,
 	)); err == nil {
-		backend = b
-
 		testCrudIdSet = []interface{}{nil, nil, nil}
-		run()
+		run(b)
 		testCrudIdSet = defaultTestCrudIdSet
 	} else {
 		panic(fmt.Sprintf("Failed to create backend: %v\n", err))
 	}
 }
 
-func setupTestMongo(version string, run func()) {
+func setupTestMongo(version string, run testRunnerFunc) {
 	docker(`mongo`, version, map[string]interface{}{
 		`MONGO_INITDB_ROOT_USERNAME`: `pivot`,
 		`MONGO_INITDB_ROOT_PASSWORD`: `pivot`,
 		`MONGO_INITDB_DATABASE`:      `pivot`,
-	}, func(res *dockertest.Resource) error {
+	}, func(res *dockertest.Resource) (backends.Backend, error) {
 		if b, err := makeBackend(
 			fmt.Sprintf("mongodb://pivot:pivot@localhost:%v/pivot?authdb=admin", res.GetPort("27017/tcp")),
 		); err == nil {
-			backend = b
-			return b.Ping(time.Second)
+			return b, b.Ping(time.Second)
 		} else {
-			return err
+			return nil, err
 		}
 	}, run)
-}
-
-func TestMain(m *testing.M) {
-	var i int
-
-	log.SetLevel(log.DEBUG)
-
-	run := func() {
-		i = m.Run()
-
-		if i != 0 {
-			os.Exit(i)
-		}
-	}
-
-	if typeutil.V(os.Getenv(`CI`)).Bool() {
-		// setupTestDynamoDB(run)
-		setupTestRedis(run)
-		setupTestFilesystemDefault(run)
-		setupTestFilesystemJson(run)
-		setupTestFilesystemYaml(run)
-
-		setupTestMongo(`3.2`, run)
-		setupTestMongo(`3.4`, run)
-		setupTestMongo(`3.6`, run)
-		setupTestMongo(`4.0`, run)
-
-		setupTestPostgres(`9`, run)
-		setupTestPostgres(`10`, run)
-
-		setupTestMysql(`5`, run)
-		// setupTestMysql(`8`, run)
-
-		setupTestSqlite(run)
-		setupTestSqliteWithAdditionalBleveIndexer(run)
-		setupTestSqliteWithBleveIndexer(run)
-	}
 }
 
 func makeBackend(conn string, options ...backends.ConnectOptions) (backends.Backend, error) {
@@ -271,25 +294,25 @@ func makeBackend(conn string, options ...backends.ConnectOptions) (backends.Back
 	}
 }
 
-func TestCollectionManagement(t *testing.T) {
+func testCollectionManagement(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 
 	err := backend.CreateCollection(dal.NewCollection(`TestCollectionManagement`))
 
 	defer func() {
-		assert.Nil(backend.DeleteCollection(`TestCollectionManagement`))
+		assert.NoError(backend.DeleteCollection(`TestCollectionManagement`))
 	}()
 
-	assert.Nil(err)
+	assert.NoError(err)
 
 	if coll, err := backend.GetCollection(`TestCollectionManagement`); err == nil {
 		assert.Equal(`TestCollectionManagement`, coll.Name)
 	} else {
-		assert.Nil(err)
+		assert.NoError(err)
 	}
 }
 
-func TestBasicCRUD(t *testing.T) {
+func testBasicCRUD(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 
 	err := backend.CreateCollection(
@@ -400,7 +423,7 @@ func TestBasicCRUD(t *testing.T) {
 	assert.Nil(backend.Delete(`TestBasicCRUD`, recordset.Records[1].ID))
 }
 
-func TestIdFormattersRandomId(t *testing.T) {
+func testIdFormattersRandomId(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 
 	assert.Nil(backend.CreateCollection(
@@ -449,7 +472,7 @@ func TestIdFormattersRandomId(t *testing.T) {
 	assert.Equal(`Third`, record.Get(`name`))
 }
 
-func TestIdFormattersIdFromFieldValues(t *testing.T) {
+func testIdFormattersIdFromFieldValues(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 
 	assert.Nil(backend.CreateCollection(
@@ -505,7 +528,7 @@ func TestIdFormattersIdFromFieldValues(t *testing.T) {
 	assert.Equal(`third`, record.Get(`name`))
 }
 
-func TestSearchQuery(t *testing.T) {
+func testSearchQuery(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 	collection := dal.NewCollection(`TestSearchQuery`).
 		AddFields(dal.Field{
@@ -586,7 +609,7 @@ func TestSearchQuery(t *testing.T) {
 	}
 }
 
-func TestSearchQueryPaginated(t *testing.T) {
+func testSearchQueryPaginated(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 	collection := dal.NewCollection(`TestSearchQueryPaginated`)
 
@@ -628,7 +651,7 @@ func TestSearchQueryPaginated(t *testing.T) {
 	}
 }
 
-func TestSearchQueryLimit(t *testing.T) {
+func testSearchQueryLimit(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 	backends.IndexerPageSize = 100
 	c := dal.NewCollection(`TestSearchQueryLimit`)
@@ -674,7 +697,7 @@ func TestSearchQueryLimit(t *testing.T) {
 	}
 }
 
-func TestSearchQueryOffset(t *testing.T) {
+func testSearchQueryOffset(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 	backends.IndexerPageSize = 100
 	c := dal.NewCollection(`TestSearchQueryOffset`)
@@ -719,7 +742,7 @@ func TestSearchQueryOffset(t *testing.T) {
 	}
 }
 
-func TestSearchQueryOffsetLimit(t *testing.T) {
+func testSearchQueryOffsetLimit(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 	c := dal.NewCollection(`TestSearchQueryOffsetLimit`)
 
@@ -771,7 +794,7 @@ func TestSearchQueryOffsetLimit(t *testing.T) {
 	}
 }
 
-func TestListValues(t *testing.T) {
+func testListValues(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 	collection := dal.NewCollection(`TestListValues`).
 		AddFields(dal.Field{
@@ -840,7 +863,7 @@ func TestListValues(t *testing.T) {
 	}
 }
 
-func TestSearchAnalysis(t *testing.T) {
+func testSearchAnalysis(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 	collection := dal.NewCollection(`TestSearchAnalysis`).
 		AddFields(dal.Field{
@@ -891,7 +914,7 @@ func TestSearchAnalysis(t *testing.T) {
 	}
 }
 
-func TestObjectType(t *testing.T) {
+func testObjectType(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 
 	err := backend.CreateCollection(
@@ -941,7 +964,7 @@ func TestObjectType(t *testing.T) {
 	assert.EqualValues(1, record.GetNested(`properties.count`))
 }
 
-func TestAggregators(t *testing.T) {
+func testAggregators(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 	collection := dal.NewCollection(`TestAggregators`).
 		AddFields(dal.Field{

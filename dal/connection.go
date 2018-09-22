@@ -63,18 +63,25 @@ func (self *ConnectionString) Backend() string {
 
 // Returns the protocol component of the string.
 func (self *ConnectionString) Protocol(defaults ...string) string {
-	_, protocol := self.Scheme()
 
-	if protocol == `` && len(defaults) > 0 {
+	if _, protocol := self.Scheme(); protocol != `` {
+		return protocol
+	} else if len(defaults) > 0 {
 		return defaults[0]
 	} else {
-		return protocol
+		return ``
 	}
 }
 
 // Returns the host component of the string.
-func (self *ConnectionString) Host() string {
-	return self.URI.Host
+func (self *ConnectionString) Host(defaults ...string) string {
+	if host := self.URI.Host; host != `` {
+		return host
+	} else if len(defaults) > 0 {
+		return defaults[0]
+	} else {
+		return ``
+	}
 }
 
 // Returns the dataset component of the string.

@@ -4,23 +4,46 @@ import (
 	"testing"
 
 	"github.com/ghetzel/go-stockutil/log"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot"
 	"github.com/ghetzel/pivot/dal"
 	"github.com/stretchr/testify/require"
 )
 
+type testTypeWithStringer int
+
+const (
+	TestFirst testTypeWithStringer = iota
+	TestSecond
+	TestThird
+)
+
+func (self testTypeWithStringer) String() string {
+	switch self {
+	case TestFirst:
+		return `first`
+	case TestSecond:
+		return `second`
+	case TestThird:
+		return `third`
+	default:
+		return ``
+	}
+}
+
 func TestModelCRUD(t *testing.T) {
 	log.SetLevel(log.DEBUG)
 	assert := require.New(t)
 
-	db, err := pivot.NewDatabase(`sqlite://`)
+	db, err := pivot.NewDatabase(`redis://`)
 	assert.Nil(err)
 
 	type ModelOne struct {
 		ID      int
-		Name    string `pivot:"name"`
-		Enabled bool   `pivot:"enabled,omitempty"`
-		Size    int    `pivot:"size,omitempty"`
+		Name    string               `pivot:"name"`
+		Enabled bool                 `pivot:"enabled,omitempty"`
+		Type    testTypeWithStringer `pivot:"type"`
+		Size    int                  `pivot:"size,omitempty"`
 	}
 
 	model1 := NewModel(db, &dal.Collection{
@@ -29,12 +52,19 @@ func TestModelCRUD(t *testing.T) {
 			{
 				Name: `name`,
 				Type: dal.StringType,
+				Formatter: func(value interface{}, op dal.FieldOperation) (interface{}, error) {
+					return stringutil.Camelize(value), nil
+				},
 			}, {
 				Name: `enabled`,
 				Type: dal.BooleanType,
 			}, {
 				Name: `size`,
 				Type: dal.IntType,
+			}, {
+				Name:         `type`,
+				Type:         dal.IntType,
+				DefaultValue: TestFirst,
 			},
 		},
 	})
@@ -46,6 +76,7 @@ func TestModelCRUD(t *testing.T) {
 		Name:    `test-1`,
 		Enabled: true,
 		Size:    12345,
+		Type:    TestSecond,
 	}))
 
 	v := new(ModelOne)
@@ -53,11 +84,13 @@ func TestModelCRUD(t *testing.T) {
 
 	assert.Nil(err)
 	assert.Equal(1, v.ID)
-	assert.Equal(`test-1`, v.Name)
+	assert.Equal(`Test1`, v.Name)
 	assert.Equal(true, v.Enabled)
 	assert.Equal(12345, v.Size)
+	assert.Equal(TestSecond, v.Type)
 
 	v.Name = `testerly-one`
+	v.Type = TestThird
 	assert.Nil(model1.Update(v))
 
 	v = new(ModelOne)
@@ -65,9 +98,10 @@ func TestModelCRUD(t *testing.T) {
 
 	assert.Nil(err)
 	assert.Equal(1, v.ID)
-	assert.Equal(`testerly-one`, v.Name)
+	assert.Equal(`TesterlyOne`, v.Name)
 	assert.Equal(true, v.Enabled)
 	assert.Equal(12345, v.Size)
+	assert.Equal(TestThird, v.Type)
 
 	assert.Nil(model1.Delete(1))
 	assert.Error(model1.Get(1, nil))

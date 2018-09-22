@@ -81,6 +81,7 @@ require (
 	github.com/stretchr/testify v1.2.1
 	github.com/tinylib/msgp v1.0.2
 	github.com/urfave/negroni v0.3.0
+	github.com/vmihailenco/msgpack v4.0.0+incompatible
 	github.com/willf/bitset v0.0.0-20161202170036-5c3c0fce4884
 	github.com/yosssi/gohtml v0.0.0-20180130040904-97fbf36f4aa8
 	golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b

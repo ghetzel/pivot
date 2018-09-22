@@ -22,6 +22,3 @@ test:
 
 build:
 	test -d pivot && go build --tags json1 -i -o bin/pivot pivot/*.go
-
-quickbuild: deps fmt
-	test -d pivot && go build -i -o bin/pivot pivot/*.go

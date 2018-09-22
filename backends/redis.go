@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
@@ -14,8 +15,11 @@ import (
 	"github.com/ghetzel/pivot/dal"
 	"github.com/ghetzel/pivot/filter"
 	"github.com/gomodule/redigo/redis"
+	"github.com/vmihailenco/msgpack"
 )
 
+var RedisDefaultProtocol = `tcp`
+var RedisDefaultAddress = `localhost:6379`
 var redisDefaultKeyPrefix = `pivot.`
 var redisDefaultPingTimeout = 5 * time.Second
 var redisDefaultCommandTimeout = 20 * time.Second
@@ -67,6 +71,7 @@ func (self *RedisBackend) Ping(timeout time.Duration) error {
 }
 
 func (self *RedisBackend) RegisterCollection(collection *dal.Collection) {
+	log.Debugf("[%v] register collection %q", self, collection.Name)
 	self.registeredCollections.Store(collection.Name, collection)
 }
 
@@ -129,7 +134,7 @@ func (self *RedisBackend) Retrieve(name string, id interface{}, fields ...string
 					fieldValue := fmt.Sprintf("%v", pair[1])
 
 					if len(fields) == 0 || sliceutil.ContainsString(fields, fieldName) {
-						if value, err := self.decode(collection, fieldName, fieldValue); err == nil {
+						if value, err := self.decode(collection, fieldName, []byte(fieldValue)); err == nil {
 							record.Set(fieldName, value)
 						}
 					}
@@ -187,6 +192,8 @@ func (self *RedisBackend) ListCollections() ([]string, error) {
 }
 
 func (self *RedisBackend) CreateCollection(definition *dal.Collection) error {
+	querylog.Debugf("[%t] Create collection %v", self, definition.Name)
+
 	// write the schema definition to the schema key
 	if data, err := json.Marshal(definition); err == nil {
 		schemaKey := self.key(definition.Name, `__schema__`)
@@ -219,6 +226,10 @@ func (self *RedisBackend) DeleteCollection(name string) error {
 			}
 		}
 
+		if _, err := self.run(`DEL`, self.key(name, `__schema__`)); err != nil {
+			merr = utils.AppendError(merr, err)
+		}
+
 		return merr
 	} else {
 		return err
@@ -226,11 +237,15 @@ func (self *RedisBackend) DeleteCollection(name string) error {
 }
 
 func (self *RedisBackend) GetCollection(name string) (*dal.Collection, error) {
-	if collectionI, ok := self.registeredCollections.Load(name); ok {
-		return collectionI.(*dal.Collection), nil
-	} else {
-		return nil, dal.CollectionNotFound
+	if collectionI, ok := self.registeredCollections.Load(name); ok && collectionI != nil {
+		schemaKey := self.key(name, `__schema__`)
+
+		if i, err := redis.Int(self.run(`EXISTS`, schemaKey)); err == nil && i == 1 {
+			return collectionI.(*dal.Collection), nil
+		}
 	}
+
+	return nil, dal.CollectionNotFound
 }
 
 func (self *RedisBackend) Flush() error {
@@ -269,7 +284,7 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 
 			for key, value := range record.Fields {
 				if encoded, err := self.encode(collection, key, value); err == nil {
-					if encoded != `` {
+					if len(encoded) > 0 {
 						args = append(args, key)
 						args = append(args, encoded)
 					}
@@ -301,44 +316,37 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 	}
 }
 
-func (self *RedisBackend) encode(collection *dal.Collection, key string, value interface{}) (string, error) {
-	if field, ok := collection.GetField(key); ok {
-		var encoded string
-
-		switch field.Type {
-		case dal.ObjectType:
-			if data, err := json.Marshal(value); err == nil {
-				encoded = string(data)
-			} else {
-				return ``, err
-			}
-		default:
-			if enc, err := stringutil.ToString(value); err == nil {
-				encoded = enc
-			} else {
-				return ``, err
-			}
+func (self *RedisBackend) encode(collection *dal.Collection, key string, value interface{}) ([]byte, error) {
+	if _, ok := collection.GetField(key); ok {
+		if data, err := msgpack.Marshal(value); err == nil {
+			return data, nil
+		} else {
+			return nil, err
 		}
-
-		return encoded, nil
 	} else {
-		return ``, nil
+		return nil, fmt.Errorf("No such field %q", key)
 	}
 }
 
-func (self *RedisBackend) decode(collection *dal.Collection, key string, value string) (interface{}, error) {
+func (self *RedisBackend) decode(collection *dal.Collection, key string, value []byte) (interface{}, error) {
 	if field, ok := collection.GetField(key); ok {
 		switch field.Type {
 		case dal.ObjectType:
 			var out map[string]interface{}
 
-			if err := json.Unmarshal([]byte(value), &out); err == nil {
+			if err := msgpack.Unmarshal(value, &out); err == nil {
 				return out, nil
 			} else {
 				return nil, err
 			}
 		default:
-			return field.ConvertValue(value)
+			var out interface{}
+
+			if err := msgpack.Unmarshal(value, &out); err == nil {
+				return field.ConvertValue(out)
+			} else {
+				return nil, err
+			}
 		}
 	} else {
 		return nil, fmt.Errorf("No such field %q", key)
@@ -365,8 +373,12 @@ func (self *RedisBackend) refreshCollection(schemaKey string) error {
 			var collection dal.Collection
 
 			if err := json.Unmarshal(schemadef, &collection); err == nil {
-				self.RegisterCollection(&collection)
-				return nil
+				if collection.Name != `` {
+					self.RegisterCollection(&collection)
+					return nil
+				} else {
+					return fmt.Errorf("Invalid collection schema")
+				}
 			} else {
 				return err
 			}
@@ -393,7 +405,7 @@ func (self *RedisBackend) run(cmd string, args ...interface{}) (interface{}, err
 	if conn := self.pool.Get(); conn != nil {
 		defer conn.Close()
 
-		querylog.Debugf("[%v] %v %v", self, cmd, strings.Join(sliceutil.Stringify(args), ` `))
+		// querylog.Debugf("[%v] %v %v", self, cmd, strings.Join(sliceutil.Stringify(args), ` `))
 		return redis.DoWithTimeout(conn, self.cmdTimeout, cmd, args...)
 	} else {
 		return nil, fmt.Errorf("Failed to borrow Redis connection")
@@ -415,8 +427,8 @@ func (self *RedisBackend) connect() error {
 			}
 
 			return redis.Dial(
-				self.cs.Protocol(`tcp`),
-				self.cs.Host(),
+				self.cs.Protocol(RedisDefaultProtocol),
+				self.cs.Host(RedisDefaultAddress),
 				options...,
 			)
 		},
