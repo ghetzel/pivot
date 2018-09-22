@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/ghetzel/pivot/dal"
-	"github.com/ghetzel/pivot/filter"
-	"github.com/ghetzel/pivot/filter/generators"
+	"github.com/ghetzel/pivot/v3/dal"
+	"github.com/ghetzel/pivot/v3/filter"
+	"github.com/ghetzel/pivot/v3/filter/generators"
 )
 
 type esAggregationQuery struct {

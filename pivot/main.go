@@ -9,12 +9,12 @@ import (
 	"github.com/ghetzel/cli"
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/stringutil"
-	"github.com/ghetzel/pivot"
-	"github.com/ghetzel/pivot/backends"
-	"github.com/ghetzel/pivot/dal"
-	"github.com/ghetzel/pivot/filter"
-	"github.com/ghetzel/pivot/filter/generators"
-	"github.com/ghetzel/pivot/mapper"
+	"github.com/ghetzel/pivot/v3"
+	"github.com/ghetzel/pivot/v3/backends"
+	"github.com/ghetzel/pivot/v3/dal"
+	"github.com/ghetzel/pivot/v3/filter"
+	"github.com/ghetzel/pivot/v3/filter/generators"
+	"github.com/ghetzel/pivot/v3/mapper"
 )
 
 func main() {

@@ -8,8 +8,8 @@ import (
 	"path"
 	"time"
 
-	"github.com/ghetzel/pivot/backends"
-	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/v3/backends"
+	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghodss/yaml"
 )
 

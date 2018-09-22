@@ -12,7 +12,7 @@ import (
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/timeutil"
-	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/v3/dal"
 )
 
 var CriteriaSeparator = `/`

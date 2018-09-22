@@ -18,8 +18,8 @@ import (
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
-	"github.com/ghetzel/pivot/dal"
-	"github.com/ghetzel/pivot/filter"
+	"github.com/ghetzel/pivot/v3/dal"
+	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/orcaman/concurrent-map"
 )
 

@@ -5,8 +5,8 @@ import (
 
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/stringutil"
-	"github.com/ghetzel/pivot"
-	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/v3"
+	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/stretchr/testify/require"
 )
 

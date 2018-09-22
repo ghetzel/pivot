@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/ghetzel/go-stockutil/maputil"
-	"github.com/ghetzel/pivot/filter"
+	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/stretchr/testify/require"
 )
 

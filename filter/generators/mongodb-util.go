@@ -5,7 +5,7 @@ import (
 	"regexp"
 
 	"github.com/ghetzel/go-stockutil/stringutil"
-	"github.com/ghetzel/pivot/filter"
+	"github.com/ghetzel/pivot/v3/filter"
 )
 
 var rxCharFilter = regexp.MustCompile(`[\W\s]`)

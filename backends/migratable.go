@@ -1,7 +1,7 @@
 package backends
 
 import (
-	"github.com/ghetzel/pivot/dal"
+	"github.com/ghetzel/pivot/v3/dal"
 )
 
 type Migratable interface {

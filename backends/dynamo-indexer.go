@@ -7,8 +7,8 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/ghetzel/pivot/dal"
-	"github.com/ghetzel/pivot/filter"
+	"github.com/ghetzel/pivot/v3/dal"
+	"github.com/ghetzel/pivot/v3/filter"
 )
 
 func (self *DynamoBackend) IndexConnectionString() *dal.ConnectionString {

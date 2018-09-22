@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/ghetzel/go-stockutil/stringutil"
-	"github.com/ghetzel/pivot/dal"
-	"github.com/ghetzel/pivot/filter"
-	"github.com/ghetzel/pivot/filter/generators"
+	"github.com/ghetzel/pivot/v3/dal"
+	"github.com/ghetzel/pivot/v3/filter"
+	"github.com/ghetzel/pivot/v3/filter/generators"
 	_ "github.com/go-sql-driver/mysql"
 )
 

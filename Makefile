@@ -3,19 +3,19 @@
 LOCALS :=$(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 .EXPORT_ALL_VARIABLES:
-GO111MODULE           = on
+GO111MODULE = on
 
 all: deps fmt test build
 
 deps:
 	go get ./...
+	go vet ./...
 
 fmt:
 	@go list github.com/mjibson/esc || go get github.com/mjibson/esc/...
 	@go list golang.org/x/tools/cmd/goimports || go get golang.org/x/tools/cmd/goimports
 	go generate -x ./...
-	goimports -w $(LOCALS)
-	go vet ./...
+	gofmt -w $(LOCALS)
 
 test:
 	go test --tags json1 ./...

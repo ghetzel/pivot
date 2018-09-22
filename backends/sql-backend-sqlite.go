@@ -12,8 +12,8 @@ import (
 	"github.com/ghetzel/go-stockutil/pathutil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
-	"github.com/ghetzel/pivot/dal"
-	"github.com/ghetzel/pivot/filter/generators"
+	"github.com/ghetzel/pivot/v3/dal"
+	"github.com/ghetzel/pivot/v3/filter/generators"
 	_ "github.com/mattn/go-sqlite3"
 )
 
