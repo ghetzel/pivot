@@ -15,7 +15,6 @@ import (
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/gomodule/redigo/redis"
-	"github.com/vmihailenco/msgpack"
 )
 
 var RedisDefaultProtocol = `tcp`
@@ -284,10 +283,8 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 
 			for key, value := range record.Fields {
 				if encoded, err := self.encode(collection, key, value); err == nil {
-					if len(encoded) > 0 {
-						args = append(args, key)
-						args = append(args, encoded)
-					}
+					args = append(args, key)
+					args = append(args, encoded)
 				}
 			}
 
@@ -318,7 +315,7 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 
 func (self *RedisBackend) encode(collection *dal.Collection, key string, value interface{}) ([]byte, error) {
 	if _, ok := collection.GetField(key); ok {
-		if data, err := msgpack.Marshal(value); err == nil {
+		if data, err := json.Marshal(value); err == nil {
 			return data, nil
 		} else {
 			return nil, err
@@ -334,7 +331,7 @@ func (self *RedisBackend) decode(collection *dal.Collection, key string, value [
 		case dal.ObjectType:
 			var out map[string]interface{}
 
-			if err := msgpack.Unmarshal(value, &out); err == nil {
+			if err := json.Unmarshal(value, &out); err == nil {
 				return out, nil
 			} else {
 				return nil, err
@@ -342,7 +339,7 @@ func (self *RedisBackend) decode(collection *dal.Collection, key string, value [
 		default:
 			var out interface{}
 
-			if err := msgpack.Unmarshal(value, &out); err == nil {
+			if err := json.Unmarshal(value, &out); err == nil {
 				return field.ConvertValue(out)
 			} else {
 				return nil, err
