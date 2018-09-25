@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from __future__ import absolute_import
 from .results import RecordSet, Record
 from . import exceptions
@@ -195,6 +196,15 @@ class Collection(object):
 
     def update(self, *records):
         return self.create(*records, update=True)
+
+    def update_or_create(self, *records):
+        try:
+            return self.update(*records)
+        except Exception as e:
+            if 'Cannot update record without an ID' in e.message:
+                return self.create(*records)
+            else:
+                raise
 
     def aggregate(self, fields, fns=None, filterstring=None, noexpand=None):
         """
