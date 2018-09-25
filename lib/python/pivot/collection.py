@@ -184,15 +184,13 @@ class Collection(object):
             'fields': record,
         } for record in [dict(r) for r in records]]
 
-        self.client.request(
+        return RecordSet(self.client.request(
             ('put' if update else 'post'),
             '/api/collections/{}/records'.format(self.name),
             {
                 'records': records,
             }
-        )
-
-        return True
+        ).json())
 
     def update(self, *records):
         return self.create(*records, update=True)

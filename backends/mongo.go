@@ -163,11 +163,11 @@ func (self *MongoBackend) Insert(name string, records *dal.RecordSet) error {
 				self.normalizeRecordValues(record)
 				data := self.prepareValuesForWrite(record.Fields)
 
-				if record.ID != nil {
-					data[MongoIdentityField] = self.getId(record.ID)
-				} else {
-					delete(data, MongoIdentityField)
+				if record.ID == nil {
+					record.ID = bson.NewObjectId().Hex()
 				}
+
+				data[MongoIdentityField] = self.getId(record.ID)
 
 				if err := self.db.C(collection.Name).Insert(&data); err != nil {
 					return err
