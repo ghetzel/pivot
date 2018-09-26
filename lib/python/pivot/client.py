@@ -5,6 +5,7 @@ import requests.exceptions
 from . import exceptions
 from .collection import Collection, Field
 from .utils import compact
+import json
 
 
 DEFAULT_URL = 'http://localhost:29029'
@@ -32,16 +33,19 @@ class Client(object):
         if response.status_code < 400:
             return response
         else:
-            body = response.json()
+            try:
+                body = response.json()
 
-            if response.status_code == 403:
-                raise exceptions.AuthenticationFailed(response, body)
-            elif response.status_code == 404:
-                raise exceptions.NotFound(response, body)
-            elif response.status_code >= 500:
-                raise exceptions.ServiceUnavailable(response, body)
-            else:
-                raise exceptions.HttpError(response, body)
+                if response.status_code == 403:
+                    raise exceptions.AuthenticationFailed(response, body)
+                elif response.status_code == 404:
+                    raise exceptions.NotFound(response, body)
+                elif response.status_code >= 500:
+                    raise exceptions.ServiceUnavailable(response, body)
+                else:
+                    raise exceptions.HttpError(response, body)
+            except json.decoder.JSONDecodeError:
+                raise exceptions.HttpError(response, None)
 
     def make_url(self, path):
         return '{}/{}'.format(self.url, path.lstrip('/'))

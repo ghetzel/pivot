@@ -3,6 +3,7 @@ from __future__ import absolute_import
 from .results import RecordSet, Record
 from . import exceptions
 from .utils import compact
+import json
 
 
 class Field(object):
@@ -184,13 +185,18 @@ class Collection(object):
             'fields': record,
         } for record in [dict(r) for r in records]]
 
-        return RecordSet(self.client.request(
+        response = self.client.request(
             ('put' if update else 'post'),
             '/api/collections/{}/records'.format(self.name),
             {
                 'records': records,
             }
-        ).json())
+        )
+
+        if len(response.content):
+            return RecordSet(response.json())
+        else:
+            return RecordSet({})
 
     def update(self, *records):
         return self.create(*records, update=True)
@@ -199,7 +205,7 @@ class Collection(object):
         try:
             return self.update(*records)
         except Exception as e:
-            if 'Cannot update record without an ID' in e.message:
+            if 'Cannot update record without an ID' in '{}'.format(e):
                 return self.create(*records)
             else:
                 raise

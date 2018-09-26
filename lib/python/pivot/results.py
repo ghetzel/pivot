@@ -35,11 +35,11 @@ class RecordSet(object):
 
     def __init__(self, response, client=None):
         if not isinstance(response, dict):
-            raise ValueError('RecordSet must be populated with a dict')
+            raise ValueError('RecordSet must be populated with a dict, got {}'.format(response.__class__))
 
         self._client = client
         self.response = response
-        self._result_count = response['result_count']
+        self._result_count = response.get('result_count', 0)
         self._results_iter = iter(self.records)
 
     @property
