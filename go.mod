@@ -57,7 +57,7 @@ require (
 	github.com/mafredri/cdp v0.17.2
 	github.com/mattn/go-colorable v0.0.9
 	github.com/mattn/go-isatty v0.0.3
-	github.com/mattn/go-sqlite3 v1.6.0
+	github.com/mattn/go-sqlite3 v1.9.0
 	github.com/mcuadros/go-defaults v1.1.0
 	github.com/microcosm-cc/bluemonday v0.0.0-20180327211928-995366fdf961
 	github.com/mitchellh/mapstructure v0.0.0-20180715050151-f15292f7a699
