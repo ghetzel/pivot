@@ -13,4 +13,5 @@ services:
 - docker
 
 before_install:
+- go get github.com/ory/dockertest
 - go get github.com/mjibson/esc/...
