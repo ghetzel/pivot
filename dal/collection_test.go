@@ -181,3 +181,59 @@ func TestCollectionMapFromRecord(t *testing.T) {
 		`age`:     42,
 	}, rv)
 }
+
+func TestCollectionTTLField(t *testing.T) {
+	assert := require.New(t)
+
+	collection := &Collection{
+		Name:              `TestCollectionTTLField`,
+		IdentityFieldType: StringType,
+		TimeToLiveField:   `ttl`,
+	}
+
+	assert.Zero(collection.TTL(NewRecord(`test1`)))
+	assert.Zero(collection.TTL(NewRecord(`test1`).Set(`ttl`, nil)))
+	assert.Zero(collection.TTL(NewRecord(`test1`).Set(`ttl`, 0)))
+	assert.Zero(collection.TTL(NewRecord(`test1`).Set(`ttl`, ``)))
+	assert.Zero(collection.TTL(NewRecord(`test1`).Set(`ttl`, false)))
+
+	assert.NotZero(
+		collection.TTL(NewRecord(`test1`).Set(`ttl`, time.Now().Add(time.Second))),
+	)
+
+	assert.NotZero(
+		collection.TTL(NewRecord(`test1`).Set(`ttl`, time.Now().Unix()+60)),
+	)
+}
+
+func TestCollectionIsExpired(t *testing.T) {
+	assert := require.New(t)
+
+	collection := &Collection{
+		Name:              `TestCollectionIsExpired`,
+		IdentityFieldType: StringType,
+		TimeToLiveField:   `ttl`,
+	}
+
+	assert.False(collection.IsExpired(NewRecord(`test1`)))
+	assert.False(collection.IsExpired(NewRecord(`test1`).Set(`ttl`, nil)))
+	assert.False(collection.IsExpired(NewRecord(`test1`).Set(`ttl`, 0)))
+	assert.False(collection.IsExpired(NewRecord(`test1`).Set(`ttl`, ``)))
+	assert.False(collection.IsExpired(NewRecord(`test1`).Set(`ttl`, false)))
+
+	assert.False(
+		collection.IsExpired(NewRecord(`test1`).Set(`ttl`, time.Now().Add(time.Second))),
+	)
+
+	assert.False(
+		collection.IsExpired(NewRecord(`test1`).Set(`ttl`, time.Now().Unix()+60)),
+	)
+
+	assert.True(
+		collection.IsExpired(NewRecord(`test1`).Set(`ttl`, time.Now().Add(-1*time.Nanosecond))),
+	)
+
+	assert.True(
+		collection.IsExpired(NewRecord(`test1`).Set(`ttl`, time.Now().Unix()-60)),
+	)
+}

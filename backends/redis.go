@@ -132,10 +132,10 @@ func (self *RedisBackend) Exists(name string, id interface{}) bool {
 
 func (self *RedisBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
-		keyLen := len(collection.Keys())
-
-		if idLen := sliceutil.Len(id); idLen != keyLen {
-			return nil, fmt.Errorf("expected %d key values, got %d", keyLen, idLen)
+		if keyLen := len(collection.Keys()); keyLen > 0 {
+			if idLen := sliceutil.Len(id); idLen != keyLen {
+				return nil, fmt.Errorf("%v: expected %d key values, got %d", self, keyLen, idLen)
+			}
 		}
 
 		if dbfields, err := redis.Strings(self.run(`HGETALL`, self.key(collection, id))); err == nil {
@@ -183,8 +183,8 @@ func (self *RedisBackend) Delete(name string, ids ...interface{}) error {
 		keyLen := len(collection.Keys())
 
 		for _, id := range ids {
-			if idLen := sliceutil.Len(id); idLen != keyLen {
-				return fmt.Errorf("expected %d key values, got %d", keyLen, idLen)
+			if idLen := sliceutil.Len(id); keyLen > 0 && idLen != keyLen {
+				return fmt.Errorf("%v: expected %d key values, got %d", self, keyLen, idLen)
 			}
 
 			if _, err := self.run(`DEL`, self.key(collection, id)); err != nil {
@@ -311,6 +311,7 @@ func (self *RedisBackend) key(collection *dal.Collection, id interface{}) string
 func (self *RedisBackend) upsert(create bool, collectionName string, recordset *dal.RecordSet) error {
 	if collection, err := self.GetCollection(collectionName); err == nil {
 		var merr error
+		var ttlSeconds int
 
 		keyLen := len(collection.Keys())
 
@@ -321,8 +322,15 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 				return err
 			}
 
+			// don't even attempt to write already-expired records
+			if collection.IsExpired(record) {
+				return nil
+			} else {
+				ttlSeconds = int(collection.TTL(record).Round(time.Second).Seconds())
+			}
+
 			if idLen := sliceutil.Len(record.ID); keyLen > 0 && idLen != keyLen {
-				return fmt.Errorf("expected %d key values, got %d", keyLen, idLen)
+				return fmt.Errorf("%v: expected %d key values, got %d", self, keyLen, idLen)
 			}
 
 			var key string = self.key(collection, record.ID)
@@ -342,7 +350,13 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 
 				args = append([]interface{}{key}, args...)
 
-				if _, err := self.run(`HMSET`, args...); err != nil {
+				if _, err := self.run(`HMSET`, args...); err == nil {
+					if ttlSeconds > 0 {
+						if _, err := self.run(`EXPIRE`, key, ttlSeconds); err != nil {
+							merr = utils.AppendError(merr, err)
+						}
+					}
+				} else {
 					merr = utils.AppendError(merr, err)
 				}
 			}

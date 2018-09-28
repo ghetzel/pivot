@@ -89,6 +89,9 @@ func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error) {
 	case `current-time-if-unset`:
 		return CurrentTimeIfUnset, nil
 
+	case `now-plus-duration`:
+		return NowPlusDuration(typeutil.V(args).Duration()), nil
+
 	default:
 		return nil, fmt.Errorf("Unknown formatter %q", name)
 	}
@@ -248,4 +251,14 @@ func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, erro
 	}
 
 	return value, nil
+}
+
+func NowPlusDuration(duration time.Duration) FieldFormatterFunc {
+	return func(value interface{}, op FieldOperation) (interface{}, error) {
+		if op == PersistOperation && duration != 0 {
+			return time.Now().Add(duration), nil
+		} else {
+			return value, nil
+		}
+	}
 }

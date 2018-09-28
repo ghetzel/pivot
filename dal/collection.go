@@ -3,6 +3,7 @@ package dal
 import (
 	"fmt"
 	"reflect"
+	"time"
 
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
@@ -43,6 +44,7 @@ type Collection struct {
 	AllowMissingEmbeddedRecords bool                    `json:"allow_missing_embedded_records"`
 	TotalRecords                int64                   `json:"total_records,omitempty"`
 	TotalRecordsExact           bool                    `json:"total_records_exact,omitempty"`
+	TimeToLiveField             string                  `json:"time_to_live_field"`
 	IdentityFieldFormatter      FieldFormatterFunc      `json:"-"`
 	IdentityFieldValidator      FieldValidatorFunc      `json:"-"`
 	PreSaveValidator            CollectionValidatorFunc `json:"-"`
@@ -57,6 +59,30 @@ func NewCollection(name string) *Collection {
 		IdentityField:          DefaultIdentityField,
 		IdentityFieldType:      DefaultIdentityFieldType,
 		IdentityFieldValidator: ValidateNotEmpty,
+	}
+}
+
+// Return the duration until the TimeToLiveField in given record expires within the current collection.
+// Collections with an empty TimeToLiveField, or records with a missing or zero-valued TimeToLiveField
+// will return 0.  If the record has already expired, the returned duration will be a negative number.
+func (self *Collection) TTL(record *Record) time.Duration {
+	if self.TimeToLiveField != `` {
+		if value := record.Get(self.TimeToLiveField); !typeutil.IsZero(value) {
+			if expireAt := typeutil.V(value).Time(); !expireAt.IsZero() {
+				return expireAt.Sub(time.Now())
+			}
+		}
+	}
+
+	return 0
+}
+
+// Expired records are those whose TTL duration is non-zero and negative.
+func (self *Collection) IsExpired(record *Record) bool {
+	if self.TTL(record) < 0 {
+		return true
+	} else {
+		return false
 	}
 }
 
