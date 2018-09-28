@@ -3,6 +3,7 @@ package backends
 import (
 	"fmt"
 	"math"
+	"strings"
 
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
@@ -45,7 +46,7 @@ func (self *RedisBackend) QueryFunc(collection *dal.Collection, flt *filter.Filt
 	var keyPattern string
 	placeholders := make([]interface{}, 0)
 
-	for i := 0; i < len(collection.Keys()); i++ {
+	for i := 0; i < collection.KeyCount(); i++ {
 		placeholders = append(placeholders, `*`)
 	}
 
@@ -69,6 +70,8 @@ func (self *RedisBackend) QueryFunc(collection *dal.Collection, flt *filter.Filt
 		}
 	}
 
+	keyPattern = strings.TrimSuffix(keyPattern, `:*:*`) + `:*`
+
 	if keys, err := redis.Strings(self.run(`KEYS`, keyPattern)); err == nil {
 		limit := len(keys)
 		total := int64(len(keys))
@@ -79,6 +82,10 @@ func (self *RedisBackend) QueryFunc(collection *dal.Collection, flt *filter.Filt
 
 		for i := flt.Offset; i < limit; i++ {
 			if _, values := redisSplitKey(keys[i]); len(values) > 0 {
+				if values[0] == `__schema__` {
+					continue
+				}
+
 				record, err := self.Retrieve(collection.Name, values, flt.Fields...)
 
 				// fire off the result handler

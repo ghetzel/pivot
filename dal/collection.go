@@ -352,16 +352,20 @@ func (self *Collection) IsKeyField(name string) bool {
 	return false
 }
 
-func (self *Collection) Keys() []Field {
-	fields := make([]Field, 0)
+func (self *Collection) KeyCount() int {
+	keys := 0
+
+	if self.GetIdentityFieldName() != `` {
+		keys += 1
+	}
 
 	for _, field := range self.Fields {
-		if field.Identity || field.Key {
-			fields = append(fields, field)
+		if field.Key {
+			keys += 1
 		}
 	}
 
-	return fields
+	return keys
 }
 
 func (self *Collection) GetFirstNonIdentityKeyField() (Field, bool) {
@@ -576,13 +580,19 @@ func (self *Collection) MapFromRecord(record *Record, fields ...string) (map[str
 			}
 		}
 
-		for _, field := range self.Fields {
-			if v := record.Get(field.Name); v != nil {
-				if len(fields) > 0 && !sliceutil.ContainsString(fields, field.Name) {
-					continue
-				}
+		if len(self.Fields) > 0 {
+			for _, field := range self.Fields {
+				if v := record.Get(field.Name); v != nil {
+					if len(fields) > 0 && !sliceutil.ContainsString(fields, field.Name) {
+						continue
+					}
 
-				rv[field.Name] = v
+					rv[field.Name] = v
+				}
+			}
+		} else {
+			for k, v := range record.Fields {
+				rv[k] = v
 			}
 		}
 	}

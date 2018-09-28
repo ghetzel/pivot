@@ -132,6 +132,9 @@ func InflateEmbeddedRecords(backend Backend, parent *dal.Collection, record *dal
 						}
 					}
 
+					// clear out the array we're modifying
+					record.SetNested(keyBefore, []interface{}{})
+
 					for i, result := range results {
 						if len(result) > 0 {
 							nestKey := strings.Replace(key, `*`, fmt.Sprintf("%d", i), 1)
@@ -166,6 +169,7 @@ func retrieveEmbeddedRecord(backend Backend, parent *dal.Collection, related *da
 
 	// retrieve the record by ID
 	if record, err := backend.Retrieve(related.Name, id, fields...); err == nil {
+
 		if data, err := related.MapFromRecord(record, fields...); err == nil {
 			return data, nil
 		} else if parent.AllowMissingEmbeddedRecords {

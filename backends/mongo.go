@@ -308,6 +308,8 @@ func (self *MongoBackend) prepareValuesForWrite(data map[string]interface{}) map
 
 func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[string]interface{}, fields ...string) (*dal.Record, error) {
 	if dataId, ok := data[MongoIdentityField]; ok {
+		fields = sliceutil.CompactString(fields)
+
 		record := dal.NewRecord(
 			collection.ConvertValue(dal.DefaultIdentityField, stringutil.Autotype(
 				self.fromId(dataId),

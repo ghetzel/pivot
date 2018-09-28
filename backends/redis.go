@@ -120,7 +120,7 @@ func (self *RedisBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 func (self *RedisBackend) Exists(name string, id interface{}) bool {
 	if collection, err := self.GetCollection(name); err == nil {
-		if len(collection.Keys()) == 0 || sliceutil.Len(id) == len(collection.Keys()) {
+		if len(sliceutil.Sliceify(id)) == collection.KeyCount() {
 			if i, err := redis.Int(self.run(`EXISTS`, self.key(collection, id))); err == nil && i == 1 {
 				return true
 			}
@@ -132,10 +132,8 @@ func (self *RedisBackend) Exists(name string, id interface{}) bool {
 
 func (self *RedisBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
-		if keyLen := len(collection.Keys()); keyLen > 0 {
-			if idLen := sliceutil.Len(id); idLen != keyLen {
-				return nil, fmt.Errorf("%v: expected %d key values, got %d", self, keyLen, idLen)
-			}
+		if idLen := len(sliceutil.Sliceify(id)); idLen != collection.KeyCount() {
+			return nil, fmt.Errorf("%v: expected %d key values, got %d", self, collection.KeyCount(), idLen)
 		}
 
 		if dbfields, err := redis.Strings(self.run(`HGETALL`, self.key(collection, id))); err == nil {
@@ -180,10 +178,10 @@ func (self *RedisBackend) Delete(name string, ids ...interface{}) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		var merr error
 
-		keyLen := len(collection.Keys())
+		keyLen := collection.KeyCount()
 
 		for _, id := range ids {
-			if idLen := sliceutil.Len(id); keyLen > 0 && idLen != keyLen {
+			if idLen := len(sliceutil.Sliceify(id)); keyLen > 0 && idLen != keyLen {
 				return fmt.Errorf("%v: expected %d key values, got %d", self, keyLen, idLen)
 			}
 
@@ -286,13 +284,14 @@ func (self *RedisBackend) key(collection *dal.Collection, id interface{}) string
 		k += collection.Name
 
 		idParts := sliceutil.Stringify(sliceutil.Sliceify(id))
+		keyLen := collection.KeyCount()
 
-		if keys := collection.Keys(); len(keys) == 0 {
+		if keyLen == 0 {
 			for _, part := range idParts {
 				k += fmt.Sprintf(":%v", part)
 			}
 		} else {
-			for i, _ := range keys {
+			for i := 0; i < keyLen; i++ {
 				if i < len(idParts) {
 					k += fmt.Sprintf(":%v", idParts[i])
 				} else {
@@ -304,7 +303,6 @@ func (self *RedisBackend) key(collection *dal.Collection, id interface{}) string
 		k += `*`
 	}
 
-	log.Debugf("DEBUG KEY: %v", k)
 	return k
 }
 
@@ -313,7 +311,7 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 		var merr error
 		var ttlSeconds int
 
-		keyLen := len(collection.Keys())
+		keyLen := collection.KeyCount()
 
 		for _, record := range recordset.Records {
 			if r, err := collection.MakeRecord(record); err == nil {
@@ -329,7 +327,7 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 				ttlSeconds = int(collection.TTL(record).Round(time.Second).Seconds())
 			}
 
-			if idLen := sliceutil.Len(record.ID); keyLen > 0 && idLen != keyLen {
+			if idLen := len(sliceutil.Sliceify(record.ID)); keyLen > 0 && idLen != keyLen {
 				return fmt.Errorf("%v: expected %d key values, got %d", self, keyLen, idLen)
 			}
 

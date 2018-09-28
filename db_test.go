@@ -39,18 +39,46 @@ func TestAll(t *testing.T) {
 	log.SetLevel(log.DEBUG)
 
 	run := func(b backends.Backend) {
+		t.Logf("[%v] Testing CollectionManagement", b)
 		testCollectionManagement(t, b)
+
+		t.Logf("[%v] Testing BasicCRUD", b)
 		testBasicCRUD(t, b)
+
+		t.Logf("[%v] Testing IdFormattersRandomId", b)
 		testIdFormattersRandomId(t, b)
+
+		t.Logf("[%v] Testing IdFormattersIdFromFieldValues", b)
 		testIdFormattersIdFromFieldValues(t, b)
+
+		t.Logf("[%v] Testing CompositeKeyQueries", b)
+		testCompositeKeyQueries(t, b)
+
+		t.Logf("[%v] Testing SearchQuery", b)
 		testSearchQuery(t, b)
+
+		t.Logf("[%v] Testing SearchQueryPaginated", b)
 		testSearchQueryPaginated(t, b)
+
+		t.Logf("[%v] Testing SearchQueryLimit", b)
 		testSearchQueryLimit(t, b)
+
+		t.Logf("[%v] Testing SearchQueryOffset", b)
 		testSearchQueryOffset(t, b)
+
+		t.Logf("[%v] Testing SearchQueryOffsetLimit", b)
 		testSearchQueryOffsetLimit(t, b)
+
+		t.Logf("[%v] Testing ListValues", b)
 		testListValues(t, b)
+
+		t.Logf("[%v] Testing SearchAnalysis", b)
 		testSearchAnalysis(t, b)
+
+		t.Logf("[%v] Testing ObjectType", b)
 		testObjectType(t, b)
+
+		t.Logf("[%v] Testing Aggregators", b)
 		testAggregators(t, b)
 	}
 
@@ -791,6 +819,74 @@ func testSearchQueryOffsetLimit(t *testing.T, backend backends.Backend) {
 		assert.True(ok)
 		assert.NotNil(record)
 		assert.Equal(`03`, record.ID)
+	}
+}
+
+func testCompositeKeyQueries(t *testing.T, backend backends.Backend) {
+	assert := require.New(t)
+	collection := &dal.Collection{
+		Name:              `TestCompositeKeyQueries`,
+		IdentityFieldType: dal.StringType,
+		Fields: []dal.Field{
+			{
+				Name: `other_id`,
+				Type: dal.IntType,
+				Key:  true,
+			}, dal.Field{
+				Name: `group`,
+				Type: dal.StringType,
+			},
+		},
+	}
+
+	if search := backend.WithSearch(collection); search != nil {
+		err := backend.CreateCollection(collection)
+
+		defer func() {
+			assert.Nil(backend.DeleteCollection(`TestCompositeKeyQueries`))
+		}()
+
+		assert.Nil(err)
+
+		assert.Nil(backend.Insert(`TestCompositeKeyQueries`, dal.NewRecordSet(
+			dal.NewRecord(`a`).SetFields(map[string]interface{}{
+				`other_id`: `1`,
+				`group`:    `first`,
+			}),
+			dal.NewRecord(`a`).SetFields(map[string]interface{}{
+				`other_id`: `2`,
+				`group`:    `second`,
+			}),
+			dal.NewRecord(`b`).SetFields(map[string]interface{}{
+				`other_id`: `1`,
+				`group`:    `third`,
+			}))))
+
+		// test exact match with composite key
+		f, err := filter.Parse(`id/a/other_id/1`)
+		assert.Nil(err)
+
+		recordset, err := search.Query(collection, f)
+		assert.Nil(err)
+		assert.NotNil(recordset)
+
+		assert.EqualValues(1, recordset.ResultCount, "%v", recordset.Records)
+		record, ok := recordset.GetRecord(0)
+		assert.True(ok)
+		assert.NotNil(record)
+		assert.EqualValues(`a`, record.ID)
+		assert.EqualValues(1, record.Get(`other_id`))
+
+		// test scanning the primary key
+		f, err = filter.Parse(`id/a`)
+		assert.Nil(err)
+
+		recordset, err = search.Query(collection, f)
+		assert.Nil(err)
+		assert.NotNil(recordset)
+
+		assert.EqualValues(7, recordset.ResultCount, "%v", recordset.Records)
+		assert.Equal([]interface{}{int64(1), int64(2)}, recordset.Pluck(`other_id`))
 	}
 }
 
