@@ -326,8 +326,6 @@ func (self *DynamoBackend) cacheTable(name string) (*dal.Collection, error) {
 		})
 
 		if ks := table.Table.KeySchema; len(ks) > 1 {
-			log.Dump(ks[1])
-
 			collection.AddFields(dal.Field{
 				Name:     *ks[1].AttributeName,
 				Key:      true,
@@ -493,7 +491,7 @@ func (self *DynamoBackend) getKeyAttributes(name string, id interface{}) (*filte
 					}
 				}
 
-				querylog.Debugf("[%T] retrieve: %v %v", self, collection.Name, id)
+				querylog.Debugf("[%v] retrieve: %v %v", self, collection.Name, id)
 
 				return flt, dynamoToDynamoAttributes(collection, keys, nil), nil
 			} else {

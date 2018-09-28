@@ -179,7 +179,7 @@ func (self *SqlBackend) ListValues(collection *dal.Collection, fields []string, 
 		f.Options[`ForceIndexRecord`] = true
 
 		if results, err := self.Query(collection, f); err == nil {
-			querylog.Debugf("sql-ListValues(): %+v", results)
+			// querylog.Debugf("sql-ListValues(): %+v", results)
 
 			var values []interface{}
 

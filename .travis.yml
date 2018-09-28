@@ -11,3 +11,6 @@ sudo: required
 # Enable docker
 services:
 - docker
+
+before_install:
+- go get github.com/mjibson/esc/...

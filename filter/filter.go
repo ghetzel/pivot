@@ -43,6 +43,15 @@ type Criterion struct {
 	Aggregation Aggregation   `json:"aggregation,omitempty"`
 }
 
+func (self *Criterion) IsExactMatch() bool {
+	switch self.Operator {
+	case `is`, ``:
+		return true
+	default:
+		return false
+	}
+}
+
 type SortBy struct {
 	Field      string
 	Descending bool

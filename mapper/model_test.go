@@ -35,7 +35,7 @@ func TestModelCRUD(t *testing.T) {
 	log.SetLevel(log.DEBUG)
 	assert := require.New(t)
 
-	db, err := pivot.NewDatabase(`redis://`)
+	db, err := pivot.NewDatabase(`sqlite://`)
 	assert.Nil(err)
 
 	type ModelOne struct {

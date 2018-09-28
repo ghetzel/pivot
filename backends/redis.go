@@ -101,6 +101,10 @@ func (self *RedisBackend) Initialize() error {
 		}
 	}
 
+	if self.indexer == nil {
+		self.indexer = self
+	}
+
 	if self.indexer != nil {
 		if err := self.indexer.IndexInitialize(self); err != nil {
 			return err
@@ -115,16 +119,26 @@ func (self *RedisBackend) Insert(name string, recordset *dal.RecordSet) error {
 }
 
 func (self *RedisBackend) Exists(name string, id interface{}) bool {
-	if i, err := redis.Int(self.run(`EXISTS`, self.key(name, id))); err == nil && i == 1 {
-		return true
-	} else {
-		return false
+	if collection, err := self.GetCollection(name); err == nil {
+		if len(collection.Keys()) == 0 || sliceutil.Len(id) == len(collection.Keys()) {
+			if i, err := redis.Int(self.run(`EXISTS`, self.key(collection, id))); err == nil && i == 1 {
+				return true
+			}
+		}
 	}
+
+	return false
 }
 
 func (self *RedisBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
-		if dbfields, err := redis.Strings(self.run(`HGETALL`, self.key(collection.Name, id))); err == nil {
+		keyLen := len(collection.Keys())
+
+		if idLen := sliceutil.Len(id); idLen != keyLen {
+			return nil, fmt.Errorf("expected %d key values, got %d", keyLen, idLen)
+		}
+
+		if dbfields, err := redis.Strings(self.run(`HGETALL`, self.key(collection, id))); err == nil {
 			record := dal.NewRecord(id)
 
 			for _, pair := range sliceutil.Chunks(dbfields, 2) {
@@ -166,8 +180,14 @@ func (self *RedisBackend) Delete(name string, ids ...interface{}) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		var merr error
 
+		keyLen := len(collection.Keys())
+
 		for _, id := range ids {
-			if _, err := self.run(`DEL`, self.key(collection.Name, id)); err != nil {
+			if idLen := sliceutil.Len(id); idLen != keyLen {
+				return fmt.Errorf("expected %d key values, got %d", keyLen, idLen)
+			}
+
+			if _, err := self.run(`DEL`, self.key(collection, id)); err != nil {
 				merr = utils.AppendError(merr, err)
 			}
 		}
@@ -191,11 +211,11 @@ func (self *RedisBackend) ListCollections() ([]string, error) {
 }
 
 func (self *RedisBackend) CreateCollection(definition *dal.Collection) error {
-	querylog.Debugf("[%t] Create collection %v", self, definition.Name)
+	querylog.Debugf("[%v] Create collection %v", self, definition.Name)
 
 	// write the schema definition to the schema key
 	if data, err := json.Marshal(definition); err == nil {
-		schemaKey := self.key(definition.Name, `__schema__`)
+		schemaKey := self.key(definition, `__schema__`)
 
 		if out, err := redis.String(self.run(
 			`SET`,
@@ -216,20 +236,24 @@ func (self *RedisBackend) CreateCollection(definition *dal.Collection) error {
 }
 
 func (self *RedisBackend) DeleteCollection(name string) error {
-	if keys, err := redis.Strings(self.run(`KEYS`, self.key(name, `*`))); err == nil {
-		var merr error
+	if collection, err := self.GetCollection(name); err == nil {
+		if keys, err := redis.Strings(self.run(`KEYS`, self.key(collection, `*`))); err == nil {
+			var merr error
 
-		for _, key := range keys {
-			if _, err := self.run(`DEL`, key); err != nil {
+			for _, key := range keys {
+				if _, err := self.run(`DEL`, key); err != nil {
+					merr = utils.AppendError(merr, err)
+				}
+			}
+
+			if _, err := self.run(`DEL`, self.key(collection, `__schema__`)); err != nil {
 				merr = utils.AppendError(merr, err)
 			}
-		}
 
-		if _, err := self.run(`DEL`, self.key(name, `__schema__`)); err != nil {
-			merr = utils.AppendError(merr, err)
+			return merr
+		} else {
+			return err
 		}
-
-		return merr
 	} else {
 		return err
 	}
@@ -237,7 +261,7 @@ func (self *RedisBackend) DeleteCollection(name string) error {
 
 func (self *RedisBackend) GetCollection(name string) (*dal.Collection, error) {
 	if collectionI, ok := self.registeredCollections.Load(name); ok && collectionI != nil {
-		schemaKey := self.key(name, `__schema__`)
+		schemaKey := self.key(collectionI.(*dal.Collection), `__schema__`)
 
 		if i, err := redis.Int(self.run(`EXISTS`, schemaKey)); err == nil && i == 1 {
 			return collectionI.(*dal.Collection), nil
@@ -251,25 +275,44 @@ func (self *RedisBackend) Flush() error {
 	return nil
 }
 
-func (self *RedisBackend) key(collection string, id interface{}) string {
+func (self *RedisBackend) key(collection *dal.Collection, id interface{}) string {
 	k := self.keyPrefix
 
 	if dataset := self.cs.Dataset(); dataset != `` {
 		k += dataset + `.`
 	}
 
-	k += collection
+	if collection != nil {
+		k += collection.Name
 
-	if id != nil {
-		k += fmt.Sprintf(":%v", id)
+		idParts := sliceutil.Stringify(sliceutil.Sliceify(id))
+
+		if keys := collection.Keys(); len(keys) == 0 {
+			for _, part := range idParts {
+				k += fmt.Sprintf(":%v", part)
+			}
+		} else {
+			for i, _ := range keys {
+				if i < len(idParts) {
+					k += fmt.Sprintf(":%v", idParts[i])
+				} else {
+					k += ":*"
+				}
+			}
+		}
+	} else {
+		k += `*`
 	}
 
+	log.Debugf("DEBUG KEY: %v", k)
 	return k
 }
 
 func (self *RedisBackend) upsert(create bool, collectionName string, recordset *dal.RecordSet) error {
 	if collection, err := self.GetCollection(collectionName); err == nil {
 		var merr error
+
+		keyLen := len(collection.Keys())
 
 		for _, record := range recordset.Records {
 			if r, err := collection.MakeRecord(record); err == nil {
@@ -278,7 +321,11 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 				return err
 			}
 
-			var key string = self.key(collectionName, record.ID)
+			if idLen := sliceutil.Len(record.ID); keyLen > 0 && idLen != keyLen {
+				return fmt.Errorf("expected %d key values, got %d", keyLen, idLen)
+			}
+
+			var key string = self.key(collection, record.ID)
 			var args []interface{}
 
 			for key, value := range record.Fields {
@@ -351,7 +398,7 @@ func (self *RedisBackend) decode(collection *dal.Collection, key string, value [
 }
 
 func (self *RedisBackend) refreshCollections() error {
-	if schemata, err := redis.Strings(self.run(`KEYS`, self.key(`*`, `__schema__`))); err == nil {
+	if schemata, err := redis.Strings(self.run(`KEYS`, self.key(nil, `__schema__`))); err == nil {
 		var merr error
 
 		for _, key := range schemata {
@@ -365,35 +412,38 @@ func (self *RedisBackend) refreshCollections() error {
 }
 
 func (self *RedisBackend) refreshCollection(schemaKey string) error {
-	if _, err := self.GetCollection(self.collectionNameFromKey(schemaKey)); err == dal.CollectionNotFound {
-		if schemadef, err := redis.Bytes(self.run(`GET`, schemaKey)); err == nil {
-			var collection dal.Collection
+	if collectionName, _ := redisSplitKey(schemaKey); collectionName != `` {
+		if _, err := self.GetCollection(collectionName); err == dal.CollectionNotFound {
+			if schemadef, err := redis.Bytes(self.run(`GET`, schemaKey)); err == nil {
+				var collection dal.Collection
 
-			if err := json.Unmarshal(schemadef, &collection); err == nil {
-				if collection.Name != `` {
-					self.RegisterCollection(&collection)
-					return nil
+				if err := json.Unmarshal(schemadef, &collection); err == nil {
+					if collection.Name != `` {
+						self.RegisterCollection(&collection)
+						return nil
+					} else {
+						return fmt.Errorf("Invalid collection schema")
+					}
 				} else {
-					return fmt.Errorf("Invalid collection schema")
+					return err
 				}
 			} else {
 				return err
 			}
 		} else {
-			return err
+			return nil
 		}
 	} else {
-		return nil
+		return fmt.Errorf("invalid key")
 	}
 }
 
-func (self *RedisBackend) collectionNameFromKey(key string) string {
-	parts := strings.Split(key, `.`)
-
-	if len(parts) > 1 {
-		return parts[len(parts)-2]
+func redisSplitKey(key string) (string, []string) {
+	if parts := strings.Split(key, `.`); len(parts) > 0 {
+		final := strings.Split(parts[len(parts)-1], `:`)
+		return final[0], final[1:]
 	} else {
-		return ``
+		return ``, nil
 	}
 }
 

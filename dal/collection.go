@@ -326,6 +326,18 @@ func (self *Collection) IsKeyField(name string) bool {
 	return false
 }
 
+func (self *Collection) Keys() []Field {
+	fields := make([]Field, 0)
+
+	for _, field := range self.Fields {
+		if field.Identity || field.Key {
+			fields = append(fields, field)
+		}
+	}
+
+	return fields
+}
+
 func (self *Collection) GetFirstNonIdentityKeyField() (Field, bool) {
 	for _, field := range self.Fields {
 		if field.Key && !field.Identity {
