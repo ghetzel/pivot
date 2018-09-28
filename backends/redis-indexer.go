@@ -3,7 +3,6 @@ package backends
 import (
 	"fmt"
 	"math"
-	"strings"
 
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
@@ -44,16 +43,17 @@ func (self *RedisBackend) QueryFunc(collection *dal.Collection, flt *filter.Filt
 	}
 
 	var keyPattern string
-	placeholders := make([]interface{}, 0)
-
-	for i := 0; i < collection.KeyCount(); i++ {
-		placeholders = append(placeholders, `*`)
-	}
 
 	// full keyscan
 	if flt == nil || flt.IsMatchAll() {
-		keyPattern = self.key(collection, placeholders)
+		keyPattern = self.key(collection.Name, `*`)
 	} else {
+		placeholders := make([]interface{}, 0)
+
+		for i := 0; i < collection.KeyCount(); i++ {
+			placeholders = append(placeholders, `*`)
+		}
+
 		for i, criterion := range flt.Criteria {
 			if !criterion.IsExactMatch() || len(criterion.Values) != 1 {
 				return fmt.Errorf(
@@ -68,9 +68,9 @@ func (self *RedisBackend) QueryFunc(collection *dal.Collection, flt *filter.Filt
 				return fmt.Errorf("%v: too many criteria", self)
 			}
 		}
-	}
 
-	keyPattern = strings.TrimSuffix(keyPattern, `:*:*`) + `:*`
+		keyPattern = self.key(collection.Name, placeholders...)
+	}
 
 	if keys, err := redis.Strings(self.run(`KEYS`, keyPattern)); err == nil {
 		limit := len(keys)

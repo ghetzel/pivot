@@ -17,7 +17,7 @@ fmt:
 	gofmt -w $(LOCALS)
 
 test:
-	go test -count=1 --tags json1 ./...
+	go test --tags json1 ./...
 
 build:
 	test -d pivot && go build --tags json1 -i -o bin/pivot pivot/*.go

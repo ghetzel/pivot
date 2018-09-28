@@ -120,8 +120,8 @@ func (self *RedisBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 func (self *RedisBackend) Exists(name string, id interface{}) bool {
 	if collection, err := self.GetCollection(name); err == nil {
-		if len(sliceutil.Sliceify(id)) == collection.KeyCount() {
-			if i, err := redis.Int(self.run(`EXISTS`, self.key(collection, id))); err == nil && i == 1 {
+		if ids := sliceutil.Sliceify(id); len(ids) == collection.KeyCount() {
+			if i, err := redis.Int(self.run(`EXISTS`, self.key(collection.Name, ids...))); err == nil && i == 1 {
 				return true
 			}
 		}
@@ -132,38 +132,49 @@ func (self *RedisBackend) Exists(name string, id interface{}) bool {
 
 func (self *RedisBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
-		if idLen := len(sliceutil.Sliceify(id)); idLen != collection.KeyCount() {
-			return nil, fmt.Errorf("%v: expected %d key values, got %d", self, collection.KeyCount(), idLen)
-		}
+		// expand id, make sure it matches the number of parts we need for this collection
+		if ids := sliceutil.Sliceify(id); len(ids) == collection.KeyCount() {
+			if dbfields, err := redis.Strings(self.run(`HGETALL`, self.key(collection.Name, ids))); err == nil {
+				record := dal.NewRecord(ids[0])
 
-		if dbfields, err := redis.Strings(self.run(`HGETALL`, self.key(collection, id))); err == nil {
-			record := dal.NewRecord(id)
-
-			for _, pair := range sliceutil.Chunks(dbfields, 2) {
-				if len(pair) == 2 {
-					fieldName := fmt.Sprintf("%v", pair[0])
-					fieldValue := fmt.Sprintf("%v", pair[1])
-
-					if len(fields) == 0 || sliceutil.ContainsString(fields, fieldName) {
-						if value, err := self.decode(collection, fieldName, []byte(fieldValue)); err == nil {
-							record.Set(fieldName, value)
+				if len(ids) == 2 {
+					if key, ok := collection.GetFirstNonIdentityKeyField(); ok {
+						if value, err := key.Format(ids[1], dal.RetrieveOperation); err == nil {
+							record.Set(key.Name, value)
+						} else {
+							return nil, err
 						}
 					}
 				}
-			}
 
-			if collection.IdentityFieldType != dal.StringType {
-				record.ID = stringutil.Autotype(record.ID)
-			}
+				for _, pair := range sliceutil.Chunks(dbfields, 2) {
+					if len(pair) == 2 {
+						fieldName := fmt.Sprintf("%v", pair[0])
+						fieldValue := fmt.Sprintf("%v", pair[1])
 
-			// do this AFTER populating the record's fields from the database
-			if err := record.Populate(record, collection); err != nil {
+						if len(fields) == 0 || sliceutil.ContainsString(fields, fieldName) {
+							if value, err := self.decode(collection, fieldName, []byte(fieldValue)); err == nil {
+								record.Set(fieldName, value)
+							}
+						}
+					}
+				}
+
+				if collection.IdentityFieldType != dal.StringType {
+					record.ID = stringutil.Autotype(record.ID)
+				}
+
+				// do this AFTER populating the record's fields from the database
+				if err := record.Populate(record, collection); err != nil {
+					return nil, err
+				}
+
+				return record, nil
+			} else {
 				return nil, err
 			}
-
-			return record, nil
 		} else {
-			return nil, err
+			return nil, fmt.Errorf("%v: expected %d key values, got %d", self, collection.KeyCount(), len(ids))
 		}
 	} else {
 		return nil, err
@@ -181,12 +192,12 @@ func (self *RedisBackend) Delete(name string, ids ...interface{}) error {
 		keyLen := collection.KeyCount()
 
 		for _, id := range ids {
-			if idLen := len(sliceutil.Sliceify(id)); keyLen > 0 && idLen != keyLen {
-				return fmt.Errorf("%v: expected %d key values, got %d", self, keyLen, idLen)
-			}
-
-			if _, err := self.run(`DEL`, self.key(collection, id)); err != nil {
-				merr = utils.AppendError(merr, err)
+			if ids := sliceutil.Sliceify(id); keyLen == 0 || len(ids) == keyLen {
+				if _, err := self.run(`DEL`, self.key(collection.Name, ids...)); err != nil {
+					merr = utils.AppendError(merr, err)
+				}
+			} else {
+				return fmt.Errorf("%v: expected %d key values, got %d", self, keyLen, len(ids))
 			}
 		}
 
@@ -213,7 +224,7 @@ func (self *RedisBackend) CreateCollection(definition *dal.Collection) error {
 
 	// write the schema definition to the schema key
 	if data, err := json.Marshal(definition); err == nil {
-		schemaKey := self.key(definition, `__schema__`)
+		schemaKey := self.key(definition.Name, `__schema__`)
 
 		if out, err := redis.String(self.run(
 			`SET`,
@@ -235,7 +246,7 @@ func (self *RedisBackend) CreateCollection(definition *dal.Collection) error {
 
 func (self *RedisBackend) DeleteCollection(name string) error {
 	if collection, err := self.GetCollection(name); err == nil {
-		if keys, err := redis.Strings(self.run(`KEYS`, self.key(collection, `*`))); err == nil {
+		if keys, err := redis.Strings(self.run(`KEYS`, self.key(collection.Name, `*`))); err == nil {
 			var merr error
 
 			for _, key := range keys {
@@ -244,7 +255,7 @@ func (self *RedisBackend) DeleteCollection(name string) error {
 				}
 			}
 
-			if _, err := self.run(`DEL`, self.key(collection, `__schema__`)); err != nil {
+			if _, err := self.run(`DEL`, self.key(collection.Name, `__schema__`)); err != nil {
 				merr = utils.AppendError(merr, err)
 			}
 
@@ -259,9 +270,7 @@ func (self *RedisBackend) DeleteCollection(name string) error {
 
 func (self *RedisBackend) GetCollection(name string) (*dal.Collection, error) {
 	if collectionI, ok := self.registeredCollections.Load(name); ok && collectionI != nil {
-		schemaKey := self.key(collectionI.(*dal.Collection), `__schema__`)
-
-		if i, err := redis.Int(self.run(`EXISTS`, schemaKey)); err == nil && i == 1 {
+		if i, err := redis.Int(self.run(`EXISTS`, self.key(name, `__schema__`))); err == nil && i == 1 {
 			return collectionI.(*dal.Collection), nil
 		}
 	}
@@ -273,34 +282,17 @@ func (self *RedisBackend) Flush() error {
 	return nil
 }
 
-func (self *RedisBackend) key(collection *dal.Collection, id interface{}) string {
+func (self *RedisBackend) key(name string, id ...interface{}) string {
 	k := self.keyPrefix
 
 	if dataset := self.cs.Dataset(); dataset != `` {
 		k += dataset + `.`
 	}
 
-	if collection != nil {
-		k += collection.Name
+	k += name
 
-		idParts := sliceutil.Stringify(sliceutil.Sliceify(id))
-		keyLen := collection.KeyCount()
-
-		if keyLen == 0 {
-			for _, part := range idParts {
-				k += fmt.Sprintf(":%v", part)
-			}
-		} else {
-			for i := 0; i < keyLen; i++ {
-				if i < len(idParts) {
-					k += fmt.Sprintf(":%v", idParts[i])
-				} else {
-					k += ":*"
-				}
-			}
-		}
-	} else {
-		k += `*`
+	for _, str := range sliceutil.Stringify(id) {
+		k += `:` + str
 	}
 
 	return k
@@ -331,7 +323,7 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 				return fmt.Errorf("%v: expected %d key values, got %d", self, keyLen, idLen)
 			}
 
-			var key string = self.key(collection, record.ID)
+			var key string = self.key(collection.Name, sliceutil.Sliceify(record.ID)...)
 			var args []interface{}
 
 			for key, value := range record.Fields {
@@ -348,12 +340,14 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 
 				args = append([]interface{}{key}, args...)
 
-				if _, err := self.run(`HMSET`, args...); err == nil {
+				if out, err := redis.String(self.run(`HMSET`, args...)); err == nil && out == `OK` {
 					if ttlSeconds > 0 {
 						if _, err := self.run(`EXPIRE`, key, ttlSeconds); err != nil {
 							merr = utils.AppendError(merr, err)
 						}
 					}
+				} else if err == nil {
+					merr = utils.AppendError(merr, fmt.Errorf("%v: persist failed: %v", self, out))
 				} else {
 					merr = utils.AppendError(merr, err)
 				}
@@ -410,7 +404,7 @@ func (self *RedisBackend) decode(collection *dal.Collection, key string, value [
 }
 
 func (self *RedisBackend) refreshCollections() error {
-	if schemata, err := redis.Strings(self.run(`KEYS`, self.key(nil, `__schema__`))); err == nil {
+	if schemata, err := redis.Strings(self.run(`KEYS`, self.key(`*`, `__schema__`))); err == nil {
 		var merr error
 
 		for _, key := range schemata {
@@ -464,7 +458,9 @@ func (self *RedisBackend) run(cmd string, args ...interface{}) (interface{}, err
 	if conn := self.pool.Get(); conn != nil {
 		defer conn.Close()
 
-		// querylog.Debugf("[%v] %v %v", self, cmd, strings.Join(sliceutil.Stringify(args), ` `))
+		debug := strings.Join(sliceutil.Stringify(args), ` `)
+
+		querylog.Debugf("[%v] %v %v", self, cmd, debug)
 		return redis.DoWithTimeout(conn, self.cmdTimeout, cmd, args...)
 	} else {
 		return nil, fmt.Errorf("Failed to borrow Redis connection")

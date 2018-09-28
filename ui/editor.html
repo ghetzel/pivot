@@ -1,12 +1,14 @@
 ---
 bindings:
-- name:     schema
-  resource: '/api/schema/{{ qs `collection` }}'
+-   name:     schema
+    resource: '/api/schema/{{ qs `collection` }}'
 
-- name:     record
-  resource: '/api/collections/{{ qs `collection` }}/records/{{ qs `record` }}'
-  optional: true
-  fallback: {}
+-   name:     record
+    resource: '/api/collections/{{ qs `collection` }}/records/{{ qs `record` }}'
+    optional: true
+    params:
+        limit: 1
+    fallback: {}
 ---
 <form
     id="editor"
@@ -20,11 +22,11 @@ bindings:
     <input type="hidden" name="id" value="{{ $.bindings.record.id }}">
     {{ end }}
 
-    {{ range .bindings.schema.fields }}
+    {{ range $i, $field := $.bindings.schema.fields }}
     {{   if eqx .name `id` }}
     {{     var `value` $.bindings.record.id }}
     {{   else }}
-    {{     var `value` (get $.bindings.record.fields .name) }}
+    {{     var `value` (get $.bindings.record.fields $field.name) }}
     {{   end }}
     <div class="form-group row">
         <label
@@ -49,7 +51,7 @@ bindings:
                 <option value="true"{{ if $.vars.value }} selected{{ end }}>True</option>
                 <option value="false"{{ if not $.vars.value }} selected{{ end }}>False</option>
             </select>
-            {{ else if eqx .type `int` }}
+            {{ else if or (eqx .type `int`) (eqx .type `float`) }}
             <input
                 class="form-control form-control-sm"
                 type="number"
