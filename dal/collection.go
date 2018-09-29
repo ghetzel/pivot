@@ -210,10 +210,6 @@ func (self *Collection) HasRecordType() bool {
 	return false
 }
 
-func (self *Collection) SetInitializer(init InitializerFunc) {
-	self.instanceInitializer = init
-}
-
 func (self *Collection) NewInstance(initializers ...InitializerFunc) interface{} {
 	if self.recordType == nil {
 		panic("Cannot create instance without a registered type")
@@ -309,12 +305,6 @@ func (self *Collection) FillDefaults(record *Record) {
 }
 
 func (self *Collection) GetField(name string) (Field, bool) {
-	for _, field := range self.Fields {
-		if field.Name == name {
-			return field, true
-		}
-	}
-
 	if name == self.GetIdentityFieldName() {
 		return Field{
 			Name:     name,
@@ -323,6 +313,12 @@ func (self *Collection) GetField(name string) (Field, bool) {
 			Key:      true,
 			Required: true,
 		}, true
+	} else {
+		for _, field := range self.Fields {
+			if field.Name == name {
+				return field, true
+			}
+		}
 	}
 
 	return Field{}, false
@@ -388,6 +384,45 @@ func (self *Collection) ConvertValue(name string, value interface{}) interface{}
 	return value
 }
 
+func (self *Collection) ValueForField(name string, value interface{}, op FieldOperation) (interface{}, error) {
+	var formatter FieldFormatterFunc
+	var validator FieldValidatorFunc
+
+	if name == self.GetIdentityFieldName() {
+		formatter = self.IdentityFieldFormatter
+		validator = self.IdentityFieldValidator
+		value = self.ConvertValue(name, value)
+	} else if field, ok := self.GetField(name); ok {
+		if v, err := field.ConvertValue(value); err == nil {
+			formatter = field.Formatter
+			validator = field.Validator
+
+			// fmt.Printf("%v: value %T(%v) becomes %T(%v)\n", name, value, value, v, v)
+			value = v
+		} else {
+			return nil, err
+		}
+	} else {
+		return nil, FieldNotFound
+	}
+
+	if formatter != nil {
+		if v, err := formatter(value, op); err == nil {
+			value = v
+		} else {
+			return nil, err
+		}
+	}
+
+	if validator != nil {
+		if err := validator(value); err != nil {
+			return nil, err
+		}
+	}
+
+	return value, nil
+}
+
 func (self *Collection) formatAndValidateId(id interface{}, op FieldOperation, record *Record) (interface{}, error) {
 	// if specified, apply a formatter to the ID
 	if self.IdentityFieldFormatter != nil {
@@ -411,8 +446,15 @@ func (self *Collection) formatAndValidateId(id interface{}, op FieldOperation, r
 }
 
 // Generates a Record instance from the given value based on this collection's schema.
-func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
+func (self *Collection) MakeRecord(in interface{}, ops ...FieldOperation) (*Record, error) {
 	var idFieldName string
+	var op FieldOperation
+
+	if len(ops) > 0 {
+		op = ops[0]
+	} else {
+		op = PersistOperation
+	}
 
 	if err := validatePtrToStructType(in); err != nil {
 		return nil, err
@@ -424,30 +466,24 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 
 		// we're returning the record we were given, but first we need to validate and format it
 		for key, value := range record.Fields {
-			if field, ok := self.GetField(key); ok {
-				if v, err := field.Format(value, PersistOperation); err == nil {
-					if err := field.Validate(v); err == nil {
-						record.Fields[key] = v
-					} else {
-						return nil, err
-					}
-				} else {
-					return nil, err
-				}
-			} else {
+			if v, err := self.ValueForField(key, value, op); err == nil {
+				record.Set(key, v)
+			} else if IsFieldNotFoundErr(err) {
 				delete(record.Fields, key)
+			} else {
+				return nil, err
 			}
 		}
 
 		// validate ID value
-		if idI, err := self.formatAndValidateId(record.ID, PersistOperation, record); err == nil {
+		if idI, err := self.formatAndValidateId(record.ID, op, record); err == nil {
 			record.ID = idI
 		} else {
 			return nil, err
 		}
 
 		// validate whole record (if specified)
-		if err := self.ValidateRecord(record, PersistOperation); err != nil {
+		if err := self.ValidateRecord(record, op); err != nil {
 			return nil, err
 		}
 
@@ -471,33 +507,17 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 				if fieldDescr.Identity && !typeutil.IsZero(fieldDescr.Field) {
 					idFieldName = tagName
 					record.ID = value
-				} else {
-					if collectionField, ok := self.GetField(tagName); ok {
-						// validate and format value according to the collection field's rules
-						if v, err := collectionField.Format(value, PersistOperation); err == nil {
-							if err := collectionField.Validate(v); err == nil {
-								value = v
-							} else {
-								return nil, err
-							}
-						} else {
-							return nil, err
-						}
-
-						// if we're supposed to skip empty values, and this value is indeed empty, skip
-						if fieldDescr.OmitEmpty && typeutil.IsZero(value) {
-							continue
-						}
-
-						// set the value in the output record
-						record.Set(tagName, value)
-
-						// make sure the corresponding value in the input struct matches
-						typeutil.SetValue(
-							fieldDescr.ReflectField,
-							value,
-						)
+				} else if finalValue, err := self.ValueForField(tagName, value, op); err == nil {
+					// if we're supposed to skip empty values, and this value is indeed empty, skip
+					if fieldDescr.OmitEmpty && typeutil.IsZero(finalValue) {
+						continue
 					}
+
+					// set the value in the output record
+					record.Set(tagName, finalValue)
+
+					// make sure the corresponding value in the input struct matches
+					typeutil.SetValue(fieldDescr.ReflectField, finalValue)
 				}
 			}
 		}
@@ -534,7 +554,7 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 			}
 		}
 
-		if idI, err := self.formatAndValidateId(record.ID, PersistOperation, record); err == nil {
+		if idI, err := self.formatAndValidateId(record.ID, op, record); err == nil {
 			record.ID = idI
 
 			// make sure the corresponding ID in the input struct matches
@@ -548,7 +568,7 @@ func (self *Collection) MakeRecord(in interface{}) (*Record, error) {
 		}
 
 		// validate whole record (if specified)
-		if err := self.ValidateRecord(record, PersistOperation); err != nil {
+		if err := self.ValidateRecord(record, op); err != nil {
 			return nil, err
 		}
 

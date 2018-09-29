@@ -39,11 +39,11 @@ func TestFieldConvertValueString(t *testing.T) {
 	// -------------------------------------------------------------------------
 	value, err = field.ConvertValue(``)
 	assert.NoError(err)
-	assert.Nil(value)
+	assert.Equal(``, value)
 
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
-	assert.Nil(value)
+	assert.Equal(``, value)
 
 	value, err = field.ConvertValue(`things`)
 	assert.NoError(err)
@@ -104,6 +104,10 @@ func TestFieldConvertValueBool(t *testing.T) {
 		`YES`,
 		`ON`,
 		1,
+		-4,
+		3.14,
+		42,
+		`dennis`,
 	} {
 		value, err = field.ConvertValue(v)
 		assert.NoError(err)
@@ -125,17 +129,6 @@ func TestFieldConvertValueBool(t *testing.T) {
 		assert.NoError(err)
 		assert.Equal(false, value, fmt.Sprintf("output: %T(%v) -> %T(%v)", v, v, value, value))
 	}
-
-	for _, noes := range []interface{}{
-		-4,
-		3.14,
-		42,
-		`dennis`,
-	} {
-		value, err = field.ConvertValue(noes)
-		assert.Error(err)
-	}
-
 	// required, no default
 	// -------------------------------------------------------------------------
 	field.Required = true
@@ -150,6 +143,10 @@ func TestFieldConvertValueBool(t *testing.T) {
 		`YES`,
 		`ON`,
 		1,
+		-4,
+		3.14,
+		42,
+		`dennis`,
 	} {
 		value, err = field.ConvertValue(v)
 		assert.NoError(err)
@@ -173,16 +170,6 @@ func TestFieldConvertValueBool(t *testing.T) {
 		assert.Equal(false, value, fmt.Sprintf("output: %T(%v) -> %T(%v)", v, v, value, value))
 	}
 
-	for _, noes := range []interface{}{
-		-4,
-		3.14,
-		42,
-		`dennis`,
-	} {
-		value, err = field.ConvertValue(noes)
-		assert.Error(err)
-	}
-
 	// required, with default
 	// -------------------------------------------------------------------------
 	field.DefaultValue = true
@@ -197,6 +184,10 @@ func TestFieldConvertValueBool(t *testing.T) {
 		`YES`,
 		`ON`,
 		1,
+		-4,
+		3.14,
+		42,
+		`dennis`,
 	} {
 		value, err = field.ConvertValue(v)
 		assert.NoError(err)
@@ -223,16 +214,6 @@ func TestFieldConvertValueBool(t *testing.T) {
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
 	assert.Equal(true, value, fmt.Sprintf("output: nil -> %T(%v)", value, value))
-
-	for _, noes := range []interface{}{
-		-4,
-		3.14,
-		42,
-		`dennis`,
-	} {
-		value, err = field.ConvertValue(noes)
-		assert.Error(err)
-	}
 }
 
 // TODO: basically the *worst* thing you can write in a file full of tests

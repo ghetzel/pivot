@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
-	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 )
 
@@ -34,23 +33,17 @@ type Field struct {
 }
 
 func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
-	var convertType stringutil.ConvertType
+	variant := typeutil.V(in)
 
 	switch self.Type {
 	case StringType:
-		convertType = stringutil.String
+		in = variant.String()
 	case BooleanType:
-		convertType = stringutil.Boolean
-
-		if fmt.Sprintf("%v", in) == `1` {
-			in = true
-		} else if fmt.Sprintf("%v", in) == `0` {
-			in = false
-		}
+		in = variant.Bool()
 	case IntType:
-		convertType = stringutil.Integer
+		in = variant.Int()
 	case FloatType:
-		convertType = stringutil.Float
+		in = variant.Float()
 	case TimeType:
 		// parse incoming int64s as epoch or epoch milliseconds
 		if inInt64, ok := in.(int64); ok {
@@ -63,16 +56,8 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 			in = time.Time{}
 		}
 
-		convertType = stringutil.Time
-	}
-
-	if convertType != stringutil.Invalid {
-		if v, err := stringutil.ConvertTo(convertType, in); err == nil {
-			in = v
-		} else {
-			return nil, err
-		}
-	} else {
+		in = variant.Time()
+	default:
 		switch strings.ToLower(fmt.Sprintf("%v", in)) {
 		case `null`, `nil`:
 			in = nil
@@ -89,13 +74,10 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 
 		} else if self.Required {
 			return self.GetTypeInstance(), nil
-
-		} else {
-			return nil, nil
 		}
-	} else {
-		return in, nil
 	}
+
+	return in, nil
 }
 
 func (self *Field) GetDefaultValue() interface{} {

@@ -46,7 +46,7 @@ func TestCollectionMakeRecord(t *testing.T) {
 
 	assert.Nil(record.ID)
 	assert.Equal(`tester`, record.Get(`name`))
-	assert.Equal(42, record.Get(`age`))
+	assert.EqualValues(42, record.Get(`age`))
 
 	type TestRecord2 struct {
 		ID        int
@@ -69,7 +69,7 @@ func TestCollectionMakeRecord(t *testing.T) {
 
 	assert.Equal(11, record.ID)
 	assert.Equal(`tester`, record.Get(`name`))
-	assert.Equal(0, record.Get(`age`))
+	assert.EqualValues(0, record.Get(`age`))
 }
 
 func TestCollectionNewInstance(t *testing.T) {

@@ -850,15 +850,15 @@ func testCompositeKeyQueries(t *testing.T, backend backends.Backend) {
 
 		assert.Nil(backend.Insert(`TestCompositeKeyQueries`, dal.NewRecordSet(
 			dal.NewRecord(`a`).SetFields(map[string]interface{}{
-				`other_id`: `1`,
+				`other_id`: 1,
 				`group`:    `first`,
 			}),
 			dal.NewRecord(`a`).SetFields(map[string]interface{}{
-				`other_id`: `2`,
+				`other_id`: 2,
 				`group`:    `second`,
 			}),
 			dal.NewRecord(`b`).SetFields(map[string]interface{}{
-				`other_id`: `1`,
+				`other_id`: 1,
 				`group`:    `third`,
 			}))))
 

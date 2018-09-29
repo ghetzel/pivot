@@ -260,3 +260,71 @@ func TestRecordPopulateStructWithFormatterValidator(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(`test_value`, thing.Name)
 }
+
+func TestRecordKeys(t *testing.T) {
+	assert := require.New(t)
+
+	collection := &Collection{
+		Name: `TestRecordKeys`,
+		Fields: []Field{
+			{
+				Name: `other`,
+				Type: StringType,
+				Key:  true,
+			}, {
+				Name: `thing`,
+				Type: StringType,
+			},
+		},
+	}
+
+	assert.EqualValues(
+		[]interface{}{1, `first`},
+		NewRecord([]interface{}{1, `first`}).Keys(collection),
+	)
+
+	assert.EqualValues(
+		[]interface{}{2, `second`},
+		NewRecord([]interface{}{2}).Set(`other`, `second`).Keys(collection),
+	)
+
+	assert.EqualValues(
+		[]interface{}{2},
+		NewRecord([]interface{}{2}).Keys(collection),
+	)
+
+	assert.Empty(NewRecord(nil).Keys(collection))
+}
+
+func TestRecordSetKeys(t *testing.T) {
+	assert := require.New(t)
+
+	collection := &Collection{
+		Name: `TestRecordKeys`,
+		Fields: []Field{
+			{
+				Name: `other`,
+				Type: StringType,
+				Key:  true,
+			}, {
+				Name: `thing`,
+				Type: StringType,
+			},
+		},
+	}
+
+	record := NewRecord(nil)
+	record.SetKeys(collection, PersistOperation, 1, `first`)
+	assert.EqualValues(1, record.ID)
+	assert.EqualValues(`first`, record.Get(`other`))
+
+	record = NewRecord(nil)
+	record.SetKeys(collection, PersistOperation, 1)
+	assert.EqualValues(1, record.ID)
+	assert.Nil(record.Get(`other`))
+
+	record = NewRecord(nil)
+	record.SetKeys(collection, PersistOperation)
+	assert.Nil(record.ID)
+	assert.Nil(record.Get(`other`))
+}

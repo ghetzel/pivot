@@ -319,11 +319,13 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 				ttlSeconds = int(collection.TTL(record).Round(time.Second).Seconds())
 			}
 
-			if idLen := len(sliceutil.Sliceify(record.ID)); keyLen > 0 && idLen != keyLen {
-				return fmt.Errorf("%v: expected %d key values, got %d", self, keyLen, idLen)
+			ids := record.Keys(collection)
+
+			if keyLen > 0 && len(ids) != keyLen {
+				return fmt.Errorf("%v: expected %d key values, got %d", self, keyLen, len(ids))
 			}
 
-			var key string = self.key(collection.Name, sliceutil.Sliceify(record.ID)...)
+			var key string = self.key(collection.Name, ids...)
 			var args []interface{}
 
 			for key, value := range record.Fields {

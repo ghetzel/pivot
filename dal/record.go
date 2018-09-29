@@ -10,6 +10,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 )
@@ -42,6 +43,55 @@ func (self *Record) init() {
 	if self.Fields == nil {
 		self.Fields = make(map[string]interface{})
 	}
+}
+
+func (self *Record) Keys(collection *Collection) []interface{} {
+	values := sliceutil.Sliceify(self.ID)
+
+	if collection != nil {
+		for _, field := range collection.Fields {
+			// if there are more keys than we currently have values...
+			if collection.KeyCount() > len(values) {
+				if field.Key {
+					if value := self.Get(field.Name); value != nil {
+						// append this key value
+						values = append(values, value)
+					}
+				}
+			} else {
+				break
+			}
+		}
+	}
+
+	return values
+}
+
+func (self *Record) SetKeys(collection *Collection, op FieldOperation, keys ...interface{}) error {
+	if collection != nil {
+		if len(keys) > 0 {
+			self.ID = keys[0]
+			i := 1
+
+			for _, field := range collection.Fields {
+				// if there are more keys than we currently have values...
+				if i < len(keys) {
+					if field.Key {
+						if value, err := collection.ValueForField(field.Name, keys[i], op); err == nil {
+							self.Set(field.Name, value)
+							i += 1
+						} else {
+							return err
+						}
+					}
+				} else {
+					break
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 func (self *Record) Copy(other *Record) {

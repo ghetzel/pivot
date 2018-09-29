@@ -17,7 +17,7 @@ require (
 	github.com/cenkalti/backoff v2.0.0+incompatible
 	github.com/containerd/continuity v0.0.0-20180919190352-508d86ade3c2
 	github.com/couchbase/vellum v0.0.0-20180314210611-5083a469fcef
-	github.com/davecgh/go-spew v1.1.0
+	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v0.0.0-20171013212420-1d4478f51bed
 	github.com/docker/go-connections v0.3.0
 	github.com/docker/go-units v0.3.3
@@ -29,7 +29,7 @@ require (
 	github.com/ghetzel/argonaut v0.0.0-20171013012758-1fc8289ff003
 	github.com/ghetzel/cli v1.16.0
 	github.com/ghetzel/diecast v0.0.0-20180404162638-0eeab4621f46
-	github.com/ghetzel/go-stockutil v0.0.0-20180920191201-20bafb696ed6
+	github.com/ghetzel/go-stockutil v1.5.49
 	github.com/ghetzel/go-webfriend v0.0.0-20180331030455-a02e0c9b1137
 	github.com/ghetzel/uuid v0.0.0-20171129191014-dec09d789f3d
 	github.com/ghodss/yaml v1.0.0
@@ -42,8 +42,8 @@ require (
 	github.com/gomodule/redigo v0.0.0-20180627144507-2cd21d9966bf
 	github.com/gorilla/websocket v1.2.0
 	github.com/grokify/html-strip-tags-go v0.0.0-20180403100050-2e24dd3c29e5
-	github.com/hashicorp/errwrap v0.0.0-20141028054710-7554cd9344ce
-	github.com/hashicorp/go-multierror v0.0.0-20171204182908-b7773ae21874
+	github.com/hashicorp/errwrap v1.0.0
+	github.com/hashicorp/go-multierror v1.0.0
 	github.com/hashicorp/golang-lru v0.0.0-20180201235237-0fb14efe8c47
 	github.com/husobee/vestigo v1.1.0
 	github.com/jbenet/go-base58 v0.0.0-20150317085156-6237cf65f3a6
@@ -56,12 +56,11 @@ require (
 	github.com/lib/pq v0.0.0-20180327071824-d34b9ff171c2
 	github.com/mafredri/cdp v0.17.2
 	github.com/mattn/go-colorable v0.0.9
-	github.com/mattn/go-isatty v0.0.3
+	github.com/mattn/go-isatty v0.0.4
 	github.com/mattn/go-sqlite3 v1.9.0
 	github.com/mcuadros/go-defaults v1.1.0
 	github.com/microcosm-cc/bluemonday v0.0.0-20180327211928-995366fdf961
-	github.com/mitchellh/mapstructure v0.0.0-20180715050151-f15292f7a699
-	github.com/mjibson/esc v0.1.0 // indirect
+	github.com/mitchellh/mapstructure v1.0.0
 	github.com/montanaflynn/stats v0.0.0-20151014174947-eeaced052adb
 	github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
@@ -78,9 +77,9 @@ require (
 	github.com/sirupsen/logrus v1.0.6
 	github.com/spaolacci/murmur3 v0.0.0-20170819071325-9f5d223c6079
 	github.com/steveyen/gtreap v0.0.0-20150807155958-0abe01ef9be2
-	github.com/stretchr/testify v1.2.1
+	github.com/stretchr/testify v1.2.2
 	github.com/tinylib/msgp v1.0.2
-	github.com/urfave/negroni v0.3.0
+	github.com/urfave/negroni v1.0.0
 	github.com/vmihailenco/msgpack v4.0.0+incompatible
 	github.com/willf/bitset v0.0.0-20161202170036-5c3c0fce4884
 	github.com/yosssi/gohtml v0.0.0-20180130040904-97fbf36f4aa8
