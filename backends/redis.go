@@ -10,7 +10,6 @@ import (
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
-	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/utils"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
@@ -147,18 +146,8 @@ func (self *RedisBackend) Retrieve(name string, id interface{}, fields ...string
 	if collection, err := self.GetCollection(name); err == nil {
 		// expand id, make sure it matches the number of parts we need for this collection
 		if ids := sliceutil.Sliceify(id); len(ids) == collection.KeyCount() {
-			if dbfields, err := redis.Strings(self.run(`HGETALL`, self.key(collection.Name, ids))); err == nil {
-				record := dal.NewRecord(ids[0])
-
-				if len(ids) == 2 {
-					if key, ok := collection.GetFirstNonIdentityKeyField(); ok {
-						if value, err := key.Format(ids[1], dal.RetrieveOperation); err == nil {
-							record.Set(key.Name, value)
-						} else {
-							return nil, err
-						}
-					}
-				}
+			if dbfields, err := redis.Strings(self.run(`HGETALL`, self.key(collection.Name, ids...))); err == nil {
+				record := dal.NewRecord(nil)
 
 				for _, pair := range sliceutil.Chunks(dbfields, 2) {
 					if len(pair) == 2 {
@@ -173,8 +162,8 @@ func (self *RedisBackend) Retrieve(name string, id interface{}, fields ...string
 					}
 				}
 
-				if collection.IdentityFieldType != dal.StringType {
-					record.ID = stringutil.Autotype(record.ID)
+				if err := record.SetKeys(collection, dal.RetrieveOperation, ids...); err != nil {
+					return nil, err
 				}
 
 				// do this AFTER populating the record's fields from the database
