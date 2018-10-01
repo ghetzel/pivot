@@ -47,6 +47,19 @@ func NewDynamoBackend(connection dal.ConnectionString) Backend {
 	}
 }
 
+func (self *DynamoBackend) Supports(features ...BackendFeature) bool {
+	for _, feat := range features {
+		switch feat {
+		case PartialSearch, CompositeKeys:
+			continue
+		default:
+			return false
+		}
+	}
+
+	return true
+}
+
 func (self *DynamoBackend) String() string {
 	return `dynamodb`
 }

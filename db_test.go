@@ -51,8 +51,10 @@ func TestAll(t *testing.T) {
 		t.Logf("[%v] Testing IdFormattersIdFromFieldValues", b)
 		testIdFormattersIdFromFieldValues(t, b)
 
-		t.Logf("[%v] Testing CompositeKeyQueries", b)
-		testCompositeKeyQueries(t, b)
+		if b.Supports(backends.CompositeKeys) {
+			t.Logf("[%v] Testing CompositeKeyQueries", b)
+			testCompositeKeyQueries(t, b)
+		}
 
 		t.Logf("[%v] Testing SearchQuery", b)
 		testSearchQuery(t, b)

@@ -119,3 +119,7 @@ func (self *EmbeddedRecordBackend) Flush() error {
 func (self *EmbeddedRecordBackend) Ping(d time.Duration) error {
 	return self.backend.Ping(d)
 }
+
+func (self *EmbeddedRecordBackend) Supports(feature ...BackendFeature) bool {
+	return self.backend.Supports(feature...)
+}

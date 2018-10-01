@@ -54,6 +54,17 @@ func NewFilesystemBackend(connection dal.ConnectionString) Backend {
 	}
 }
 
+func (self *FilesystemBackend) Supports(features ...BackendFeature) bool {
+	for _, feat := range features {
+		switch feat {
+		default:
+			return false
+		}
+	}
+
+	return true
+}
+
 func (self *FilesystemBackend) String() string {
 	return `filesystem`
 }

@@ -36,6 +36,17 @@ func NewMongoBackend(connection dal.ConnectionString) Backend {
 	return backend
 }
 
+func (self *MongoBackend) Supports(features ...BackendFeature) bool {
+	for _, feat := range features {
+		switch feat {
+		default:
+			return false
+		}
+	}
+
+	return true
+}
+
 func (self *MongoBackend) String() string {
 	return `mongodb`
 }

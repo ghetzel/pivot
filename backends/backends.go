@@ -18,6 +18,13 @@ var querylog = log.Logger()
 var stats, _ = statsd.New()
 var DefaultAutoregister = false
 
+type BackendFeature int
+
+const (
+	PartialSearch BackendFeature = iota
+	CompositeKeys
+)
+
 type Backend interface {
 	Initialize() error
 	SetIndexer(dal.ConnectionString) error
@@ -37,6 +44,7 @@ type Backend interface {
 	Flush() error
 	Ping(time.Duration) error
 	String() string
+	Supports(feature ...BackendFeature) bool
 }
 
 var NotImplementedError = fmt.Errorf("Not Implemented")

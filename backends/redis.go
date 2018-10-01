@@ -42,6 +42,19 @@ func NewRedisBackend(connection dal.ConnectionString) Backend {
 	}
 }
 
+func (self *RedisBackend) Supports(features ...BackendFeature) bool {
+	for _, feat := range features {
+		switch feat {
+		case PartialSearch, CompositeKeys:
+			continue
+		default:
+			return false
+		}
+	}
+
+	return true
+}
+
 func (self *RedisBackend) String() string {
 	return `redis`
 }

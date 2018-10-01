@@ -79,6 +79,17 @@ func NewSqlBackend(connection dal.ConnectionString) Backend {
 	return backend
 }
 
+func (self *SqlBackend) Supports(features ...BackendFeature) bool {
+	for _, feat := range features {
+		switch feat {
+		default:
+			return false
+		}
+	}
+
+	return true
+}
+
 func (self *SqlBackend) String() string {
 	switch dbtype := self.conn.Backend(); dbtype {
 	case `postgres`, `postgresql`, `psql`:

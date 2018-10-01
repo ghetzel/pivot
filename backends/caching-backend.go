@@ -114,3 +114,7 @@ func (self *CachingBackend) Ping(d time.Duration) error {
 func (self *CachingBackend) String() string {
 	return self.backend.String()
 }
+
+func (self *CachingBackend) Supports(feature ...BackendFeature) bool {
+	return self.backend.Supports(feature...)
+}
