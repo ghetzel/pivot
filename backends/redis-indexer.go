@@ -76,7 +76,11 @@ func (self *RedisBackend) QueryFunc(collection *dal.Collection, flt *filter.Filt
 		limit := len(keys)
 		total := int64(len(keys))
 
-		if flt.Limit > 0 && flt.Limit < limit {
+		if flt.Limit <= 0 {
+			flt.Limit = IndexerPageSize
+		}
+
+		if flt.Limit < limit {
 			limit = flt.Limit
 		}
 

@@ -31,6 +31,7 @@ require (
 	github.com/ghetzel/diecast v1.9.15
 	github.com/ghetzel/go-stockutil v1.5.49
 	github.com/ghetzel/go-webfriend v0.9.27
+	github.com/ghetzel/pivot v2.5.0+incompatible // indirect
 	github.com/ghetzel/uuid v0.0.0-20171129191014-dec09d789f3d
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd
