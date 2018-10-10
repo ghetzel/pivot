@@ -13,13 +13,13 @@ bindings:
 <form
     id="editor"
     class="container"
-    method="{{ if $.bindings.record.id }}put{{ else }}post{{ end }}"
-    action="/api/collections/{{ qs `collection` }}/records/{{ $.bindings.record.id }}"
+    method="POST"
+    action="/api/collections/{{ qs `collection` }}/records?update={{ if $.bindings.record.id }}true{{ else }}false{{ end }}&redirect=/?collection={{ qs `collection` }}{{ if $.bindings.record.id }}%26q=id/is:{{ $.bindings.record.id }}{{ end }}"
 >
-    <h2>Editing {{ .bindings.schema.name }} {{ if $.bindings.record.id }}{{ $.bindings.record.id }}{{ end }}</h2>
+    <h2>Editing {{ $.bindings.schema.name }} {{ if $.bindings.record.id }}{{ $.bindings.record.id }}{{ end }}</h2>
 
     {{ if $.bindings.record.id }}
-    <input type="hidden" name="id" value="{{ $.bindings.record.id }}">
+    <input type="hidden" name="records.0.id" value="{{ $.bindings.record.id }}">
     {{ end }}
 
     {{ range $i, $field := $.bindings.schema.fields }}
@@ -30,7 +30,7 @@ bindings:
     {{   end }}
     <div class="form-group row">
         <label
-            for="fields.{{ .name }}"
+            for="records.0.fields.{{ .name }}"
             class="
                 col-sm-4
                 col-form-label
@@ -43,31 +43,37 @@ bindings:
         <div class="col-sm-8">
             {{ if eqx .type `bool` }}
             <select
-                name="fields.{{ .name }}"
+                {{ if not $i }}autofocus{{ end }}
+                name="records.0.fields.{{ .name }}"
                 class="form-control form-control-sm"
                 {{ if .required }}required{{ end }}
-                {{ if (and .identity $.vars.value) }}readonly{{ end }}
+                {{ if or .not_user_editable (and .identity $.vars.value) }}readonly{{ end }}
             >
                 <option value="true"{{ if $.vars.value }} selected{{ end }}>True</option>
                 <option value="false"{{ if not $.vars.value }} selected{{ end }}>False</option>
             </select>
             {{ else if or (eqx .type `int`) (eqx .type `float`) }}
             <input
+                {{ if not $i }}autofocus{{ end }}
                 class="form-control form-control-sm"
                 type="number"
-                name="fields.{{ .name }}"
+                name="records.0.fields.{{ .name }}"
                 value="{{ $.vars.value }}"
+                {{ if eqx .type `float` }}
+                step="any"
+                {{ end }}
                 {{ if .required }}required{{ end }}
-                {{ if (and .identity $.vars.value) }}readonly{{ end }}
+                {{ if or .not_user_editable (and .identity $.vars.value) }}readonly{{ end }}
             ></input>
             {{ else }}
             <input
+                {{ if not $i }}autofocus{{ end }}
                 class="form-control form-control-sm"
                 type="text"
-                name="fields.{{ .name }}"
+                name="records.0.fields.{{ .name }}"
                 value="{{ $.vars.value }}"
                 {{ if .required }}required{{ end }}
-                {{ if (and .identity $.vars.value) }}readonly{{ end }}
+                {{ if or .not_user_editable (and .identity $.vars.value) }}readonly{{ end }}
             ></input>
             {{ end }}
 
@@ -78,9 +84,13 @@ bindings:
     </div>
     {{ end }}
 
-    <div class="form-group row">
+    <div class="form-group row d-flex justify-content-between">
+        <a class="btn btn-lg btn-danger" href="/?collection={{ qs `collection` }}">
+            Cancel
+        </a>
+
         <button type="submit" class="btn btn-lg btn-primary">
-            Save Record
+            {{ if $.bindings.record.id }}Update{{ else }}Create{{ end }} Record
         </button>
     </div>
 </form>

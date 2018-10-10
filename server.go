@@ -149,19 +149,8 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			httputil.RespondJSON(w, status)
 		})
 
-	router.Get(`/api/collections/:collection`,
-		func(w http.ResponseWriter, req *http.Request) {
-			name := vestigo.Param(req, `collection`)
-			backend := backendForRequest(req, self.backend)
-
-			if collection, err := backend.GetCollection(name); err == nil {
-				collection = injectRequestParamsIntoCollection(req, collection)
-
-				httputil.RespondJSON(w, collection)
-			} else {
-				httputil.RespondJSON(w, err, http.StatusNotFound)
-			}
-		})
+	// Querying
+	// ---------------------------------------------------------------------------------------------
 
 	queryHandler := func(w http.ResponseWriter, req *http.Request) {
 		var query interface{}
@@ -365,6 +354,44 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			}
 		})
 
+	// Record CRUD
+	// ---------------------------------------------------------------------------------------------
+
+	recordUpsert := func(w http.ResponseWriter, req *http.Request) {
+		var recordset dal.RecordSet
+
+		backend := backendForRequest(req, self.backend)
+
+		if err := httputil.ParseRequest(req, &recordset); err == nil {
+			name := vestigo.Param(req, `collection`)
+			status := http.StatusAccepted
+
+			var err error
+
+			if req.Method == `PUT` || httputil.QBool(req, `update`) {
+				err = backend.Update(name, &recordset)
+			} else {
+				err = backend.Insert(name, &recordset)
+				status = http.StatusCreated
+			}
+
+			if err == nil {
+				if redirect := httputil.Q(req, `redirect`); strings.HasPrefix(redirect, `/`) {
+					http.Redirect(w, req, redirect, http.StatusTemporaryRedirect)
+				} else {
+					httputil.RespondJSON(w, nil, status)
+				}
+			} else {
+				httputil.RespondJSON(w, err)
+			}
+		} else {
+			httputil.RespondJSON(w, err, http.StatusBadRequest)
+		}
+	}
+
+	router.Post(`/api/collections/:collection/records`, recordUpsert)
+	router.Put(`/api/collections/:collection/records`, recordUpsert)
+
 	router.Get(`/api/collections/:collection/records/:id`,
 		func(w http.ResponseWriter, req *http.Request) {
 			var id interface{}
@@ -419,48 +446,6 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			}
 		})
 
-	recordCreate := func(w http.ResponseWriter, req *http.Request) {
-		var recordset dal.RecordSet
-
-		backend := backendForRequest(req, self.backend)
-
-		if err := httputil.ParseRequest(req, &recordset); err == nil {
-			name := vestigo.Param(req, `collection`)
-
-			if err := backend.Insert(name, &recordset); err == nil {
-				httputil.RespondJSON(w, &recordset)
-			} else {
-				httputil.RespondJSON(w, err)
-			}
-		} else {
-			httputil.RespondJSON(w, err, http.StatusBadRequest)
-		}
-	}
-
-	router.Post(`/api/collections/:collection/records`, recordCreate)
-	router.Post(`/api/collections/:collection/records/`, recordCreate)
-
-	recordUpdate := func(w http.ResponseWriter, req *http.Request) {
-		var recordset dal.RecordSet
-
-		backend := backendForRequest(req, self.backend)
-
-		if err := httputil.ParseRequest(req, &recordset); err == nil {
-			name := vestigo.Param(req, `collection`)
-
-			if err := backend.Update(name, &recordset); err == nil {
-				httputil.RespondJSON(w, nil)
-			} else {
-				httputil.RespondJSON(w, err)
-			}
-		} else {
-			httputil.RespondJSON(w, err, http.StatusBadRequest)
-		}
-	}
-
-	router.Put(`/api/collections/:collection/records`, recordUpdate)
-	router.Put(`/api/collections/:collection/records/`, recordUpdate)
-
 	router.Delete(`/api/collections/:collection/records/*id`,
 		func(w http.ResponseWriter, req *http.Request) {
 			var id interface{}
@@ -478,6 +463,22 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 				httputil.RespondJSON(w, nil)
 			} else {
 				httputil.RespondJSON(w, err)
+			}
+		})
+
+	// Schema Operations
+	// ---------------------------------------------------------------------------------------------
+	router.Get(`/api/collections/:collection`,
+		func(w http.ResponseWriter, req *http.Request) {
+			name := vestigo.Param(req, `collection`)
+			backend := backendForRequest(req, self.backend)
+
+			if collection, err := backend.GetCollection(name); err == nil {
+				collection = injectRequestParamsIntoCollection(req, collection)
+
+				httputil.RespondJSON(w, collection)
+			} else {
+				httputil.RespondJSON(w, err, http.StatusNotFound)
 			}
 		})
 

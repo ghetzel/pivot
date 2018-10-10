@@ -1,13 +1,13 @@
 ---
 bindings:
-- name:     collections
-  resource: :/api/schema
+-   name:     collections
+    resource: /api/schema
 ---
 <div class="row">
     <div class="col-sm-12 col-md-2 collections-list">
         <h3 class="collections-list-header">Collections</h3>
         <div class="list-group" id="collections">
-            {{ range .bindings.collections }}
+            {{ range $.bindings.collections }}
             <a href="/?collection={{ . }}" class="list-group-item list-group-item-action" data-collection="{{ . }}">
                 {{ . }}
             </a>
@@ -28,9 +28,9 @@ bindings:
             var browser = $('#browser');
             browser.load('/_query?' + $.param({
                 id:     collection,
-                limit:  25,
-                offset: 0,
-                sort:   '',
+                limit:  {{ qs `limit` 25 }},
+                offset: {{ qs `offset` 0 }},
+                sort:   '{{ qs `sort` }}',
                 q:      '{{ qs `q` }}',
             }));
         };

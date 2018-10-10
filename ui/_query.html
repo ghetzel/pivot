@@ -1,16 +1,25 @@
 ---
 bindings:
-- name:     results
-  resource: :/api/collections/{{ qs `id` }}/where/{{ or (qs `q`) `all` }}
-  params:
-    limit:  '{{ qs `limit` }}'
-    offset: '{{ qs `offset` }}'
-    sort:   '{{ qs `sort` }}'
-    fields: '{{ qs `fields` }}'
+-   name:     results
+    resource: '/api/collections/{{ qs `id` }}/where/{{ or (qs `q`) `all` }}'
+    params:
+        limit:  '{{ qs `limit` }}'
+        offset: '{{ qs `offset` }}'
+        sort:   '{{ qs `sort` }}'
+        fields: '{{ qs `fields` }}'
+
+includes:
+    paginator: '/_includes/paginator.html'
 ---
 <div class="container-fluid">
     <nav class="nav browser-header">
-        <div class="navbar-brand w-100">{{ qs `id` }}</div class="nav-brand">
+        <div class="navbar-brand w-50 m-0">{{ qs `id` }}</div class="nav-brand">
+        <div class="navbar-text w-50 m-0 text-right">
+            <a class="btn btn-success" href="/editor?collection={{ qs `id` }}">
+                <i class="fa fa-plus"></i>
+                New Record
+            </a>
+        </div>
 
         <form class="w-100" action="/">
             <input type="hidden" name="collection" value="{{ qs `id` }}">
@@ -63,7 +72,15 @@ bindings:
     </nav>
 
     <div class="browser-view">
-        <h6 class="mb-4">{{ thousandify .bindings.results.result_count }} results</h6>
+        <h6 class="mb-4">
+            {{ if gt (asInt $.bindings.results.total_pages) 1 }}
+            Viewing
+            {{ add 1 (qs `offset`) }}&ndash;{{ add (qs `offset`) (len $.bindings.results.records) }}
+            of
+            {{ end }}
+            {{ thousandify $.bindings.results.result_count }} results
+        </h6>
+        {{ template "paginator" . }}
 
         <table class="table">
             <thead>
@@ -74,9 +91,13 @@ bindings:
                 </tr>
             </thead>
             <tbody>
-            {{ range $index, $record := .bindings.results.records }}
+            {{ range $index, $record := $.bindings.results.records }}
                 <tr>
-                    <td>{{ $record.id }}</td>
+                    <td>
+                        <a href="/editor?collection={{ qs `id` }}&record={{ $record.id }}">
+                            {{ $record.id }}
+                        </a>
+                    </td>
                     <td style="padding: 0">
                         <table class="table table-sm table-plain table-responsive">
                             <tbody>
@@ -117,10 +138,29 @@ bindings:
                         <a href="/editor?collection={{ qs `id` }}&record={{ $record.id }}">
                             <i class="fa fa-pencil"></i>
                         </a>
+
+                        <a href="#" onclick="
+                            if(confirm('Are you sure you want to delete the record {{ $record.id }}?')) {
+                                $.ajax({
+                                    url: '/api/collections/{{ qs `id` }}/records/{{ $record.id }}',
+                                    method: 'delete',
+                                    success: function() {
+                                        window.location.reload();
+                                    },
+                                    error: function(data) {
+                                        alert('An error occurred while deleting the record: ' + data.responseText);
+                                    },
+                                });
+                            }
+                        ">
+                            <i class="fa fa-remove"></i>
+                        </a>
                     </td>
                 </tr>
             {{ end }}
             </tbody>
         </table>
+
+        {{ template "paginator" . }}
     </div>
 </div>

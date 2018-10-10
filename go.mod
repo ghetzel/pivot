@@ -4,7 +4,7 @@ require (
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78
 	github.com/Microsoft/go-winio v0.4.11
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5
-	github.com/PuerkitoBio/goquery v0.0.0-20180324162212-ea1bc64a6308
+	github.com/PuerkitoBio/goquery v1.4.1
 	github.com/RoaringBitmap/roaring v0.4.4
 	github.com/Smerity/govarint v0.0.0-20150407073650-7265e41f48f1
 	github.com/alexcesaro/statsd v2.0.0+incompatible
@@ -22,26 +22,26 @@ require (
 	github.com/docker/go-connections v0.3.0
 	github.com/docker/go-units v0.3.3
 	github.com/dsnet/compress v0.0.0-20171208185109-cc9eb1d7ad76
-	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
+	github.com/dustin/go-humanize v0.0.0-20180713052910-9f541cc9db5d
 	github.com/edsrzf/mmap-go v0.0.0-20170320065105-0bce6a688712
-	github.com/fatih/color v1.6.0
+	github.com/fatih/color v1.7.0
 	github.com/fatih/structs v1.0.0
-	github.com/ghetzel/argonaut v0.0.0-20171013012758-1fc8289ff003
+	github.com/ghetzel/argonaut v0.0.0-20180428155514-51604c68ce30
 	github.com/ghetzel/cli v1.16.0
-	github.com/ghetzel/diecast v0.0.0-20180404162638-0eeab4621f46
+	github.com/ghetzel/diecast v1.9.15
 	github.com/ghetzel/go-stockutil v1.5.49
-	github.com/ghetzel/go-webfriend v0.0.0-20180331030455-a02e0c9b1137
+	github.com/ghetzel/go-webfriend v0.9.27
 	github.com/ghetzel/uuid v0.0.0-20171129191014-dec09d789f3d
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd
 	github.com/go-ini/ini v1.34.0
 	github.com/go-sql-driver/mysql v1.3.0
 	github.com/gobwas/glob v0.2.3
-	github.com/golang/protobuf v0.0.0-20150325215109-655cdfa588ea
+	github.com/golang/protobuf v1.2.0
 	github.com/golang/snappy v0.0.0-20160407051505-cef980a12b31
 	github.com/gomodule/redigo v0.0.0-20180627144507-2cd21d9966bf
 	github.com/gorilla/websocket v1.2.0
-	github.com/grokify/html-strip-tags-go v0.0.0-20180403100050-2e24dd3c29e5
+	github.com/grokify/html-strip-tags-go v0.0.0-20180530080503-3f8856873ce5
 	github.com/hashicorp/errwrap v1.0.0
 	github.com/hashicorp/go-multierror v1.0.0
 	github.com/hashicorp/golang-lru v0.0.0-20180201235237-0fb14efe8c47
@@ -54,12 +54,12 @@ require (
 	github.com/julienschmidt/httprouter v0.0.0-20150421170007-8c199fb6259f
 	github.com/kelvins/sunrisesunset v0.0.0-20170601204625-14f1915ad4b4
 	github.com/lib/pq v0.0.0-20180327071824-d34b9ff171c2
-	github.com/mafredri/cdp v0.17.2
+	github.com/mafredri/cdp v0.18.5
 	github.com/mattn/go-colorable v0.0.9
 	github.com/mattn/go-isatty v0.0.4
 	github.com/mattn/go-sqlite3 v1.9.0
 	github.com/mcuadros/go-defaults v1.1.0
-	github.com/microcosm-cc/bluemonday v0.0.0-20180327211928-995366fdf961
+	github.com/microcosm-cc/bluemonday v1.0.0
 	github.com/mitchellh/mapstructure v1.0.0
 	github.com/montanaflynn/stats v0.0.0-20151014174947-eeaced052adb
 	github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae
@@ -84,9 +84,8 @@ require (
 	github.com/willf/bitset v0.0.0-20161202170036-5c3c0fce4884
 	github.com/yosssi/gohtml v0.0.0-20180130040904-97fbf36f4aa8
 	golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b
-	golang.org/x/net v0.0.0-20180330215511-b68f30494add
-	golang.org/x/sys v0.0.0-20180329131831-378d26f46672
-	golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e // indirect
+	golang.org/x/net v0.0.0-20180906233101-161cd47e91fd
+	golang.org/x/sys v0.0.0-20180909124046-d0be0721c37e
 	gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528
 	gopkg.in/neurosnap/sentences.v1 v1.0.6
 	gopkg.in/yaml.v2 v2.2.1

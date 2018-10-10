@@ -1,0 +1,25 @@
+{{ if gt (asInt $.bindings.results.total_pages) 1 }}
+<nav class="w-100 d-flex justify-content-center" aria-label="Pages">
+    <ul class="pagination">
+        <li class="page-item{{ if eqx $.bindings.results.page 1 }} disabled{{ end }}">
+            <a class="page-link" href="/?collection={{ qs `id` }}&offset={{ page (subtract $.bindings.results.page 1) $.bindings.results.records_per_page }}">
+                Previous
+            </a>
+        </li>
+
+        {{ range $i, $page := sequence $.bindings.results.total_pages }}
+        <li class="page-item{{ if eqx (add $page 1) $.bindings.results.page }} active{{ end }}">
+            <a class="page-link" href="/?collection={{ qs `id` }}&offset={{ page (add $page 1) $.bindings.results.records_per_page }}">
+                {{ (add $page 1) }}
+            </a>
+        </li>
+        {{ end }}
+
+        <li class="page-item{{ if ge $.bindings.results.page $.bindings.results.total_pages }} disabled{{ end }}">
+            <a class="page-link" href="/?collection={{ qs `id` }}&offset={{ page (add $.bindings.results.page 1) $.bindings.results.records_per_page }}">
+                Next
+            </a>
+        </li>
+    </ul>
+</nav>
+{{ end }}
