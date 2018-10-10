@@ -13,10 +13,10 @@ bindings:
 <form
     id="editor"
     class="container"
-    method="post"
-    action="/api/collections/{{ qs `collection` }}/records/{{ qs `record` }}"
+    method="{{ if $.bindings.record.id }}put{{ else }}post{{ end }}"
+    action="/api/collections/{{ qs `collection` }}/records/{{ $.bindings.record.id }}"
 >
-    <h2>Editing {{ .bindings.schema.name }} {{ if (qs `record`) }}{{ qs `record` }}{{ end }}</h2>
+    <h2>Editing {{ .bindings.schema.name }} {{ if $.bindings.record.id }}{{ $.bindings.record.id }}{{ end }}</h2>
 
     {{ if $.bindings.record.id }}
     <input type="hidden" name="id" value="{{ $.bindings.record.id }}">

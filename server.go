@@ -419,43 +419,47 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			}
 		})
 
-	router.Post(`/api/collections/:collection/records`,
-		func(w http.ResponseWriter, req *http.Request) {
-			var recordset dal.RecordSet
+	recordCreate := func(w http.ResponseWriter, req *http.Request) {
+		var recordset dal.RecordSet
 
-			backend := backendForRequest(req, self.backend)
+		backend := backendForRequest(req, self.backend)
 
-			if err := httputil.ParseRequest(req, &recordset); err == nil {
-				name := vestigo.Param(req, `collection`)
+		if err := httputil.ParseRequest(req, &recordset); err == nil {
+			name := vestigo.Param(req, `collection`)
 
-				if err := backend.Insert(name, &recordset); err == nil {
-					httputil.RespondJSON(w, &recordset)
-				} else {
-					httputil.RespondJSON(w, err)
-				}
+			if err := backend.Insert(name, &recordset); err == nil {
+				httputil.RespondJSON(w, &recordset)
 			} else {
-				httputil.RespondJSON(w, err, http.StatusBadRequest)
+				httputil.RespondJSON(w, err)
 			}
-		})
+		} else {
+			httputil.RespondJSON(w, err, http.StatusBadRequest)
+		}
+	}
 
-	router.Put(`/api/collections/:collection/records`,
-		func(w http.ResponseWriter, req *http.Request) {
-			var recordset dal.RecordSet
+	router.Post(`/api/collections/:collection/records`, recordCreate)
+	router.Post(`/api/collections/:collection/records/`, recordCreate)
 
-			backend := backendForRequest(req, self.backend)
+	recordUpdate := func(w http.ResponseWriter, req *http.Request) {
+		var recordset dal.RecordSet
 
-			if err := httputil.ParseRequest(req, &recordset); err == nil {
-				name := vestigo.Param(req, `collection`)
+		backend := backendForRequest(req, self.backend)
 
-				if err := backend.Update(name, &recordset); err == nil {
-					httputil.RespondJSON(w, nil)
-				} else {
-					httputil.RespondJSON(w, err)
-				}
+		if err := httputil.ParseRequest(req, &recordset); err == nil {
+			name := vestigo.Param(req, `collection`)
+
+			if err := backend.Update(name, &recordset); err == nil {
+				httputil.RespondJSON(w, nil)
 			} else {
-				httputil.RespondJSON(w, err, http.StatusBadRequest)
+				httputil.RespondJSON(w, err)
 			}
-		})
+		} else {
+			httputil.RespondJSON(w, err, http.StatusBadRequest)
+		}
+	}
+
+	router.Put(`/api/collections/:collection/records`, recordUpdate)
+	router.Put(`/api/collections/:collection/records/`, recordUpdate)
 
 	router.Delete(`/api/collections/:collection/records/*id`,
 		func(w http.ResponseWriter, req *http.Request) {
