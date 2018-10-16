@@ -17,6 +17,7 @@ import (
 var querylog = log.Logger()
 var stats, _ = statsd.New()
 var DefaultAutoregister = false
+var AutopingTimeout = 5 * time.Second
 
 type BackendFeature int
 
@@ -69,12 +70,34 @@ func RegisterBackend(name string, fn BackendFunc) {
 	backendMap[name] = fn
 }
 
+func startPeriodicPinger(interval time.Duration, backend Backend) {
+	for {
+		if err := backend.Ping(AutopingTimeout); err != nil {
+			log.Warningf("%v: ping failed with error: %v", backend, err)
+		}
+
+		time.Sleep(interval)
+	}
+}
+
 func MakeBackend(connection dal.ConnectionString) (Backend, error) {
+	var autopingInterval time.Duration
+
 	backendName := connection.Backend()
 	log.Infof("Creating backend: %v", connection.String())
 
 	if fn, ok := backendMap[backendName]; ok {
+		if i := connection.OptDuration(`ping`, 0); i > 0 {
+			autopingInterval = i
+		}
+
+		connection.ClearOpt(`ping`)
+
 		if backend := fn(connection); backend != nil {
+			if autopingInterval > 0 {
+				go startPeriodicPinger(autopingInterval, backend)
+			}
+
 			return backend, nil
 		} else {
 			return nil, fmt.Errorf("Error occurred instantiating backend %q", backendName)

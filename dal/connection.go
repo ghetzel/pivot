@@ -136,6 +136,10 @@ func (self *ConnectionString) HasOpt(key string) bool {
 	return ok
 }
 
+func (self *ConnectionString) ClearOpt(key string) {
+	delete(self.Options, key)
+}
+
 func (self *ConnectionString) OptString(key string, fallback string) string {
 	if v := typeutil.V(self.Options[key]).String(); v != `` {
 		return v

@@ -1,0 +1,97 @@
+package backends
+
+import (
+	"time"
+
+	"github.com/ghetzel/pivot/v3/dal"
+	"github.com/ghetzel/pivot/v3/filter"
+)
+
+type MonitoringBackend struct {
+	backend Backend
+}
+
+func NewMonitoringBackend(parent Backend) *MonitoringBackend {
+	return &MonitoringBackend{
+		backend: parent,
+	}
+}
+
+func (self *MonitoringBackend) Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error) {
+	defer stats.NewTiming().Send(`pivot.operations.retrieve.timing`)
+	stats.Increment(`pivot.operations.retrieve.calls`)
+
+	record, err := self.backend.Retrieve(collection, id)
+
+	if err != nil {
+		stats.Increment(`pivot.operations.retrieve.errors`)
+	}
+
+	return record, err
+}
+
+func (self *MonitoringBackend) Exists(collection string, id interface{}) bool {
+}
+
+func (self *MonitoringBackend) Insert(collection string, records *dal.RecordSet) error {
+}
+
+func (self *MonitoringBackend) Update(collection string, records *dal.RecordSet, target ...string) error {
+}
+
+func (self *MonitoringBackend) Delete(collection string, ids ...interface{}) error {
+}
+
+func (self *MonitoringBackend) CreateCollection(definition *dal.Collection) error {
+}
+
+func (self *MonitoringBackend) DeleteCollection(collection string) error {
+}
+
+func (self *MonitoringBackend) ListCollections() ([]string, error) {
+}
+
+func (self *MonitoringBackend) GetCollection(collection string) (*dal.Collection, error) {
+}
+
+func (self *MonitoringBackend) Ping(d time.Duration) error {
+}
+
+
+// passthrough the remaining functions to fulfill the Backend interface
+// -------------------------------------------------------------------------------------------------
+func (self *MonitoringBackend) Initialize() error {
+	return self.backend.Initialize()
+}
+
+func (self *MonitoringBackend) SetIndexer(cs dal.ConnectionString) error {
+	return self.backend.SetIndexer(cs)
+}
+
+func (self *MonitoringBackend) RegisterCollection(c *dal.Collection) {
+	self.backend.RegisterCollection(c)
+}
+
+func (self *MonitoringBackend) GetConnectionString() *dal.ConnectionString {
+	return self.backend.GetConnectionString()
+}
+
+func (self *MonitoringBackend) WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer {
+	return self.backend.WithSearch(collection, filters...)
+}
+
+func (self *MonitoringBackend) WithAggregator(collection *dal.Collection) Aggregator {
+	return self.backend.WithAggregator(collection)
+}
+
+func (self *MonitoringBackend) Flush() error {
+	return self.backend.Flush()
+}
+
+func (self *MonitoringBackend) String() string {
+	return self.backend.String()
+}
+
+func (self *MonitoringBackend) Supports(feature ...BackendFeature) bool {
+	return self.backend.Supports(feature...)
+}

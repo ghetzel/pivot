@@ -462,9 +462,8 @@ func (self *RedisBackend) run(cmd string, args ...interface{}) (interface{}, err
 	if conn := self.pool.Get(); conn != nil {
 		defer conn.Close()
 
-		debug := strings.Join(sliceutil.Stringify(args), ` `)
-
-		querylog.Debugf("[%v] %v %v", self, cmd, debug)
+		// debug := strings.Join(sliceutil.Stringify(args), ` `)
+		// querylog.Debugf("[%v] %v %v", self, cmd, debug)
 		return redis.DoWithTimeout(conn, self.cmdTimeout, cmd, args...)
 	} else {
 		return nil, fmt.Errorf("Failed to borrow Redis connection")
@@ -473,8 +472,19 @@ func (self *RedisBackend) run(cmd string, args ...interface{}) (interface{}, err
 
 func (self *RedisBackend) connect() error {
 	self.pool = &redis.Pool{
-		MaxIdle:   3,
-		MaxActive: 1024,
+		MaxIdle:     int(self.cs.OptDuration(`maxIdleConnections`, 10)),
+		IdleTimeout: self.cs.OptDuration(`idleTimeout`, 10*time.Minute),
+		Wait:        true,
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			// don't attempt a "freshness ping" if we're less than halfway to the IdleTimeout
+			if self.pool != nil {
+				if time.Since(t) < (self.pool.IdleTimeout / 2) {
+					return nil
+				}
+			}
+
+			return self.Ping(redisDefaultPingTimeout)
+		},
 		Dial: func() (redis.Conn, error) {
 			options := []redis.DialOption{
 				redis.DialKeepAlive(self.timeout),
