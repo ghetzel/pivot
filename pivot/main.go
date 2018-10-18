@@ -22,6 +22,7 @@ func main() {
 	app.Name = pivot.ApplicationName
 	app.Usage = pivot.ApplicationSummary
 	app.Version = pivot.ApplicationVersion
+	app.EnableBashCompletion = true
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
