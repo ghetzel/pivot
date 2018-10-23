@@ -697,6 +697,8 @@ func backendForRequest(req *http.Request, backend backends.Backend) backends.Bac
 
 			backend = backends.NewEmbeddedRecordBackend(backend, skipKeys...)
 		}
+	} else {
+		backend = backends.NewEmbeddedRecordBackend(backend)
 	}
 
 	return backend
