@@ -50,16 +50,18 @@ func (self *MongoBackend) QueryFunc(collection *dal.Collection, flt *filter.Filt
 
 		if totalResults, err := q.Count(); err == nil {
 			if flt.Limit > 0 {
-				q.Limit(flt.Limit)
+				q = q.Limit(flt.Limit)
 			}
 
 			if flt.Offset > 0 {
-				q.Skip(flt.Offset)
+				q = q.Skip(flt.Offset)
 			}
 
 			if len(flt.Sort) > 0 {
-				q.Sort(flt.Sort...)
+				q = q.Sort(flt.Sort...)
 			}
+
+			q = self.prepMongoQuery(q, flt.Fields)
 
 			iter := q.Iter()
 

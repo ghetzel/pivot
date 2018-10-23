@@ -29,7 +29,7 @@ require (
 	github.com/ghetzel/argonaut v0.0.0-20180428155514-51604c68ce30
 	github.com/ghetzel/cli v1.16.0
 	github.com/ghetzel/diecast v1.9.15
-	github.com/ghetzel/go-stockutil v1.5.49
+	github.com/ghetzel/go-stockutil v1.5.52
 	github.com/ghetzel/go-webfriend v0.9.27
 	github.com/ghetzel/pivot v2.5.0+incompatible // indirect
 	github.com/ghetzel/uuid v0.0.0-20171129191014-dec09d789f3d
@@ -87,6 +87,7 @@ require (
 	golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b
 	golang.org/x/net v0.0.0-20180906233101-161cd47e91fd
 	golang.org/x/sys v0.0.0-20180909124046-d0be0721c37e
+	golang.org/x/tools v0.0.0-20181009195744-afb03721b588
 	gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528
 	gopkg.in/neurosnap/sentences.v1 v1.0.6
 	gopkg.in/yaml.v2 v2.2.1

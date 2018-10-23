@@ -197,13 +197,13 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 				var queryInterface backends.Indexer
 
-				if search := backend.WithSearch(collection); search != nil {
+				if search := backend.WithSearch(collection, f); search != nil {
 					if rightName == `` {
 						queryInterface = search
 					} else {
 						if rightCollection, err := backend.GetCollection(rightName); err == nil {
 							// leaving this here, though a little redundant, for when we support heterogeneous backends
-							if rightSearch := backend.WithSearch(rightCollection); rightSearch != nil {
+							if rightSearch := backend.WithSearch(rightCollection, f); rightSearch != nil {
 								queryInterface = backends.NewMetaIndex(
 									search,
 									collection,

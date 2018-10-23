@@ -81,6 +81,8 @@ github.com/ghetzel/go-stockutil v1.5.48 h1:3l5WqikhHeKfPP1Ic3rPv5o6ReYeQN04NlEQr
 github.com/ghetzel/go-stockutil v1.5.48/go.mod h1:Y2IAZKZNEGeZZD46Cwd94CoA1Oh+Bx0N4c2z5FpMT5s=
 github.com/ghetzel/go-stockutil v1.5.49 h1:SQEo4cLlzLidi9j+u+AvcYdN6jy5yqpJAB8L+YGn4VY=
 github.com/ghetzel/go-stockutil v1.5.49/go.mod h1:Y2IAZKZNEGeZZD46Cwd94CoA1Oh+Bx0N4c2z5FpMT5s=
+github.com/ghetzel/go-stockutil v1.5.52 h1:aHmiUEhOa7704ia+/TcqeDmKhlyGoZEzs8GAbqK9IAM=
+github.com/ghetzel/go-stockutil v1.5.52/go.mod h1:Y2IAZKZNEGeZZD46Cwd94CoA1Oh+Bx0N4c2z5FpMT5s=
 github.com/ghetzel/go-webfriend v0.0.0-20180331030455-a02e0c9b1137 h1:07EcSO7JZG9k2kY/zUi1uf2LOhWb0YKTpc7GP14jmFA=
 github.com/ghetzel/go-webfriend v0.0.0-20180331030455-a02e0c9b1137/go.mod h1:beTYu3lp1LNlg6oO/76c5lvt8RiDY0NZ0Tdp/FwTYHI=
 github.com/ghetzel/go-webfriend v0.9.23 h1:VDXVXUzOIGlAbz1ihgMe7/rAeqrNZ+SHW0+28V80EpM=
@@ -278,6 +280,7 @@ golang.org/x/sys v0.0.0-20180909124046-d0be0721c37e/go.mod h1:STP8DvDyc/dI5b8T5h
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e h1:FDhOuMEY4JVRztM/gsbk+IKUQ8kj74bxZrgw87eMMVc=
 golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
+golang.org/x/tools v0.0.0-20181009195744-afb03721b588 h1:kh3GnRktWqrQvTxeCwEwv53CzrYN2ao3At3jt9XeZNU=
 golang.org/x/tools v0.0.0-20181009195744-afb03721b588/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=

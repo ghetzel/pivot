@@ -21,9 +21,9 @@ func NewEmbeddedRecordBackend(parent Backend, skipKeys ...string) *EmbeddedRecor
 	}
 }
 
-func (self *EmbeddedRecordBackend) Inflate(collection *dal.Collection, record *dal.Record) (*dal.Record, error) {
+func (self *EmbeddedRecordBackend) Inflate(collection *dal.Collection, record *dal.Record, fields ...string) (*dal.Record, error) {
 	if collection != nil {
-		if err := InflateEmbeddedRecords(self, collection, record, nil); err == nil {
+		if err := InflateEmbeddedRecords(self, collection, record, nil, fields...); err == nil {
 			return record, nil
 		} else {
 			return nil, err
@@ -40,7 +40,7 @@ func (self *EmbeddedRecordBackend) String() string {
 func (self *EmbeddedRecordBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
 		if record, err := self.backend.Retrieve(name, id, fields...); err == nil {
-			return self.Inflate(collection, record)
+			return self.Inflate(collection, record, fields...)
 		} else {
 			return nil, err
 		}
@@ -52,7 +52,15 @@ func (self *EmbeddedRecordBackend) Retrieve(name string, id interface{}, fields 
 func (self *EmbeddedRecordBackend) WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer {
 	if indexer := self.backend.WithSearch(collection, filters...); indexer != nil {
 		wi := NewWrappedIndexer(indexer, self)
-		wi.RecordFunc = self.Inflate
+		wi.RecordFunc = func(collection *dal.Collection, record *dal.Record) (*dal.Record, error) {
+			var fields []string
+
+			if len(filters) > 0 {
+				fields = filters[0].Fields
+			}
+
+			return self.Inflate(collection, record, fields...)
+		}
 
 		return wi
 	} else {

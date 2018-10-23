@@ -107,7 +107,7 @@ func MakeBackend(connection dal.ConnectionString) (Backend, error) {
 	}
 }
 
-func InflateEmbeddedRecords(backend Backend, parent *dal.Collection, record *dal.Record, prepId func(interface{}) interface{}) error { // for each relationship
+func InflateEmbeddedRecords(backend Backend, parent *dal.Collection, record *dal.Record, prepId func(interface{}) interface{}, requestedFields ...string) error { // for each relationship
 	skipKeys := make([]string, 0)
 
 	if embed, ok := backend.(*EmbeddedRecordBackend); ok {
@@ -147,6 +147,8 @@ func InflateEmbeddedRecords(backend Backend, parent *dal.Collection, record *dal
 		//
 		relfields := relationship.Fields
 		exported := related.ExportedFields
+		reqfields := make([]string, len(requestedFields))
+		copy(reqfields, requestedFields)
 
 		if len(exported) == 0 {
 			nestedFields = relfields
@@ -154,6 +156,24 @@ func InflateEmbeddedRecords(backend Backend, parent *dal.Collection, record *dal
 			nestedFields = exported
 		} else {
 			nestedFields = sliceutil.IntersectStrings(relfields, exported)
+		}
+
+		// split the nested subfields
+		for i, rel := range reqfields {
+			if first, last := stringutil.SplitPair(rel, `:`); sliceutil.ContainsString(keys, first) {
+				reqfields[i] = last
+			} else {
+				reqfields[i] = ``
+			}
+		}
+
+		reqfields = sliceutil.CompactString(reqfields)
+
+		// finally, further constraing the fieldset by those fields being requested
+		if len(nestedFields) == 0 {
+			nestedFields = reqfields
+		} else if len(reqfields) > 0 {
+			nestedFields = sliceutil.IntersectStrings(nestedFields, reqfields)
 		}
 
 		for _, key := range keys {
@@ -168,7 +188,7 @@ func InflateEmbeddedRecords(backend Backend, parent *dal.Collection, record *dal
 							id = prepId(id)
 						}
 
-						if data, err := retrieveEmbeddedRecord(backend, parent, related, id, nestedFields...); err == nil {
+						if data, err := retrieveEmbeddedRecord(backend, parent, related, key, id, nestedFields...); err == nil {
 							results = append(results, data)
 						} else {
 							return err
@@ -190,7 +210,7 @@ func InflateEmbeddedRecords(backend Backend, parent *dal.Collection, record *dal
 						nestedId = prepId(nestedId)
 					}
 
-					if data, err := retrieveEmbeddedRecord(backend, parent, related, nestedId, nestedFields...); err == nil {
+					if data, err := retrieveEmbeddedRecord(backend, parent, related, key, nestedId, nestedFields...); err == nil {
 						if len(data) > 0 {
 							record.SetNested(keyBefore, data)
 						}
@@ -205,14 +225,13 @@ func InflateEmbeddedRecords(backend Backend, parent *dal.Collection, record *dal
 	return nil
 }
 
-func retrieveEmbeddedRecord(backend Backend, parent *dal.Collection, related *dal.Collection, id interface{}, fields ...string) (map[string]interface{}, error) {
+func retrieveEmbeddedRecord(backend Backend, parent *dal.Collection, related *dal.Collection, key string, id interface{}, fields ...string) (map[string]interface{}, error) {
 	if id == nil {
 		return nil, nil
 	}
 
 	// retrieve the record by ID
 	if record, err := backend.Retrieve(related.Name, id, fields...); err == nil {
-
 		if data, err := related.MapFromRecord(record, fields...); err == nil {
 			return data, nil
 		} else if parent.AllowMissingEmbeddedRecords {

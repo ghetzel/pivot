@@ -37,7 +37,7 @@ func (self *CachingBackend) Retrieve(collection string, id interface{}, fields .
 		}
 	}
 
-	if record, err := self.backend.Retrieve(collection, id); err == nil {
+	if record, err := self.backend.Retrieve(collection, id, fields...); err == nil {
 		cacheset[id] = record
 		return record, nil
 	} else {

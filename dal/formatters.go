@@ -238,15 +238,11 @@ func DeriveFromFields(format string, fields ...string) FieldFormatterFunc {
 }
 
 func CurrentTime(value interface{}, op FieldOperation) (interface{}, error) {
-	if op == PersistOperation {
-		return time.Now(), nil
-	} else {
-		return value, nil
-	}
+	return time.Now(), nil
 }
 
 func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error) {
-	if op == PersistOperation && typeutil.IsZero(value) {
+	if typeutil.IsZero(value) {
 		return time.Now(), nil
 	}
 
@@ -255,7 +251,7 @@ func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, erro
 
 func NowPlusDuration(duration time.Duration) FieldFormatterFunc {
 	return func(value interface{}, op FieldOperation) (interface{}, error) {
-		if op == PersistOperation && duration != 0 {
+		if duration != 0 {
 			return time.Now().Add(duration), nil
 		} else {
 			return value, nil

@@ -155,7 +155,10 @@ func (self *MongoBackend) Retrieve(name string, id interface{}, fields ...string
 	if collection, err := self.GetCollection(name); err == nil {
 		var data map[string]interface{}
 
-		if err := self.db.C(collection.Name).FindId(self.getId(id)).One(&data); err == nil {
+		q := self.db.C(collection.Name).FindId(self.getId(id))
+		q = self.prepMongoQuery(q, fields)
+
+		if err := q.One(&data); err == nil {
 			return self.recordFromResult(collection, data, fields...)
 		} else if err == mgo.ErrNotFound {
 			return nil, fmt.Errorf("Record %v does not exist", id)
@@ -331,9 +334,7 @@ func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[
 			v = self.fromId(v)
 
 			if _, ok := collection.GetField(k); ok || len(collection.Fields) == 0 {
-				if len(fields) == 0 || sliceutil.ContainsString(fields, k) {
-					record.Set(k, v)
-				}
+				record.Set(k, v)
 			}
 		}
 
@@ -373,4 +374,19 @@ func (self *MongoBackend) fromId(in interface{}) interface{} {
 	}
 
 	return in
+}
+
+func (self *MongoBackend) prepMongoQuery(q *mgo.Query, fields []string) *mgo.Query {
+	if len(fields) > 0 {
+		projection := make(bson.M)
+
+		for _, field := range fields {
+			first, _ := stringutil.SplitPair(field, `:`)
+			projection[first] = 1
+		}
+
+		q = q.Select(projection)
+	}
+
+	return q
 }
