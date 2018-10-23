@@ -9,13 +9,15 @@ import (
 )
 
 type EmbeddedRecordBackend struct {
-	backend Backend
-	cache   sync.Map
+	SkipKeys []string
+	backend  Backend
+	cache    sync.Map
 }
 
-func NewEmbeddedRecordBackend(parent Backend) *EmbeddedRecordBackend {
+func NewEmbeddedRecordBackend(parent Backend, skipKeys ...string) *EmbeddedRecordBackend {
 	return &EmbeddedRecordBackend{
-		backend: parent,
+		SkipKeys: skipKeys,
+		backend:  parent,
 	}
 }
 

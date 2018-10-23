@@ -687,8 +687,16 @@ func backendForRequest(req *http.Request, backend backends.Backend) backends.Bac
 		backend = backends.NewCachingBackend(backend)
 	}
 
-	if !httputil.QBool(req, `noexpand`) {
-		backend = backends.NewEmbeddedRecordBackend(backend)
+	if nx := httputil.Q(req, `noexpand`); nx != `` {
+		if !stringutil.IsBooleanTrue(nx) {
+			skipKeys := make([]string, 0)
+
+			if !stringutil.IsBooleanFalse(nx) {
+				skipKeys = strings.Split(nx, `,`)
+			}
+
+			backend = backends.NewEmbeddedRecordBackend(backend, skipKeys...)
+		}
 	}
 
 	return backend

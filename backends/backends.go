@@ -108,8 +108,20 @@ func MakeBackend(connection dal.ConnectionString) (Backend, error) {
 }
 
 func InflateEmbeddedRecords(backend Backend, parent *dal.Collection, record *dal.Record, prepId func(interface{}) interface{}) error { // for each relationship
+	skipKeys := make([]string, 0)
+
+	if embed, ok := backend.(*EmbeddedRecordBackend); ok {
+		skipKeys = embed.SkipKeys
+	}
+
 	for _, relationship := range parent.EmbeddedCollections {
 		keys := sliceutil.CompactString(sliceutil.Stringify(sliceutil.Sliceify(relationship.Keys)))
+
+		// if we're supposed to skip certain keys, and this is one of them
+		if len(skipKeys) > 0 && sliceutil.ContainsAnyString(skipKeys, keys...) {
+			log.Debugf("explicitly skipping %+v", keys)
+			continue
+		}
 
 		var related *dal.Collection
 
