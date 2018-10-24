@@ -5,6 +5,7 @@ package backends
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/v3/dal"
@@ -63,7 +64,11 @@ func (self *MongoBackend) aggregateFloat(collection *dal.Collection, aggregation
 			Field:       field,
 		},
 	}, flt, true); err == nil {
-		return result.(float64), nil
+		if vF, ok := result.(float64); ok {
+			return vF, nil
+		} else {
+			return 0, err
+		}
 	} else {
 		return 0, err
 	}
@@ -134,6 +139,8 @@ func (self *MongoBackend) aggregate(collection *dal.Collection, groupBy []string
 				if v, ok := result[firstKey]; ok {
 					if vF, err := stringutil.ConvertToFloat(v); err == nil {
 						return vF, nil
+					} else if vT, err := stringutil.ConvertToTime(v); err == nil {
+						return float64(vT.UnixNano()) / float64(time.Second), nil
 					} else {
 						return 0, fmt.Errorf("'%s' aggregation not supported for field %v", firstKey, _id)
 					}
