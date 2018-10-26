@@ -211,9 +211,7 @@ func InflateEmbeddedRecords(backend Backend, parent *dal.Collection, record *dal
 					}
 
 					if data, err := retrieveEmbeddedRecord(backend, parent, related, key, nestedId, nestedFields...); err == nil {
-						if len(data) > 0 {
-							record.SetNested(keyBefore, data)
-						}
+						record.SetNested(keyBefore, data)
 					} else {
 						return err
 					}
@@ -235,20 +233,20 @@ func retrieveEmbeddedRecord(backend Backend, parent *dal.Collection, related *da
 		if data, err := related.MapFromRecord(record, fields...); err == nil {
 			return data, nil
 		} else if parent.AllowMissingEmbeddedRecords {
-			// log.Warningf("nested(%s[%s]): %v", parent.Name, related.Name, err)
+			log.Warningf("nested(%s.%s => %v): %v", parent.Name, key, related.Name, err)
 			return nil, nil
 		} else {
-			return nil, fmt.Errorf("nested(%s[%s]): serialization error: %v", parent.Name, related.Name, err)
+			return nil, fmt.Errorf("nested(%s.%s => %v): serialization error: %v", parent.Name, key, related.Name, err)
 		}
 	} else if parent.AllowMissingEmbeddedRecords {
-		// if dal.IsNotExistError(err) {
-		// 	log.Warningf("nested(%s[%s]): record %v is missing", parent.Name, related.Name, id)
-		// } else {
-		// 	log.Warningf("nested(%s[%s]): retrieval error on %v: %v", parent.Name, related.Name, id, err)
-		// }
+		if dal.IsNotExistError(err) {
+			log.Warningf("nested(%s.%s => %v): record %v is missing", parent.Name, key, related.Name, id)
+		} else {
+			log.Warningf("nested(%s.%s => %v): retrieval error on %v: %v", parent.Name, key, related.Name, id, err)
+		}
 
 		return nil, nil
 	} else {
-		return nil, fmt.Errorf("nested(%s[%s]): %v", parent.Name, related.Name, err)
+		return nil, fmt.Errorf("nested(%s.%s => %v): %v", parent.Name, key, related.Name, err)
 	}
 }
