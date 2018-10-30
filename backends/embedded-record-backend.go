@@ -11,19 +11,26 @@ import (
 type EmbeddedRecordBackend struct {
 	SkipKeys []string
 	backend  Backend
+	indexer  Indexer
 	cache    sync.Map
 }
 
 func NewEmbeddedRecordBackend(parent Backend, skipKeys ...string) *EmbeddedRecordBackend {
-	return &EmbeddedRecordBackend{
+	backend := &EmbeddedRecordBackend{
 		SkipKeys: skipKeys,
 		backend:  parent,
 	}
+
+	if indexer := parent.WithSearch(nil); indexer != nil {
+		backend.indexer = indexer
+	}
+
+	return backend
 }
 
-func (self *EmbeddedRecordBackend) Inflate(collection *dal.Collection, record *dal.Record, fields ...string) (*dal.Record, error) {
+func (self *EmbeddedRecordBackend) EmbedRelationships(collection *dal.Collection, record *dal.Record, fields ...string) (*dal.Record, error) {
 	if collection != nil {
-		if err := InflateEmbeddedRecords(self, collection, record, nil, fields...); err == nil {
+		if err := PopulateRelationships(self, collection, record, nil, fields...); err == nil {
 			return record, nil
 		} else {
 			return nil, err
@@ -40,7 +47,9 @@ func (self *EmbeddedRecordBackend) String() string {
 func (self *EmbeddedRecordBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
 		if record, err := self.backend.Retrieve(name, id, fields...); err == nil {
-			return self.Inflate(collection, record, fields...)
+			record, err = self.EmbedRelationships(collection, record, fields...)
+			ResolveDeferredRecords(nil, record)
+			return record, nil
 		} else {
 			return nil, err
 		}
@@ -50,19 +59,8 @@ func (self *EmbeddedRecordBackend) Retrieve(name string, id interface{}, fields 
 }
 
 func (self *EmbeddedRecordBackend) WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer {
-	if indexer := self.backend.WithSearch(collection, filters...); indexer != nil {
-		wi := NewWrappedIndexer(indexer, self)
-		wi.RecordFunc = func(collection *dal.Collection, record *dal.Record) (*dal.Record, error) {
-			var fields []string
-
-			if len(filters) > 0 {
-				fields = filters[0].Fields
-			}
-
-			return self.Inflate(collection, record, fields...)
-		}
-
-		return wi
+	if self.indexer != nil {
+		return self
 	} else {
 		return nil
 	}
@@ -132,4 +130,78 @@ func (self *EmbeddedRecordBackend) Ping(d time.Duration) error {
 
 func (self *EmbeddedRecordBackend) Supports(feature ...BackendFeature) bool {
 	return self.backend.Supports(feature...)
+}
+
+// fulfill the Indexer interface
+// -------------------------------------------------------------------------------------------------
+func (self *EmbeddedRecordBackend) GetBackend() Backend {
+	return self
+}
+
+func (self *EmbeddedRecordBackend) IndexConnectionString() *dal.ConnectionString {
+	return self.indexer.IndexConnectionString()
+}
+
+func (self *EmbeddedRecordBackend) IndexInitialize(b Backend) error {
+	return self.indexer.IndexInitialize(b)
+}
+
+func (self *EmbeddedRecordBackend) IndexExists(collection *dal.Collection, id interface{}) bool {
+	return self.indexer.IndexExists(collection, id)
+}
+
+func (self *EmbeddedRecordBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
+	return self.indexer.IndexRetrieve(collection, id)
+}
+
+func (self *EmbeddedRecordBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+	return self.indexer.IndexRemove(collection, ids)
+}
+
+func (self *EmbeddedRecordBackend) Index(collection *dal.Collection, records *dal.RecordSet) error {
+	return self.indexer.Index(collection, records)
+}
+
+func (self *EmbeddedRecordBackend) QueryFunc(collection *dal.Collection, filter *filter.Filter, resultFn IndexResultFunc) error {
+	deferredCache := make(map[string]interface{})
+
+	return self.indexer.QueryFunc(collection, filter, func(record *dal.Record, err error, page IndexPage) error {
+		if err := ResolveDeferredRecords(deferredCache, record); err == nil {
+			return resultFn(record, err, page)
+		} else {
+			return err
+		}
+	})
+}
+
+func (self *EmbeddedRecordBackend) Query(collection *dal.Collection, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+	recordset, err := self.indexer.Query(collection, filter, resultFns...)
+
+	for i, record := range recordset.Records {
+		if record, err := self.EmbedRelationships(collection, record, filter.Fields...); err == nil {
+			recordset.Records[i] = record
+		} else {
+			return nil, err
+		}
+	}
+
+	deferredCache := make(map[string]interface{})
+
+	if err := ResolveDeferredRecords(deferredCache, recordset.Records...); err != nil {
+		return nil, err
+	}
+
+	return recordset, err
+}
+
+func (self *EmbeddedRecordBackend) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error) {
+	return self.indexer.ListValues(collection, fields, filter)
+}
+
+func (self *EmbeddedRecordBackend) DeleteQuery(collection *dal.Collection, f *filter.Filter) error {
+	return self.indexer.DeleteQuery(collection, f)
+}
+
+func (self *EmbeddedRecordBackend) FlushIndex() error {
+	return self.indexer.FlushIndex()
 }
