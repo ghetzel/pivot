@@ -683,9 +683,9 @@ func filterFromRequest(req *http.Request, filterIn interface{}, defaultLimit int
 }
 
 func backendForRequest(req *http.Request, backend backends.Backend) backends.Backend {
-	if !httputil.QBool(req, `nocache`) {
-		backend = backends.NewCachingBackend(backend)
-	}
+	// if !httputil.QBool(req, `nocache`) {
+	// 	backend = backends.NewCachingBackend(backend)
+	// }
 
 	if nx := httputil.Q(req, `noexpand`); nx != `` {
 		if !stringutil.IsBooleanTrue(nx) {
