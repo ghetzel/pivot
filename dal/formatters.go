@@ -238,12 +238,18 @@ func DeriveFromFields(format string, fields ...string) FieldFormatterFunc {
 }
 
 func CurrentTime(value interface{}, op FieldOperation) (interface{}, error) {
-	return time.Now(), nil
+	if op == PersistOperation {
+		return time.Now(), nil
+	} else {
+		return value, nil
+	}
 }
 
 func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error) {
-	if typeutil.IsZero(value) {
-		return time.Now(), nil
+	if op == PersistOperation {
+		if typeutil.IsZero(value) {
+			return time.Now(), nil
+		}
 	}
 
 	return value, nil
