@@ -16,6 +16,7 @@ import (
 
 // create handy type aliases to avoid importing from all over the place
 type DB = backends.Backend
+type Model = backends.Mapper
 type Collection = dal.Collection
 type Record = dal.Record
 type RecordSet = dal.RecordSet
