@@ -10,13 +10,21 @@ import (
 
 	"github.com/ghetzel/pivot/v3/backends"
 	"github.com/ghetzel/pivot/v3/dal"
+	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/ghodss/yaml"
 )
+
+// create handy type aliases to avoid importing from all over the place
+type DB = backends.Backend
+type Collection = dal.Collection
+type Record = dal.Record
+type RecordSet = dal.RecordSet
+type Filter = filter.Filter
 
 var MonitorCheckInterval = time.Duration(10) * time.Second
 var NetrcFile = ``
 
-func NewDatabaseWithOptions(connection string, options backends.ConnectOptions) (backends.Backend, error) {
+func NewDatabaseWithOptions(connection string, options backends.ConnectOptions) (DB, error) {
 	if cs, err := dal.ParseConnectionString(connection); err == nil {
 		if NetrcFile != `` {
 			if err := cs.LoadCredentialsFromNetrc(NetrcFile); err != nil {
@@ -59,7 +67,7 @@ func NewDatabaseWithOptions(connection string, options backends.ConnectOptions) 
 	}
 }
 
-func NewDatabase(connection string) (backends.Backend, error) {
+func NewDatabase(connection string) (DB, error) {
 	return NewDatabaseWithOptions(connection, backends.ConnectOptions{})
 }
 

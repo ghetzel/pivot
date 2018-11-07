@@ -36,7 +36,7 @@ type Server struct {
 	ConnectionString string
 	ConnectOptions   backends.ConnectOptions
 	UiDirectory      string
-	backend          backends.Backend
+	backend          DB
 	endpoints        []util.Endpoint
 	routeMap         map[string]util.EndpointResponseFunc
 	schemaDefs       []string
@@ -682,7 +682,7 @@ func filterFromRequest(req *http.Request, filterIn interface{}, defaultLimit int
 	return f, nil
 }
 
-func backendForRequest(req *http.Request, backend backends.Backend) backends.Backend {
+func backendForRequest(req *http.Request, backend DB) DB {
 	// if !httputil.QBool(req, `nocache`) {
 	// 	backend = backends.NewCachingBackend(backend)
 	// }
