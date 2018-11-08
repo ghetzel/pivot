@@ -295,12 +295,14 @@ func (self *MongoBackend) Flush() error {
 }
 
 func (self *MongoBackend) normalizeRecordValues(record *dal.Record) {
-	for name, value := range record.Fields {
+	record.Fields = maputil.Apply(record.Fields, func(key []string, value interface{}) (interface{}, bool) {
 		switch value.(type) {
 		case bson.ObjectId:
-			record.Fields[name] = value.(bson.ObjectId).Hex()
+			return value.(bson.ObjectId).Hex(), true
 		}
-	}
+
+		return nil, false
+	})
 }
 
 func (self *MongoBackend) prepareValuesForWrite(data map[string]interface{}) map[string]interface{} {

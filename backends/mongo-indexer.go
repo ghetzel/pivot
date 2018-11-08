@@ -167,6 +167,10 @@ func (self *MongoBackend) filterToNative(collection *dal.Collection, flt *filter
 		query = bson.M(maputil.Apply(query, func(key []string, value interface{}) (interface{}, bool) {
 			vS := fmt.Sprintf("%v", value)
 
+			// I'm half-a-tick from just forking the mgo library for how absolutely maddening this
+			// Stringer output is.
+			vS = stringutil.Unwrap(vS, `ObjectIdHex("`, `")`)
+
 			if bson.IsObjectIdHex(vS) {
 				return bson.ObjectIdHex(vS), true
 			} else if stringutil.IsTime(value) {
@@ -178,7 +182,7 @@ func (self *MongoBackend) filterToNative(collection *dal.Collection, flt *filter
 			return nil, false
 		}))
 
-		querylog.Debugf("[%T] query: %v", self, typeutil.Dump(query))
+		querylog.Debugf("[%T] query %v: %v", self, collection.Name, typeutil.Dump(query))
 		return query, nil
 	} else {
 		return nil, err

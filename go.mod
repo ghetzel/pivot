@@ -29,7 +29,7 @@ require (
 	github.com/ghetzel/argonaut v0.0.0-20180428155514-51604c68ce30
 	github.com/ghetzel/cli v1.16.0
 	github.com/ghetzel/diecast v1.9.15
-	github.com/ghetzel/go-stockutil v1.5.52
+	github.com/ghetzel/go-stockutil v1.6.0
 	github.com/ghetzel/go-webfriend v0.9.27
 	github.com/ghetzel/pivot v2.5.0+incompatible // indirect
 	github.com/ghetzel/uuid v0.0.0-20171129191014-dec09d789f3d
@@ -70,7 +70,7 @@ require (
 	github.com/opencontainers/runc v1.0.0-rc5
 	github.com/orcaman/concurrent-map v0.0.0-20180319144342-a05df785d2dc
 	github.com/ory/dockertest v3.3.2+incompatible
-	github.com/phayes/freeport v0.0.0-20171002181615-b8543db493a5
+	github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2
 	github.com/philhofer/fwd v1.0.0
 	github.com/pkg/errors v0.8.0
 	github.com/pmezard/go-difflib v1.0.0

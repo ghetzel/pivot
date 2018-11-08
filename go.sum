@@ -83,6 +83,8 @@ github.com/ghetzel/go-stockutil v1.5.49 h1:SQEo4cLlzLidi9j+u+AvcYdN6jy5yqpJAB8L+
 github.com/ghetzel/go-stockutil v1.5.49/go.mod h1:Y2IAZKZNEGeZZD46Cwd94CoA1Oh+Bx0N4c2z5FpMT5s=
 github.com/ghetzel/go-stockutil v1.5.52 h1:aHmiUEhOa7704ia+/TcqeDmKhlyGoZEzs8GAbqK9IAM=
 github.com/ghetzel/go-stockutil v1.5.52/go.mod h1:Y2IAZKZNEGeZZD46Cwd94CoA1Oh+Bx0N4c2z5FpMT5s=
+github.com/ghetzel/go-stockutil v1.6.0 h1:4oMJ2uj/DdxP2rZXKcIhurOciLCWZwchNEZatAtjzYQ=
+github.com/ghetzel/go-stockutil v1.6.0/go.mod h1:WWQnJTs0pzKtG2xqysVPYfPRdPhLwSU9f0oGG46Ji3I=
 github.com/ghetzel/go-webfriend v0.0.0-20180331030455-a02e0c9b1137 h1:07EcSO7JZG9k2kY/zUi1uf2LOhWb0YKTpc7GP14jmFA=
 github.com/ghetzel/go-webfriend v0.0.0-20180331030455-a02e0c9b1137/go.mod h1:beTYu3lp1LNlg6oO/76c5lvt8RiDY0NZ0Tdp/FwTYHI=
 github.com/ghetzel/go-webfriend v0.9.23 h1:VDXVXUzOIGlAbz1ihgMe7/rAeqrNZ+SHW0+28V80EpM=
@@ -217,6 +219,8 @@ github.com/peterbourgon/diskv v2.0.1+incompatible h1:UBdAOUP5p4RWqPBg048CAvpKN+v
 github.com/peterbourgon/diskv v2.0.1+incompatible/go.mod h1:uqqh8zWWbv1HBMNONnaR/tNboyR3/BZd58JJSHlUSCU=
 github.com/phayes/freeport v0.0.0-20171002181615-b8543db493a5 h1:rZQtoozkfsiNs36c7Tdv/gyGNzD1X1XWKO8rptVNZuM=
 github.com/phayes/freeport v0.0.0-20171002181615-b8543db493a5/go.mod h1:iIss55rKnNBTvrwdmkUpLnDpZoAHvWaiq5+iMmen4AE=
+github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2 h1:JhzVVoYvbOACxoUmOs6V/G4D5nPVUW73rKvXxP4XUJc=
+github.com/phayes/freeport v0.0.0-20180830031419-95f893ade6f2/go.mod h1:iIss55rKnNBTvrwdmkUpLnDpZoAHvWaiq5+iMmen4AE=
 github.com/philhofer/fwd v1.0.0 h1:UbZqGr5Y38ApvM/V/jEljVxwocdweyH+vmYvRPBnbqQ=
 github.com/philhofer/fwd v1.0.0/go.mod h1:gk3iGcWd9+svBvR0sR+KPcfE+RNWozjowpeBVG3ZVNU=
 github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=

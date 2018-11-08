@@ -36,6 +36,7 @@ type Server struct {
 	ConnectionString string
 	ConnectOptions   backends.ConnectOptions
 	UiDirectory      string
+	Autoexpand       bool
 	backend          DB
 	endpoints        []util.Endpoint
 	routeMap         map[string]util.EndpointResponseFunc
@@ -136,7 +137,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 	router.Get(`/api/status`,
 		func(w http.ResponseWriter, req *http.Request) {
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			status := map[string]interface{}{
 				`backend`: backend.GetConnectionString().String(),
@@ -189,7 +190,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			}
 		}
 
-		backend := backendForRequest(req, self.backend)
+		backend := backendForRequest(self, req, self.backend)
 
 		if f, err := filterFromRequest(req, query, int64(DefaultResultLimit)); err == nil {
 			if collection, err := backend.GetCollection(name); err == nil {
@@ -249,7 +250,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			name := vestigo.Param(req, `collection`)
 			fields := strings.Split(vestigo.Param(req, `fields`), `,`)
 			aggregations := strings.Split(httputil.Q(req, `fn`, `count`), `,`)
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if f, err := filterFromRequest(req, httputil.Q(req, `q`, `all`), 0); err == nil {
 				if collection, err := backend.GetCollection(name); err == nil {
@@ -310,7 +311,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)
 			fieldNames := vestigo.Param(req, `_name`)
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if f, err := filterFromRequest(req, httputil.Q(req, `q`, `all`), 0); err == nil {
 				if collection, err := backend.GetCollection(name); err == nil {
@@ -341,7 +342,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)
 			query := vestigo.Param(req, `_name`)
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if f, err := filter.Parse(query); err == nil {
 				if err := backend.Delete(name, f); err == nil {
@@ -360,7 +361,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	recordUpsert := func(w http.ResponseWriter, req *http.Request) {
 		var recordset dal.RecordSet
 
-		backend := backendForRequest(req, self.backend)
+		backend := backendForRequest(self, req, self.backend)
 
 		if err := httputil.ParseRequest(req, &recordset); err == nil {
 			name := vestigo.Param(req, `collection`)
@@ -398,7 +399,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			var fields []string
 
 			name := vestigo.Param(req, `collection`)
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if ids := strings.Split(vestigo.Param(req, `id`), `:`); len(ids) == 1 {
 				id = ids[0]
@@ -423,7 +424,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			var record dal.Record
 
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if err := httputil.ParseRequest(req, &record); err == nil {
 				recordset := dal.NewRecordSet(&record)
@@ -451,7 +452,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			var id interface{}
 
 			name := vestigo.Param(req, `collection`)
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if ids := strings.Split(vestigo.Param(req, `_name`), `/`); len(ids) == 1 {
 				id = ids[0]
@@ -471,7 +472,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Get(`/api/collections/:collection`,
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if collection, err := backend.GetCollection(name); err == nil {
 				collection = injectRequestParamsIntoCollection(req, collection)
@@ -487,7 +488,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			var recordset dal.RecordSet
 
 			name := vestigo.Param(req, `collection`)
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
 				if err := backend.Insert(name, &recordset); err == nil {
@@ -505,7 +506,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			var recordset dal.RecordSet
 
 			name := vestigo.Param(req, `collection`)
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
 				if err := backend.Update(name, &recordset); err == nil {
@@ -520,7 +521,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 	router.Get(`/api/schema`,
 		func(w http.ResponseWriter, req *http.Request) {
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if names, err := backend.ListCollections(); err == nil {
 				httputil.RespondJSON(w, names)
@@ -533,7 +534,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		func(w http.ResponseWriter, req *http.Request) {
 			var collections []dal.Collection
 
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if body, err := ioutil.ReadAll(req.Body); err == nil {
 				var collection dal.Collection
@@ -580,7 +581,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Get(`/api/schema/:collection`,
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if collection, err := backend.GetCollection(name); err == nil {
 				collection = injectRequestParamsIntoCollection(req, collection)
@@ -594,7 +595,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Delete(`/api/schema/:collection`,
 		func(w http.ResponseWriter, req *http.Request) {
 			name := vestigo.Param(req, `collection`)
-			backend := backendForRequest(req, self.backend)
+			backend := backendForRequest(self, req, self.backend)
 
 			if err := backend.DeleteCollection(name); err == nil {
 				httputil.RespondJSON(w, nil)
@@ -682,23 +683,28 @@ func filterFromRequest(req *http.Request, filterIn interface{}, defaultLimit int
 	return f, nil
 }
 
-func backendForRequest(req *http.Request, backend DB) DB {
-	// if !httputil.QBool(req, `nocache`) {
-	// 	backend = backends.NewCachingBackend(backend)
-	// }
+func backendForRequest(server *Server, req *http.Request, backend DB) DB {
+	nx := httputil.Q(req, `noexpand`)
+	skipKeys := make([]string, 0)
+	useEmbeddedBackend := server.Autoexpand
 
-	if nx := httputil.Q(req, `noexpand`); nx != `` {
-		if !stringutil.IsBooleanTrue(nx) {
-			skipKeys := make([]string, 0)
-
-			if !stringutil.IsBooleanFalse(nx) {
-				skipKeys = strings.Split(nx, `,`)
-			}
-
-			backend = backends.NewEmbeddedRecordBackend(backend, skipKeys...)
+	// if the ?noexpand querystring was provided in some form...
+	if nx != `` {
+		// noexpand=true means "don't wrap the backend in the embedded dingus at all"
+		if stringutil.IsBooleanTrue(nx) {
+			useEmbeddedBackend = false
+		} else if !stringutil.IsBooleanFalse(nx) {
+			// noexpand=<anything other than a falsey value> means "wrap, but skip these fields when expanding"
+			skipKeys = httputil.QStrings(req, `noexpand`, `,`)
+			useEmbeddedBackend = true
+		} else {
+			// noexpand=false means "wrap and expand all fields"
+			useEmbeddedBackend = true
 		}
-	} else {
-		backend = backends.NewEmbeddedRecordBackend(backend)
+	}
+
+	if useEmbeddedBackend {
+		backend = backends.NewEmbeddedRecordBackend(backend, skipKeys...)
 	}
 
 	return backend

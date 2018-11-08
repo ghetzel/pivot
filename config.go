@@ -10,6 +10,7 @@ import (
 type Configuration struct {
 	Backend      string                   `json:"backend"`
 	Indexer      string                   `json:"indexer"`
+	Autoexpand   bool                     `json:"autoexpand"`
 	Environments map[string]Configuration `json:"environments"`
 }
 
