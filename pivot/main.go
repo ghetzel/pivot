@@ -110,6 +110,7 @@ func main() {
 				server.Address = c.String(`address`)
 				server.UiDirectory = c.String(`ui-dir`)
 				server.ConnectOptions.Indexer = indexer
+				server.Autoexpand = cnf.Autoexpand
 
 				for _, filename := range c.GlobalStringSlice(`schema`) {
 					server.AddSchemaDefinition(filename)

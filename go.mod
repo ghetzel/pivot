@@ -29,7 +29,7 @@ require (
 	github.com/ghetzel/argonaut v0.0.0-20180428155514-51604c68ce30
 	github.com/ghetzel/cli v1.16.0
 	github.com/ghetzel/diecast v1.9.15
-	github.com/ghetzel/go-stockutil v1.6.0
+	github.com/ghetzel/go-stockutil v1.6.1
 	github.com/ghetzel/go-webfriend v0.9.27
 	github.com/ghetzel/pivot v2.5.0+incompatible // indirect
 	github.com/ghetzel/uuid v0.0.0-20171129191014-dec09d789f3d
