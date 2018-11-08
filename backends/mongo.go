@@ -174,7 +174,6 @@ func (self *MongoBackend) Insert(name string, records *dal.RecordSet) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		for _, record := range records.Records {
 			if _, err := collection.MakeRecord(record); err == nil {
-				self.normalizeRecordValues(record)
 				data := self.prepareValuesForWrite(record.Fields)
 
 				if record.ID == nil {
@@ -201,7 +200,6 @@ func (self *MongoBackend) Update(name string, records *dal.RecordSet, target ...
 	if collection, err := self.GetCollection(name); err == nil {
 		for _, record := range records.Records {
 			if _, err := collection.MakeRecord(record); err == nil {
-				self.normalizeRecordValues(record)
 				data := self.prepareValuesForWrite(record.Fields)
 
 				if record.ID == nil {
@@ -294,17 +292,6 @@ func (self *MongoBackend) Flush() error {
 	return nil
 }
 
-func (self *MongoBackend) normalizeRecordValues(record *dal.Record) {
-	record.Fields = maputil.Apply(record.Fields, func(key []string, value interface{}) (interface{}, bool) {
-		switch value.(type) {
-		case bson.ObjectId:
-			return value.(bson.ObjectId).Hex(), true
-		}
-
-		return nil, false
-	})
-}
-
 func (self *MongoBackend) prepareValuesForWrite(data map[string]interface{}) map[string]interface{} {
 	output := make(map[string]interface{})
 
@@ -332,6 +319,15 @@ func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[
 			)),
 		)
 
+		// really gotta hunt these ObjectIds down
+		maputil.Walk(data, func(value interface{}, key []string, isLeaf bool) error {
+			if oid, ok := value.(bson.ObjectId); ok {
+				maputil.DeepSet(data, key, oid.Hex())
+			}
+
+			return nil
+		})
+
 		for k, v := range data {
 			v = self.fromId(v)
 
@@ -346,8 +342,6 @@ func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[
 		if err := record.Populate(record, collection); err != nil {
 			return nil, fmt.Errorf("error populating record: %v", err)
 		}
-
-		self.normalizeRecordValues(record)
 
 		return record, nil
 	} else {

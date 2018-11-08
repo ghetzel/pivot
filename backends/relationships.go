@@ -204,7 +204,7 @@ func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record
 	// first pass: get all DeferredRecord values from all records
 	//             and map them to each record
 	for _, record := range records {
-		if err := maputil.Walk(record.Fields, func(value interface{}, key []string, isLeaf bool) error {
+		if err := maputil.WalkStruct(record.Fields, func(value interface{}, key []string, isLeaf bool) error {
 			if deferred, ok := value.(DeferredRecord); ok {
 				dptr := &deferred
 				deferset := deferredRecords[deferred.GroupKey()]
