@@ -30,7 +30,7 @@ require (
 	github.com/fatih/structs v1.0.0
 	github.com/ghetzel/cli v1.16.0
 	github.com/ghetzel/diecast v1.9.15
-	github.com/ghetzel/go-stockutil v1.6.4
+	github.com/ghetzel/go-stockutil v1.6.6
 	github.com/ghetzel/go-webfriend v0.9.27 // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd // indirect

@@ -87,8 +87,8 @@ github.com/ghetzel/go-defaults v1.2.0 h1:U1T64bxhBc6nVZ68QXch1hoHq43h6isqgbvG7kx
 github.com/ghetzel/go-defaults v1.2.0/go.mod h1:xWhTgOoc4UNWT7sl3oyNFqtKzEbUKI9C3rqbwtwdxFw=
 github.com/ghetzel/go-stockutil v1.5.49 h1:SQEo4cLlzLidi9j+u+AvcYdN6jy5yqpJAB8L+YGn4VY=
 github.com/ghetzel/go-stockutil v1.5.49/go.mod h1:Y2IAZKZNEGeZZD46Cwd94CoA1Oh+Bx0N4c2z5FpMT5s=
-github.com/ghetzel/go-stockutil v1.6.4 h1:+D9w1EqrBG2UgfKOYHGnHdfhZuHARCLnFR+lYuKGTRM=
-github.com/ghetzel/go-stockutil v1.6.4/go.mod h1:WWQnJTs0pzKtG2xqysVPYfPRdPhLwSU9f0oGG46Ji3I=
+github.com/ghetzel/go-stockutil v1.6.6 h1:SxQJw3cy/bM3ZpfbcJadmyBti7fTdhQTeX+XOpoSHUY=
+github.com/ghetzel/go-stockutil v1.6.6/go.mod h1:WWQnJTs0pzKtG2xqysVPYfPRdPhLwSU9f0oGG46Ji3I=
 github.com/ghetzel/go-webfriend v0.9.23 h1:VDXVXUzOIGlAbz1ihgMe7/rAeqrNZ+SHW0+28V80EpM=
 github.com/ghetzel/go-webfriend v0.9.23/go.mod h1:4tjKFGdCtac9eXJ8Hz48DSCoiwjhzynwFFiyhsLfMnI=
 github.com/ghetzel/go-webfriend v0.9.27 h1:I7nDcGnx4VASWphswXr+RNdPmzb7JsK1zZXcwzF2kH8=
