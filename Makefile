@@ -21,3 +21,4 @@ test:
 
 build:
 	test -d pivot && go build --tags json1 -i -o bin/pivot pivot/*.go
+	which pivot && cp -v bin/pivot `which pivot` || true
