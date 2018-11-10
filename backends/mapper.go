@@ -19,6 +19,7 @@ type Mapper interface {
 	Update(from interface{}) error
 	CreateOrUpdate(id interface{}, from interface{}) error
 	Delete(ids ...interface{}) error
+	DeleteQuery(flt interface{}) error
 	Find(flt interface{}, into interface{}) error
 	FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error
 	All(into interface{}) error
