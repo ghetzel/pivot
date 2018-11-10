@@ -158,6 +158,21 @@ func (self *Model) Delete(ids ...interface{}) error {
 	return self.db.Delete(self.collection.Name, ids...)
 }
 
+// Delete all records matching the given query.
+func (self *Model) DeleteQuery(flt interface{}) error {
+	if f, err := self.filterFromInterface(flt); err == nil {
+		f.IdentityField = self.collection.IdentityField
+
+		if search := self.db.WithSearch(self.collection, f); search != nil {
+			return search.DeleteQuery(self.collection, f)
+		} else {
+			return fmt.Errorf("backend %T does not support searching", self.db)
+		}
+	} else {
+		return err
+	}
+}
+
 // Perform a query for instances of the model that match the given filter.Filter.
 // Results will be returned in the slice or array pointed to by the into parameter, or
 // if into points to a dal.RecordSet, the RecordSet resulting from the query will be returned
