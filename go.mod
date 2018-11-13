@@ -7,12 +7,14 @@ require (
 	github.com/RoaringBitmap/roaring v0.4.4 // indirect
 	github.com/Smerity/govarint v0.0.0-20150407073650-7265e41f48f1 // indirect
 	github.com/alexcesaro/statsd v2.0.0+incompatible
+	github.com/andybalholm/cascadia v1.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.13.26
 	github.com/blevesearch/bleve v0.7.0
 	github.com/blevesearch/blevex v0.0.0-20180227211930-4b158bb555a3 // indirect
 	github.com/blevesearch/go-porterstemmer v0.0.0-20141230013033-23a2c8e5cf1f // indirect
 	github.com/blevesearch/segment v0.0.0-20160105220820-db70c57796cc // indirect
 	github.com/boltdb/bolt v0.0.0-20171120010307-9da317453632 // indirect
+	github.com/c-bata/go-prompt v0.2.2 // indirect
 	github.com/cenkalti/backoff v2.0.0+incompatible // indirect
 	github.com/containerd/continuity v0.0.0-20180919190352-508d86ade3c2 // indirect
 	github.com/couchbase/vellum v0.0.0-20180314210611-5083a469fcef // indirect
@@ -20,7 +22,6 @@ require (
 	github.com/cznic/mathutil v0.0.0-20181021201202-eba54fb065b7 // indirect
 	github.com/cznic/strutil v0.0.0-20171016134553-529a34b1c186 // indirect
 	github.com/deckarep/golang-set v0.0.0-20171013212420-1d4478f51bed
-	github.com/dickeyxxx/netrc v0.0.0-20180207092346-e1a19c977509 // indirect
 	github.com/docker/go-connections v0.3.0 // indirect
 	github.com/docker/go-units v0.3.3 // indirect
 	github.com/edsrzf/mmap-go v0.0.0-20170320065105-0bce6a688712 // indirect
@@ -28,10 +29,9 @@ require (
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/fatih/structs v1.0.0
-	github.com/ghetzel/cli v1.16.0
-	github.com/ghetzel/diecast v1.9.15
-	github.com/ghetzel/go-stockutil v1.6.6
-	github.com/ghetzel/go-webfriend v0.9.27 // indirect
+	github.com/ghetzel/cli v1.17.0
+	github.com/ghetzel/diecast v1.9.29
+	github.com/ghetzel/go-stockutil v1.6.17
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd // indirect
 	github.com/glycerine/goconvey v0.0.0-20180728074245-46e3a41ad493 // indirect
@@ -50,7 +50,6 @@ require (
 	github.com/jtolds/gls v4.2.1+incompatible // indirect
 	github.com/lib/pq v0.0.0-20180327071824-d34b9ff171c2
 	github.com/mattn/go-sqlite3 v1.9.0
-	github.com/mcuadros/go-defaults v1.1.0 // indirect
 	github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
@@ -59,6 +58,7 @@ require (
 	github.com/ory/dockertest v3.3.2+incompatible
 	github.com/philhofer/fwd v1.0.0 // indirect
 	github.com/pkg/errors v0.8.0 // indirect
+	github.com/pkg/term v0.0.0-20180730021639-bffc007b7fd5 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20170806203942-52369c62f446 // indirect
 	github.com/sirupsen/logrus v1.0.6 // indirect
 	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
@@ -77,5 +77,4 @@ require (
 	gopkg.in/ini.v1 v1.39.0 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528
 	gotest.tools v2.1.0+incompatible // indirect
-	launchpad.net/gocheck v0.0.0-20140225173054-000000000087 // indirect
 )
