@@ -14,12 +14,13 @@ import (
 )
 
 type DeferredRecord struct {
-	Original       interface{}
-	Backend        Backend
-	CollectionName string
-	ID             interface{}
-	Keys           []string
-	AllowMissing   bool
+	Original          interface{}
+	Backend           Backend
+	IdentityFieldName string
+	CollectionName    string
+	ID                interface{}
+	Keys              []string
+	AllowMissing      bool
 }
 
 func (self *DeferredRecord) GroupKey(id ...interface{}) string {
@@ -52,7 +53,11 @@ func (self *DeferredRecord) Resolve() (map[string]interface{}, error) {
 		if record, err := self.Backend.Retrieve(name, self.ID, self.Keys...); err == nil {
 			return record.Fields, nil
 		} else if self.AllowMissing {
-			return nil, nil
+			return map[string]interface{}{
+				self.IdentityFieldName: self.ID,
+				`_missing`:             true,
+				`_collection`:          name,
+			}, nil
 		} else {
 			return nil, err
 		}
@@ -144,11 +149,12 @@ func PopulateRelationships(backend Backend, parent *dal.Collection, record *dal.
 
 						if id != nil {
 							results = append(results, &DeferredRecord{
-								Original:       nestedId,
-								Backend:        backend,
-								CollectionName: related.Name,
-								ID:             id,
-								Keys:           nestedFields,
+								Original:          nestedId,
+								Backend:           backend,
+								IdentityFieldName: related.GetIdentityFieldName(),
+								CollectionName:    related.Name,
+								ID:                id,
+								Keys:              nestedFields,
 							})
 						} else if !parent.AllowMissingEmbeddedRecords {
 							return fmt.Errorf("%v.%v[]: Related record %v.%v is missing", parent.Name, keyBefore, related.Name, nestedId)
@@ -176,11 +182,12 @@ func PopulateRelationships(backend Backend, parent *dal.Collection, record *dal.
 					}
 
 					deferred := &DeferredRecord{
-						Original:       nestedId,
-						Backend:        backend,
-						CollectionName: related.Name,
-						ID:             nestedId,
-						Keys:           nestedFields,
+						Original:          nestedId,
+						Backend:           backend,
+						IdentityFieldName: related.GetIdentityFieldName(),
+						CollectionName:    related.Name,
+						ID:                nestedId,
+						Keys:              nestedFields,
 					}
 
 					record.SetNested(keyBefore, deferred)
@@ -281,6 +288,9 @@ func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record
 								if _, ok := cache[key]; ok {
 									continue
 								} else {
+									// ensure that the ID always ends up in the related fieldset
+									relatedRecord.Fields[related.IdentityField] = relatedRecord.ID
+
 									cache[key] = relatedRecord.Fields
 								}
 							}
