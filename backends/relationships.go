@@ -152,7 +152,7 @@ func PopulateRelationships(backend Backend, parent *dal.Collection, record *dal.
 					}
 
 					// clear out the array we're modifying
-					record.SetNested(keyBefore, []interface{}{})
+					// record.SetNested(keyBefore, []interface{}{})
 
 					for i, result := range results {
 						nestKey := strings.Replace(key, `*`, fmt.Sprintf("%d", i), 1)
