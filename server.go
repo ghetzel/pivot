@@ -380,7 +380,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 				if redirect := httputil.Q(req, `redirect`); strings.HasPrefix(redirect, `/`) {
 					http.Redirect(w, req, redirect, http.StatusTemporaryRedirect)
 				} else {
-					httputil.RespondJSON(w, nil, status)
+					httputil.RespondJSON(w, recordset, status)
 				}
 			} else {
 				httputil.RespondJSON(w, err)

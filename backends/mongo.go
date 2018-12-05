@@ -181,6 +181,7 @@ func (self *MongoBackend) Insert(name string, records *dal.RecordSet) error {
 				}
 
 				data[MongoIdentityField] = self.getId(record.ID)
+				querylog.Debugf("[%T] %s: new id=%v", self, name, record.ID)
 
 				if err := self.db.C(collection.Name).Insert(&data); err != nil {
 					return err
