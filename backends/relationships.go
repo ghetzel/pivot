@@ -243,7 +243,7 @@ func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record
 				ids = append(ids, deferred.ID)
 			}
 
-			ids = sliceutil.Unique(ids)
+			// ids = sliceutil.Unique(ids)
 			foundIds := make([]interface{}, 0)
 
 			if len(ids) > 0 {
