@@ -191,7 +191,7 @@ func PopulateRelationships(backend Backend, parent *dal.Collection, record *dal.
 }
 
 func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record) error {
-	deferredRecords := make(map[string][]*DeferredRecord)
+	deferredRecords := make(map[string]*DeferredRecord)
 	resolvedValues := make([]*recordFieldValue, 0)
 
 	if cache == nil {
@@ -204,9 +204,7 @@ func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record
 		if err := maputil.WalkStruct(record.Fields, func(value interface{}, key []string, isLeaf bool) error {
 			if deferred, ok := value.(DeferredRecord); ok {
 				dptr := &deferred
-				deferset := deferredRecords[deferred.GroupKey()]
-				deferset = append(deferset, dptr)
-				deferredRecords[deferred.GroupKey()] = deferset
+				deferredRecords[deferred.String()] = dptr
 
 				resolvedValues = append(resolvedValues, &recordFieldValue{
 					Record:   record,
@@ -230,11 +228,10 @@ func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record
 	// 2. do a bulk retrieve of all the values IDs in each group
 	// 3. put the results into the cache map (keyed on backend:collection:ID:fieldset)
 	//
-	for _, collectionDefers := range deferredRecords {
+	for relatedCollectionName, collectionDefers := range deferredGroupByCollection(deferredRecords) {
 		if len(collectionDefers) > 0 {
 			var keyFn = collectionDefers[0].GroupKey
 			var backend = collectionDefers[0].Backend
-			var relatedCollectionName = collectionDefers[0].CollectionName
 			var fields = collectionDefers[0].Keys
 			var ids []interface{}
 
@@ -331,4 +328,18 @@ func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record
 	}
 
 	return nil
+}
+
+func deferredGroupByCollection(deferred map[string]*DeferredRecord) map[string][]*DeferredRecord {
+	grouped := make(map[string][]*DeferredRecord)
+
+	for _, def := range deferred {
+		if group, ok := grouped[def.CollectionName]; ok {
+			grouped[def.CollectionName] = append(group, def)
+		} else {
+			grouped[def.CollectionName] = []*DeferredRecord{def}
+		}
+	}
+
+	return grouped
 }
