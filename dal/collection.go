@@ -348,20 +348,28 @@ func (self *Collection) IsKeyField(name string) bool {
 	return false
 }
 
-func (self *Collection) KeyCount() int {
-	keys := 0
-
-	if self.GetIdentityFieldName() != `` {
-		keys += 1
+func (self *Collection) KeyFields() []Field {
+	keys := []Field{
+		Field{
+			Name:     self.GetIdentityFieldName(),
+			Type:     self.IdentityFieldType,
+			Identity: true,
+			Key:      true,
+			Required: true,
+		},
 	}
 
 	for _, field := range self.Fields {
 		if field.Key {
-			keys += 1
+			keys = append(keys, field)
 		}
 	}
 
 	return keys
+}
+
+func (self *Collection) KeyCount() int {
+	return len(self.KeyFields())
 }
 
 func (self *Collection) GetFirstNonIdentityKeyField() (Field, bool) {

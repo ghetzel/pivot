@@ -318,12 +318,10 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 func (self *SqlBackend) Exists(name string, id interface{}) bool {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
-		if tx, err := self.db.Begin(); err == nil {
-			defer tx.Commit()
+		if f, err := self.keyQuery(collection, id); err == nil {
+			if tx, err := self.db.Begin(); err == nil {
+				defer tx.Commit()
 
-			if f, err := filter.FromMap(map[string]interface{}{
-				collection.IdentityField: fmt.Sprintf("is:%v", id),
-			}); err == nil {
 				f.Fields = []string{collection.IdentityField}
 				queryGen := self.makeQueryGen(collection)
 
@@ -345,10 +343,10 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 					querylog.Debugf("[%v] query generator error %v", self, err)
 				}
 			} else {
-				querylog.Debugf("[%v] filter error %v", self, err)
+				querylog.Debugf("[%v] transaction error %v", self, err)
 			}
 		} else {
-			querylog.Debugf("[%v] transaction error %v", self, err)
+			querylog.Debugf("[%v] error generating key query: %v", self, err)
 		}
 	} else {
 		querylog.Debugf("[%v] cache error %v", self, err)
@@ -359,18 +357,16 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 
 func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
-		if f, err := filter.FromMap(map[string]interface{}{
-			collection.IdentityField: fmt.Sprintf("is:%v", id),
-		}); err == nil {
+		if f, err := self.keyQuery(collection, id); err == nil {
 			f.Fields = fields
 			queryGen := self.makeQueryGen(collection)
 
 			if err := queryGen.Initialize(collection.Name); err == nil {
 				if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-					querylog.Debugf("[%v] %s %v", self, string(stmt[:]), id)
+					querylog.Debugf("[%v] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 					// perform query
-					if rows, err := self.db.Query(string(stmt[:]), id); err == nil {
+					if rows, err := self.db.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
 						defer rows.Close()
 
 						if columns, err := rows.Columns(); err == nil {
@@ -388,7 +384,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 							return nil, err
 						}
 					} else {
-						return nil, err
+						return nil, fmt.Errorf("retrieve error: %v", err)
 					}
 				} else {
 					return nil, err
@@ -440,16 +436,12 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 						defer tx.Rollback()
 						return fmt.Errorf("Update must target at least one record")
 					}
-				} else {
+				} else if f, err := self.keyQuery(collection, record); err == nil {
 					// try to build a filter targeting this specific record
-					if f, err := filter.FromMap(map[string]interface{}{
-						collection.IdentityField: fmt.Sprintf("is:%v", record.ID),
-					}); err == nil {
-						recordUpdateFilter = f
-					} else {
-						defer tx.Rollback()
-						return err
-					}
+					recordUpdateFilter = f
+				} else {
+					defer tx.Rollback()
+					return err
 				}
 
 				// add all non-ID fields to the record's Fields set
@@ -499,6 +491,9 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 		if search := self.WithSearch(collection); search != nil {
 			defer search.IndexRemove(collection, ids)
 		}
+
+		// TODO: need to work out how to handle DELETEs on tables with composite keys
+		// f, err := self.keyQuery(collection, record)
 
 		f := filter.New()
 
@@ -1059,5 +1054,35 @@ func (self *SqlBackend) getCollectionFromCache(name string) (*dal.Collection, er
 		return registered.(*dal.Collection), nil
 	} else {
 		return nil, dal.CollectionNotFound
+	}
+}
+
+func (self *SqlBackend) keyQuery(collection *dal.Collection, id interface{}) (*filter.Filter, error) {
+	var ids []interface{}
+
+	keyFields := collection.KeyFields()
+
+	if record, ok := id.(*dal.Record); ok {
+		ids = record.Keys(collection)
+	} else {
+		ids = sliceutil.Flatten(id)
+	}
+
+	if len(keyFields) != len(ids) {
+		return nil, fmt.Errorf("Expected ID to be a slice of length %d, got %d value(s)", len(keyFields), len(ids))
+	}
+
+	idquery := map[string]interface{}{}
+
+	for i, keyField := range keyFields {
+		idquery[keyField.Name] = ids[i]
+	}
+
+	if f, err := filter.FromMap(idquery); err == nil {
+		f.Limit = 1
+
+		return f, nil
+	} else {
+		return nil, err
 	}
 }
