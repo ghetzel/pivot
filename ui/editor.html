@@ -24,62 +24,82 @@ bindings:
     {{ end }}
 
     {{ range $i, $field := $.bindings.schema.fields }}
-    {{   if eqx .name `id` }}
+    {{   if eqx $field.name `id` }}
     {{     var `value` $.bindings.record.id }}
     {{   else }}
     {{     var `value` (get $.bindings.record.fields $field.name) }}
     {{   end }}
     <div class="form-group row">
         <label
-            for="records.0.fields.{{ .name }}"
+            for="records.0.fields.{{ $field.name }}"
             class="
                 col-sm-4
                 col-form-label
-                {{ if .identity }} text-danger{{ end }}
-                {{ if .required }} font-weight-bold{{ end }}
+                {{ if $field.identity }} text-danger{{ end }}
+                {{ if $field.required }} font-weight-bold{{ end }}
             "
         >
-            {{ .name }}
+            {{ $field.name }}
         </label>
         <div class="col-sm-8">
-            {{ if eqx .type `bool` }}
+            {{ if eqx $field.type `bool` }}
             <select
+                id="{{ underscore $field.name }}"
                 {{ if not $i }}autofocus{{ end }}
-                name="records.0.fields.{{ .name }}"
+                name="records.0.fields.{{ $field.name }}"
                 class="form-control form-control-sm"
-                {{ if .required }}required{{ end }}
-                {{ if or .not_user_editable (and .identity $.vars.value) }}readonly{{ end }}
+                {{ if $field.required }}required{{ end }}
+                {{ if or $field.not_user_editable (and $field.identity $.vars.value) }}readonly{{ end }}
             >
                 <option value="true"{{ if $.vars.value }} selected{{ end }}>True</option>
                 <option value="false"{{ if not $.vars.value }} selected{{ end }}>False</option>
             </select>
-            {{ else if or (eqx .type `int`) (eqx .type `float`) }}
+            {{ else if any $field.type `int` `float` }}
             <input
+                id="{{ underscore $field.name }}"
                 {{ if not $i }}autofocus{{ end }}
                 class="form-control form-control-sm"
                 type="number"
-                name="records.0.fields.{{ .name }}"
+                name="records.0.fields.{{ $field.name }}"
                 value="{{ $.vars.value }}"
-                {{ if eqx .type `float` }}
+                {{ if eqx $field.type `float` }}
                 step="any"
                 {{ end }}
-                {{ if .required }}required{{ end }}
-                {{ if or .not_user_editable (and .identity $.vars.value) }}readonly{{ end }}
+                {{ if $field.required }}required{{ end }}
+                {{ if or $field.not_user_editable (and $field.identity $.vars.value) }}readonly{{ end }}
             ></input>
+            {{ else if any $field.type `object` `array` `raw` }}
+            <textarea
+                id="{{ underscore $field.name }}"
+                class="form-control form-control-sm"
+                name="records.0.fields.{{ $field.name }}"
+                {{ if $field.required }}required{{ end }}
+                {{ if or $field.not_user_editable (and $field.identity $.vars.value) }}readonly{{ end }}
+            >{{ jsonify $.vars.value "  " }}</textarea>
+            <script type="text/javascript">
+                $(function(){
+                    CodeMirror.fromTextArea(document.getElementById('{{ underscore $field.name }}'), {
+                        theme:         'monokai',
+                        lineNumbers:   true,
+                        matchBrackets: true,
+                    });
+                });
+            </script>
             {{ else }}
             <input
+                id="{{ underscore $field.name }}"
                 {{ if not $i }}autofocus{{ end }}
                 class="form-control form-control-sm"
                 type="text"
-                name="records.0.fields.{{ .name }}"
+                name="records.0.fields.{{ $field.name }}"
                 value="{{ $.vars.value }}"
-                {{ if .required }}required{{ end }}
-                {{ if or .not_user_editable (and .identity $.vars.value) }}readonly{{ end }}
+                {{ if $field.required }}required{{ end }}
+                {{ if or $field.not_user_editable (and $field.identity $.vars.value) }}readonly{{ end }}
             ></input>
             {{ end }}
 
-            {{ if .description }}
-            <small class="text-muted">{{ .description }}</small>
+            {{ if $field.description }}
+            <small class="text-muted">{{ $field.description }}</small>
             {{ end }}
         </div>
     </div>

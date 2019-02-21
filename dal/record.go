@@ -70,7 +70,7 @@ func (self *Record) Keys(collection *Collection) []interface{} {
 func (self *Record) SetKeys(collection *Collection, op FieldOperation, keys ...interface{}) error {
 	if collection != nil {
 		if len(keys) > 0 {
-			self.ID = keys[0]
+			self.ID = collection.ConvertValue(collection.GetIdentityFieldName(), keys[0])
 			i := 1
 
 			for _, field := range collection.Fields {

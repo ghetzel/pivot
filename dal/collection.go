@@ -31,27 +31,76 @@ type Instantiator interface {
 }
 
 type Collection struct {
-	Name                        string                  `json:"name"`
-	IndexName                   string                  `json:"index_name,omitempty"`
-	IndexCompoundFields         []string                `json:"index_compound_fields,omitempty"`
-	IndexCompoundFieldJoiner    string                  `json:"index_compound_field_joiner,omitempty"`
-	SkipIndexPersistence        bool                    `json:"skip_index_persistence,omitempty"`
-	Fields                      []Field                 `json:"fields"`
-	IdentityField               string                  `json:"identity_field,omitempty"`
-	IdentityFieldType           Type                    `json:"identity_field_type,omitempty"`
-	EmbeddedCollections         []Relationship          `json:"embed,omitempty"`
-	ExportedFields              []string                `json:"export,omitempty"`
-	AllowMissingEmbeddedRecords bool                    `json:"allow_missing_embedded_records"`
-	TotalRecords                int64                   `json:"total_records,omitempty"`
-	TotalRecordsExact           bool                    `json:"total_records_exact,omitempty"`
-	TimeToLiveField             string                  `json:"time_to_live_field"`
-	IdentityFieldFormatter      FieldFormatterFunc      `json:"-"`
-	IdentityFieldValidator      FieldValidatorFunc      `json:"-"`
-	PreSaveValidator            CollectionValidatorFunc `json:"-"`
-	recordType                  reflect.Type
-	instanceInitializer         InitializerFunc
+	// The name of the collection
+	Name string `json:"name"`
+
+	// The name of the associated external inverted index used to query this collection.
+	IndexName string `json:"index_name,omitempty"`
+
+	// Lists the field names that make up a composite key on this Collection that should be joined
+	// together when determining index record IDs.  Often it is the case that external indices do
+	// not support composite keys the way databases do, so this allows Collections with composite
+	// keys to be indexed in those systems by joining several values together to form a unique key.
+	IndexCompoundFields []string `json:"index_compound_fields,omitempty"`
+
+	// The string used to join and split ID values that go into / come out of external indices.
+	IndexCompoundFieldJoiner string `json:"index_compound_field_joiner,omitempty"`
+
+	// Disable automatically dual-writing modified records into the external index.
+	SkipIndexPersistence bool `json:"skip_index_persistence,omitempty"`
+
+	// The fields that belong to this collection (all except the primary key/identity field/first
+	// field in a composite key)
+	Fields []Field `json:"fields"`
+
+	// The name of the identity field for this Collection.  Defaults to "id".
+	IdentityField string `json:"identity_field,omitempty"`
+
+	// The datatype of the identity field.  Defaults to integer.
+	IdentityFieldType Type `json:"identity_field_type,omitempty"`
+
+	// Specifies how fields in this Collection relate to records from other collections.  This is
+	// a partial implementation of a relational model, specifically capturing one-to-one or
+	// one-to-many relationships.  The definitions here will retrieve the assocated records from
+	// another, and those values will replace the value that is actually in this Collection's field.
+	EmbeddedCollections []Relationship `json:"embed,omitempty"`
+
+	// Specifies which fields can be seen when records are from relationships defined on other
+	// Collections.  This can be used to restrict the exposure) of sensitive data in this Collection
+	// be being an embedded field in another Collection.
+	ExportedFields []string `json:"export,omitempty"`
+
+	// Specify whether missing related fields generate an error when retrieving a record.
+	AllowMissingEmbeddedRecords bool `json:"allow_missing_embedded_records"`
+
+	// A read-only count of the number of records in this Collection
+	TotalRecords int64 `json:"total_records,omitempty"`
+
+	// Whether the value of TotalRecords represents an exact (authoritative) count or an
+	// approximate count.
+	TotalRecordsExact bool `json:"total_records_exact,omitempty"`
+
+	// The name of a field containing an absolute datetime after which expired records should be
+	// deleted from this Collection.
+	TimeToLiveField string `json:"time_to_live_field"`
+
+	// A function that modifies the identity key value before any operation.  Operates the same as
+	// a Field Formatter function.
+	IdentityFieldFormatter FieldFormatterFunc `json:"-"`
+
+	// A function that validates the value of an identity key before create and update operations.
+	// Operates the same as a Field Validator function.
+	IdentityFieldValidator FieldValidatorFunc `json:"-"`
+
+	// If specified, this function receives a copy of the populated record before create and update
+	// operations, allowing for a last-chance validation of the record as a whole.  Use a pre-save
+	// validator when validation requires checking multiple fields at once.
+	PreSaveValidator    CollectionValidatorFunc `json:"-"`
+	recordType          reflect.Type
+	instanceInitializer InitializerFunc
 }
 
+// Create a new colllection definition with no fields.
 func NewCollection(name string) *Collection {
 	return &Collection{
 		Name:                   name,
@@ -86,6 +135,7 @@ func (self *Collection) IsExpired(record *Record) bool {
 	}
 }
 
+// Get the canonical name of the external index name.
 func (self *Collection) GetIndexName() string {
 	if self.IndexName != `` {
 		return self.IndexName
@@ -94,6 +144,7 @@ func (self *Collection) GetIndexName() string {
 	return self.Name
 }
 
+// Get the canonical name of the dataset in an external aggregator service.
 func (self *Collection) GetAggregatorName() string {
 	if self.IndexName != `` {
 		return self.IndexName
@@ -102,6 +153,7 @@ func (self *Collection) GetAggregatorName() string {
 	return self.Name
 }
 
+// Configure the identity field of a collection in a single function call.
 func (self *Collection) SetIdentity(name string, idtype Type, formatter FieldFormatterFunc, validator FieldValidatorFunc) *Collection {
 	if name != `` {
 		self.IdentityField = name
@@ -120,6 +172,7 @@ func (self *Collection) SetIdentity(name string, idtype Type, formatter FieldFor
 	return self
 }
 
+// Append a field definition to this collection.
 func (self *Collection) AddFields(fields ...Field) *Collection {
 	self.Fields = append(self.Fields, fields...)
 	return self
@@ -294,6 +347,7 @@ func (self *Collection) NewInstance(initializers ...InitializerFunc) interface{}
 	return instance
 }
 
+// Populate a given Record with the default values (if any) of all fields in the Collection.
 func (self *Collection) FillDefaults(record *Record) {
 	for _, field := range self.Fields {
 		if field.DefaultValue != nil {
@@ -304,6 +358,8 @@ func (self *Collection) FillDefaults(record *Record) {
 	}
 }
 
+// Retrieve a single field by name.  The second return value will be false if the field does not
+// exist.
 func (self *Collection) GetField(name string) (Field, bool) {
 	if name == self.GetIdentityFieldName() {
 		return Field{
@@ -324,6 +380,7 @@ func (self *Collection) GetField(name string) (Field, bool) {
 	return Field{}, false
 }
 
+// Get the canonical name of the primary identity field.
 func (self *Collection) GetIdentityFieldName() string {
 	if self.IdentityField == `` {
 		return DefaultIdentityField
@@ -332,6 +389,7 @@ func (self *Collection) GetIdentityFieldName() string {
 	}
 }
 
+// TODO: what is this?
 func (self *Collection) IsIdentityField(name string) bool {
 	if field, ok := self.GetField(name); ok {
 		return field.Identity
@@ -340,6 +398,7 @@ func (self *Collection) IsIdentityField(name string) bool {
 	return false
 }
 
+// Return whether a given field name is a key on this Collection.
 func (self *Collection) IsKeyField(name string) bool {
 	if field, ok := self.GetField(name); ok {
 		return (field.Key && !field.Identity)
@@ -348,6 +407,8 @@ func (self *Collection) IsKeyField(name string) bool {
 	return false
 }
 
+// Retrieve all of the fields that comprise the primary key for this Collection.  This will always include the identity
+// field at a minimum.
 func (self *Collection) KeyFields() []Field {
 	keys := []Field{
 		Field{
@@ -359,6 +420,7 @@ func (self *Collection) KeyFields() []Field {
 		},
 	}
 
+	// append additional key fields
 	for _, field := range self.Fields {
 		if field.Key {
 			keys = append(keys, field)
@@ -368,10 +430,12 @@ func (self *Collection) KeyFields() []Field {
 	return keys
 }
 
+// Return the number of keys on that uniquely identify a single record in this Collection.
 func (self *Collection) KeyCount() int {
 	return len(self.KeyFields())
 }
 
+// Retrieve the first non-indentity key field, sometimes referred to as the "range", "sort", or "cluster" key.
 func (self *Collection) GetFirstNonIdentityKeyField() (Field, bool) {
 	for _, field := range self.Fields {
 		if field.Key && !field.Identity {
@@ -382,6 +446,7 @@ func (self *Collection) GetFirstNonIdentityKeyField() (Field, bool) {
 	return Field{}, false
 }
 
+// Convert a given value according to the data type of a specific named field.
 func (self *Collection) ConvertValue(name string, value interface{}) interface{} {
 	if field, ok := self.GetField(name); ok {
 		if v, err := field.ConvertValue(value); err == nil {
@@ -392,6 +457,9 @@ func (self *Collection) ConvertValue(name string, value interface{}) interface{}
 	return value
 }
 
+// Convert a given value into one that that can go into the backend database (for create/update operations), or that
+// should be returned to the user (for retrieval operations) in accordance with the named field's data type and
+// formatters.  Invalid values (determined by Validators and the Required option in the Field) will return an error.
 func (self *Collection) ValueForField(name string, value interface{}, op FieldOperation) (interface{}, error) {
 	var formatter FieldFormatterFunc
 	var validator FieldValidatorFunc
@@ -586,6 +654,7 @@ func (self *Collection) MakeRecord(in interface{}, ops ...FieldOperation) (*Reco
 	}
 }
 
+// Convert the given record into a map.
 func (self *Collection) MapFromRecord(record *Record, fields ...string) (map[string]interface{}, error) {
 	rv := make(map[string]interface{})
 
@@ -628,6 +697,7 @@ func (self *Collection) MapFromRecord(record *Record, fields ...string) (map[str
 	return rv, nil
 }
 
+// Validate the given record against all Field and Collection validators.
 func (self *Collection) ValidateRecord(record *Record, op FieldOperation) error {
 	switch op {
 	case PersistOperation:
@@ -642,6 +712,7 @@ func (self *Collection) ValidateRecord(record *Record, op FieldOperation) error 
 	return nil
 }
 
+// Determine the differences (if any) between this Collection definition and another.
 func (self *Collection) Diff(actual *Collection) []SchemaDelta {
 	differences := make([]SchemaDelta, 0)
 

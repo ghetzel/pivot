@@ -753,6 +753,7 @@ func testSearchQueryOffset(t *testing.T, backend backends.Backend) {
 		f, err := filter.Parse(`all`)
 		assert.Nil(err)
 
+		f.Limit = 100
 		f.Offset = 20
 
 		recordset, err := search.Query(c, f)

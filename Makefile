@@ -1,6 +1,6 @@
 .PHONY: test deps
 
-LOCALS :=$(shell find . -type f -name '*.go' -not -path "./vendor/*")
+LOCALS :=$(shell find . -type f -name '*.go')
 
 .EXPORT_ALL_VARIABLES:
 GO111MODULE = on

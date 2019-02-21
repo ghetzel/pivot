@@ -17,8 +17,8 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 	self.queryGenTypeMapping = generators.MysqlTypeMapping
 	self.queryGenNormalizerFormat = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(%v, ':', ' '), '[', ' '), ']', ' '), '*', ' '))"
 	self.listAllTablesQuery = `SHOW TABLES`
-	self.createPrimaryKeyIntFormat = `%s INT AUTO_INCREMENT NOT NULL PRIMARY KEY`
-	self.createPrimaryKeyStrFormat = `%s VARCHAR(255) NOT NULL PRIMARY KEY`
+	self.createPrimaryKeyIntFormat = `%s INT AUTO_INCREMENT NOT NULL`
+	self.createPrimaryKeyStrFormat = `%s VARCHAR(255) NOT NULL`
 
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {

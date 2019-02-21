@@ -12,25 +12,76 @@ import (
 )
 
 type Field struct {
-	Name               string                 `json:"name"`
-	Description        string                 `json:"description,omitempty"`
-	Type               Type                   `json:"type"`
-	KeyType            Type                   `json:"keytype,omitempty"`
-	Subtype            Type                   `json:"subtype,omitempty"`
-	Length             int                    `json:"length,omitempty"`
-	Precision          int                    `json:"precision,omitempty"`
-	Identity           bool                   `json:"identity,omitempty"`
-	Key                bool                   `json:"key,omitempty"`
-	Required           bool                   `json:"required,omitempty"`
-	Unique             bool                   `json:"unique,omitempty"`
-	DefaultValue       interface{}            `json:"default,omitempty"`
-	NativeType         string                 `json:"native_type,omitempty"`
-	NotUserEditable    bool                   `json:"not_user_editable"`
-	ValidateOnPopulate bool                   `json:"validate_on_populate,omitempty"`
-	Validator          FieldValidatorFunc     `json:"-"`
-	Formatter          FieldFormatterFunc     `json:"-"`
-	FormatterConfig    map[string]interface{} `json:"formatters,omitempty"`
-	ValidatorConfig    map[string]interface{} `json:"validators,omitempty"`
+	// The name of the field
+	Name string `json:"name"`
+
+	// A description of the field used in help text
+	Description string `json:"description,omitempty"`
+
+	// The data type of the field
+	Type Type `json:"type"`
+
+	// For complex field types (tuples, objects); the data type of the key portion
+	KeyType Type `json:"keytype,omitempty"`
+
+	// For complex field types (arrays, sets, lists); the data type of the contained values
+	Subtype Type `json:"subtype,omitempty"`
+
+	// The length constraint for values in the field (where supported)
+	Length int `json:"length,omitempty"`
+
+	// The precision of stored values in the field (where supported)
+	Precision int `json:"precision,omitempty"`
+
+	// Whether the field is an identity field (don't use this, configure the identity on the
+	// Collection instead)
+	Identity bool `json:"identity,omitempty"`
+
+	// Whether the field is a key field in a composite key Collection
+	Key bool `json:"key,omitempty"`
+
+	// Whether the field can store a null/empty value
+	Required bool `json:"required,omitempty"`
+
+	// Enforces that the field value must be unique across the entire Collection (where supported)
+	Unique bool `json:"unique,omitempty"`
+
+	// The name of a group of unique fields that, taken together, must be unique across the entire
+	// Collection (where supported)
+	UniqueGroup string `json:"unique_group,omitempty"`
+
+	// The default value of the field is one is not explicitly specified.  Can be any type or a
+	// function that takes zero arguments and returns a single value.
+	DefaultValue interface{} `json:"default,omitempty"`
+
+	// Represents the native datatype of the underlying Backend object (read only)
+	NativeType string `json:"native_type,omitempty"`
+
+	// Specify that the field should not be modified.  This is not enforced in Pivot, but rather
+	// serves as a note to applications implementing interactions with the Pivot API.
+	NotUserEditable bool `json:"not_user_editable"`
+
+	// Whether this field's validator(s) should be used to validate data being retrieved from the
+	// backend.  Invalid data (possibly created outside of Pivot) will cause Retrieve() calls to
+	// return a validation error.
+	ValidateOnPopulate bool `json:"validate_on_populate,omitempty"`
+
+	// A function that is used to validate the field's value before performing any create, update,
+	// and (optionally) retrieval operations.
+	Validator FieldValidatorFunc `json:"-"`
+
+	// A function that can modify values before any create or update operations.  Formatters run
+	// before Validators, giving users the opportunity to ensure a valid value is in the data
+	// structure before validation runs.
+	Formatter FieldFormatterFunc `json:"-"`
+
+	// A declarative form of the Validator configuration that uses pre-defined validators. Primarily
+	// used when storing schema declarations in external JSON files.
+	ValidatorConfig map[string]interface{} `json:"validators,omitempty"`
+
+	// A declarative form of the Formatter configuration that uses pre-defined validators. Primarily
+	// used when storing schema declarations in external JSON files.
+	FormatterConfig map[string]interface{} `json:"formatters,omitempty"`
 }
 
 func (self *Field) ConvertValue(in interface{}) (interface{}, error) {

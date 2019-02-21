@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 	"time"
 
 	"github.com/ghetzel/diecast"
+	"github.com/ghetzel/go-stockutil/fileutil"
 	"github.com/ghetzel/go-stockutil/httputil"
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
@@ -70,7 +72,9 @@ func (self *Server) AddSchemaDefinition(filename string) {
 func (self *Server) ListenAndServe() error {
 	uiDir := self.UiDirectory
 
-	if self.UiDirectory == `embedded` {
+	if d := os.Getenv(`UI`); fileutil.DirExists(d) {
+		uiDir = d
+	} else if self.UiDirectory == `embedded` {
 		uiDir = `/`
 	}
 

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/ghetzel/go-stockutil/pathutil"
-	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/ghodss/yaml"
@@ -581,9 +580,7 @@ func (self *FilesystemBackend) readObject(collection *dal.Collection, id string,
 
 func (self *FilesystemBackend) prepareIncomingRecord(collectionName string, record *dal.Record) error {
 	if collection, ok := self.registeredCollections[collectionName]; ok {
-		if collection.IdentityFieldType != dal.StringType {
-			record.ID = stringutil.Autotype(record.ID)
-		}
+		record.ID = collection.ConvertValue(collection.GetIdentityFieldName(), record.ID)
 
 		// do this AFTER populating the record's fields from the database
 		if err := record.Populate(record, collection); err != nil {

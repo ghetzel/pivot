@@ -22,8 +22,8 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	self.queryGenTypeMapping = generators.SqliteTypeMapping
 	self.queryGenNormalizerFormat = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(%v, ':', ' '), '[', ' '), ']', ' '), '*', ' '))"
 	self.listAllTablesQuery = `SELECT name FROM sqlite_master`
-	self.createPrimaryKeyIntFormat = `%s INTEGER NOT NULL PRIMARY KEY ASC`
-	self.createPrimaryKeyStrFormat = `%s TEXT NOT NULL PRIMARY KEY`
+	self.createPrimaryKeyIntFormat = `%s INTEGER NOT NULL`
+	self.createPrimaryKeyStrFormat = `%s TEXT NOT NULL`
 
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {

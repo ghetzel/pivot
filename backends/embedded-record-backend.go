@@ -175,23 +175,25 @@ func (self *EmbeddedRecordBackend) QueryFunc(collection *dal.Collection, filter 
 }
 
 func (self *EmbeddedRecordBackend) Query(collection *dal.Collection, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
-	recordset, err := self.indexer.Query(collection, filter, resultFns...)
+	if recordset, err := self.indexer.Query(collection, filter, resultFns...); err == nil {
+		for i, record := range recordset.Records {
+			if record, err := self.EmbedRelationships(collection, record, filter.Fields...); err == nil {
+				recordset.Records[i] = record
+			} else {
+				return nil, err
+			}
+		}
 
-	for i, record := range recordset.Records {
-		if record, err := self.EmbedRelationships(collection, record, filter.Fields...); err == nil {
-			recordset.Records[i] = record
-		} else {
+		deferredCache := make(map[string]interface{})
+
+		if err := ResolveDeferredRecords(deferredCache, recordset.Records...); err != nil {
 			return nil, err
 		}
-	}
 
-	deferredCache := make(map[string]interface{})
-
-	if err := ResolveDeferredRecords(deferredCache, recordset.Records...); err != nil {
+		return recordset, err
+	} else {
 		return nil, err
 	}
-
-	return recordset, err
 }
 
 func (self *EmbeddedRecordBackend) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error) {

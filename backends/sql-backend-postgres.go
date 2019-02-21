@@ -19,8 +19,8 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 	self.queryGenTypeMapping = generators.PostgresTypeMapping
 	self.queryGenNormalizerFormat = "regexp_replace(lower(%v), '[\\:\\[\\]\\*]+', ' ')"
 	self.listAllTablesQuery = `SELECT table_name from information_schema.TABLES WHERE table_catalog = CURRENT_CATALOG AND table_schema = 'public'`
-	self.createPrimaryKeyIntFormat = `%s BIGSERIAL PRIMARY KEY`
-	self.createPrimaryKeyStrFormat = `%s VARCHAR(255) PRIMARY KEY`
+	self.createPrimaryKeyIntFormat = `%s BIGSERIAL`
+	self.createPrimaryKeyStrFormat = `%s VARCHAR(255)`
 	self.countEstimateQuery = "SELECT reltuples::bigint AS estimate FROM pg_class WHERE oid = to_regclass('%s')"
 	self.countExactQuery = "SELECT COUNT(*) AS exact FROM (SELECT 1 FROM %s LIMIT %d) t"
 

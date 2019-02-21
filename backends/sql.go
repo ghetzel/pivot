@@ -643,6 +643,18 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 		fields = append(fields, def)
 	}
 
+	// Constraints
+	// after we've added all the field definitions, append the PRIMARY KEY () constraint statement
+	// with all of the key fields in the schema.
+	primaryKeys := make([]string, 0)
+
+	for _, k := range definition.KeyFields() {
+		primaryKeys = append(primaryKeys, gen.ToFieldName(k.Name))
+	}
+
+	fields = append(fields, fmt.Sprintf("PRIMARY KEY (%s)", strings.Join(primaryKeys, `, `)))
+
+	// join all fields on "," and finish building the statement
 	stmt += strings.Join(fields, `, `)
 	stmt += `)`
 
