@@ -96,6 +96,33 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 		in = variant.Int()
 	case FloatType:
 		in = variant.Float()
+	case ObjectType:
+		if native, ok := in.(map[string]interface{}); ok {
+			return native, nil
+
+		} else if typeutil.IsMap(in) {
+			return variant.MapNative(), nil
+
+		} else {
+			var raw []byte
+			var obj map[string]interface{}
+
+			if typeutil.IsKindOfString(in) {
+				raw = []byte(typeutil.String(in))
+			} else if r, ok := in.([]byte); ok {
+				raw = r
+			} else if r, ok := in.([]uint8); ok {
+				raw = []byte(r)
+			} else {
+				return nil, fmt.Errorf("Cannot use %T as an ObjectType input", in)
+			}
+
+			if err := json.Unmarshal(raw, &obj); err == nil {
+				return obj, nil
+			} else {
+				return nil, err
+			}
+		}
 	case TimeType:
 		// parse incoming int64s as epoch or epoch milliseconds
 		if inInt64, ok := in.(int64); ok {

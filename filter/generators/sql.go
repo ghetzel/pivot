@@ -702,6 +702,10 @@ func (self *Sql) ToAggregatedFieldName(agg filter.Aggregation, field string) str
 }
 
 func (self *Sql) ToNativeValue(t dal.Type, subtypes []dal.Type, in interface{}) string {
+	if in == nil {
+		return `NULL`
+	}
+
 	switch t {
 	case dal.StringType:
 		return fmt.Sprintf("'%v'", in)
@@ -717,8 +721,14 @@ func (self *Sql) ToNativeValue(t dal.Type, subtypes []dal.Type, in interface{}) 
 	// case dal.TimeType:
 	// handle now/current_timestamp junk
 
+	case dal.IntType:
+		return fmt.Sprintf("%d", typeutil.Int(in))
+
+	case dal.FloatType:
+		return fmt.Sprintf("%f", typeutil.Float(in))
+
 	default:
-		return fmt.Sprintf("%v", in)
+		return fmt.Sprintf("'%v'", in)
 	}
 }
 

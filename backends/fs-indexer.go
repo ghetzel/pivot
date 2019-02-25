@@ -135,7 +135,9 @@ func (self *FilesystemBackend) ListValues(collection *dal.Collection, fields []s
 						v = make([]interface{}, 0)
 					}
 
-					v = sliceutil.Unique(append(v, record.ID))
+					if record.ID != nil {
+						v = sliceutil.Unique(append(v, record.ID))
+					}
 				default:
 					if current, ok := values[field]; ok {
 						v = current
@@ -143,7 +145,9 @@ func (self *FilesystemBackend) ListValues(collection *dal.Collection, fields []s
 						v = make([]interface{}, 0)
 					}
 
-					v = sliceutil.Unique(append(v, record.Get(field)))
+					if newV := record.Get(field); newV != nil {
+						v = sliceutil.Unique(append(v, newV))
+					}
 				}
 
 				values[field] = v

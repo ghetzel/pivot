@@ -187,7 +187,7 @@ func (self *Record) AppendNested(key string, value ...interface{}) *Record {
 }
 
 // Populates a given struct with with the values in this record.
-//
+// TODO: I am afraid of how this function is implemented and need to completely rewrite it.
 func (self *Record) Populate(into interface{}, collection *Collection) error {
 	// special case for what is essentially copying another record into this one
 	if record, ok := into.(*Record); ok {
