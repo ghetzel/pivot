@@ -6,8 +6,10 @@ package mapper
 import (
 	"fmt"
 	"reflect"
+	"sort"
 
 	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/backends"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
@@ -254,7 +256,19 @@ func (self *Model) ListWithFilter(fields []string, flt interface{}) (map[string]
 		f.IdentityField = self.collection.IdentityField
 
 		if search := self.db.WithSearch(self.collection, f); search != nil {
-			return search.ListValues(self.collection, fields, f)
+			if fieldValues, err := search.ListValues(self.collection, fields, f); err == nil {
+				for field, values := range fieldValues {
+					sort.Slice(values, func(i int, j int) bool {
+						return typeutil.String(values[i]) < typeutil.String(values[j])
+					})
+
+					fieldValues[field] = values
+				}
+
+				return fieldValues, nil
+			} else {
+				return nil, err
+			}
 		} else {
 			return nil, fmt.Errorf("backend %T does not support searching", self.db)
 		}

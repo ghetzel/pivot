@@ -5,13 +5,10 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"time"
 
-	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
-	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 )
 
@@ -94,12 +91,64 @@ func (self *Record) SetKeys(collection *Collection, op FieldOperation, keys ...i
 	return nil
 }
 
-func (self *Record) Copy(other *Record) {
-	if other != nil {
-		self.ID = other.ID
-		self.Fields = other.Fields
-		self.Data = other.Data
+func (self *Record) Copy(other *Record, schema ...*Collection) error {
+	var collection *Collection
+
+	if len(schema) > 0 && schema[0] != nil {
+		collection = schema[0]
 	}
+
+	if other != nil {
+		self.Data = other.Data
+
+		if collection != nil {
+			collection.FillDefaults(self)
+		}
+
+		for key, value := range other.Fields {
+			if collection != nil {
+				if collectionField, ok := collection.GetField(key); ok {
+					// use the field's type in the collection schema to convert the value
+					if v, err := collectionField.ConvertValue(value); err == nil {
+						value = v
+					} else {
+						log.Warningf("error populating field %q: %v", key, err)
+						continue
+					}
+
+					// apply formatters to this value
+					if v, err := collectionField.Format(value, RetrieveOperation); err == nil {
+						value = v
+					} else {
+						log.Warningf("error formatting field %q: %v", key, err)
+						continue
+					}
+
+					// this specifies that we should double-check the validity of the values coming in
+					if collectionField.ValidateOnPopulate {
+						// validate the value
+						if err := collectionField.Validate(value); err != nil {
+							return err
+						}
+					}
+				}
+			}
+
+			self.Set(key, value)
+		}
+
+		self.ID = other.ID
+
+		if collection != nil {
+			if idI, err := collection.formatAndValidateId(self.ID, RetrieveOperation, self); err == nil {
+				self.ID = idI
+			} else {
+				log.Warningf("error formatting ID: %v", err)
+			}
+		}
+	}
+
+	return nil
 }
 
 func (self *Record) Get(key string, fallback ...interface{}) interface{} {
@@ -187,55 +236,10 @@ func (self *Record) AppendNested(key string, value ...interface{}) *Record {
 }
 
 // Populates a given struct with with the values in this record.
-// TODO: I am afraid of how this function is implemented and need to completely rewrite it.
 func (self *Record) Populate(into interface{}, collection *Collection) error {
 	// special case for what is essentially copying another record into this one
 	if record, ok := into.(*Record); ok {
-		if collection != nil {
-			collection.FillDefaults(self)
-		}
-
-		for key, value := range record.Fields {
-			if collection != nil {
-				if collectionField, ok := collection.GetField(key); ok {
-					// use the field's type in the collection schema to convert the value
-					if v, err := collectionField.ConvertValue(value); err == nil {
-						value = v
-					} else {
-						log.Warningf("error populating field %q: %v", key, err)
-						continue
-					}
-
-					// apply formatters to this value
-					if v, err := collectionField.Format(value, RetrieveOperation); err == nil {
-						value = v
-					} else {
-						log.Warningf("error formatting field %q: %v", key, err)
-						continue
-					}
-
-					// this specifies that we should double-check the validity of the values coming in
-					if collectionField.ValidateOnPopulate {
-						// validate the value
-						if err := collectionField.Validate(value); err != nil {
-							return err
-						}
-					}
-				}
-			}
-
-			self.Set(key, value)
-		}
-
-		self.ID = record.ID
-
-		if collection != nil {
-			if idI, err := collection.formatAndValidateId(self.ID, RetrieveOperation, self); err == nil {
-				self.ID = idI
-			} else {
-				log.Warningf("error formatting ID: %v", err)
-			}
-		}
+		return self.Copy(record, collection)
 	} else {
 		if err := validatePtrToStructType(into); err != nil {
 			return err
@@ -249,7 +253,6 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 			}
 		}
 
-		instanceStruct := structs.New(into)
 		var idFieldName string
 		var fallbackIdFieldName string
 
@@ -257,163 +260,103 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 		// knows the ID field is called.  This is used for input structs that don't explicitly tag
 		// a field with the ",identity" option
 		if collection != nil {
-			if id := collection.IdentityField; id != `` {
-				fallbackIdFieldName = id
-			}
+			idFieldName = collection.GetIdentityFieldName()
 		}
 
 		// get the name of the identity field from the given struct
-		if id, err := GetIdentityFieldName(into, fallbackIdFieldName); err == nil {
+		if id, err := GetIdentityFieldName(into, fallbackIdFieldName); err == nil && id != `` {
 			idFieldName = id
-		} else {
+		} else if err != nil {
 			return err
-		}
-
-		if idFieldName != `` {
-			// get field descriptors for the output struct
-			if fields, err := getFieldsForStruct(into); err == nil {
-				// for each value in the record's fields map...
-				for key, value := range self.Fields {
-					// only operate on fields that exist in the output struct
-					if field, ok := fields[key]; ok {
-						// only operate on exported output struct fields
-						if field.Field.IsExported() {
-							// skip the identity field, we handle that separately
-							if field.Identity || field.Field.Name() == idFieldName {
-								continue
-							}
-
-							// if a collection is specified, then use the corresponding field from that collection
-							// to format the value first
-							if collection != nil {
-								if collectionField, ok := collection.GetField(key); ok {
-									// use the field's type in the collection schema to convert the value
-									if v, err := collectionField.ConvertValue(value); err == nil {
-										value = v
-									} else {
-										return err
-									}
-
-									// apply formatters to this value
-									if v, err := collectionField.Format(value, RetrieveOperation); err == nil {
-										value = v
-									} else {
-										return err
-									}
-
-									// this specifies that we should double-check the validity of the values coming in
-									if collectionField.ValidateOnPopulate {
-										// validate the value
-										if err := collectionField.Validate(value); err != nil {
-											return err
-										}
-									}
-								} else {
-									// because we were given a collection, we know whether we should actually
-									// work with this field or not
-									continue
-								}
-							}
-
-							// skip values that are that type's zero value if OmitEmpty is set
-							if field.OmitEmpty {
-								if typeutil.IsZero(value) {
-									continue
-								}
-							}
-
-							// get the underlying type of the field
-							fType := reflect.TypeOf(field.Field.Value())
-							vValue := reflect.ValueOf(value)
-
-							// convert the value to the field's type if necessary
-							if fType != nil {
-								if vValue.IsValid() {
-									if !vValue.Type().AssignableTo(fType) {
-										if vValue.Type().ConvertibleTo(fType) {
-											vValue = vValue.Convert(fType)
-											value = vValue.Interface()
-										}
-									}
-								} else {
-									value = reflect.Zero(fType).Interface()
-								}
-							}
-
-							// last-ditch effort to handle weird edge cases
-							switch field.ReflectField.Type().String() {
-							case `time.Time`, `*time.Time`:
-								isPtr := strings.HasPrefix(field.ReflectField.Type().String(), `*`)
-
-								if v, err := stringutil.ConvertToTime(value); err == nil {
-									if isPtr {
-										value = &v
-									} else {
-										value = v
-									}
-								} else if v, err := stringutil.ConvertToInteger(value); err == nil {
-									var vT time.Time
-
-									// guess at whether we're dealing with epoch seconds or nanoseconds
-									if v <= 4294967296 {
-										vT = time.Unix(v, 0)
-									} else {
-										vT = time.Unix(0, v)
-									}
-
-									if isPtr {
-										value = &vT
-									} else {
-										value = vT
-									}
-								} else {
-									return err
-								}
-							}
-
-							if err := typeutil.SetValue(field.ReflectField, value); err != nil {
-								log.Warningf("Failed to set field %s: %v", field.Field.Name(), err)
-							}
-						}
-					}
-				}
-			} else {
-				return err
-			}
-
-			// get the underlying field from the struct we're outputting to
-			if _, ok := instanceStruct.FieldOk(idFieldName); ok {
-				// if possible, format and validate the record ID first.
-				// this lets us create (for example) random IDs
-				if collection != nil {
-					if idI, err := collection.formatAndValidateId(self.ID, RetrieveOperation, self); err == nil {
-						self.ID = idI
-					} else {
-						return err
-					}
-				}
-
-				if self.ID != nil {
-					id := self.ID
-					reflectField := reflect.ValueOf(into)
-
-					if reflectField.Kind() == reflect.Ptr {
-						reflectField = reflectField.Elem()
-					}
-
-					reflectField = reflectField.FieldByName(idFieldName)
-
-					if err := typeutil.SetValue(reflectField, id); err != nil {
-						return fmt.Errorf("Field '%s' is not settable: %v", idFieldName, err)
-					}
-				}
-			}
 		} else {
 			return fmt.Errorf("Could not determine identity field name")
 		}
+
+		if data, err := self.toMap(collection, idFieldName); err == nil {
+			return maputil.TaggedStructFromMap(data, into, RecordStructTag)
+		} else {
+			return err
+		}
+	}
+}
+
+func (self *Record) toMap(collection *Collection, idFieldName string) (map[string]interface{}, error) {
+	data := make(map[string]interface{})
+
+	// populate defaults
+	if collection != nil {
+		for _, field := range collection.Fields {
+			data[field.Name] = field.GetDefaultValue()
+		}
 	}
 
-	return nil
+	// get identity field name
+	if idFieldName == `` {
+		if collection != nil {
+			idFieldName = collection.GetIdentityFieldName()
+		} else {
+			idFieldName = DefaultIdentityField
+		}
+	}
+
+	// set values
+	data[idFieldName] = self.ID
+
+	for k, v := range self.Fields {
+		// if the field we're setting already exists (i.e.: has a default value), that value
+		// isn't a zero value, but the incoming one IS a zero value, skip.
+		if existing, ok := data[k]; ok {
+			// TODO: using straight Zero Value detection is insufficient for bool fields, and possibly time.Time.  Look into this.
+			if !typeutil.IsZero(existing) && typeutil.IsZero(v) {
+				continue
+			}
+		}
+
+		data[k] = v
+	}
+
+	if collection != nil {
+		// format and validate values (including identity)
+		for key, value := range data {
+			if key == idFieldName {
+				if idI, err := collection.formatAndValidateId(value, RetrieveOperation, self); err == nil {
+					value = idI
+				} else {
+					return nil, err
+				}
+			} else if collectionField, ok := collection.GetField(key); ok {
+				// apply formatters to this value
+				if v, err := collectionField.Format(value, RetrieveOperation); err == nil {
+					value = v
+				} else {
+					log.Warningf("error formatting field %q: %v", key, err)
+					continue
+				}
+
+				// this specifies that we should double-check the validity of the values coming in
+				if collectionField.ValidateOnPopulate {
+					// validate the value
+					if err := collectionField.Validate(value); err != nil {
+						return nil, err
+					}
+				}
+
+			}
+
+			data[key] = value
+		}
+
+		// cull values that aren't fields in the collection
+		for k, _ := range data {
+			if k == idFieldName {
+				continue
+			} else if _, ok := collection.GetField(k); !ok {
+				delete(data, k)
+			}
+		}
+	}
+
+	return data, nil
 }
 
 func (self *Record) appendValue(key string, value ...interface{}) []interface{} {
