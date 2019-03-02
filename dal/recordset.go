@@ -3,6 +3,8 @@ package dal
 import (
 	"fmt"
 	"reflect"
+
+	"github.com/ghetzel/go-stockutil/typeutil"
 )
 
 type RecordSet struct {
@@ -39,6 +41,16 @@ func (self *RecordSet) Append(other *RecordSet) *RecordSet {
 func (self *RecordSet) GetRecord(index int) (*Record, bool) {
 	if index < len(self.Records) {
 		return self.Records[index], true
+	}
+
+	return nil, false
+}
+
+func (self *RecordSet) GetRecordByID(id interface{}) (*Record, bool) {
+	for _, record := range self.Records {
+		if typeutil.String(record.ID) == typeutil.String(id) {
+			return record, true
+		}
 	}
 
 	return nil, false

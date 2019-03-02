@@ -50,7 +50,7 @@ type BackendFunc func(dal.ConnectionString) Backend
 
 var backendMap = map[string]BackendFunc{
 	`dynamodb`:   NewDynamoBackend,
-	`file`:       NewFilesystemBackend,
+	`file`:       NewFileBackend,
 	`fs`:         NewFilesystemBackend,
 	`mongodb`:    NewMongoBackend,
 	`mongo`:      NewMongoBackend,

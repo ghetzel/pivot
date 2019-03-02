@@ -282,6 +282,18 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 	}
 }
 
+func (self *Record) OnlyFields(fields []string) *Record {
+	if len(fields) > 0 {
+		for field, _ := range self.Fields {
+			if !sliceutil.ContainsString(fields, field) {
+				delete(self.Fields, field)
+			}
+		}
+	}
+
+	return self
+}
+
 func (self *Record) Map(fields ...string) map[string]interface{} {
 	out := make(map[string]interface{})
 

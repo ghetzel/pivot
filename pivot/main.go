@@ -220,7 +220,7 @@ func main() {
 									} else if !ok {
 										log.Warningf("failed to copy record: invalid return type %T", ptrToInstance)
 									} else {
-										log.Warningf("failed to copy record: %v", i, err)
+										log.Warningf("failed to copy record %d: %v", i, err)
 									}
 								}); err == nil {
 									log.Noticef("Successfully copied %d records from collection %q", i, name)

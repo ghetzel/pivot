@@ -140,6 +140,10 @@ func (self *ConnectionString) ClearOpt(key string) {
 	delete(self.Options, key)
 }
 
+func (self *ConnectionString) Opt(key string) typeutil.Variant {
+	return typeutil.V(self.Options[key])
+}
+
 func (self *ConnectionString) OptString(key string, fallback string) string {
 	if v := typeutil.V(self.Options[key]).String(); v != `` {
 		return v
