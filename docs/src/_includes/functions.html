@@ -1,0 +1,112 @@
+---
+postprocessors:
+- trim-empty-lines
+---
+{{ range $group := sortByKey $.bindings.functionGroups "Name" }}
+<details>
+    <summary>
+        <a href="#{{ hyphenate $group.Name }}">{{ $group.Name }}</a>
+    </summary>
+
+    <ul>
+        {{ range $fn := sortByKey $group.Functions "Name" }}
+        {{ if not $fn.Hidden }}
+        <li>
+            <a href="#fn-{{ $fn.Name }}">{{ $fn.Name }}</a>
+        </li>
+        {{ end }}
+        {{ end }}
+    </ul>
+</details>
+{{ end }}
+
+{{ range $group := sortByKey $.bindings.functionGroups "Name" }}
+<section class="group mt-4" id="{{ hyphenate $group.Name }}">
+    <header>
+        <h3>{{ $group.Name }}</h3>
+        <p>{{ markdown $group.Description }}</p>
+    </header>
+
+    {{ range $fn := sortByKey $group.Functions "Name" }}
+    {{ if not $fn.Hidden }}
+    <section class="function" id="fn-{{ $fn.Name }}">
+        <h4 class="mt-3">
+            {{ $fn.Name }}
+            <a href="#fn-{{ $fn.Name }}" class="text-body ml-2">
+                <i class="fa fa-link"></i>
+            </a>
+        </h4>
+
+        {{ if $fn.Alias }}
+        <i>Alias for </i> <a href="#fn-{{ $fn.Alias }}">{{ $fn.Alias }}</a>.
+        {{ else }}
+        <div class="mb-1">
+            {{ if $fn.Aliases }}
+            <i>Aliases: {{ join $fn.Aliases ", " }}</i>
+            {{ end }}
+
+            <i>Usage:</i>
+            <code>{{ $fn.Name }}{{ range $arg := $fn.Arguments }} {{ if or $arg.Optional $arg.Variadic }}[{{ end }}{{ $arg.Name | underscore | upper }}{{ if $arg.Variadic }} ...{{ end }}{{ if or $arg.Optional $arg.Variadic }}]{{ end }}{{ end }}</code>
+        </div>
+        {{ end }}
+
+        {{ if $fn.Summary }}
+        {{   markdown $fn.Summary }}
+        {{ else }}
+        <i>Undocumented</i>
+        {{ end }}
+
+        {{ if $fn.Arguments }}
+        <h5>Arguments</h5>
+        <table class="table table-sm table-responsive w-100">
+            <thead>
+                <tr>
+                    <th class="col-2">Name</th>
+                    <th class="col-2">Data Type</th>
+                    <th class="col">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range $arg := $fn.Arguments }}
+                <tr>
+                    <th><pre>{{ upper $arg.Name }}</pre></th>
+                    <td>{{ $arg.Type }}{{ if $arg.Variadic }} (1+){{ end }}</td>
+                    <td>
+                        {{ markdown $arg.Description }}
+                        {{ if $arg.Valid }}
+                        <i class="d-block mt-2">Acceptable Values:</i>
+                        <table class="table table-sm mt-2">
+                            {{ range $valid := $arg.Valid }}
+                            <tr>
+                                <td><code>{{ jsonify $valid.Name }}</code></td>
+                                <td>{{ markdown $valid.Description }}</td>
+                            </tr>
+                            {{ end }}
+                        </table>
+                        {{ end }}
+                    </td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+        {{ end }}
+
+        {{ if $fn.Examples }}
+        <h5>Examples</h5>
+        <div class="examples">
+            {{ range $i, $x := $fn.Examples }}
+            <div class="example" id="fn-{{ $fn.Name }}-example-{{ add $i }}">
+                {{ if $x.Description }}
+                <h6>{{ markdown $x.Description }}</h6>
+                {{ end }}
+                <code><span class="code-unselectable">&#123;&#123;&nbsp;</span>{{ $x.Code }}<span class="code-unselectable">&nbsp;&#125;&#125;</span></code>
+                <p class="returns">{{ jsonify $x.Return }}</p>
+            </div>
+            {{ end }}
+        </div>
+        {{ end }}
+    </section>
+    {{ end }}
+    {{ end }}
+</section>
+{{ end }}

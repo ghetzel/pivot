@@ -1,0 +1,84 @@
+---
+postprocessors:
+- trim-empty-lines
+---
+<html lang="en">
+<head>
+    <title>Pivot</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" type="text/css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    {{ if $.page.local }}
+    <link rel="stylesheet" href="/style.scss" type="text/css">
+    {{ else }}
+    <link rel="stylesheet" href="/pivot/style.css" type="text/css">
+    {{ end }}
+</head>
+<body>
+    <nav class="navbar bg-pivot justify-content-center justify-content-sm-start navbar-expand-lg">
+        <a class="navbar-brand" href="/">
+            PIVOT
+        </a>
+
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://github.com/ghetzel/pivot">
+                        <img src="https://img.shields.io/github/tag/ghetzel/pivot.svg?colorB=111111&label=GitHub&style=flat">
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://godoc.org/github.com/ghetzel/pivot">
+                        <img src="https://godoc.org/github.com/ghetzel/pivot?status.svg">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="d-flex justify-content-stretch align-items-stretch">
+        <div class="col-md-3 col-lg-2 col-xl-2 bg-pivot sticky-top d-none d-sm-block p-0">
+            <nav
+                id="sidebar"
+                class="navbar navbar-light align-items-start"
+            >
+                <nav class="nav nav-pills flex-column">
+                    {{ $doc := markdown (read "/README.md") "common" "auto-heading-ids" }}
+
+                    {{ range $h2 := htmlquery $doc "h2" }}
+                    <a class="nav-link" href="#{{ $h2.attributes.id }}">{{ $h2.text }}</a>
+                    {{ end }}
+
+                    <details>
+                        <summary class="nav-link">
+                            <a href="#funcref">Functions</a>
+                        </summary>
+                        <nav class="nav nav-pills flex-column ml-4">
+                        {{ range $group := sortByKey $.bindings.functionGroups "Name" }}
+                            <a class="nav-link" href="#{{ hyphenate $group.Name }}">{{ $group.Name }}</a>
+                        {{ end }}
+                        </nav>
+                    </details>
+
+                    <details>
+                        <summary class="nav-link">
+                            <a href="#appendix">Appendix</a>
+                        </summary>
+                    </details>
+                </nav>
+            </nav>
+        </div>
+
+        <div class="col-md-9 col-xl-8 p-4" id="content">
+            {{ template "content" . }}
+        </div>
+    </div>
+</body>
+</html>

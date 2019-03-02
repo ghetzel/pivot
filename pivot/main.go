@@ -1,16 +1,22 @@
 package main
 
 import (
+	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
+	"strings"
 
 	"github.com/ghetzel/cli"
+	"github.com/ghetzel/go-stockutil/fileutil"
 	"github.com/ghetzel/go-stockutil/log"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/v3"
 	"github.com/ghetzel/pivot/v3/backends"
+	"github.com/ghetzel/pivot/v3/client"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/ghetzel/pivot/v3/filter/generators"
@@ -279,10 +285,277 @@ func main() {
 					log.Fatalf("invalid filter: %v", err)
 				}
 			},
+		}, {
+			Name:  `client`,
+			Usage: `Provides an HTTP API client for interacting with a running Pivot instance.`,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:   `url, u`,
+					Usage:  `The Pivot API URL to connect to.`,
+					EnvVar: `PIVOT_URL`,
+					Value:  client.DefaultPivotUrl,
+				},
+				cli.StringFlag{
+					Name:  `format, f`,
+					Usage: `How to format API result output. (one of: text, json, yaml)`,
+				},
+				cli.BoolFlag{
+					Name:  `pretty, P`,
+					Usage: `Pretty-print the formatted output (indenting where applicable)`,
+				},
+			},
+			Subcommands: cli.Commands{
+				{
+					Name:  `status`,
+					Usage: `Retrieve status info from Pivot.`,
+					Action: func(c *cli.Context) {
+						if status, err := pivotClient(c).Status(); err == nil {
+							output(c, status, func() error {
+								fmt.Printf(
+									"%v %v: backend=%v indexer=%v\n",
+									status.Application,
+									status.Version,
+									status.Backend,
+									status.Indexer,
+								)
+
+								return nil
+							})
+						} else {
+							log.Fatal(err)
+						}
+					},
+				}, {
+					Name:      `collections`,
+					Usage:     `Return a list of collection names or details on a specific collection.`,
+					ArgsUsage: `[NAME]`,
+					Action: func(c *cli.Context) {
+						if specific := c.Args(); len(specific) == 0 {
+							if names, err := pivotClient(c).Collections(); err == nil {
+								output(c, names, func() error {
+									if len(names) > 0 {
+										fmt.Println(strings.Join(names, "\n"))
+									}
+
+									return nil
+								})
+							} else {
+								log.Fatal(err)
+							}
+						} else {
+							for _, name := range specific {
+								if collection, err := pivotClient(c).Collection(name); err == nil {
+									output(c, collection, nil)
+								} else {
+									log.Fatal(err)
+								}
+							}
+						}
+					},
+				}, {
+					Name: `records`,
+					Usage: `Retrieve (or create, update) records from a specific collection. ` +
+						`If data is read from standard input, it will be inserted/updated into the ` +
+						`collection specified in the Record's "collection" field, falling back to ` +
+						`the collection specified in the first positional argument after this subcommand.`,
+					ArgsUsage: `[COLLECTION [ID ..]]`,
+					Flags: []cli.Flag{
+						cli.BoolFlag{
+							Name:  `warn-errors, w`,
+							Usage: `Errors creating/updating records will only produce warnings instead of exiting the program.`,
+						},
+					},
+					Action: func(c *cli.Context) {
+						pc := pivotClient(c)
+						collection := c.Args().First()
+						ids := make([]string, 0)
+
+						if args := c.Args(); len(args) > 1 {
+							ids = args[1:]
+						}
+
+						// if stdin is not a terminal (e.g.: something is being piped into the command)
+						// then read and parse lines as JSON dal.Records
+						if !fileutil.IsTerminal() {
+							lines := bufio.NewScanner(os.Stdin)
+
+							for lines.Scan() {
+								line := strings.TrimSpace(lines.Text())
+
+								if line == `` || strings.HasPrefix(line, `#`) {
+									continue
+								}
+
+								var record dal.Record
+
+								if err := json.Unmarshal([]byte(line), &record); err == nil {
+
+									if record.CollectionName != `` {
+										collection = record.CollectionName
+									}
+
+									if collection == `` {
+										logerr(c, "No collection specified in record or on command line")
+									}
+
+									if record.Operation == `` {
+										if record.ID == nil {
+											record.Operation = `create`
+										} else {
+											record.Operation = `update`
+										}
+									}
+
+									switch record.Operation {
+									case `create`:
+										_, err = pc.CreateRecord(collection, &record)
+									case `update`:
+										_, err = pc.UpdateRecord(collection, &record)
+									case `delete`:
+										err = pc.DeleteRecords(collection, record.ID)
+									default:
+										logerr(c, "Unknown record operation %q", record.Operation)
+									}
+								} else {
+									logerr(c, "malformed input: %v", err)
+								}
+							}
+
+							if err := lines.Err(); err != nil {
+								logerr(c, "error reading input: %v", err)
+							}
+						}
+
+						if len(ids) > 0 {
+							if collection == `` {
+								log.Fatalf("Must specify a collection to retrieve records from.")
+							}
+
+							// read any records explicitly requested in positional arguments
+							// this can be cleverly used as a readback for records just written via stdin
+							for _, id := range ids {
+								if record, err := pc.GetRecord(collection, id); err == nil {
+									output(c, record, nil)
+								} else {
+									logerr(c, "retrieve error: %v", err)
+								}
+							}
+						}
+					},
+				}, {
+					Name:      `query`,
+					Usage:     `Query a collection and output the results.`,
+					ArgsUsage: `COLLECTION [FILTERS ..]`,
+					Flags: []cli.Flag{
+						cli.IntFlag{
+							Name:  `limit, l`,
+							Usage: `Limit the number of records to return in one query`,
+						},
+						cli.IntFlag{
+							Name:  `offset, o`,
+							Usage: `The record offset to apply to the query (for retrieving paginated results)`,
+						},
+						cli.StringFlag{
+							Name:  `sort, s`,
+							Usage: `A comma-separated list of fields to sort the results by (in order of priority)`,
+						},
+						cli.StringFlag{
+							Name:  `fields, f`,
+							Usage: `A comma-separated list of fields to include in the resulting records.`,
+						},
+						cli.BoolFlag{
+							Name:  `autopage, P`,
+							Usage: `Automatically paginate through results, performing the query`,
+						},
+					},
+					Action: func(c *cli.Context) {
+						if collection := c.Args().First(); collection != `` {
+							filters := make([]string, 0)
+							offset := c.Int(`offset`)
+							fSort := sliceutil.CompactString(strings.Split(c.String(`sort`), `,`))
+							fFields := sliceutil.CompactString(strings.Split(c.String(`fields`), `,`))
+
+							if args := c.Args(); len(args) > 1 {
+								filters = args[1:]
+							}
+
+							for {
+								if results, err := pivotClient(c).Query(collection, filters, &client.QueryOptions{
+									Limit:  c.Int(`limit`),
+									Offset: offset,
+									Sort:   fSort,
+									Fields: fFields,
+								}); err == nil {
+									for _, record := range results.Records {
+										output(c, record.Map(fFields...), nil)
+									}
+
+									if len(results.Records) == 0 {
+										return
+									} else if !c.Bool(`autopage`) {
+										return
+									}
+
+									offset += len(results.Records)
+								} else {
+									log.Fatal(err)
+									return
+								}
+							}
+						} else {
+							log.Fatalf("Must specify a collection to query.")
+						}
+					},
+				},
+			},
 		},
 	}
 
 	app.Run(os.Args)
+}
+
+func logerr(c *cli.Context, format string, args ...interface{}) {
+	if c.Bool(`warn-errors`) {
+		log.Warningf(format, args...)
+	} else {
+		log.Fatalf(format, args...)
+	}
+}
+
+func pivotClient(c *cli.Context) *client.Pivot {
+	if c, err := client.New(c.String(`url`)); err == nil {
+		return c
+	} else {
+		log.Fatalf("client error: %v", err)
+		return nil
+	}
+}
+
+func output(c *cli.Context, value interface{}, textFn func() error) error {
+	format := c.String(`format`)
+
+	var err error
+
+	if textFn == nil {
+		format = `json`
+	}
+
+	switch format {
+	case `json`:
+		enc := json.NewEncoder(os.Stdout)
+
+		if c.Bool(`pretty`) {
+			enc.SetIndent(``, `  `)
+		}
+
+		err = enc.Encode(value)
+	default:
+		if textFn != nil {
+			err = textFn()
+		}
+	}
+
+	return err
 }
 
 func populateNetrc(c *cli.Context) {

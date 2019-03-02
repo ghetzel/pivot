@@ -142,21 +142,22 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	router.Get(`/api/status`,
 		func(w http.ResponseWriter, req *http.Request) {
 			backend := backendForRequest(self, req, self.backend)
-
-			status := map[string]interface{}{
-				`backend`: backend.GetConnectionString().String(),
+			status := util.Status{
+				OK:          true,
+				Application: ApplicationName,
+				Version:     ApplicationVersion,
+				Backend:     backend.GetConnectionString().String(),
 			}
 
 			if indexer := backend.WithSearch(nil, nil); indexer != nil {
-				status[`indexer`] = indexer.IndexConnectionString().String()
+				status.Indexer = indexer.IndexConnectionString().String()
 			}
 
-			httputil.RespondJSON(w, status)
+			httputil.RespondJSON(w, &status)
 		})
 
 	// Querying
 	// ---------------------------------------------------------------------------------------------
-
 	queryHandler := func(w http.ResponseWriter, req *http.Request) {
 		var query interface{}
 		var name string

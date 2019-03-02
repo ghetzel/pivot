@@ -15,10 +15,12 @@ import (
 var FieldNestingSeparator string = `.`
 
 type Record struct {
-	ID     interface{}            `json:"id"`
-	Fields map[string]interface{} `json:"fields,omitempty"`
-	Data   []byte                 `json:"data,omitempty"`
-	Error  error                  `json:"error,omitempty"`
+	ID             interface{}            `json:"id"`
+	Fields         map[string]interface{} `json:"fields,omitempty"`
+	Data           []byte                 `json:"data,omitempty"`
+	Error          error                  `json:"error,omitempty"`
+	CollectionName string                 `json:"collection,omitempty"`
+	Operation      string                 `json:"operation,omitempty"`
 }
 
 func NewRecord(id interface{}) *Record {
@@ -278,6 +280,26 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 			return err
 		}
 	}
+}
+
+func (self *Record) Map(fields ...string) map[string]interface{} {
+	out := make(map[string]interface{})
+
+	if self.ID != nil {
+		out[`id`] = self.ID
+	}
+
+	if len(fields) > 0 {
+		for _, field := range sliceutil.IntersectStrings(fields, maputil.StringKeys(self.Fields)) {
+			out[field] = self.Fields[field]
+		}
+	} else {
+		for k, v := range self.Fields {
+			out[k] = v
+		}
+	}
+
+	return out
 }
 
 func (self *Record) toMap(collection *Collection, idFieldName string) (map[string]interface{}, error) {

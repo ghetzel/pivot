@@ -208,6 +208,10 @@ func Parse(spec string) (*Filter, error) {
 
 	spec = strings.TrimPrefix(spec, `/`)
 
+	if spec == AllValue {
+		return All(), nil
+	}
+
 	rvV := MakeFilter(spec)
 	rv := &rvV
 	criteriaPre := strings.Split(spec, CriteriaSeparator)
