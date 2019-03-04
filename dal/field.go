@@ -84,6 +84,9 @@ type Field struct {
 	// A declarative form of the Formatter configuration that uses pre-defined validators. Primarily
 	// used when storing schema declarations in external JSON files.
 	FormatterConfig map[string]interface{} `json:"formatters,omitempty"`
+
+	// Used to store the order this field appears in the source database.
+	Index int `json:"index,omitempty"`
 }
 
 func (self *Field) ConvertValue(in interface{}) (interface{}, error) {

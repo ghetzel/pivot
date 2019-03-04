@@ -59,6 +59,9 @@ type Collection struct {
 	// The datatype of the identity field.  Defaults to integer.
 	IdentityFieldType Type `json:"identity_field_type,omitempty"`
 
+	// Used to store the location of the identity field in the source database.
+	IdentityFieldIndex int `json:"identity_field_index"`
+
 	// Specifies how fields in this Collection relate to records from other collections.  This is
 	// a partial implementation of a relational model, specifically capturing one-to-one or
 	// one-to-many relationships.  The definitions here will retrieve the assocated records from
@@ -92,10 +95,14 @@ type Collection struct {
 	// Operates the same as a Field Validator function.
 	IdentityFieldValidator FieldValidatorFunc `json:"-"`
 
+	// Allow backends to store internal information about the backing datasource for this collection.
+	SourceURI string `json:"-"`
+
 	// If specified, this function receives a copy of the populated record before create and update
 	// operations, allowing for a last-chance validation of the record as a whole.  Use a pre-save
 	// validator when validation requires checking multiple fields at once.
-	PreSaveValidator    CollectionValidatorFunc `json:"-"`
+	PreSaveValidator CollectionValidatorFunc `json:"-"`
+
 	recordType          reflect.Type
 	instanceInitializer InitializerFunc
 }
@@ -365,6 +372,7 @@ func (self *Collection) GetField(name string) (Field, bool) {
 		return Field{
 			Name:     name,
 			Type:     self.IdentityFieldType,
+			Index:    self.IdentityFieldIndex,
 			Identity: true,
 			Key:      true,
 			Required: true,
@@ -372,6 +380,29 @@ func (self *Collection) GetField(name string) (Field, bool) {
 	} else {
 		for _, field := range self.Fields {
 			if field.Name == name {
+				return field, true
+			}
+		}
+	}
+
+	return Field{}, false
+}
+
+// Retrieve a single field by its index value. The second return value will be false if a field
+// at that index does not exist.
+func (self *Collection) GetFieldByIndex(index int) (Field, bool) {
+	if index == self.IdentityFieldIndex {
+		return Field{
+			Name:     self.GetIdentityFieldName(),
+			Type:     self.IdentityFieldType,
+			Index:    self.IdentityFieldIndex,
+			Identity: true,
+			Key:      true,
+			Required: true,
+		}, true
+	} else {
+		for _, field := range self.Fields {
+			if field.Index == index {
 				return field, true
 			}
 		}

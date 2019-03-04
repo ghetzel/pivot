@@ -18,6 +18,9 @@ import (
 	"github.com/ghetzel/pivot/v3/filter"
 )
 
+var fileBackendTypeAutodetectRows = 50
+var fileBackendAutoindexField = `_index`
+
 type FileBackend struct {
 	Backend
 	Indexer
@@ -33,7 +36,10 @@ func NewFileBackend(connection dal.ConnectionString) Backend {
 }
 
 func (self *FileBackend) filename() string {
-	return filepath.Join(self.conn.Host(), self.conn.Dataset())
+	filename := filepath.Join(self.conn.Host(), self.conn.Dataset())
+	filename = fileutil.MustExpandUser(filename)
+
+	return filename
 }
 
 func (self *FileBackend) normalize(filename string) string {
@@ -80,7 +86,10 @@ func (self *FileBackend) autoregisterCollections() error {
 }
 
 func (self *FileBackend) updateCollectionFromFile(filename string) error {
-	switch protocol := self.conn.Protocol(); protocol {
+	protocol := self.conn.Protocol()
+	log.Debugf("%T: autoregister %s (protocol: %s)", self, filename, protocol)
+
+	switch protocol {
 	case `csv`, `tsv`:
 		if file, err := os.Open(filename); err == nil {
 			defer file.Close()
@@ -113,15 +122,23 @@ func (self *FileBackend) updateCollectionFromFile(filename string) error {
 							if dtype.IsSupersetOf(detectedTypes[c]) {
 								detectedTypes[c] = dtype
 							}
+						} else if dtype.String() == `` {
+							detectedTypes = append(detectedTypes, utilutil.String)
 						} else {
 							detectedTypes = append(detectedTypes, dtype)
 						}
 					}
+
+					if r > fileBackendTypeAutodetectRows {
+						break
+					}
 				}
+
+				collection := dal.NewCollection(self.normalize(filename))
+				collection.SourceURI = filename
 
 				for _, row := range rc {
 					if len(row) > 0 {
-						collection := dal.NewCollection(self.normalize(filename))
 						collection.IdentityField = ``
 						idCol := -1
 
@@ -134,24 +151,28 @@ func (self *FileBackend) updateCollectionFromFile(filename string) error {
 						}
 
 						if collection.IdentityField == `` {
-							collection.IdentityField = strings.TrimSpace(row[0])
-							idCol = 0
+							collection.IdentityField = fileBackendAutoindexField
 						}
 
 						for c, col := range row {
 							if c == idCol {
+								collection.IdentityFieldType = dal.Type(detectedTypes[c].String())
+								collection.IdentityFieldIndex = c
 								continue
 							} else {
 								collection.AddFields(dal.Field{
-									Name: strings.TrimSpace(col),
-									Type: dal.Type(detectedTypes[c].String()),
+									Name:  strings.TrimSpace(col),
+									Type:  dal.Type(detectedTypes[c].String()),
+									Index: c,
 								})
 							}
 						}
-
-						self.collections.Store(collection.Name, collection)
 					}
+
+					break
 				}
+
+				self.collections.Store(collection.Name, collection)
 
 				return nil
 			} else {
@@ -186,13 +207,12 @@ func (self *FileBackend) refresh(filename string) error {
 				}
 
 				if rc, err := csvr.ReadAll(); err == nil {
-					nameToIndex := make(map[string]int)
-					indexToName := make(map[int]string)
 					idColName := collection.GetIdentityFieldName()
+					hasExplicitIdColumn := (idColName != fileBackendAutoindexField)
 
 				NextRow:
 					for r, row := range rc {
-						record := dal.NewRecord(nil)
+						record := dal.NewRecord(r)
 
 					NextColumn:
 						for c, col := range row {
@@ -202,10 +222,9 @@ func (self *FileBackend) refresh(filename string) error {
 								continue NextColumn
 							}
 
-							if self.conn.Opt(`header`).Bool() && r == 0 {
-								nameToIndex[col] = c
-								indexToName[c] = col
-							} else if idCol, ok := nameToIndex[idColName]; ok && c == idCol {
+							if r == 0 {
+								continue NextRow
+							} else if hasExplicitIdColumn && c == collection.IdentityFieldIndex {
 								if v, err := collection.ValueForField(idColName, col, dal.RetrieveOperation); err == nil && v != `` {
 									record.ID = v
 								} else if v == `` {
@@ -215,9 +234,9 @@ func (self *FileBackend) refresh(filename string) error {
 									log.Warningf("%T: failed to parse identity at R%dC%d: %v", self, r, c, err)
 									continue NextRow
 								}
-							} else if fieldName, ok := indexToName[c]; ok && fieldName != `` {
-								if v, err := collection.ValueForField(fieldName, col, dal.RetrieveOperation); err == nil {
-									record.Set(fieldName, v)
+							} else if field, ok := collection.GetFieldByIndex(c); ok {
+								if v, err := field.ConvertValue(col); err == nil {
+									record.SetNested(field.Name, v)
 								} else {
 									log.Warningf("%T: failed to parse column R%dC%d: %v", self, r, c, err)
 									continue NextRow
@@ -272,7 +291,7 @@ func (self *FileBackend) Initialize() error {
 	}
 
 	if err := self.autoregisterCollections(); err != nil {
-		return err
+		return fmt.Errorf("autoregister failed: %v", err)
 	}
 
 	return self.refresh(self.filename())
@@ -290,25 +309,35 @@ func (self *FileBackend) GetConnectionString() *dal.ConnectionString {
 	return &self.conn
 }
 
-func (self *FileBackend) Exists(collection string, id interface{}) bool {
-	if rs := self.rs(collection); rs != nil {
-		_, ok := rs.GetRecordByID(id)
-		return ok
+func (self *FileBackend) Exists(name string, id interface{}) bool {
+	if collection, err := self.GetCollection(name); err == nil {
+		self.refresh(collection.SourceURI)
+
+		if rs := self.rs(collection.Name); rs != nil {
+			_, ok := rs.GetRecordByID(id)
+			return ok
+		}
 	}
 
 	return false
 }
 
-func (self *FileBackend) Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error) {
-	if rs := self.rs(collection); rs != nil {
-		if record, ok := rs.GetRecordByID(id); ok {
-			return record.OnlyFields(fields), nil
-		} else {
-			return nil, fmt.Errorf("Record %v does not exist", id)
+func (self *FileBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
+	if collection, err := self.GetCollection(name); err == nil {
+		if err := self.refresh(collection.SourceURI); err != nil {
+			return nil, err
 		}
-	} else {
-		return nil, dal.CollectionNotFound
+
+		if rs := self.rs(collection.Name); rs != nil {
+			if record, ok := rs.GetRecordByID(id); ok {
+				return record.OnlyFields(fields), nil
+			} else {
+				return nil, fmt.Errorf("Record %v does not exist", id)
+			}
+		}
 	}
+
+	return nil, dal.CollectionNotFound
 }
 
 func (self *FileBackend) Insert(collection string, records *dal.RecordSet) error {
@@ -343,7 +372,7 @@ func (self *FileBackend) ListCollections() ([]string, error) {
 }
 
 func (self *FileBackend) GetCollection(collection string) (*dal.Collection, error) {
-	if c, ok := self.collections.Load(collection); ok {
+	if c, ok := self.collections.Load(self.normalize(collection)); ok {
 		if collection, ok := c.(*dal.Collection); ok {
 			return collection, nil
 		}
