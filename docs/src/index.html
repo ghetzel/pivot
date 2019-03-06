@@ -1,7 +1,3 @@
----
-includes:
-  functions: /_includes/functions.html
----
 {{ $docs := markdown (read "/README.md") "common" "auto-heading-ids" }}
 {{ $docs := htmlRemove $docs "h1" }}
 {{ $docs := htmlAddClass $docs "details" "card" "mb-2" }}
