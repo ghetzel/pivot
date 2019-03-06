@@ -68,6 +68,12 @@ Connecting to a database using Pivot is easy.  Start Pivot in `web` mode and pro
 
 TODO:
 
+## Collections
+
+### Formatters
+
+### Validators
+
 ## Backends
 
 TODO:
