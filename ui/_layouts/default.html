@@ -46,15 +46,20 @@ bindings:
         -->
 
             <div class="navbar-collapse" id="menu">
-                <a class="navbar-brand" href="/">Pivot</a>
+                <a class="navbar-brand" href="/">PIVOT</a>
 
-                <span class="navbar-text ml-auto">
-                    <b>Backend:</b> {{ $.bindings.status.backend }}
-                    {{ if nex $.bindings.status.backend $.bindings.status.indexer }}
-                        <br />
-                        <b>Indexer:</b>
-                        {{ $.bindings.status.indexer }}
-                    {{ end }}
+                <span class="navbar-text ml-auto text-right">
+                    <div>
+                        <b>Backend:</b> {{ $.bindings.status.backend }}
+                        {{ if nex $.bindings.status.backend $.bindings.status.indexer }}
+                            <br />
+                            <b>Indexer:</b>
+                            {{ $.bindings.status.indexer }}
+                        {{ end }}
+                    </div>
+                    <div>
+                        <b>Version:</b> {{ $.bindings.status.version }}
+                    </div>
                 </span>
             </div>
         </nav>

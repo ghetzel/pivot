@@ -495,7 +495,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			name := vestigo.Param(req, `collection`)
 			backend := backendForRequest(self, req, self.backend)
 
-			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
+			if err := httputil.ParseRequest(req, &recordset); err == nil {
 				if err := backend.Insert(name, &recordset); err == nil {
 					httputil.RespondJSON(w, nil)
 				} else {
@@ -513,7 +513,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			name := vestigo.Param(req, `collection`)
 			backend := backendForRequest(self, req, self.backend)
 
-			if err := json.NewDecoder(req.Body).Decode(&recordset); err == nil {
+			if err := httputil.ParseRequest(req, &recordset); err == nil {
 				if err := backend.Update(name, &recordset); err == nil {
 					httputil.RespondJSON(w, nil)
 				} else {

@@ -1,4 +1,7 @@
-{{ if gt (asInt $.bindings.results.total_pages) 1 }}
+{{ $startWindow := 5 }}
+{{ $endWindow   := 3 }}
+
+{{ if gtx $.bindings.results.total_pages 1 }}
 <nav class="w-100 d-flex justify-content-center" aria-label="Pages">
     <ul class="pagination">
         <li class="page-item{{ if eqx $.bindings.results.page 1 }} disabled{{ end }}">
@@ -7,12 +10,39 @@
             </a>
         </li>
 
-        {{ range $i, $page := sequence $.bindings.results.total_pages }}
+        {{ range $i, $page := slice (sequence $.bindings.results.total_pages) 0 $startWindow }}
         <li class="page-item{{ if eqx (add $page 1) $.bindings.results.page }} active{{ end }}">
             <a class="page-link" href="/?collection={{ qs `id` }}&offset={{ page (add $page 1) $.bindings.results.records_per_page }}">
                 {{ (add $page 1) }}
             </a>
         </li>
+        {{ end }}
+
+        {{ if and (gtx $.bindings.results.page (add $startWindow 1)) (gtx $.bindings.results.total_pages $startWindow) (lex $.bindings.results.page (subtract $.bindings.results.total_pages $endWindow)) }}
+        <li class="page-item disabled">
+            <a class="page-link">...</a>
+        </li>
+        {{ end }}
+
+        {{ if and (gtx $.bindings.results.page (add $startWindow 1)) (lex $.bindings.results.page (subtract $.bindings.results.total_pages $endWindow)) }}
+        <li class="page-item{{ if eqx $.bindings.results.page $.bindings.results.page }} active{{ end }}">
+            <a class="page-link" href="/?collection={{ qs `id` }}&offset={{ page $.bindings.results.page $.bindings.results.records_per_page }}">
+                {{ $.bindings.results.page }}
+            </a>
+        </li>
+        {{ end }}
+
+        {{ if gtx $.bindings.results.total_pages $startWindow }}
+        <li class="page-item disabled">
+            <a class="page-link">...</a>
+        </li>
+        {{ range $i, $page := slice (sequence $.bindings.results.total_pages) (multiply -1 $endWindow) -1 }}
+        <li class="page-item{{ if eqx (add $page 1) $.bindings.results.page }} active{{ end }}">
+            <a class="page-link" href="/?collection={{ qs `id` }}&offset={{ page (add $page 1) $.bindings.results.records_per_page }}">
+                {{ (add $page 1) }}
+            </a>
+        </li>
+        {{ end }}
         {{ end }}
 
         <li class="page-item{{ if ge $.bindings.results.page $.bindings.results.total_pages }} disabled{{ end }}">

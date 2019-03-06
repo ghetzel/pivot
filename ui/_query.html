@@ -9,6 +9,9 @@ bindings:
         fields: '{{ qs `fields` }}'
         noexpand: true
 
+-   name:     schema
+    resource: '/api/schema/{{ qs `id` }}'
+
 includes:
     paginator: '/_includes/paginator.html'
 ---
@@ -103,16 +106,17 @@ includes:
                         <table class="table table-sm table-plain table-responsive">
                             <tbody>
                             {{ range $k, $v := $record.fields }}
+                            {{   $embed := firstByKey $.bindings.schema.embed "key" $k }}
                             <tr class="elide">
                                 <th>{{ $k }}</th>
                                 <td id="q_{{ $index }}_{{ $k }}">
-                                {{ if isMap $v }}
+                                {{ if or (isMap $v) (isArray $v) }}
                                     <script type="text/javascript">
                                         $(function(){
                                             var data = JSON.parse({{ jsonify $v }});
 
                                             $('#q_{{ $index }}_{{ $k }}').jsonViewer(data, {
-                                                collapsed: true,
+                                                collapsed: false,
                                             });
                                         });
                                     </script>
@@ -122,12 +126,16 @@ includes:
                                             var data = JSON.parse({{ $v }});
 
                                             $('#q_{{ $index }}_{{ $k }}').jsonViewer(data, {
-                                                collapsed: true,
+                                                collapsed: false,
                                             });
                                         });
                                     </script>
                                 {{ else }}
-                                    <code>{{ jsonify $v }}</code>
+                                    {{ if $embed.collection }}
+                                    <pre class="m-0"><a href="/?collection={{ $embed.collection }}&q=id%2Fis%3A{{ $v }}" target="_blank">{{ $v }}</a></pre>
+                                    {{ else }}
+                                    <pre class="m-0">{{ $v }}</pre>
+                                    {{ end }}
                                 {{ end }}
                                 </td>
                             </tr>

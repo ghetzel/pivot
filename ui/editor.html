@@ -40,8 +40,11 @@ bindings:
             "
         >
             {{ $field.name }}
+            <small class="form-help float-right">
+                <i>{{ titleize (switch $field.type $field.type "str" "string" "bool" "boolean") }}</i>
+            </small>
         </label>
-        <div class="col-sm-8">
+        <div class="col-sm-8" id="field_{{ $field.name }}">
             {{ if eqx $field.type `bool` }}
             <select
                 id="{{ underscore $field.name }}"
@@ -68,23 +71,122 @@ bindings:
                 {{ if $field.required }}required{{ end }}
                 {{ if or $field.not_user_editable (and $field.identity $.vars.value) }}readonly{{ end }}
             ></input>
-            {{ else if any $field.type `object` `array` `raw` }}
-            <textarea
+            {{ else if and (any $field.type `object` `array` `raw`) (or (isZero $.vars.value) (isMap $.vars.value) (isArray $.vars.value)) }}
+
+            <fieldset class="form-group bg-light border rounded p-3" id="{{ underscore $field.name }}">
+            {{  if $.vars.value }}
+            {{      range $i, $v := coalesce $.vars.value "." }}
+                <div class="form-row mb-1" id="field_{{ underscore $field.name }}_{{ $i }}">
+                    <div class="col">
+                        <input
+                            class="form-control"
+                            disabled
+                            value="{{ $i }}"
+                            {{ if any $field.type `array` `raw` }}
+                            type="number"
+                            min="0"
+                            {{ else }}
+                            type="text"
+                            {{ end }}
+                        >
+                    </div>
+                    <div class="col">
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="(value)"
+                            name="records.0.fields.{{ underscore $field.name }}.{{ $i }}"
+                            value="{{ $v }}"
+                        >
+                    </div>
+
+                    <div class="col-1">
+                        <a
+                            class="btn btn-default text-danger"
+                            onclick="$('#field_{{ underscore $field.name }}_{{ $i }}').remove()"
+                        >
+                            <i class="fa fa-remove"></i>
+                        </a>
+                    </div>
+                </div>
+            {{      end }}
+            {{  end }}
+
+            </fieldset>
+
+            <button
+                class="btn btn-sm btn-success float-right"
+                onclick="$(function(){
+                    var fs = $('#{{ underscore $field.name }}');
+                    var index = fs.children().length;
+
+                    var row = $('<div></div>')
+                        .addClass('form-row mb-1')
+                        .attr('id', 'field_{{ underscore $field.name }}_' + index);
+
+                    var c1 = $('<div></div>')
+                        .addClass('col')
+                        .append(
+                            $('<input></input>')
+                                .addClass('form-control')
+                                {{ if any $field.type `array` `raw` }}
+                                .attr('type', 'number')
+                                .attr('min',  '0')
+                                .attr('value', index)
+                                {{ else }}
+                                .attr('type', 'text')
+                                {{ end }}
+                        );
+
+                    var c2 = $('<div></div>')
+                        .addClass('col')
+                        .append(
+                            $('<input></input>')
+                                .addClass('form-control')
+                                .attr('type', 'text')
+                                .attr('placeholder', '(value)')
+                                .attr('name', 'records.0.fields.{{ underscore $field.name }}.' + index)
+
+                        );
+
+                    var c3 = $('<div></div>')
+                        .addClass('col-1')
+                        .append(
+                            $('<a></a>')
+                                .addClass('btn btn-default text-danger')
+                                .attr('onclick', '$(\'#field_{{ underscore $field.name }}_' + index +  '\').remove()')
+                                .append(
+                                    $('<i></i>').addClass('fa fa-remove')
+                                )
+                        );
+
+                    row.append(c1);
+                    row.append(c2);
+                    row.append(c3);
+                    fs.append(row);
+                }); return false;"
+            >
+                <i class="fa fa-plus"></i>
+                Add Item
+            </button>
+            {{ else if eqx $field.type "date" }}
+            <input
                 id="{{ underscore $field.name }}"
+                {{ if not $i }}autofocus{{ end }}
                 class="form-control form-control-sm"
+                type="datetime-local"
                 name="records.0.fields.{{ $field.name }}"
+                {{ if $.vars.value }}
+                value="{{ time $.vars.value `rfc3339` }}"
+                {{ end }}
                 {{ if $field.required }}required{{ end }}
                 {{ if or $field.not_user_editable (and $field.identity $.vars.value) }}readonly{{ end }}
-            >{{ jsonify $.vars.value "  " }}</textarea>
-            <script type="text/javascript">
-                $(function(){
-                    CodeMirror.fromTextArea(document.getElementById('{{ underscore $field.name }}'), {
-                        theme:         'monokai',
-                        lineNumbers:   true,
-                        matchBrackets: true,
-                    });
-                });
-            </script>
+            ></input>
+            <div class="form-help">
+                <small>
+                    Specify date/time values in RFC 3339 format; e.g.: <code>YYYY-mm-ddTHH:MM:SS+ZZ:ZZ</code>
+                </small>
+            </div>
             {{ else }}
             <input
                 id="{{ underscore $field.name }}"

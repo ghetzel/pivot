@@ -7,7 +7,6 @@ require (
 	github.com/RoaringBitmap/roaring v0.4.4 // indirect
 	github.com/Smerity/govarint v0.0.0-20150407073650-7265e41f48f1 // indirect
 	github.com/alexcesaro/statsd v2.0.0+incompatible
-	github.com/andybalholm/cascadia v1.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.13.26
 	github.com/blevesearch/bleve v0.7.0
 	github.com/blevesearch/blevex v0.0.0-20180227211930-4b158bb555a3 // indirect
@@ -30,7 +29,7 @@ require (
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/fatih/structs v1.0.0
 	github.com/ghetzel/cli v1.17.0
-	github.com/ghetzel/diecast v1.9.29
+	github.com/ghetzel/diecast v1.10.17
 	github.com/ghetzel/go-stockutil v1.7.20
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd // indirect
