@@ -9,7 +9,7 @@ Pivot is a standalone web server that facilitates access to multiple database sy
 
 ## Benefits and Useful Features
 
-Pivot is intended as a "good-enough" solution to many of the common data access and modification tasks needed by web applications to do real work.  Pivot does not aim to be a complete solution for any one database, but rather encourages architectural changes that make switching between disparate database technologies possible and simple to achieve.  This approach has a variety of benefits, including providing much better flexibility in how web applications are deployed and managed.
+Pivot is intended as a "good enough" solution to many of the common data access and modification tasks needed by web applications to do real work.  Pivot does not aim to be a complete solution for any one database, but rather encourages architectural changes that make switching between disparate database technologies possible and simple to achieve.  This approach has a variety of benefits, including providing much better flexibility in how web applications are deployed and managed.
 
 To take an example, imagine the lifecycle of developing a mid-sized web application.  Developers may require the database fit on their development devices, and require relatively little up-front setup and ongoing maintenance.  Similar requirements may exist for testing/continuous integration environments that often run with constrained resources or on heavily oversubscribed hardware.  However, in a production deployment, real-world usage will dictate largely the opposite: fast, consistent, highly-available, and/or distributed databases (possibly running on third-party infrastructure) that are specialized for performance at the cost of ease of setup.
 
