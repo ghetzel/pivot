@@ -8,11 +8,6 @@
 
 {{ $docs }}
 
-<a name="funcref"></a>
-
-<h2 class="mb-4">Function Reference</h2>
-{{ template "functions" . }}
-
 <h2 class="mb-4" id="appendix">Appendix</h2>
 {{ $apx := markdown (read "/APPENDIX.md") "common" "auto-heading-ids" }}
 {{ $apx := htmlAddClass $apx "details" "card" "mb-2" }}
