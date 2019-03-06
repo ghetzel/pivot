@@ -58,17 +58,6 @@ postprocessors:
 
                     <details>
                         <summary class="nav-link">
-                            <a href="#funcref">Functions</a>
-                        </summary>
-                        <nav class="nav nav-pills flex-column ml-4">
-                        {{ range $group := sortByKey $.bindings.functionGroups "Name" }}
-                            <a class="nav-link" href="#{{ hyphenate $group.Name }}">{{ $group.Name }}</a>
-                        {{ end }}
-                        </nav>
-                    </details>
-
-                    <details>
-                        <summary class="nav-link">
                             <a href="#appendix">Appendix</a>
                         </summary>
                     </details>
