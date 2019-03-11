@@ -38,10 +38,10 @@ func (self *Elasticsearch) Initialize(collectionName string) error {
 }
 
 func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
-	conjunction := `and`
+	conjunction := `must`
 
 	if flt.Conjunction == filter.OrConjunction {
-		conjunction = `or`
+		conjunction = `should`
 	}
 
 	var query map[string]interface{}
@@ -52,14 +52,16 @@ func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
 		}
 	} else {
 		query = map[string]interface{}{
-			conjunction: self.criteria,
+			`bool`: map[string]interface{}{
+				conjunction: self.criteria,
+			},
 		}
 	}
 
 	payload := map[string]interface{}{
-		`filter`: query,
-		`size`:   flt.Limit,
-		`from`:   flt.Offset,
+		`query`: query,
+		`size`:  flt.Limit,
+		`from`:  flt.Offset,
 	}
 
 	if len(flt.Fields) > 0 {

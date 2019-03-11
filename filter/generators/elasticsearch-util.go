@@ -39,7 +39,9 @@ func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[
 				}
 			}
 
-			c[`or`] = or_terms
+			c[`bool`] = map[string]interface{}{
+				`should`: or_terms,
+			}
 		}
 	}
 
@@ -98,7 +100,9 @@ func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map
 			}
 		}
 
-		c[`and`] = and_not
+		c[`bool`] = map[string]interface{}{
+			`must`: and_not,
+		}
 	}
 
 	return c, nil
@@ -150,7 +154,9 @@ func esCriterionOperatorPattern(gen *Elasticsearch, opname string, criterion fil
 			}
 		}
 
-		c[`or`] = or_regexp
+		c[`bool`] = map[string]interface{}{
+			`should`: or_regexp,
+		}
 	}
 
 	return c, nil
