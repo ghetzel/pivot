@@ -71,6 +71,7 @@ func (self *Server) AddSchemaDefinition(filename string) {
 
 func (self *Server) ListenAndServe() error {
 	uiDir := self.UiDirectory
+	loadedCollections := make([]*dal.Collection, 0)
 
 	if d := os.Getenv(`UI`); fileutil.DirExists(d) {
 		uiDir = d
@@ -91,9 +92,26 @@ func (self *Server) ListenAndServe() error {
 
 			for _, collection := range collections {
 				self.backend.RegisterCollection(collection)
+				loadedCollections = append(loadedCollections, collection)
 			}
 		} else {
 			return err
+		}
+	}
+
+	if self.ConnectOptions.AutocreateCollections {
+		for _, schema := range loadedCollections {
+			if _, err := self.backend.GetCollection(schema.Name); err == nil {
+				continue
+			} else if dal.IsCollectionNotFoundErr(err) {
+				if err := self.backend.CreateCollection(schema); err == nil {
+					log.Noticef("[%v] Created collection %q", self.backend, schema.Name)
+				} else {
+					log.Errorf("[%v] Error creating collection %q: %v", self.backend, schema.Name, err)
+				}
+			} else {
+				return fmt.Errorf("error creating collection %q: %v", schema.Name, err)
+			}
 		}
 	}
 

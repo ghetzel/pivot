@@ -39,7 +39,7 @@ func ParseFieldType(in string) Type {
 	case `raw`:
 		return RawType
 	default:
-		return AutoType
+		return ``
 	}
 }
 

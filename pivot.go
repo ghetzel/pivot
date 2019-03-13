@@ -8,6 +8,7 @@ import (
 	"path"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/pivot/v3/backends"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
@@ -75,6 +76,7 @@ func NewDatabase(connection string) (DB, error) {
 func LoadSchemataFromFile(filename string) ([]*dal.Collection, error) {
 	if file, err := os.Open(filename); err == nil {
 		var collections []*dal.Collection
+		var merr error
 
 		switch ext := path.Ext(filename); ext {
 		case `.json`:
@@ -95,7 +97,11 @@ func LoadSchemataFromFile(filename string) ([]*dal.Collection, error) {
 			return nil, fmt.Errorf("Unrecognized file extension %s", ext)
 		}
 
-		return collections, nil
+		for _, collection := range collections {
+			merr = log.AppendError(merr, collection.Check())
+		}
+
+		return collections, merr
 	} else {
 		return nil, err
 	}

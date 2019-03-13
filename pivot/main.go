@@ -83,6 +83,10 @@ func main() {
 					Usage: `The path to the UI directory`,
 					Value: pivot.DefaultUiDirectory,
 				},
+				cli.BoolFlag{
+					Name:  `autocreate, C`,
+					Usage: `Whether to automatically create collections defined in schema files that don't already exist in the backend.`,
+				},
 			},
 			Action: func(c *cli.Context) {
 				var backend string
@@ -108,6 +112,10 @@ func main() {
 					indexer = config.Indexer
 				}
 
+				if c.IsSet(`autocreate`) {
+					config.AutocreateCollections = c.Bool(`autocreate`)
+				}
+
 				if backend == `` {
 					log.Fatalf("Must specify a backend to connect to.")
 				}
@@ -116,6 +124,7 @@ func main() {
 				server.Address = c.String(`address`)
 				server.UiDirectory = c.String(`ui-dir`)
 				server.ConnectOptions.Indexer = indexer
+				server.ConnectOptions.AutocreateCollections = config.AutocreateCollections
 				server.Autoexpand = config.Autoexpand
 
 				for _, filename := range c.GlobalStringSlice(`schema`) {

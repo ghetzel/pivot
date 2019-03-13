@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 )
@@ -741,6 +742,23 @@ func (self *Collection) ValidateRecord(record *Record, op FieldOperation) error 
 	}
 
 	return nil
+}
+
+// Verifies that the schema passes some basic sanity checks.
+func (self *Collection) Check() error {
+	var merr error
+
+	for i, field := range self.Fields {
+		if field.Name == `` {
+			merr = log.AppendError(merr, fmt.Errorf("collection[%s] field #%d cannot have an empty name", self.Name, i))
+		}
+
+		if ParseFieldType(string(field.Type)) == `` {
+			merr = log.AppendError(merr, fmt.Errorf("collection[%s] field[%s]: invalid type %q", self.Name, field.Name, field.Type))
+		}
+	}
+
+	return merr
 }
 
 // Determine the differences (if any) between this Collection definition and another.

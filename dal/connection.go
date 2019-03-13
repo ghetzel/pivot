@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/fileutil"
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
@@ -100,20 +101,25 @@ func (self *ConnectionString) SetCredentials(username string, password string) {
 // Reads a .netrc-style file and loads the appropriate credentials.  The host component of
 // this connection string is matched with the netrc "machine" field.
 func (self *ConnectionString) LoadCredentialsFromNetrc(filename string) error {
+
 	if u := self.URI.User; u == nil && filename != `` {
-		if netrcFile, err := netrc.Parse(filename); err == nil {
-			if machine := netrcFile.Machine(self.URI.Hostname()); machine != nil {
-				log.Debugf("Reading credentials from %v for host %v", filename, machine.Name)
+		filename = fileutil.MustExpandUser(filename)
 
-				login := machine.Get(`login`)
-				password := machine.Get(`password`)
+		if fileutil.IsNonemptyFile(filename) {
+			if netrcFile, err := netrc.Parse(filename); err == nil {
+				if machine := netrcFile.Machine(self.URI.Hostname()); machine != nil {
+					log.Debugf("Reading credentials from %v for host %v", filename, machine.Name)
 
-				if login != `` || password != `` {
-					self.URI.User = url.UserPassword(login, password)
+					login := machine.Get(`login`)
+					password := machine.Get(`password`)
+
+					if login != `` || password != `` {
+						self.URI.User = url.UserPassword(login, password)
+					}
 				}
+			} else {
+				return fmt.Errorf("netrc error: %v", err)
 			}
-		} else {
-			return fmt.Errorf("netrc error: %v", err)
 		}
 	}
 
