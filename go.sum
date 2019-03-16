@@ -24,10 +24,10 @@ github.com/blevesearch/bleve v0.7.0 h1:znyZ3zjsh2Scr60vszs7rbF29TU6i1q9bfnZf1vh0
 github.com/blevesearch/bleve v0.7.0/go.mod h1:Y2lmIkzV6mcNfAnAdOd+ZxHkHchhBfU/xroGIp61wfw=
 github.com/blevesearch/blevex v0.0.0-20180227211930-4b158bb555a3 h1:U6vnxZrTfItfiUiYx0lf/LgHjRSfaKK5QHSom3lEbnA=
 github.com/blevesearch/blevex v0.0.0-20180227211930-4b158bb555a3/go.mod h1:WH+MU2F4T0VmSdaPX+Wu5GYoZBrYWdOZWSjzvYcDmqQ=
-github.com/blevesearch/go-porterstemmer v0.0.0-20141230013033-23a2c8e5cf1f h1:J9ZVHbB2X6JNxbKw/f3Y4E9Xq+Ro+zPiivzgmi3RTvg=
-github.com/blevesearch/go-porterstemmer v0.0.0-20141230013033-23a2c8e5cf1f/go.mod h1:haWQqFT3RdOGz7PJuM3or/pWNJS1pKkoZJWCkWu0DVA=
-github.com/blevesearch/segment v0.0.0-20160105220820-db70c57796cc h1:7OfDAkuAGx71ruzOIFqCkHqGIsVZU0C7PMw5u1bIrwU=
-github.com/blevesearch/segment v0.0.0-20160105220820-db70c57796cc/go.mod h1:IInt5XRvpiGE09KOk9mmCMLjHhydIhNPKPPFLFBB7L8=
+github.com/blevesearch/go-porterstemmer v1.0.2 h1:qe7n69gBd1OLY5sHKnxQHIbzn0LNJA4hpAf+5XDxV2I=
+github.com/blevesearch/go-porterstemmer v1.0.2/go.mod h1:haWQqFT3RdOGz7PJuM3or/pWNJS1pKkoZJWCkWu0DVA=
+github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f h1:kqbi9lqXLLs+zfWlgo1PIiRQ86n33K1JKotjj4rSYOg=
+github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f/go.mod h1:IInt5XRvpiGE09KOk9mmCMLjHhydIhNPKPPFLFBB7L8=
 github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 h1:DDGfHa7BWjL4YnC6+E63dPcxHo2sUxDIu8g3QgEJdRY=
 github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869/go.mod h1:Ekp36dRnpXw/yCqJaO+ZrUyxD+3VXMFFr56k5XYrpB4=
 github.com/boltdb/bolt v0.0.0-20171120010307-9da317453632 h1:MFw4sLe0rZgBFYnyNpgARfYHxmpC/ztz4tVQBo2jArU=

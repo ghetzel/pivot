@@ -10,8 +10,8 @@ require (
 	github.com/aws/aws-sdk-go v1.13.26
 	github.com/blevesearch/bleve v0.7.0
 	github.com/blevesearch/blevex v0.0.0-20180227211930-4b158bb555a3 // indirect
-	github.com/blevesearch/go-porterstemmer v0.0.0-20141230013033-23a2c8e5cf1f // indirect
-	github.com/blevesearch/segment v0.0.0-20160105220820-db70c57796cc // indirect
+	github.com/blevesearch/go-porterstemmer v1.0.2 // indirect
+	github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f // indirect
 	github.com/boltdb/bolt v0.0.0-20171120010307-9da317453632 // indirect
 	github.com/c-bata/go-prompt v0.2.2 // indirect
 	github.com/cenkalti/backoff v2.0.0+incompatible // indirect

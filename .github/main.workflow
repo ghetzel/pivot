@@ -10,7 +10,7 @@ workflow "Build" {
 }
 
 action "release darwin/amd64" {
-  uses = "ghetzel/go-release.action@v1.12"
+  uses = "ghetzel/go-release.action@d2a93b3e6c7c606f23c1d6dc07797b357e455fa5"
   env = {
     GOOS = "darwin"
     GOARCH = "amd64"
@@ -19,7 +19,7 @@ action "release darwin/amd64" {
 }
 
 action "release freebsd/amd64" {
-  uses = "ghetzel/go-release.action@v1.12"
+  uses = "ghetzel/go-release.action@d2a93b3e6c7c606f23c1d6dc07797b357e455fa5"
   env = {
     GOOS = "freebsd"
     GOARCH = "amd64"
@@ -28,7 +28,7 @@ action "release freebsd/amd64" {
 }
 
 action "release linux/amd64" {
-  uses = "ghetzel/go-release.action@v1.12"
+  uses = "ghetzel/go-release.action@d2a93b3e6c7c606f23c1d6dc07797b357e455fa5"
   env = {
     GOOS = "linux"
     GOARCH = "amd64"
