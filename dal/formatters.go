@@ -187,6 +187,7 @@ func TrimSpace(value interface{}, _ FieldOperation) (interface{}, error) {
 	}
 }
 
+// Generates a V4 UUID value if the existing value is empty.
 func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error) {
 	if record, ok := value.(*Record); ok {
 		value = record.ID
@@ -199,6 +200,7 @@ func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error) {
 	return value, nil
 }
 
+// Same as GenerateUUID, but allows for a custom representation of the underlying bytes.
 func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc {
 	return func(value interface{}, _ FieldOperation) (interface{}, error) {
 		if record, ok := value.(*Record); ok {
@@ -221,6 +223,20 @@ func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc {
 	}
 }
 
+// Only evaluates the given formatter if the current value of the field is empty.
+func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc {
+	return func(value interface{}, op FieldOperation) (interface{}, error) {
+		if onlyIf != nil {
+			if typeutil.IsZero(value) {
+				return onlyIf(value, op)
+			}
+		}
+
+		return value, nil
+	}
+}
+
+// Extracts values from the given Record and generates a deterministic output based on those values.
 func DeriveFromFields(format string, fields ...string) FieldFormatterFunc {
 	return func(input interface{}, _ FieldOperation) (interface{}, error) {
 		if record, ok := input.(*Record); ok {
@@ -237,6 +253,7 @@ func DeriveFromFields(format string, fields ...string) FieldFormatterFunc {
 	}
 }
 
+// Returns the current time every time the field is persisted.
 func CurrentTime(value interface{}, op FieldOperation) (interface{}, error) {
 	if op == PersistOperation {
 		return time.Now(), nil
@@ -245,22 +262,26 @@ func CurrentTime(value interface{}, op FieldOperation) (interface{}, error) {
 	}
 }
 
+// Returns the current time when the field is persisted if the current value is empty.
 func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error) {
-	if op == PersistOperation {
-		if typeutil.IsZero(value) {
+	return IfUnset(func(v interface{}, o FieldOperation) (interface{}, error) {
+		if o == PersistOperation {
 			return time.Now(), nil
+		} else {
+			return v, nil
 		}
-	}
-
-	return value, nil
+	})(value, op)
 }
 
+// Returns the current time with an added offset when the field is persisted.
 func NowPlusDuration(duration time.Duration) FieldFormatterFunc {
 	return func(value interface{}, op FieldOperation) (interface{}, error) {
-		if duration != 0 {
-			return time.Now().Add(duration), nil
-		} else {
-			return value, nil
+		if op == PersistOperation {
+			if duration != 0 {
+				return time.Now().Add(duration), nil
+			}
 		}
+
+		return value, nil
 	}
 }

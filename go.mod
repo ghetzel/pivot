@@ -14,7 +14,6 @@ require (
 	github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f // indirect
 	github.com/boltdb/bolt v0.0.0-20171120010307-9da317453632 // indirect
 	github.com/c-bata/go-prompt v0.2.2 // indirect
-	github.com/cenkalti/backoff v2.0.0+incompatible // indirect
 	github.com/containerd/continuity v0.0.0-20180919190352-508d86ade3c2 // indirect
 	github.com/couchbase/vellum v0.0.0-20180314210611-5083a469fcef // indirect
 	github.com/cznic/b v0.0.0-20180115125044-35e9bbe41f07 // indirect
@@ -30,7 +29,7 @@ require (
 	github.com/fatih/structs v1.0.0
 	github.com/ghetzel/cli v1.17.0
 	github.com/ghetzel/diecast v1.10.17
-	github.com/ghetzel/go-stockutil v1.7.20
+	github.com/ghetzel/go-stockutil v1.7.39
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd // indirect
 	github.com/glycerine/goconvey v0.0.0-20180728074245-46e3a41ad493 // indirect

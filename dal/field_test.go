@@ -3,7 +3,9 @@ package dal
 import (
 	"fmt"
 	"testing"
+	"time"
 
+	"github.com/ghetzel/go-stockutil/utils"
 	"github.com/stretchr/testify/require"
 )
 
@@ -216,9 +218,269 @@ func TestFieldConvertValueBool(t *testing.T) {
 	assert.Equal(true, value, fmt.Sprintf("output: nil -> %T(%v)", value, value))
 }
 
-// TODO: basically the *worst* thing you can write in a file full of tests
-// func TestFieldConvertValueInteger(t *testing.T) {}
-// func TestFieldConvertValueFloat(t *testing.T) {}
-// func TestFieldConvertValueTime(t *testing.T) {}
-// func TestFieldConvertValueObject(t *testing.T) {}
+func TestFieldConvertValueInteger(t *testing.T) {
+	assert := require.New(t)
+	var field *Field
+	var value interface{}
+	var err error
+
+	field = &Field{
+		Type: IntType,
+	}
+
+	// not required, no default
+	// -------------------------------------------------------------------------
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.EqualValues(int64(0), value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(int64(0), value)
+
+	value, err = field.ConvertValue(`1234`)
+	assert.NoError(err)
+	assert.Equal(int64(1234), value)
+
+	// required, no default
+	// -------------------------------------------------------------------------
+	field.Required = true
+
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.Equal(int64(0), value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(int64(0), value)
+
+	value, err = field.ConvertValue(`9876`)
+	assert.NoError(err)
+	assert.Equal(int64(9876), value)
+
+	// required, with default
+	// -------------------------------------------------------------------------
+	field.DefaultValue = int32(69)
+
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.Equal(int64(69), value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(int64(69), value)
+
+	value, err = field.ConvertValue(42)
+	assert.NoError(err)
+	assert.Equal(int64(42), value)
+}
+
+func TestFieldConvertValueFloat(t *testing.T) {
+	assert := require.New(t)
+	var field *Field
+	var value interface{}
+	var err error
+
+	field = &Field{
+		Type: FloatType,
+	}
+
+	// not required, no default
+	// -------------------------------------------------------------------------
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.EqualValues(float64(0), value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(float64(0), value)
+
+	value, err = field.ConvertValue(`3.141597`)
+	assert.NoError(err)
+	assert.Equal(float64(3.141597), value)
+
+	// required, no default
+	// -------------------------------------------------------------------------
+	field.Required = true
+
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.Equal(float64(0), value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(float64(0), value)
+
+	value, err = field.ConvertValue(`2.71828`)
+	assert.NoError(err)
+	assert.Equal(float64(2.71828), value)
+
+	// required, with default
+	// -------------------------------------------------------------------------
+	field.DefaultValue = int32(69)
+
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.Equal(float64(69), value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(float64(69), value)
+
+	value, err = field.ConvertValue(0.000000000001)
+	assert.NoError(err)
+	assert.Equal(float64(0.000000000001), value)
+}
+
+func TestFieldConvertValueTime(t *testing.T) {
+	assert := require.New(t)
+	var field *Field
+	var value interface{}
+	var err error
+
+	field = &Field{
+		Type: TimeType,
+	}
+
+	// not required, no default
+	// -------------------------------------------------------------------------
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.True(value.(time.Time).IsZero())
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.True(value.(time.Time).IsZero())
+
+	value, err = field.ConvertValue(`2006-01-02T15:04:05-07:00`)
+	assert.NoError(err)
+	assert.True(utils.ReferenceTime.Equal(value.(time.Time)))
+
+	// required, no default
+	// -------------------------------------------------------------------------
+	field.Required = true
+
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.True(value.(time.Time).IsZero())
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.True(value.(time.Time).IsZero())
+
+	value, err = field.ConvertValue(1136239445)
+	assert.NoError(err)
+	assert.True(utils.ReferenceTime.Equal(value.(time.Time)))
+
+	// required, with default
+	// -------------------------------------------------------------------------
+	field.DefaultValue = time.Unix(1136239445, 0)
+
+	value, err = field.ConvertValue(``)
+	assert.NoError(err)
+	assert.True(utils.ReferenceTime.Equal(value.(time.Time)))
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.True(utils.ReferenceTime.Equal(value.(time.Time)))
+
+	value, err = field.ConvertValue(1500000000)
+	assert.NoError(err)
+	assert.True(time.Date(2017, 7, 14, 2, 40, 0, 0, time.UTC).Equal(value.(time.Time)))
+}
+
+func TestFieldConvertValueObject(t *testing.T) {
+	assert := require.New(t)
+	var field *Field
+	var value interface{}
+	var err error
+
+	field = &Field{
+		Type: ObjectType,
+	}
+
+	// not required, no default
+	// -------------------------------------------------------------------------
+	value, err = field.ConvertValue(map[string]interface{}{})
+	assert.NoError(err)
+	assert.EqualValues(make(map[string]interface{}), value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Nil(value)
+
+	value, err = field.ConvertValue(map[string]interface{}{
+		`value`: 123,
+	})
+	assert.NoError(err)
+	assert.Equal(map[string]interface{}{
+		`value`: 123,
+	}, value)
+
+	type fieldConvertStruct struct {
+		Name  string
+		Value int
+	}
+
+	value, err = field.ConvertValue(fieldConvertStruct{
+		Name:  `test`,
+		Value: 123,
+	})
+
+	assert.NoError(err)
+	assert.Equal(map[string]interface{}{
+		`Name`:  `test`,
+		`Value`: float64(123),
+	}, value)
+
+	// required, no default
+	// -------------------------------------------------------------------------
+	field.Required = true
+
+	value, err = field.ConvertValue(map[string]interface{}{})
+	assert.NoError(err)
+	assert.Equal(make(map[string]interface{}), value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(make(map[string]interface{}), value)
+
+	value, err = field.ConvertValue(map[string]interface{}{
+		`value`: 456,
+	})
+	assert.NoError(err)
+	assert.Equal(map[string]interface{}{
+		`value`: 456,
+	}, value)
+
+	// required, with default
+	// -------------------------------------------------------------------------
+	field.DefaultValue = map[string]string{
+		`value`: `yay`,
+		`other`: `1234.5`,
+	}
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(map[string]interface{}{
+		`value`: `yay`,
+		`other`: `1234.5`,
+	}, value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(map[string]interface{}{
+		`value`: `yay`,
+		`other`: `1234.5`,
+	}, value)
+
+	value, err = field.ConvertValue(map[string]interface{}{
+		`value`: `ohhh`,
+	})
+	assert.NoError(err)
+	assert.Equal(map[string]interface{}{
+		`value`: `ohhh`,
+	}, value)
+}
+
 // func TestFieldConvertValueRaw(t *testing.T) {}

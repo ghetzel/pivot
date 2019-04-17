@@ -12,6 +12,7 @@ import (
 )
 
 var DefaultFieldCodec = `json`
+var IntIsProbablyUnixEpochSeconds int64 = 4294967296
 
 type Field struct {
 	// The name of the field
@@ -89,7 +90,7 @@ type Field struct {
 	Index int `json:"index,omitempty"`
 }
 
-func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
+func (self *Field) normalizeType(in interface{}) (interface{}, error) {
 	variant := typeutil.V(in)
 
 	switch self.Type {
@@ -102,54 +103,66 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 	case FloatType:
 		in = variant.Float()
 	case ObjectType:
-		if native, ok := in.(map[string]interface{}); ok {
-			return native, nil
-		} else if typeutil.IsMap(in) {
-			return variant.MapNative(), nil
-		} else {
-			var raw []byte
-			var obj map[string]interface{}
+		if in != nil {
+			if native, ok := in.(map[string]interface{}); ok {
+				return native, nil
+			} else if typeutil.IsMap(in) {
+				return variant.MapNative(), nil
+			} else {
+				var raw []byte
+				var obj map[string]interface{}
 
-			if typeutil.IsStruct(in) {
-				if r, err := json.Marshal(in); err == nil {
+				if typeutil.IsStruct(in) {
+					if r, err := json.Marshal(in); err == nil {
+						raw = r
+					} else {
+						return nil, fmt.Errorf("Cannot convert %T to map: %v", in, err)
+					}
+				} else if typeutil.IsKindOfString(in) {
+					raw = []byte(typeutil.String(in))
+				} else if r, ok := in.([]byte); ok {
 					raw = r
+				} else if r, ok := in.([]uint8); ok {
+					raw = []byte(r)
 				} else {
-					return nil, fmt.Errorf("Cannot convert %T to map: %v", in, err)
+					return nil, fmt.Errorf("Cannot use %T as an ObjectType input", in)
 				}
-			} else if typeutil.IsKindOfString(in) {
-				raw = []byte(typeutil.String(in))
-			} else if r, ok := in.([]byte); ok {
-				raw = r
-			} else if r, ok := in.([]uint8); ok {
-				raw = []byte(r)
-			} else {
-				return nil, fmt.Errorf("Cannot use %T as an ObjectType input", in)
-			}
 
-			if err := json.Unmarshal(raw, &obj); err == nil {
-				return obj, nil
-			} else {
-				return nil, err
+				if err := json.Unmarshal(raw, &obj); err == nil {
+					return obj, nil
+				} else {
+					return nil, err
+				}
 			}
 		}
 	case TimeType:
-		// parse incoming int64s as epoch or epoch milliseconds
-		if inInt64, ok := in.(int64); ok {
-			if inInt64 < 4294967296 {
+		if in == nil {
+			in = time.Time{}
+		} else if inInt64, ok := in.(int64); ok {
+			// parse incoming int64s as epoch or epoch milliseconds
+			if inInt64 < IntIsProbablyUnixEpochSeconds {
 				in = time.Unix(inInt64, 0)
 			} else {
 				in = time.Unix(0, inInt64)
 			}
-		} else if in == nil {
-			in = time.Time{}
+		} else {
+			in = variant.Time()
 		}
-
-		in = variant.Time()
 	default:
 		switch strings.ToLower(fmt.Sprintf("%v", in)) {
 		case `null`, `nil`:
 			in = nil
 		}
+	}
+
+	return in, nil
+}
+
+func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
+	if norm, err := self.normalizeType(in); err == nil {
+		in = norm
+	} else {
+		return nil, err
 	}
 
 	// decide what to do with the now-normalized type
@@ -173,11 +186,17 @@ func (self *Field) GetDefaultValue() interface{} {
 		return nil
 	} else if typeutil.IsFunctionArity(self.DefaultValue, 0, 1) {
 		if values := reflect.ValueOf(self.DefaultValue).Call(make([]reflect.Value, 0)); len(values) == 1 {
-			return values[0].Interface()
+			if norm, err := self.normalizeType(values[0].Interface()); err == nil {
+				return norm
+			}
 		}
 	}
 
-	return self.DefaultValue
+	if norm, err := self.normalizeType(self.DefaultValue); err == nil {
+		return norm
+	} else {
+		return nil
+	}
 }
 
 func (self *Field) GetTypeInstance() interface{} {
@@ -191,7 +210,7 @@ func (self *Field) GetTypeInstance() interface{} {
 	case FloatType:
 		return float64(0.0)
 	case TimeType:
-		return &time.Time{}
+		return time.Time{}
 	case ObjectType:
 		return make(map[string]interface{})
 	default:
