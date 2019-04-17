@@ -2,6 +2,7 @@ package backends
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/ghetzel/go-stockutil/fileutil"
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
@@ -21,6 +23,8 @@ import (
 )
 
 var DefaultAmazonRegion = `us-east-1`
+var DefaultSharedCredentialsFile = `~/.aws/credentials`
+var DefaultSharedCredentialsProfile = `default`
 
 type DynamoBackend struct {
 	Backend
@@ -86,19 +90,30 @@ func (self *DynamoBackend) SetIndexer(indexConnString dal.ConnectionString) erro
 }
 
 func (self *DynamoBackend) Initialize() error {
-	var cred *credentials.Credentials
-
-	if u, p, ok := self.cs.Credentials(); ok {
-		cred = credentials.NewStaticCredentials(u, p, self.cs.OptString(`token`, ``))
-	} else {
-		cred = credentials.NewEnvCredentials()
-	}
-
-	if _, err := cred.Get(); err != nil {
-		querylog.Debugf("[%v] failed to retrieve credentials: %v", self, err)
-	}
-
+	var providers []credentials.Provider
 	var logLevel aws.LogLevelType
+
+	// specify explicitly-provided credentials first
+	if u, p, ok := self.cs.Credentials(); ok {
+		providers = append(providers, &credentials.StaticProvider{
+			Value: credentials.Value{
+				AccessKeyID:     u,
+				SecretAccessKey: p,
+				SessionToken:    self.cs.OptString(`token`, ``),
+			},
+		})
+	}
+
+	// if the shared credentials file exists, use it
+	if fileutil.IsNonemptyFile(DefaultSharedCredentialsFile) {
+		providers = append(providers, &credentials.SharedCredentialsProvider{
+			Filename: fileutil.MustExpandUser(DefaultSharedCredentialsFile),
+			Profile:  sliceutil.OrString(os.Getenv(`AWS_PROFILE`), DefaultSharedCredentialsProfile),
+		})
+	}
+
+	// add the environment variables provider last
+	providers = append(providers, &credentials.EnvProvider{})
 
 	if self.cs.OptBool(`debug`, false) {
 		logLevel = aws.LogDebugWithHTTPBody
@@ -108,7 +123,7 @@ func (self *DynamoBackend) Initialize() error {
 		session.New(),
 		&aws.Config{
 			Region:      aws.String(self.region),
-			Credentials: cred,
+			Credentials: credentials.NewChainCredentials(providers),
 			LogLevel:    &logLevel,
 		},
 	)
