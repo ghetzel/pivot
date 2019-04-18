@@ -105,9 +105,11 @@ func (self *DynamoBackend) Initialize() error {
 	}
 
 	// if the shared credentials file exists, use it
-	if fileutil.IsNonemptyFile(DefaultSharedCredentialsFile) {
+	shared := fileutil.MustExpandUser(DefaultSharedCredentialsFile)
+
+	if fileutil.IsNonemptyFile(shared) {
 		providers = append(providers, &credentials.SharedCredentialsProvider{
-			Filename: fileutil.MustExpandUser(DefaultSharedCredentialsFile),
+			Filename: shared,
 			Profile:  sliceutil.OrString(os.Getenv(`AWS_PROFILE`), DefaultSharedCredentialsProfile),
 		})
 	}

@@ -21,9 +21,10 @@ type fieldDescription struct {
 
 type Model interface{}
 
-func GetIdentityFieldName(instance interface{}, fallbackIdentityFieldName string) (string, error) {
+// Retrieves the struct field name and key name that represents the identity field for a given struct.
+func getIdentityFieldNameFromStruct(instance interface{}, fallbackIdentityFieldName string) (string, string, error) {
 	if err := validatePtrToStructType(instance); err != nil {
-		return ``, err
+		return ``, ``, err
 	}
 
 	s := structs.New(instance)
@@ -34,7 +35,11 @@ func GetIdentityFieldName(instance interface{}, fallbackIdentityFieldName string
 			v := strings.Split(tag, `,`)
 
 			if sliceutil.ContainsString(v[1:], `identity`) {
-				return field.Name(), nil
+				if v[0] != `` {
+					return field.Name(), v[0], nil
+				} else {
+					return field.Name(), field.Name(), nil
+				}
 			}
 		}
 	}
@@ -44,12 +49,12 @@ func GetIdentityFieldName(instance interface{}, fallbackIdentityFieldName string
 	}
 
 	if _, ok := s.FieldOk(fallbackIdentityFieldName); ok {
-		return fallbackIdentityFieldName, nil
+		return fallbackIdentityFieldName, fallbackIdentityFieldName, nil
 	} else if _, ok := s.FieldOk(DefaultStructIdentityFieldName); ok {
-		return DefaultStructIdentityFieldName, nil
+		return DefaultStructIdentityFieldName, DefaultStructIdentityFieldName, nil
 	}
 
-	return ``, fmt.Errorf("No identity field could be found for type %T", instance)
+	return ``, ``, fmt.Errorf("No identity field could be found for type %T", instance)
 }
 
 func validatePtrToStructType(instance interface{}) error {

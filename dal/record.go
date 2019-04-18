@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
@@ -266,8 +267,8 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 		}
 
 		// get the name of the identity field from the given struct
-		if id, err := GetIdentityFieldName(into, fallbackIdFieldName); err == nil && id != `` {
-			idFieldName = id
+		if _, key, err := getIdentityFieldNameFromStruct(into, fallbackIdFieldName); err == nil && key != `` {
+			idFieldName = key
 		} else if err != nil {
 			return err
 		} else {
@@ -340,8 +341,12 @@ func (self *Record) toMap(collection *Collection, idFieldName string) (map[strin
 		// if the field we're setting already exists (i.e.: has a default value), that value
 		// isn't a zero value, but the incoming one IS a zero value, skip.
 		if existing, ok := data[k]; ok {
-			// TODO: using straight Zero Value detection is insufficient for bool fields, and possibly time.Time.  Look into this.
-			if !typeutil.IsZero(existing) && typeutil.IsZero(v) {
+			if tm, ok := existing.(time.Time); ok && tm.IsZero() {
+				continue
+			} else if bv, ok := existing.(bool); ok {
+				data[k] = bv
+				continue
+			} else if !typeutil.IsZero(existing) && typeutil.IsZero(v) {
 				continue
 			}
 		}

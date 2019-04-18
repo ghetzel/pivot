@@ -21,31 +21,35 @@ type TestRecordThree struct {
 	UUID string
 }
 
-func TestGetIdentityFieldName(t *testing.T) {
+func TestGetIdentityFieldNameFromStruct(t *testing.T) {
 	assert := require.New(t)
 
 	f := TestRecord{
 		ID: 1234,
 	}
 
-	id, err := GetIdentityFieldName(&f, ``)
+	field, key, err := getIdentityFieldNameFromStruct(&f, ``)
 	assert.Nil(err)
-	assert.Equal(`ID`, id)
+	assert.Equal(`ID`, key)
+	assert.Equal(`ID`, key)
 
 	f = TestRecord{}
-	id, err = GetIdentityFieldName(&f, `Size`)
+	field, key, err = getIdentityFieldNameFromStruct(&f, `Size`)
 	assert.Nil(err)
-	assert.Equal(`Size`, id)
+	assert.Equal(`Size`, field)
+	assert.Equal(`Size`, key)
 
 	f2 := TestRecordTwo{`42`}
-	id, err = GetIdentityFieldName(&f2, ``)
-	assert.Equal(`UUID`, id)
+	field, key, err = getIdentityFieldNameFromStruct(&f2, ``)
+	assert.Equal(`UUID`, field)
+	assert.Equal(`uuid`, key)
 
 	f3 := TestRecordThree{}
-	id, err = GetIdentityFieldName(&f3, ``)
+	field, key, err = getIdentityFieldNameFromStruct(&f3, ``)
 	assert.Error(err)
 
 	f4 := TestRecordThree{}
-	id, err = GetIdentityFieldName(&f4, `UUID`)
-	assert.Equal(`UUID`, id)
+	field, key, err = getIdentityFieldNameFromStruct(&f4, `UUID`)
+	assert.Equal(`UUID`, field)
+	assert.Equal(`UUID`, key)
 }
