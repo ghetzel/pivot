@@ -367,14 +367,22 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			query := vestigo.Param(req, `_name`)
 			backend := backendForRequest(self, req, self.backend)
 
-			if f, err := filter.Parse(query); err == nil {
-				if err := backend.Delete(name, f); err == nil {
-					httputil.RespondJSON(w, nil)
+			if collection, err := backend.GetCollection(name); err == nil {
+				if search := backend.WithSearch(collection); search != nil {
+					if f, err := filter.Parse(query); err == nil {
+						if err := search.DeleteQuery(collection, f); err == nil {
+							httputil.RespondJSON(w, nil)
+						} else {
+							httputil.RespondJSON(w, fmt.Errorf("delete error: %v", err), http.StatusBadRequest)
+						}
+					} else {
+						httputil.RespondJSON(w, fmt.Errorf("filter error: %v", err), http.StatusBadRequest)
+					}
 				} else {
-					httputil.RespondJSON(w, err, http.StatusBadRequest)
+					httputil.RespondJSON(w, fmt.Errorf("index error: backend does not support querying"), http.StatusBadRequest)
 				}
 			} else {
-				httputil.RespondJSON(w, err, http.StatusBadRequest)
+				httputil.RespondJSON(w, fmt.Errorf("collection error: %v", err), http.StatusBadRequest)
 			}
 		})
 

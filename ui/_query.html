@@ -83,6 +83,29 @@ includes:
             of
             {{ end }}
             {{ thousandify $.bindings.results.result_count }} results
+
+            {{ if qs `q` }}
+            {{ if $.bindings.results.result_count }}
+            (<a onclick="$(function(){
+                var query = '{{ qs `q` }}';
+
+                if (query && query.length) {
+                    if (confirm('Are you sure you want to delete these {{ thousandify $.bindings.results.result_count }} records from this collection?') === true) {
+                        $.ajax({
+                            url: '/api/collections/{{ qs `id` }}/where/{{ qs `q` }}',
+                            method: 'delete',
+                            success: function() {
+                                window.location.reload();
+                            },
+                            error: function(data) {
+                                alert('An error occurred while deleting the records: ' + data.responseText);
+                            },
+                        });
+                    }
+                }
+            })" href="#" class="text-danger">delete results</a>)
+            {{ end }}
+            {{ end }}
         </h6>
         {{ template "paginator" . }}
 
@@ -149,7 +172,7 @@ includes:
                         </a>
 
                         <a href="#" onclick="
-                            if(confirm('Are you sure you want to delete the record {{ $record.id }}?')) {
+                            if(confirm('Are you sure you want to delete the record {{ $record.id }}?') === true) {
                                 $.ajax({
                                     url: '/api/collections/{{ qs `id` }}/records/{{ $record.id }}',
                                     method: 'delete',

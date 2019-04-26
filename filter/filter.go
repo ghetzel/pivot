@@ -126,7 +126,7 @@ type Filter struct {
 	Options       map[string]interface{}
 	Paginate      bool
 	IdentityField string
-	Normalizer    NormalizerFunc
+	Normalizer    NormalizerFunc `json:"-" bson:"-" pivot:"-"`
 	Conjunction   ConjunctionType
 }
 

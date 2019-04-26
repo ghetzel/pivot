@@ -46,7 +46,10 @@ bindings:
         -->
 
             <div class="navbar-collapse" id="menu">
-                <a class="navbar-brand" href="/">PIVOT</a>
+                <a class="navbar-brand" href="/">
+                    PIVOT
+                    <small>v{{ $.bindings.status.version }}</small>
+                </a>
 
                 <span class="navbar-text ml-auto text-right">
                     <div>
@@ -56,9 +59,6 @@ bindings:
                             <b>Indexer:</b>
                             {{ $.bindings.status.indexer }}
                         {{ end }}
-                    </div>
-                    <div>
-                        <b>Version:</b> {{ $.bindings.status.version }}
                     </div>
                 </span>
             </div>
