@@ -179,15 +179,23 @@ class Collection(object):
 
     def create(self, *records, **kwargs):
         update = kwargs.pop('update', False)
+        options = {}
+        diffuse = kwargs.pop('diffuse', '')
 
         records = [{
             'id':     record.pop('id', None),
             'fields': record,
         } for record in [dict(r) for r in records]]
 
+        if len(diffuse):
+            options['diffuse'] = diffuse
+
         response = self.client.request(
             ('put' if update else 'post'),
-            '/api/collections/{}/records'.format(self.name),
+            '/api/collections/{}/records?{}'.format(
+                self.name,
+                '&'.join(['{}={}'.format(k, v) for k, v in options.items()])
+            ),
             {
                 'records': records,
             }

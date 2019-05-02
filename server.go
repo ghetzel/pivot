@@ -395,6 +395,17 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 		backend := backendForRequest(self, req, self.backend)
 
 		if err := httputil.ParseRequest(req, &recordset); err == nil {
+			if dchar := httputil.Q(req, `diffuse`); dchar != `` {
+				for _, record := range recordset.Records {
+					if diffused, err := maputil.DiffuseMap(record.Fields, dchar); err == nil {
+						record.Fields = diffused
+					} else {
+						httputil.RespondJSON(w, err, http.StatusBadRequest)
+						return
+					}
+				}
+			}
+
 			name := vestigo.Param(req, `collection`)
 			status := http.StatusAccepted
 
