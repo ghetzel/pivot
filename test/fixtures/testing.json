@@ -1,0 +1,36 @@
+[{
+    "id":         "users",
+    "collection": "groups",
+    "fields": {
+        "Name":        "Users",
+        "Description": "A group containing all users."
+    }
+}, {
+    "id":         "test01",
+    "collection": "users",
+    "fields": {
+        "FirstName":      "Test",
+        "LastName":       "User",
+        "Email":          "   test01@example.com   ",
+        "PasswordHash":   "invalid",
+        "Salt":           "invalid",
+        "PrimaryGroupID": "users"
+    }
+}, {
+    "id":         "test02",
+    "collection": "users",
+    "fields": {
+        "FirstName":      "Test",
+        "LastName":       "User 02",
+        "Email":          "test02@example.com",
+        "PasswordHash":   "invalid",
+        "Salt":           "invalid",
+        "PrimaryGroupID": "users"
+    }
+}, {
+    "id":         "test01",
+    "collection": "users",
+    "fields": {
+        "LastName":       "User 01"
+    }
+}]

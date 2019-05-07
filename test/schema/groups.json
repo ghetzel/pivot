@@ -1,0 +1,28 @@
+[{
+    "name": "groups",
+    "fields": [{
+        "name":     "Name",
+        "type":     "str",
+        "required": true,
+        "formatters": {
+            "trim-space": true
+        }
+    }, {
+        "name":     "Description",
+        "type":     "str"
+    }, {
+        "name":      "UpdatedAt",
+        "type":      "time",
+        "required":  true,
+        "formatters": {
+            "current-time": true
+        }
+    }, {
+        "name":       "CreatedAt",
+        "type":       "time",
+        "required":   true,
+        "formatters": {
+            "current-time-if-unset": true
+        }
+    }]
+}]

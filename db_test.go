@@ -67,6 +67,12 @@ func TestAll(t *testing.T) {
 		t.Logf("[%v] Testing BasicCRUD", b)
 		testBasicCRUD(t, b)
 
+		t.Logf("[%v] Testing Load Schemata from File(s)", b)
+		testLoadSchema(t, b)
+
+		t.Logf("[%v] Testing Load Fixtures from File(s)", b)
+		testLoadFixtures(t, b)
+
 		t.Logf("[%v] Testing IdFormattersRandomId", b)
 		testIdFormattersRandomId(t, b)
 
@@ -1433,4 +1439,14 @@ func testModelList(t *testing.T, db backends.Backend) {
 	// 	int64(12345),
 	// 	int64(98765),
 	// }, values[`size`])
+}
+
+func testLoadSchema(t *testing.T, db backends.Backend) {
+	assert := require.New(t)
+	assert.NoError(ApplySchemata(`./test/schema/`, db))
+}
+
+func testLoadFixtures(t *testing.T, db backends.Backend) {
+	assert := require.New(t)
+	assert.NoError(LoadFixtures(`./test/fixtures/`, db))
 }

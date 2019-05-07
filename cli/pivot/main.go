@@ -50,6 +50,10 @@ func main() {
 			Name:  `schema, s`,
 			Usage: `Path to one or more schema files to load`,
 		},
+		cli.StringSliceFlag{
+			Name:  `fixtures, F`,
+			Usage: `Path to one or more data files to load`,
+		},
 		cli.BoolTFlag{
 			Name:  `allow-netrc, N`,
 			Usage: `Allow parsing of a .netrc file.`,
@@ -129,6 +133,10 @@ func main() {
 
 				for _, filename := range c.GlobalStringSlice(`schema`) {
 					server.AddSchemaDefinition(filename)
+				}
+
+				for _, filename := range c.GlobalStringSlice(`fixtures`) {
+					server.AddFixturePath(filename)
 				}
 
 				if err := server.ListenAndServe(); err != nil {

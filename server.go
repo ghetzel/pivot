@@ -43,6 +43,7 @@ type Server struct {
 	endpoints        []util.Endpoint
 	routeMap         map[string]util.EndpointResponseFunc
 	schemaDefs       []string
+	fixturePaths     []string
 }
 
 func NewServer(connectionString ...string) *Server {
@@ -55,18 +56,22 @@ func NewServer(connectionString ...string) *Server {
 	}
 }
 
-func (self *Server) AddSchemaDefinition(filename string) {
-	if pathutil.DirExists(filename) {
-		if entries, err := ioutil.ReadDir(filename); err == nil {
+func (self *Server) AddSchemaDefinition(fileOrDirPath string) {
+	if pathutil.DirExists(fileOrDirPath) {
+		if entries, err := ioutil.ReadDir(fileOrDirPath); err == nil {
 			for _, entry := range entries {
 				if entry.Mode().IsRegular() {
-					self.schemaDefs = append(self.schemaDefs, path.Join(filename, entry.Name()))
+					self.schemaDefs = append(self.schemaDefs, path.Join(fileOrDirPath, entry.Name()))
 				}
 			}
 		}
-	} else if pathutil.FileExists(filename) {
-		self.schemaDefs = append(self.schemaDefs, filename)
+	} else if pathutil.FileExists(fileOrDirPath) {
+		self.schemaDefs = append(self.schemaDefs, fileOrDirPath)
 	}
+}
+
+func (self *Server) AddFixturePath(fileOrDirPath string) {
+	self.fixturePaths = append(self.fixturePaths, fileOrDirPath)
 }
 
 func (self *Server) ListenAndServe() error {
@@ -99,6 +104,7 @@ func (self *Server) ListenAndServe() error {
 		}
 	}
 
+	// autocreate the collections (if specified)
 	if self.ConnectOptions.AutocreateCollections {
 		for _, schema := range loadedCollections {
 			if _, err := self.backend.GetCollection(schema.Name); err == nil {
@@ -112,6 +118,13 @@ func (self *Server) ListenAndServe() error {
 			} else {
 				return fmt.Errorf("error creating collection %q: %v", schema.Name, err)
 			}
+		}
+	}
+
+	// load fixtures (if provided)
+	for _, filename := range self.fixturePaths {
+		if err := LoadFixtures(filename, self.backend); err != nil {
+			return err
 		}
 	}
 
