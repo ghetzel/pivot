@@ -145,7 +145,7 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	var dsn string
 
 	switch dataset {
-	case `memory`, ``:
+	case `memory`, `:memory:`, ``:
 		return `sqlite3`, `:memory:`, nil
 	default:
 		if strings.HasPrefix(dataset, `~`) {

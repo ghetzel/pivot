@@ -64,6 +64,6 @@ bindings:
             </div>
         </nav>
 
-        <div id="content" class="container-fluid">{{ template "content" . }}</div>
+        <div id="content" class="{{ or $.page.class `container-fluid` }}">{{ template "content" . }}</div>
     </body>
 </html>

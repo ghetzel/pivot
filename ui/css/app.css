@@ -1,5 +1,11 @@
+html, body {
+    height:   100vh;
+    overflow: hidden;
+}
+
 #content {
     margin-top: 56px;
+    height:     calc(100vh - 56px);
 }
 
 .navicon {
@@ -35,6 +41,7 @@
     background:      #222;
     padding:         0;
     color:           #DDD;
+    overflow:        auto;
 }
 
 .collections-list > .collections-list-header {
@@ -66,6 +73,7 @@
 
 #browser {
     padding:         0;
+    overflow:        auto;
 }
 
 #browser > .container-fluid {

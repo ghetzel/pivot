@@ -1,0 +1,60 @@
+[{
+    "name":                "users",
+    "identity_field":      "ID",
+    "identity_field_type": "str",
+    "export": [
+        "FirstName",
+        "LastName",
+        "Email",
+        "PrimaryGroupID"
+    ],
+    "embed": [{
+        "key":        "PrimaryGroupID",
+        "collection": "groups"
+    }],
+    "fields": [{
+        "name":     "FirstName",
+        "type":     "str",
+        "required": true,
+        "formatters": {
+            "trim-space": true
+        }
+    }, {
+        "name":     "LastName",
+        "type":     "str",
+        "formatters": {
+            "trim-space": true
+        }
+    }, {
+        "name":     "Email",
+        "type":     "str",
+        "formatters": {
+            "trim-space": true
+        }
+    }, {
+        "name":     "PrimaryGroupID",
+        "type":     "str",
+        "required": true
+    }, {
+        "name":     "PasswordHash",
+        "type":     "str",
+        "required": true
+    }, {
+        "name":     "Salt",
+        "type":     "str",
+        "required": true
+    }, {
+        "name":      "UpdatedAt",
+        "type":      "time",
+        "required":  true,
+        "default":   "now",
+        "formatters": {
+            "current-time": true
+        }
+    }, {
+        "name":       "CreatedAt",
+        "type":       "time",
+        "required":   true,
+        "default":    "now"
+    }]
+}]
