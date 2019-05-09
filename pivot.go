@@ -30,6 +30,7 @@ type Filter = filter.Filter
 var MonitorCheckInterval = time.Duration(10) * time.Second
 var NetrcFile = ``
 
+// Create a new database connection with the given options.
 func NewDatabaseWithOptions(connection string, options backends.ConnectOptions) (DB, error) {
 	if cs, err := dal.ParseConnectionString(connection); err == nil {
 		if NetrcFile != `` {
@@ -73,10 +74,12 @@ func NewDatabaseWithOptions(connection string, options backends.ConnectOptions) 
 	}
 }
 
+// Create a new database connection with the default options.
 func NewDatabase(connection string) (DB, error) {
 	return NewDatabaseWithOptions(connection, backends.ConnectOptions{})
 }
 
+// Loads and registers a JSON-encoded array of dal.Collection objects into the given DB backend instance.
 func LoadSchemataFromFile(filename string) ([]*dal.Collection, error) {
 	if file, err := os.Open(filename); err == nil {
 		var collections []*dal.Collection
@@ -111,6 +114,7 @@ func LoadSchemataFromFile(filename string) ([]*dal.Collection, error) {
 	}
 }
 
+// Calls LoadSchemataFromFile from all *.json files in the given directory.
 func ApplySchemata(fileOrDirPath string, db DB) error {
 	var loadedCollections []*dal.Collection
 	var filenames []string
@@ -165,6 +169,7 @@ func ApplySchemata(fileOrDirPath string, db DB) error {
 	return nil
 }
 
+// Loads a JSON-encoded array of dal.Record objects from a file into the given DB backend instance.
 func LoadFixturesFromFile(filename string, db DB) error {
 	filename = fileutil.MustExpandUser(filename)
 
@@ -225,6 +230,7 @@ func LoadFixturesFromFile(filename string, db DB) error {
 	}
 }
 
+// Calls LoadFixturesFromFile from all *.json files in the given directory.
 func LoadFixtures(fileOrDirPath string, db DB) error {
 	if fileutil.DirExists(fileOrDirPath) {
 		if filenames, err := filepath.Glob(filepath.Join(fileOrDirPath, `*.json`)); err == nil {
