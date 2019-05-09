@@ -34,17 +34,17 @@ includes:
                         <input class="form-control" type="text" name="field" placeholder="field">
 
                         <select class="form-control" name="operator">
-                            <option value="is" selected>exactly</option>
-                            <option value="not">not exactly</option>
+                            <option value="is" selected>exactly (is)</option>
+                            <option value="not">not exactly (not)</option>
                             <option value="contains">contains</option>
-                            <option value="prefix">starts with</option>
-                            <option value="suffix">ends with</option>
+                            <option value="prefix">starts with (prefix)</option>
+                            <option value="suffix">ends with (suffix)</option>
                             <option value="like">like</option>
-                            <option value="unlike">not like</option>
-                            <option value="lt">less than</option>
-                            <option value="lte">less than or equal to</option>
-                            <option value="gt">greater than</option>
-                            <option value="gte">greater than or equal to</option>
+                            <option value="unlike">not like (unlike)</option>
+                            <option value="lt">less than (lt)</option>
+                            <option value="lte">less than or equal to (lte)</option>
+                            <option value="gt">greater than (gt)</option>
+                            <option value="gte">greater than or equal to (gte)</option>
                         </select>
 
                         <input class="form-control" type="text" name="value" placeholder="value">
@@ -123,6 +123,10 @@ includes:
                     <td>
                         <a href="/editor?collection={{ qs `id` }}&record={{ $record.id }}">
                             {{ $record.id }}
+                        </a>
+
+                        <a class="float-right" href="/api/collections/{{ qs `id` }}/records/{{ $record.id }}">
+                            <i class="fa fa-external-link"></i> API
                         </a>
                     </td>
                     <td style="padding: 0">

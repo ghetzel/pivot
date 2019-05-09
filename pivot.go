@@ -98,7 +98,7 @@ func LoadSchemataFromFile(filename string) ([]*dal.Collection, error) {
 			}
 
 		default:
-			return nil, fmt.Errorf("Unrecognized file extension %s", ext)
+			return nil, nil
 		}
 
 		for _, collection := range collections {
@@ -133,6 +133,10 @@ func ApplySchemata(fileOrDirPath string, db DB) error {
 
 	for _, filename := range filenames {
 		if collections, err := LoadSchemataFromFile(filename); err == nil {
+			if len(collections) == 0 {
+				continue
+			}
+
 			log.Infof("Loaded %d definitions from %v", len(collections), filename)
 
 			for _, collection := range collections {
@@ -187,6 +191,10 @@ func LoadFixturesFromFile(filename string, db DB) error {
 					var i int
 
 					for _, record := range records {
+						if record.CollectionName != name {
+							continue
+						}
+
 						var err error
 
 						if db.Exists(collection.Name, record.ID) {
@@ -202,7 +210,7 @@ func LoadFixturesFromFile(filename string, db DB) error {
 						i += 1
 					}
 
-					log.Noticef("collection %s: loaded %d records", name, i)
+					log.Infof("Collection %q: loaded %d records", name, i)
 				} else {
 					return fmt.Errorf("Cannot load collection %q: %v", name, err)
 				}

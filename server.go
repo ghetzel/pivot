@@ -93,6 +93,10 @@ func (self *Server) ListenAndServe() error {
 	// if specified, pre-load schema definitions
 	for _, filename := range self.schemaDefs {
 		if collections, err := LoadSchemataFromFile(filename); err == nil {
+			if len(collections) == 0 {
+				continue
+			}
+
 			log.Infof("Loaded %d definitions from %v", len(collections), filename)
 
 			for _, collection := range collections {

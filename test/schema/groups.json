@@ -1,5 +1,7 @@
 [{
-    "name": "groups",
+    "name":                "groups",
+    "identity_field":      "ID",
+    "identity_field_type": "str",
     "fields": [{
         "name":     "Name",
         "type":     "str",
@@ -14,6 +16,7 @@
         "name":      "UpdatedAt",
         "type":      "time",
         "required":  true,
+        "default":   "now",
         "formatters": {
             "current-time": true
         }
@@ -21,8 +24,6 @@
         "name":       "CreatedAt",
         "type":       "time",
         "required":   true,
-        "formatters": {
-            "current-time-if-unset": true
-        }
+        "default":   "now"
     }]
 }]

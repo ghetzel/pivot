@@ -1,9 +1,12 @@
 [{
-    "name": "users",
+    "name":                "users",
+    "identity_field":      "ID",
+    "identity_field_type": "str",
     "export": [
         "FirstName",
         "LastName",
-        "Email"
+        "Email",
+        "PrimaryGroupID"
     ],
     "embed": [{
         "key":        "PrimaryGroupID",
@@ -30,7 +33,7 @@
         }
     }, {
         "name":     "PrimaryGroupID",
-        "type":     "int",
+        "type":     "str",
         "required": true
     }, {
         "name":     "PasswordHash",
@@ -44,6 +47,7 @@
         "name":      "UpdatedAt",
         "type":      "time",
         "required":  true,
+        "default":   "now",
         "formatters": {
             "current-time": true
         }
@@ -51,8 +55,6 @@
         "name":       "CreatedAt",
         "type":       "time",
         "required":   true,
-        "formatters": {
-            "current-time-if-unset": true
-        }
+        "default":    "now"
     }]
 }]
