@@ -397,7 +397,7 @@ func dynamoRecordFromItem(collection *dal.Collection, item map[string]*dynamodb.
 
 		return record, nil
 	} else {
-		return record, err
+		return record, fmt.Errorf("Cannot unmarshal item to map: %v", err)
 	}
 }
 

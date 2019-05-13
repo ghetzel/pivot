@@ -41,7 +41,7 @@ func (self *DynamoBackend) Index(collection *dal.Collection, records *dal.Record
 
 func (self *DynamoBackend) QueryFunc(collection *dal.Collection, flt *filter.Filter, resultFn IndexResultFunc) error {
 	if err := self.validateFilter(collection, flt); err != nil {
-		return err
+		return fmt.Errorf("Cannot validate filter: %v", err)
 	}
 
 	ctx := aws.BackgroundContext()
@@ -106,7 +106,7 @@ func (self *DynamoBackend) QueryFunc(collection *dal.Collection, flt *filter.Fil
 				)
 			})
 		} else {
-			return err
+			return fmt.Errorf("Cannot get DynamoDB expression from filter: %v", err)
 		}
 	}
 }

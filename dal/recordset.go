@@ -122,7 +122,7 @@ func (self *RecordSet) PopulateFromRecords(into interface{}, schema *Collection)
 					vInto.Set(reflect.Append(vInto, elem))
 				}
 			} else {
-				return err
+				return fmt.Errorf("Cannot populate record: %v", err)
 			}
 		}
 

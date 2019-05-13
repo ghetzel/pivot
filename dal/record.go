@@ -131,7 +131,7 @@ func (self *Record) Copy(other *Record, schema ...*Collection) error {
 					if collectionField.ValidateOnPopulate {
 						// validate the value
 						if err := collectionField.Validate(value); err != nil {
-							return err
+							return fmt.Errorf("Cannot validate field %q: %v", collectionField.Name, err)
 						}
 					}
 				}
@@ -245,7 +245,7 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 		return self.Copy(record, collection)
 	} else {
 		if err := validatePtrToStructType(into); err != nil {
-			return err
+			return fmt.Errorf("Cannot validate input variable: %v", err)
 		}
 
 		// if the struct we got is a zero value, and we've been given a collection,
@@ -270,7 +270,7 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 		if _, key, err := getIdentityFieldNameFromStruct(into, fallbackIdFieldName); err == nil && key != `` {
 			idFieldName = key
 		} else if err != nil {
-			return err
+			return fmt.Errorf("Cannot get identity field name: %v", err)
 		} else {
 			return fmt.Errorf("Could not determine identity field name")
 		}
@@ -278,7 +278,7 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 		if data, err := self.toMap(collection, idFieldName); err == nil {
 			return maputil.TaggedStructFromMap(data, into, RecordStructTag)
 		} else {
-			return err
+			return fmt.Errorf("Cannot create map from collection: %v", err)
 		}
 	}
 }
@@ -334,8 +334,21 @@ func (self *Record) toMap(collection *Collection, idFieldName string) (map[strin
 		}
 	}
 
-	// set values
-	data[idFieldName] = self.ID
+	if typeutil.IsArray(self.ID) {
+		keyFields := collection.KeyFields()
+		keyValues := sliceutil.Sliceify(self.ID)
+
+		if len(keyFields) == len(keyValues) {
+			for i, keyField := range keyFields {
+				data[keyField.Name] = keyValues[i]
+			}
+		} else {
+			return nil, fmt.Errorf("Incorrect number of key values (%d) for composite key fields (%d)", len(keyValues), len(keyFields))
+		}
+	} else {
+		// set values
+		data[idFieldName] = self.ID
+	}
 
 	for k, v := range self.Fields {
 		// if the field we're setting already exists (i.e.: has a default value), that value

@@ -189,13 +189,13 @@ func (self *Model) Find(flt interface{}, into interface{}) error {
 			if recordset, err := search.Query(self.collection, f); err == nil {
 				return self.populateOutputParameter(f, recordset, into)
 			} else {
-				return err
+				return fmt.Errorf("Cannot perform query: %v", err)
 			}
 		} else {
 			return fmt.Errorf("backend %T does not support searching", self.db)
 		}
 	} else {
-		return err
+		return fmt.Errorf("Cannot generate filter: %v", err)
 	}
 }
 
