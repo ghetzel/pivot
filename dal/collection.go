@@ -65,9 +65,14 @@ type Collection struct {
 
 	// Specifies how fields in this Collection relate to records from other collections.  This is
 	// a partial implementation of a relational model, specifically capturing one-to-one or
-	// one-to-many relationships.  The definitions here will retrieve the assocated records from
+	// one-to-many relationships.  The definitions here will retrieve the associated records from
 	// another, and those values will replace the value that is actually in this Collection's field.
 	EmbeddedCollections []Relationship `json:"embed,omitempty"`
+
+	// Allows for constraints to be applied to a collection.  In addition to informing Pivot about the
+	// relationships between collections, this data is also used to enforce referential integrity for
+	// backends that support such guarantees (e.g.: ACID-compliant RDBMS').
+	Constraints []Constraint `json:"constraints,omitempty"`
 
 	// Specifies which fields can be seen when records are from relationships defined on other
 	// Collections.  This can be used to restrict the exposure) of sensitive data in this Collection

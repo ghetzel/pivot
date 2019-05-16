@@ -8,9 +8,10 @@
         "Email",
         "PrimaryGroupID"
     ],
-    "embed": [{
-        "key":        "PrimaryGroupID",
-        "collection": "groups"
+    "constraints": [{
+        "on":         "PrimaryGroupID",
+        "collection": "groups",
+        "field":      "ID"
     }],
     "fields": [{
         "name":     "FirstName",

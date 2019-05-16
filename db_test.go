@@ -1449,4 +1449,14 @@ func testLoadSchema(t *testing.T, db backends.Backend) {
 func testLoadFixtures(t *testing.T, db backends.Backend) {
 	assert := require.New(t)
 	assert.NoError(LoadFixtures(`./test/fixtures/`, db))
+
+	if db.Supports(backends.Constraints) {
+		assert.NotNil(db.Insert(`users`, dal.NewRecordSet(dal.NewRecord(`testXYZ`, map[string]interface{}{
+			`FirstName`:      `ShouldNot`,
+			`LastName`:       `SeeMe`,
+			`PrimaryGroupID`: `nonexistent`,
+			`PasswordHash`:   `$`,
+			`Salt`:           `abc`,
+		}))))
+	}
 }

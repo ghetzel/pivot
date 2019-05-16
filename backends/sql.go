@@ -48,22 +48,24 @@ type SqlBackend struct {
 	Backend
 	Indexer
 	Aggregator
-	conn                      *dal.ConnectionString
-	db                        *sql.DB
-	indexer                   Indexer
-	aggregator                map[string]Aggregator
-	queryGenTypeMapping       generators.SqlTypeMapping
-	queryGenNormalizerFormat  string
-	listAllTablesQuery        string
-	createPrimaryKeyIntFormat string
-	createPrimaryKeyStrFormat string
-	showTableDetailQuery      string
-	refreshCollectionFunc     sqlTableDetailsFunc
-	countEstimateQuery        string
-	countExactQuery           string
-	dropTableQuery            string
-	registeredCollections     sync.Map
-	knownCollections          map[string]bool
+	conn                       *dal.ConnectionString
+	db                         *sql.DB
+	indexer                    Indexer
+	aggregator                 map[string]Aggregator
+	queryGenTypeMapping        generators.SqlTypeMapping
+	queryGenNormalizerFormat   string
+	listAllTablesQuery         string
+	createPrimaryKeyIntFormat  string
+	createPrimaryKeyStrFormat  string
+	showTableDetailQuery       string
+	foreignKeyConstraintFormat string
+	defaultCurrentTimeString   string
+	refreshCollectionFunc      sqlTableDetailsFunc
+	countEstimateQuery         string
+	countExactQuery            string
+	dropTableQuery             string
+	registeredCollections      sync.Map
+	knownCollections           map[string]bool
 }
 
 func NewSqlBackend(connection dal.ConnectionString) Backend {
@@ -82,6 +84,8 @@ func NewSqlBackend(connection dal.ConnectionString) Backend {
 func (self *SqlBackend) Supports(features ...BackendFeature) bool {
 	for _, feat := range features {
 		switch feat {
+		case Constraints:
+			return true
 		default:
 			return false
 		}
@@ -637,13 +641,19 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 
 		// if the default value is neither nil nor a function
 		if v := field.DefaultValue; v != nil && !typeutil.IsFunction(field.DefaultValue) {
-			def += fmt.Sprintf(" DEFAULT %v", gen.ToNativeValue(field.Type, []dal.Type{field.Subtype}, v))
+			switch vS := typeutil.String(v); vS {
+			case `now`:
+				def += fmt.Sprintf(" DEFAULT %v", self.defaultCurrentTimeString)
+			default:
+				def += fmt.Sprintf(" DEFAULT %v", gen.ToNativeValue(field.Type, []dal.Type{field.Subtype}, v))
+			}
 		}
 
 		fields = append(fields, def)
 	}
 
 	// Constraints
+	// ---------------------------------------------------------------------------------------------
 	// after we've added all the field definitions, append the PRIMARY KEY () constraint statement
 	// with all of the key fields in the schema.
 	primaryKeys := make([]string, 0)
@@ -653,6 +663,39 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	}
 
 	fields = append(fields, fmt.Sprintf("PRIMARY KEY (%s)", strings.Join(primaryKeys, `, `)))
+
+	// append foreign key constraints
+	for _, fk := range definition.Constraints {
+		if err := fk.Validate(); err != nil {
+			return err
+		}
+
+		locals := sliceutil.Stringify(fk.On)
+		remotes := sliceutil.Stringify(fk.Field)
+
+		// properly wrap field names
+		for i, local := range locals {
+			locals[i] = gen.ToFieldName(local)
+		}
+
+		for i, remote := range remotes {
+			remotes[i] = gen.ToFieldName(remote)
+		}
+
+		constraint := strings.TrimSpace(fmt.Sprintf(
+			self.foreignKeyConstraintFormat,
+			strings.Join(locals, `, `),
+			gen.ToTableName(fk.Collection),
+			strings.Join(remotes, `, `),
+			fk.Options,
+		))
+
+		if constraint != `` {
+			fields = append(fields, constraint)
+		} else {
+			return fmt.Errorf("invalid constraint")
+		}
+	}
 
 	// join all fields on "," and finish building the statement
 	stmt += strings.Join(fields, `, `)

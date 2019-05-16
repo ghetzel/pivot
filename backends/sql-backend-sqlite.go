@@ -3,6 +3,7 @@ package backends
 import (
 	"database/sql"
 	"fmt"
+	"io/ioutil"
 	"path"
 	"path/filepath"
 	"strings"
@@ -24,6 +25,8 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	self.listAllTablesQuery = `SELECT name FROM sqlite_master`
 	self.createPrimaryKeyIntFormat = `%s INTEGER NOT NULL`
 	self.createPrimaryKeyStrFormat = `%s TEXT NOT NULL`
+	self.foreignKeyConstraintFormat = `FOREIGN KEY(%s) REFERENCES %s(%s) %s`
+	self.defaultCurrentTimeString = `CURRENT_TIMESTAMP`
 
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
@@ -157,6 +160,16 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 		} else if strings.HasPrefix(dataset, `.`) {
 			if v, err := filepath.Abs(dataset); err == nil {
 				dataset = v
+			} else {
+				return ``, ``, err
+			}
+		}
+
+		switch dataset {
+		case `temporary`, `:temporary:`:
+			if tmp, err := ioutil.TempFile(``, `pivot-`); err == nil {
+				dataset = tmp.Name()
+				log.Noticef("[%T] Temporary file: %v", self, dataset)
 			} else {
 				return ``, ``, err
 			}
