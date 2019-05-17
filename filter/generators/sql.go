@@ -31,14 +31,16 @@ func (self sqlRangeValue) String() string {
 
 type SqlObjectTypeEncodeFunc func(in interface{}) ([]byte, error)
 type SqlObjectTypeDecodeFunc func(in []byte, out interface{}) error
+type SqlArrayTypeEncodeFunc func(in interface{}) ([]byte, error)
+type SqlArrayTypeDecodeFunc func(in []byte, out interface{}) error
 
-var SqlObjectTypeEncode = func(in interface{}) ([]byte, error) {
+var SqlJsonTypeEncoder = func(in interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	err := json.NewEncoder(&buf).Encode(in)
 	return buf.Bytes(), err
 }
 
-var SqlObjectTypeDecode = func(in []byte, out interface{}) error {
+var SqlJsonTypeDecoder = func(in []byte, out interface{}) error {
 	return json.NewDecoder(bytes.NewReader(in)).Decode(out)
 }
 
@@ -76,6 +78,8 @@ type SqlTypeMapping struct {
 	NestedFieldJoiner     string                  // the string used to re-join all but the first value in a nested field when interpolating into NestedFieldNameFormat
 	ObjectTypeEncodeFunc  SqlObjectTypeEncodeFunc // function used for encoding objects to a native representation
 	ObjectTypeDecodeFunc  SqlObjectTypeDecodeFunc // function used for decoding objects from native into a destination map
+	ArrayTypeEncodeFunc   SqlArrayTypeEncodeFunc  // function used for encoding arrays to a native representation
+	ArrayTypeDecodeFunc   SqlArrayTypeDecodeFunc  // function used for decoding arrays from native into a destination map
 }
 
 var NoTypeMapping = SqlTypeMapping{}
@@ -853,7 +857,7 @@ func (self *Sql) PrepareInputValue(f string, value interface{}) (interface{}, er
 
 	switch reflect.ValueOf(value).Kind() {
 	case reflect.Struct, reflect.Map, reflect.Ptr, reflect.Array, reflect.Slice:
-		return SqlObjectTypeEncode(value)
+		return SqlJsonTypeEncoder(value)
 	default:
 		return value, nil
 	}
@@ -867,7 +871,7 @@ func (self *Sql) ObjectTypeEncode(in interface{}) ([]byte, error) {
 	if fn := self.TypeMapping.ObjectTypeEncodeFunc; fn != nil {
 		return fn(in)
 	} else {
-		return SqlObjectTypeEncode(in)
+		return SqlJsonTypeEncoder(in)
 	}
 }
 
@@ -879,7 +883,31 @@ func (self *Sql) ObjectTypeDecode(in []byte, out interface{}) error {
 	if fn := self.TypeMapping.ObjectTypeDecodeFunc; fn != nil {
 		return fn(in, out)
 	} else {
-		return SqlObjectTypeDecode(in, out)
+		return SqlJsonTypeDecoder(in, out)
+	}
+}
+
+func (self *Sql) ArrayTypeEncode(in interface{}) ([]byte, error) {
+	if !typeutil.IsArray(typeutil.ResolveValue(in)) {
+		return nil, fmt.Errorf("Can only encode arrays")
+	}
+
+	if fn := self.TypeMapping.ArrayTypeEncodeFunc; fn != nil {
+		return fn(in)
+	} else {
+		return SqlJsonTypeEncoder(in)
+	}
+}
+
+func (self *Sql) ArrayTypeDecode(in []byte, out interface{}) error {
+	if !typeutil.IsArray(typeutil.ResolveValue(out)) {
+		return fmt.Errorf("Can only decode into an array")
+	}
+
+	if fn := self.TypeMapping.ArrayTypeDecodeFunc; fn != nil {
+		return fn(in, out)
+	} else {
+		return SqlJsonTypeDecoder(in, out)
 	}
 }
 
@@ -968,6 +996,8 @@ func (self *Sql) valueToNativeRepresentation(coerce dal.Type, value interface{})
 			typedValue, convertErr = stringutil.ConvertTo(stringutil.Time, str)
 		case dal.ObjectType:
 			typedValue, convertErr = self.ObjectTypeEncode(str)
+		case dal.ArrayType:
+			typedValue, convertErr = self.ArrayTypeEncode(str)
 		default:
 			typedValue = stringutil.Autotype(value)
 		}

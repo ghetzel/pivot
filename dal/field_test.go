@@ -483,4 +483,63 @@ func TestFieldConvertValueObject(t *testing.T) {
 	}, value)
 }
 
-// func TestFieldConvertValueRaw(t *testing.T) {}
+func TestFieldConvertValueArray(t *testing.T) {
+	assert := require.New(t)
+	var field *Field
+	var value interface{}
+	var err error
+
+	field = &Field{
+		Type: ArrayType,
+	}
+
+	// not required, no default
+	// -------------------------------------------------------------------------
+	value, err = field.ConvertValue([]interface{}{})
+	assert.NoError(err)
+	assert.EqualValues(make([]interface{}, 0), value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Nil(value)
+
+	value, err = field.ConvertValue([]interface{}{1, 2, 3})
+	assert.NoError(err)
+	assert.Equal([]interface{}{1, 2, 3}, value)
+
+	value, err = field.ConvertValue([]string{`1`, `2`, `3`})
+	assert.NoError(err)
+	assert.Equal([]interface{}{`1`, `2`, `3`}, value)
+
+	// required, no default
+	// -------------------------------------------------------------------------
+	field.Required = true
+
+	value, err = field.ConvertValue([]interface{}{})
+	assert.NoError(err)
+	assert.Equal(make([]interface{}, 0), value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal(make([]interface{}, 0), value)
+
+	value, err = field.ConvertValue([]bool{true, true, false})
+	assert.NoError(err)
+	assert.Equal([]interface{}{true, true, false}, value)
+
+	// required, with default
+	// -------------------------------------------------------------------------
+	field.DefaultValue = []string{`a`, `b`, `c`}
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal([]interface{}{`a`, `b`, `c`}, value)
+
+	value, err = field.ConvertValue(nil)
+	assert.NoError(err)
+	assert.Equal([]interface{}{`a`, `b`, `c`}, value)
+
+	value, err = field.ConvertValue([]int64{9, 8, 7})
+	assert.NoError(err)
+	assert.Equal([]interface{}{int64(9), int64(8), int64(7)}, value)
+}

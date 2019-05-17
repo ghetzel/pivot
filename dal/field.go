@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 )
 
@@ -102,6 +103,35 @@ func (self *Field) normalizeType(in interface{}) (interface{}, error) {
 		in = variant.Int()
 	case FloatType:
 		in = variant.Float()
+	case ArrayType:
+		if in == nil {
+			return nil, nil
+		} else if typeutil.IsArray(in) {
+			if arr := sliceutil.Sliceify(in); len(arr) > 0 {
+				return arr, nil
+			} else {
+				return make([]interface{}, 0), nil
+			}
+		} else {
+			var raw []byte
+			var arr []interface{}
+
+			if typeutil.IsKindOfString(in) {
+				raw = []byte(typeutil.String(in))
+			} else if r, ok := in.([]byte); ok {
+				raw = r
+			} else if r, ok := in.([]uint8); ok {
+				raw = []byte(r)
+			} else {
+				return nil, fmt.Errorf("Cannot use %T as an ArrayType input", in)
+			}
+
+			if err := json.Unmarshal(raw, &arr); err == nil {
+				return arr, nil
+			} else {
+				return nil, err
+			}
+		}
 	case ObjectType:
 		if in != nil {
 			if native, ok := in.(map[string]interface{}); ok {
@@ -213,6 +243,8 @@ func (self *Field) GetTypeInstance() interface{} {
 		return time.Time{}
 	case ObjectType:
 		return make(map[string]interface{})
+	case ArrayType:
+		return make([]interface{}, 0)
 	default:
 		return make([]byte, 0)
 	}

@@ -937,6 +937,15 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 							value = asBytes
 						}
 
+					case dal.ArrayType:
+						var destA []interface{}
+
+						if err := queryGen.ArrayTypeDecode(asBytes, &destA); err == nil {
+							value = destA
+						} else {
+							value = asBytes
+						}
+
 					default:
 						value = nil
 
