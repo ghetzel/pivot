@@ -19,7 +19,9 @@ import (
 	"github.com/ghetzel/pivot/v3/filter/generators"
 )
 
-var objectFieldHintLength = 131071
+var SqlObjectFieldHintLength = 131071
+var SqlArrayFieldHintLength = 131069
+
 var InitialPingTimeout = time.Duration(10) * time.Second
 var sqlMaxExactCountRows = 10000
 
@@ -613,16 +615,19 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 
 		// This is weird...
 		//
-		// So Raw fields and Object fields are stored using the same datatype (BLOB), which
+		// So Array, Object, and Raw fields are stored using the same datatype (BLOB), which
 		// means that when we read back the schema definition, we don't have a decisive way of
-		// knowing whether that field should be treated as Raw or Object.  So we create Object fields
-		// with a specific length.  This serves as a hint to us that we should treat this field as an object field.
+		// knowing whether that field should be treated as Raw or Object/Array.  So we create Object/Array fields
+		// with a specific length.  This serves as a hint to us that we should treat this field as a certain type.
 		//
 		// We could also do this with comments, but not all SQL servers necessarily support comments on
 		// table schemata, so this feels more reliable in practical usage.
 		//
-		if field.Type == dal.ObjectType {
-			field.Length = objectFieldHintLength
+		switch field.Type {
+		case dal.ObjectType:
+			field.Length = SqlObjectFieldHintLength
+		case dal.ArrayType:
+			field.Length = SqlArrayFieldHintLength
 		}
 
 		if nativeType, err := gen.ToNativeType(field.Type, []dal.Type{field.Subtype}, field.Length); err == nil {

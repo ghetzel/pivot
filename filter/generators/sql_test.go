@@ -1,12 +1,14 @@
 package generators
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/stretchr/testify/require"
 )
@@ -1054,4 +1056,83 @@ func TestSqlBulkDeleteWithNormalizers(t *testing.T) {
 		`Frank`,
 		`Steve`,
 	}, gen.GetValues())
+}
+
+func TestSqlToNativeType(t *testing.T) {
+	assert := require.New(t)
+
+	type tests struct {
+		Mapping  SqlTypeMapping
+		Type     dal.Type
+		Subtypes []dal.Type
+		Length   int
+		Expected string
+	}
+
+	for i, tcase := range []tests{
+		{SqliteTypeMapping, dal.StringType, nil, 0, `TEXT`},
+		{SqliteTypeMapping, dal.StringType, nil, 42, `TEXT(42)`},
+		{SqliteTypeMapping, dal.IntType, nil, 0, `INTEGER`},
+		{SqliteTypeMapping, dal.IntType, nil, 14, `INTEGER(14)`},
+		{SqliteTypeMapping, dal.FloatType, nil, 0, `REAL`},
+		{SqliteTypeMapping, dal.FloatType, nil, 5, `REAL(5)`},
+		{SqliteTypeMapping, dal.BooleanType, nil, 0, `INTEGER(1)`},
+		{SqliteTypeMapping, dal.BooleanType, nil, 4, `INTEGER(1)`},
+		{SqliteTypeMapping, dal.TimeType, nil, 0, `INTEGER`},
+		{SqliteTypeMapping, dal.ObjectType, []dal.Type{dal.StringType, dal.AutoType}, 0, `BLOB`},
+		{SqliteTypeMapping, dal.ObjectType, []dal.Type{dal.StringType, dal.AutoType}, 123456, `BLOB(123456)`},
+		{SqliteTypeMapping, dal.ArrayType, []dal.Type{dal.IntType}, 0, `BLOB`},
+		{SqliteTypeMapping, dal.ArrayType, []dal.Type{dal.IntType}, 4321, `BLOB(4321)`},
+		{SqliteTypeMapping, dal.RawType, nil, 0, `BLOB`},
+		{SqliteTypeMapping, dal.RawType, nil, 256, `BLOB(256)`},
+		{MysqlTypeMapping, dal.StringType, nil, 0, `VARCHAR(255)`},
+		{MysqlTypeMapping, dal.StringType, nil, 42, `VARCHAR(42)`},
+		{MysqlTypeMapping, dal.IntType, nil, 0, `BIGINT`},
+		{MysqlTypeMapping, dal.IntType, nil, 14, `BIGINT(14)`},
+		{MysqlTypeMapping, dal.FloatType, nil, 0, `DECIMAL(10,8)`},
+		{MysqlTypeMapping, dal.FloatType, nil, 5, `DECIMAL(5,8)`},
+		{MysqlTypeMapping, dal.BooleanType, nil, 0, `BOOL`},
+		{MysqlTypeMapping, dal.TimeType, nil, 0, `DATETIME`},
+		{MysqlTypeMapping, dal.ObjectType, []dal.Type{dal.StringType, dal.AutoType}, 0, `MEDIUMBLOB`},
+		{MysqlTypeMapping, dal.ObjectType, []dal.Type{dal.StringType, dal.AutoType}, 123456, `MEDIUMBLOB(123456)`},
+		{MysqlTypeMapping, dal.ArrayType, []dal.Type{dal.IntType}, 0, `MEDIUMBLOB`},
+		{MysqlTypeMapping, dal.ArrayType, []dal.Type{dal.IntType}, 4321, `MEDIUMBLOB(4321)`},
+		{MysqlTypeMapping, dal.RawType, nil, 0, `MEDIUMBLOB`},
+		{MysqlTypeMapping, dal.RawType, nil, 256, `MEDIUMBLOB(256)`},
+		{PostgresTypeMapping, dal.StringType, nil, 0, `TEXT`},
+		{PostgresTypeMapping, dal.StringType, nil, 42, `TEXT(42)`},
+		{PostgresTypeMapping, dal.IntType, nil, 0, `BIGINT`},
+		{PostgresTypeMapping, dal.IntType, nil, 14, `BIGINT(14)`},
+		{PostgresTypeMapping, dal.FloatType, nil, 0, `NUMERIC`},
+		{PostgresTypeMapping, dal.FloatType, nil, 5, `NUMERIC(5)`},
+		{PostgresTypeMapping, dal.BooleanType, nil, 0, `BOOLEAN`},
+		{PostgresTypeMapping, dal.TimeType, nil, 0, `TIMESTAMP`},
+		{PostgresTypeMapping, dal.ObjectType, []dal.Type{dal.StringType, dal.AutoType}, 0, `VARCHAR`},
+		{PostgresTypeMapping, dal.ObjectType, []dal.Type{dal.StringType, dal.AutoType}, 123456, `VARCHAR(123456)`},
+		{PostgresTypeMapping, dal.ArrayType, []dal.Type{dal.IntType}, 0, `VARCHAR`},
+		{PostgresTypeMapping, dal.ArrayType, []dal.Type{dal.IntType}, 4321, `VARCHAR(4321)`},
+		{PostgresTypeMapping, dal.RawType, nil, 0, `BYTEA`},
+		{PostgresTypeMapping, dal.RawType, nil, 256, `BYTEA(256)`},
+		{CassandraTypeMapping, dal.StringType, nil, 0, `VARCHAR`},
+		{CassandraTypeMapping, dal.StringType, nil, 42, `VARCHAR(42)`},
+		{CassandraTypeMapping, dal.IntType, nil, 0, `INT`},
+		{CassandraTypeMapping, dal.IntType, nil, 14, `INT(14)`},
+		{CassandraTypeMapping, dal.FloatType, nil, 0, `FLOAT`},
+		{CassandraTypeMapping, dal.FloatType, nil, 5, `FLOAT(5)`},
+		{CassandraTypeMapping, dal.BooleanType, nil, 0, `TINYINT(1)`},
+		{CassandraTypeMapping, dal.TimeType, nil, 0, `DATETIME`},
+		{CassandraTypeMapping, dal.ObjectType, []dal.Type{dal.StringType, dal.IntType}, 0, `MAP<VARCHAR,INT>`},
+		{CassandraTypeMapping, dal.ObjectType, []dal.Type{dal.StringType, dal.BooleanType}, 0, `MAP<VARCHAR,TINYINT(1)>`},
+		{CassandraTypeMapping, dal.ArrayType, []dal.Type{dal.IntType}, 0, `LIST<INT>`},
+		{CassandraTypeMapping, dal.RawType, nil, 0, `BLOB`},
+		{CassandraTypeMapping, dal.RawType, nil, 256, `BLOB(256)`},
+	} {
+		help := fmt.Sprintf("Case %d: %v %v(%v)", i, tcase.Mapping, tcase.Type, tcase.Subtypes)
+		gen := NewSqlGenerator()
+		gen.TypeMapping = tcase.Mapping
+
+		typ, err := gen.ToNativeType(tcase.Type, tcase.Subtypes, tcase.Length)
+		assert.NoError(err, help)
+		assert.Equal(tcase.Expected, typ, help)
+	}
 }

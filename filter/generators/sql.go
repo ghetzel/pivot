@@ -56,6 +56,7 @@ const (
 )
 
 type SqlTypeMapping struct {
+	Name                  string
 	StringType            string
 	StringTypeLength      int
 	IntegerType           string
@@ -66,6 +67,7 @@ type SqlTypeMapping struct {
 	BooleanTypeLength     int
 	DateTimeType          string
 	ObjectType            string
+	ArrayType             string
 	RawType               string
 	SubtypeFormat         string
 	MultiSubtypeFormat    string
@@ -82,9 +84,14 @@ type SqlTypeMapping struct {
 	ArrayTypeDecodeFunc   SqlArrayTypeDecodeFunc  // function used for decoding arrays from native into a destination map
 }
 
+func (self SqlTypeMapping) String() string {
+	return self.Name
+}
+
 var NoTypeMapping = SqlTypeMapping{}
 
 var GenericTypeMapping = SqlTypeMapping{
+	Name:                 `generic`,
 	StringType:           `VARCHAR`,
 	StringTypeLength:     255,
 	IntegerType:          `BIGINT`,
@@ -94,6 +101,7 @@ var GenericTypeMapping = SqlTypeMapping{
 	BooleanType:          `BOOL`,
 	DateTimeType:         `DATETIME`,
 	ObjectType:           `BLOB`,
+	ArrayType:            `BLOB`,
 	RawType:              `BLOB`,
 	PlaceholderFormat:    `?`,
 	PlaceholderArgument:  ``,
@@ -104,6 +112,7 @@ var GenericTypeMapping = SqlTypeMapping{
 }
 
 var CassandraTypeMapping = SqlTypeMapping{
+	Name:                 `cassandra`,
 	StringType:           `VARCHAR`,
 	IntegerType:          `INT`,
 	FloatType:            `FLOAT`,
@@ -111,6 +120,7 @@ var CassandraTypeMapping = SqlTypeMapping{
 	BooleanTypeLength:    1,
 	DateTimeType:         `DATETIME`,
 	ObjectType:           `MAP`,
+	ArrayType:            `LIST`,
 	RawType:              `BLOB`,
 	SubtypeFormat:        `%s<%v>`,
 	MultiSubtypeFormat:   `%s<%v,%v>`,
@@ -123,6 +133,7 @@ var CassandraTypeMapping = SqlTypeMapping{
 }
 
 var MysqlTypeMapping = SqlTypeMapping{
+	Name:                 `mysql`,
 	StringType:           `VARCHAR`,
 	StringTypeLength:     255,
 	IntegerType:          `BIGINT`,
@@ -131,8 +142,9 @@ var MysqlTypeMapping = SqlTypeMapping{
 	FloatTypePrecision:   8,
 	BooleanType:          `BOOL`,
 	DateTimeType:         `DATETIME`,
-	ObjectType:           `BLOB`,
-	RawType:              `BLOB`,
+	ObjectType:           `MEDIUMBLOB`,
+	ArrayType:            `MEDIUMBLOB`,
+	RawType:              `MEDIUMBLOB`,
 	PlaceholderFormat:    `?`,
 	PlaceholderArgument:  ``,
 	TableNameFormat:      "`%s`",
@@ -142,12 +154,14 @@ var MysqlTypeMapping = SqlTypeMapping{
 }
 
 var PostgresTypeMapping = SqlTypeMapping{
+	Name:                 `postgres`,
 	StringType:           `TEXT`,
 	IntegerType:          `BIGINT`,
 	FloatType:            `NUMERIC`,
 	BooleanType:          `BOOLEAN`,
 	DateTimeType:         `TIMESTAMP`,
 	ObjectType:           `VARCHAR`,
+	ArrayType:            `VARCHAR`,
 	RawType:              `BYTEA`,
 	PlaceholderFormat:    `$%d`,
 	PlaceholderArgument:  `index1`,
@@ -158,6 +172,7 @@ var PostgresTypeMapping = SqlTypeMapping{
 }
 
 var PostgresJsonTypeMapping = SqlTypeMapping{
+	Name:         `postgres-json`,
 	StringType:   `TEXT`,
 	IntegerType:  `BIGINT`,
 	FloatType:    `NUMERIC`,
@@ -165,6 +180,7 @@ var PostgresJsonTypeMapping = SqlTypeMapping{
 	DateTimeType: `TIMESTAMP`,
 	// ObjectType:   `JSONB`, // TODO: implement the JSONB functionality in PostgreSQL 9.2+
 	ObjectType:           `VARCHAR`,
+	ArrayType:            `VARCHAR`,
 	RawType:              `BYTEA`,
 	PlaceholderFormat:    `$%d`,
 	PlaceholderArgument:  `index1`,
@@ -175,6 +191,7 @@ var PostgresJsonTypeMapping = SqlTypeMapping{
 }
 
 var SqliteTypeMapping = SqlTypeMapping{
+	Name:                 `sqlite`,
 	StringType:           `TEXT`,
 	IntegerType:          `INTEGER`,
 	FloatType:            `REAL`,
@@ -182,6 +199,7 @@ var SqliteTypeMapping = SqlTypeMapping{
 	BooleanTypeLength:    1,
 	DateTimeType:         `INTEGER`,
 	ObjectType:           `BLOB`,
+	ArrayType:            `BLOB`,
 	RawType:              `BLOB`,
 	PlaceholderFormat:    `?`,
 	PlaceholderArgument:  ``,
@@ -762,6 +780,10 @@ func (self *Sql) ToNativeType(in dal.Type, subtypes []dal.Type, length int) (str
 	case dal.BooleanType:
 		out = self.TypeMapping.BooleanType
 
+		if length > 1 {
+			length = 1
+		}
+
 		if l := self.TypeMapping.BooleanTypeLength; length == 0 && l > 0 {
 			length = l
 		}
@@ -772,12 +794,35 @@ func (self *Sql) ToNativeType(in dal.Type, subtypes []dal.Type, length int) (str
 		if f := self.TypeMapping.MultiSubtypeFormat; f == `` {
 			out = self.TypeMapping.ObjectType
 		} else if len(subtypes) == 2 {
-			out = fmt.Sprintf(
-				self.TypeMapping.MultiSubtypeFormat,
-				self.TypeMapping.ObjectType,
-				subtypes[1],
-				subtypes[2],
-			)
+			if keyType, err := self.ToNativeType(subtypes[0], nil, 0); err == nil {
+				if valType, err := self.ToNativeType(subtypes[1], nil, 0); err == nil {
+					out = fmt.Sprintf(
+						self.TypeMapping.MultiSubtypeFormat,
+						self.TypeMapping.ObjectType,
+						keyType,
+						valType,
+					)
+				} else {
+					return ``, err
+				}
+			} else {
+				return ``, err
+			}
+		}
+
+	case dal.ArrayType:
+		if f := self.TypeMapping.SubtypeFormat; f == `` {
+			out = self.TypeMapping.ArrayType
+		} else if len(subtypes) == 1 {
+			if valType, err := self.ToNativeType(subtypes[0], nil, 0); err == nil {
+				out = fmt.Sprintf(
+					self.TypeMapping.SubtypeFormat,
+					self.TypeMapping.ArrayType,
+					valType,
+				)
+			} else {
+				return ``, err
+			}
 		}
 
 	case dal.RawType:

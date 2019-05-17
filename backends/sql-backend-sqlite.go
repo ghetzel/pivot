@@ -111,12 +111,14 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 						field.Type = dal.FloatType
 
 					default:
-						if field.Length == objectFieldHintLength {
+						switch field.Length {
+						case SqlObjectFieldHintLength:
 							field.Type = dal.ObjectType
-						} else {
+						case SqlArrayFieldHintLength:
+							field.Type = dal.ArrayType
+						default:
 							field.Type = dal.RawType
 						}
-
 					}
 
 					if pk == 1 {

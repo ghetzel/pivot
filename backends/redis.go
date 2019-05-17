@@ -393,6 +393,14 @@ func (self *RedisBackend) decode(collection *dal.Collection, key string, value [
 			} else {
 				return nil, err
 			}
+		case dal.ArrayType:
+			var out []interface{}
+
+			if err := json.Unmarshal(value, &out); err == nil {
+				return out, nil
+			} else {
+				return nil, err
+			}
 		default:
 			var out interface{}
 

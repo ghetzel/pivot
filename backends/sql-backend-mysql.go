@@ -96,9 +96,12 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 								field.Type = dal.TimeType
 
 							} else {
-								if field.Length == objectFieldHintLength {
+								switch field.Length {
+								case SqlObjectFieldHintLength:
 									field.Type = dal.ObjectType
-								} else {
+								case SqlArrayFieldHintLength:
+									field.Type = dal.ArrayType
+								default:
 									field.Type = dal.RawType
 								}
 							}
