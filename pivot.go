@@ -252,3 +252,12 @@ func LoadFixtures(fileOrDirPath string, db DB) error {
 
 	return nil
 }
+
+// A panicky version of backends.Backend.GetCollection
+func MustGetCollection(db DB, name string) *dal.Collection {
+	if collection, err := db.GetCollection(name); err == nil {
+		return collection
+	} else {
+		panic(fmt.Sprintf("Cannot get collection %q: %v", name, err))
+	}
+}

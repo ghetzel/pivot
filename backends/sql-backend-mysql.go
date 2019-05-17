@@ -19,6 +19,8 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 	self.listAllTablesQuery = `SHOW TABLES`
 	self.createPrimaryKeyIntFormat = `%s INT AUTO_INCREMENT NOT NULL`
 	self.createPrimaryKeyStrFormat = `%s VARCHAR(255) NOT NULL`
+	self.foreignKeyConstraintFormat = `FOREIGN KEY(%s) REFERENCES %s (%s) %s`
+	self.defaultCurrentTimeString = `CURRENT_TIMESTAMP`
 
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
@@ -94,9 +96,12 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 								field.Type = dal.TimeType
 
 							} else {
-								if field.Length == objectFieldHintLength {
+								switch field.Length {
+								case SqlObjectFieldHintLength:
 									field.Type = dal.ObjectType
-								} else {
+								case SqlArrayFieldHintLength:
+									field.Type = dal.ArrayType
+								default:
 									field.Type = dal.RawType
 								}
 							}

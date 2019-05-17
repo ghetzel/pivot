@@ -54,7 +54,37 @@ func PopulateRelationships(backend Backend, parent *dal.Collection, record *dal.
 		skipKeys = embed.SkipKeys
 	}
 
-	for _, relationship := range parent.EmbeddedCollections {
+	embeds := parent.EmbeddedCollections
+
+	// loop through all the constraints, finding constraints on collections that we
+	// don't already have an explicitly-defined embed for.
+	//
+	// these constraints are addded as implicitly-defined embeds (unless otherwise specified)
+	//
+ConstraintsLoop:
+	for _, constraint := range parent.Constraints {
+		if constraint.NoEmbed {
+			// don't add this as an implicit embed
+			continue
+		}
+
+		if err := constraint.Validate(); err == nil {
+			for _, embed := range embeds {
+				if embed.RelatedCollectionName() == constraint.Collection {
+					continue ConstraintsLoop
+				}
+			}
+
+			embeds = append(embeds, dal.Relationship{
+				Keys:           constraint.On,
+				CollectionName: constraint.Collection,
+			})
+		} else {
+			return fmt.Errorf("Cannot embed collection: %v", err)
+		}
+	}
+
+	for _, relationship := range embeds {
 		keys := sliceutil.CompactString(sliceutil.Stringify(sliceutil.Sliceify(relationship.Keys)))
 
 		// if we're supposed to skip certain keys, and this is one of them
@@ -109,7 +139,7 @@ func PopulateRelationships(backend Backend, parent *dal.Collection, record *dal.
 
 		reqfields = sliceutil.CompactString(reqfields)
 
-		// finally, further constraing the fieldset by those fields being requested
+		// finally, further constraint the fieldset by those fields being requested
 		if len(nestedFields) == 0 {
 			nestedFields = reqfields
 		} else if len(reqfields) > 0 {

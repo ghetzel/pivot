@@ -20,6 +20,7 @@ type BackendFeature int
 const (
 	PartialSearch BackendFeature = iota
 	CompositeKeys
+	Constraints
 )
 
 type Backend interface {

@@ -31,14 +31,16 @@ func (self sqlRangeValue) String() string {
 
 type SqlObjectTypeEncodeFunc func(in interface{}) ([]byte, error)
 type SqlObjectTypeDecodeFunc func(in []byte, out interface{}) error
+type SqlArrayTypeEncodeFunc func(in interface{}) ([]byte, error)
+type SqlArrayTypeDecodeFunc func(in []byte, out interface{}) error
 
-var SqlObjectTypeEncode = func(in interface{}) ([]byte, error) {
+var SqlJsonTypeEncoder = func(in interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	err := json.NewEncoder(&buf).Encode(in)
 	return buf.Bytes(), err
 }
 
-var SqlObjectTypeDecode = func(in []byte, out interface{}) error {
+var SqlJsonTypeDecoder = func(in []byte, out interface{}) error {
 	return json.NewDecoder(bytes.NewReader(in)).Decode(out)
 }
 
@@ -54,6 +56,7 @@ const (
 )
 
 type SqlTypeMapping struct {
+	Name                  string
 	StringType            string
 	StringTypeLength      int
 	IntegerType           string
@@ -64,6 +67,7 @@ type SqlTypeMapping struct {
 	BooleanTypeLength     int
 	DateTimeType          string
 	ObjectType            string
+	ArrayType             string
 	RawType               string
 	SubtypeFormat         string
 	MultiSubtypeFormat    string
@@ -76,11 +80,18 @@ type SqlTypeMapping struct {
 	NestedFieldJoiner     string                  // the string used to re-join all but the first value in a nested field when interpolating into NestedFieldNameFormat
 	ObjectTypeEncodeFunc  SqlObjectTypeEncodeFunc // function used for encoding objects to a native representation
 	ObjectTypeDecodeFunc  SqlObjectTypeDecodeFunc // function used for decoding objects from native into a destination map
+	ArrayTypeEncodeFunc   SqlArrayTypeEncodeFunc  // function used for encoding arrays to a native representation
+	ArrayTypeDecodeFunc   SqlArrayTypeDecodeFunc  // function used for decoding arrays from native into a destination map
+}
+
+func (self SqlTypeMapping) String() string {
+	return self.Name
 }
 
 var NoTypeMapping = SqlTypeMapping{}
 
 var GenericTypeMapping = SqlTypeMapping{
+	Name:                 `generic`,
 	StringType:           `VARCHAR`,
 	StringTypeLength:     255,
 	IntegerType:          `BIGINT`,
@@ -90,6 +101,7 @@ var GenericTypeMapping = SqlTypeMapping{
 	BooleanType:          `BOOL`,
 	DateTimeType:         `DATETIME`,
 	ObjectType:           `BLOB`,
+	ArrayType:            `BLOB`,
 	RawType:              `BLOB`,
 	PlaceholderFormat:    `?`,
 	PlaceholderArgument:  ``,
@@ -100,6 +112,7 @@ var GenericTypeMapping = SqlTypeMapping{
 }
 
 var CassandraTypeMapping = SqlTypeMapping{
+	Name:                 `cassandra`,
 	StringType:           `VARCHAR`,
 	IntegerType:          `INT`,
 	FloatType:            `FLOAT`,
@@ -107,6 +120,7 @@ var CassandraTypeMapping = SqlTypeMapping{
 	BooleanTypeLength:    1,
 	DateTimeType:         `DATETIME`,
 	ObjectType:           `MAP`,
+	ArrayType:            `LIST`,
 	RawType:              `BLOB`,
 	SubtypeFormat:        `%s<%v>`,
 	MultiSubtypeFormat:   `%s<%v,%v>`,
@@ -119,6 +133,7 @@ var CassandraTypeMapping = SqlTypeMapping{
 }
 
 var MysqlTypeMapping = SqlTypeMapping{
+	Name:                 `mysql`,
 	StringType:           `VARCHAR`,
 	StringTypeLength:     255,
 	IntegerType:          `BIGINT`,
@@ -127,8 +142,9 @@ var MysqlTypeMapping = SqlTypeMapping{
 	FloatTypePrecision:   8,
 	BooleanType:          `BOOL`,
 	DateTimeType:         `DATETIME`,
-	ObjectType:           `BLOB`,
-	RawType:              `BLOB`,
+	ObjectType:           `MEDIUMBLOB`,
+	ArrayType:            `MEDIUMBLOB`,
+	RawType:              `MEDIUMBLOB`,
 	PlaceholderFormat:    `?`,
 	PlaceholderArgument:  ``,
 	TableNameFormat:      "`%s`",
@@ -138,12 +154,14 @@ var MysqlTypeMapping = SqlTypeMapping{
 }
 
 var PostgresTypeMapping = SqlTypeMapping{
+	Name:                 `postgres`,
 	StringType:           `TEXT`,
 	IntegerType:          `BIGINT`,
 	FloatType:            `NUMERIC`,
 	BooleanType:          `BOOLEAN`,
 	DateTimeType:         `TIMESTAMP`,
 	ObjectType:           `VARCHAR`,
+	ArrayType:            `VARCHAR`,
 	RawType:              `BYTEA`,
 	PlaceholderFormat:    `$%d`,
 	PlaceholderArgument:  `index1`,
@@ -154,6 +172,7 @@ var PostgresTypeMapping = SqlTypeMapping{
 }
 
 var PostgresJsonTypeMapping = SqlTypeMapping{
+	Name:         `postgres-json`,
 	StringType:   `TEXT`,
 	IntegerType:  `BIGINT`,
 	FloatType:    `NUMERIC`,
@@ -161,6 +180,7 @@ var PostgresJsonTypeMapping = SqlTypeMapping{
 	DateTimeType: `TIMESTAMP`,
 	// ObjectType:   `JSONB`, // TODO: implement the JSONB functionality in PostgreSQL 9.2+
 	ObjectType:           `VARCHAR`,
+	ArrayType:            `VARCHAR`,
 	RawType:              `BYTEA`,
 	PlaceholderFormat:    `$%d`,
 	PlaceholderArgument:  `index1`,
@@ -171,6 +191,7 @@ var PostgresJsonTypeMapping = SqlTypeMapping{
 }
 
 var SqliteTypeMapping = SqlTypeMapping{
+	Name:                 `sqlite`,
 	StringType:           `TEXT`,
 	IntegerType:          `INTEGER`,
 	FloatType:            `REAL`,
@@ -178,6 +199,7 @@ var SqliteTypeMapping = SqlTypeMapping{
 	BooleanTypeLength:    1,
 	DateTimeType:         `INTEGER`,
 	ObjectType:           `BLOB`,
+	ArrayType:            `BLOB`,
 	RawType:              `BLOB`,
 	PlaceholderFormat:    `?`,
 	PlaceholderArgument:  ``,
@@ -758,6 +780,10 @@ func (self *Sql) ToNativeType(in dal.Type, subtypes []dal.Type, length int) (str
 	case dal.BooleanType:
 		out = self.TypeMapping.BooleanType
 
+		if length > 1 {
+			length = 1
+		}
+
 		if l := self.TypeMapping.BooleanTypeLength; length == 0 && l > 0 {
 			length = l
 		}
@@ -768,12 +794,35 @@ func (self *Sql) ToNativeType(in dal.Type, subtypes []dal.Type, length int) (str
 		if f := self.TypeMapping.MultiSubtypeFormat; f == `` {
 			out = self.TypeMapping.ObjectType
 		} else if len(subtypes) == 2 {
-			out = fmt.Sprintf(
-				self.TypeMapping.MultiSubtypeFormat,
-				self.TypeMapping.ObjectType,
-				subtypes[1],
-				subtypes[2],
-			)
+			if keyType, err := self.ToNativeType(subtypes[0], nil, 0); err == nil {
+				if valType, err := self.ToNativeType(subtypes[1], nil, 0); err == nil {
+					out = fmt.Sprintf(
+						self.TypeMapping.MultiSubtypeFormat,
+						self.TypeMapping.ObjectType,
+						keyType,
+						valType,
+					)
+				} else {
+					return ``, err
+				}
+			} else {
+				return ``, err
+			}
+		}
+
+	case dal.ArrayType:
+		if f := self.TypeMapping.SubtypeFormat; f == `` {
+			out = self.TypeMapping.ArrayType
+		} else if len(subtypes) == 1 {
+			if valType, err := self.ToNativeType(subtypes[0], nil, 0); err == nil {
+				out = fmt.Sprintf(
+					self.TypeMapping.SubtypeFormat,
+					self.TypeMapping.ArrayType,
+					valType,
+				)
+			} else {
+				return ``, err
+			}
 		}
 
 	case dal.RawType:
@@ -853,7 +902,7 @@ func (self *Sql) PrepareInputValue(f string, value interface{}) (interface{}, er
 
 	switch reflect.ValueOf(value).Kind() {
 	case reflect.Struct, reflect.Map, reflect.Ptr, reflect.Array, reflect.Slice:
-		return SqlObjectTypeEncode(value)
+		return SqlJsonTypeEncoder(value)
 	default:
 		return value, nil
 	}
@@ -867,7 +916,7 @@ func (self *Sql) ObjectTypeEncode(in interface{}) ([]byte, error) {
 	if fn := self.TypeMapping.ObjectTypeEncodeFunc; fn != nil {
 		return fn(in)
 	} else {
-		return SqlObjectTypeEncode(in)
+		return SqlJsonTypeEncoder(in)
 	}
 }
 
@@ -879,7 +928,31 @@ func (self *Sql) ObjectTypeDecode(in []byte, out interface{}) error {
 	if fn := self.TypeMapping.ObjectTypeDecodeFunc; fn != nil {
 		return fn(in, out)
 	} else {
-		return SqlObjectTypeDecode(in, out)
+		return SqlJsonTypeDecoder(in, out)
+	}
+}
+
+func (self *Sql) ArrayTypeEncode(in interface{}) ([]byte, error) {
+	if !typeutil.IsArray(typeutil.ResolveValue(in)) {
+		return nil, fmt.Errorf("Can only encode arrays")
+	}
+
+	if fn := self.TypeMapping.ArrayTypeEncodeFunc; fn != nil {
+		return fn(in)
+	} else {
+		return SqlJsonTypeEncoder(in)
+	}
+}
+
+func (self *Sql) ArrayTypeDecode(in []byte, out interface{}) error {
+	if !typeutil.IsArray(typeutil.ResolveValue(out)) {
+		return fmt.Errorf("Can only decode into an array")
+	}
+
+	if fn := self.TypeMapping.ArrayTypeDecodeFunc; fn != nil {
+		return fn(in, out)
+	} else {
+		return SqlJsonTypeDecoder(in, out)
 	}
 }
 
@@ -968,6 +1041,8 @@ func (self *Sql) valueToNativeRepresentation(coerce dal.Type, value interface{})
 			typedValue, convertErr = stringutil.ConvertTo(stringutil.Time, str)
 		case dal.ObjectType:
 			typedValue, convertErr = self.ObjectTypeEncode(str)
+		case dal.ArrayType:
+			typedValue, convertErr = self.ArrayTypeEncode(str)
 		default:
 			typedValue = stringutil.Autotype(value)
 		}

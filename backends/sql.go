@@ -19,7 +19,9 @@ import (
 	"github.com/ghetzel/pivot/v3/filter/generators"
 )
 
-var objectFieldHintLength = 131071
+var SqlObjectFieldHintLength = 131071
+var SqlArrayFieldHintLength = 131069
+
 var InitialPingTimeout = time.Duration(10) * time.Second
 var sqlMaxExactCountRows = 10000
 
@@ -48,22 +50,24 @@ type SqlBackend struct {
 	Backend
 	Indexer
 	Aggregator
-	conn                      *dal.ConnectionString
-	db                        *sql.DB
-	indexer                   Indexer
-	aggregator                map[string]Aggregator
-	queryGenTypeMapping       generators.SqlTypeMapping
-	queryGenNormalizerFormat  string
-	listAllTablesQuery        string
-	createPrimaryKeyIntFormat string
-	createPrimaryKeyStrFormat string
-	showTableDetailQuery      string
-	refreshCollectionFunc     sqlTableDetailsFunc
-	countEstimateQuery        string
-	countExactQuery           string
-	dropTableQuery            string
-	registeredCollections     sync.Map
-	knownCollections          map[string]bool
+	conn                       *dal.ConnectionString
+	db                         *sql.DB
+	indexer                    Indexer
+	aggregator                 map[string]Aggregator
+	queryGenTypeMapping        generators.SqlTypeMapping
+	queryGenNormalizerFormat   string
+	listAllTablesQuery         string
+	createPrimaryKeyIntFormat  string
+	createPrimaryKeyStrFormat  string
+	showTableDetailQuery       string
+	foreignKeyConstraintFormat string
+	defaultCurrentTimeString   string
+	refreshCollectionFunc      sqlTableDetailsFunc
+	countEstimateQuery         string
+	countExactQuery            string
+	dropTableQuery             string
+	registeredCollections      sync.Map
+	knownCollections           map[string]bool
 }
 
 func NewSqlBackend(connection dal.ConnectionString) Backend {
@@ -82,6 +86,8 @@ func NewSqlBackend(connection dal.ConnectionString) Backend {
 func (self *SqlBackend) Supports(features ...BackendFeature) bool {
 	for _, feat := range features {
 		switch feat {
+		case Constraints:
+			return true
 		default:
 			return false
 		}
@@ -609,16 +615,19 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 
 		// This is weird...
 		//
-		// So Raw fields and Object fields are stored using the same datatype (BLOB), which
+		// So Array, Object, and Raw fields are stored using the same datatype (BLOB), which
 		// means that when we read back the schema definition, we don't have a decisive way of
-		// knowing whether that field should be treated as Raw or Object.  So we create Object fields
-		// with a specific length.  This serves as a hint to us that we should treat this field as an object field.
+		// knowing whether that field should be treated as Raw or Object/Array.  So we create Object/Array fields
+		// with a specific length.  This serves as a hint to us that we should treat this field as a certain type.
 		//
 		// We could also do this with comments, but not all SQL servers necessarily support comments on
 		// table schemata, so this feels more reliable in practical usage.
 		//
-		if field.Type == dal.ObjectType {
-			field.Length = objectFieldHintLength
+		switch field.Type {
+		case dal.ObjectType:
+			field.Length = SqlObjectFieldHintLength
+		case dal.ArrayType:
+			field.Length = SqlArrayFieldHintLength
 		}
 
 		if nativeType, err := gen.ToNativeType(field.Type, []dal.Type{field.Subtype}, field.Length); err == nil {
@@ -637,13 +646,19 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 
 		// if the default value is neither nil nor a function
 		if v := field.DefaultValue; v != nil && !typeutil.IsFunction(field.DefaultValue) {
-			def += fmt.Sprintf(" DEFAULT %v", gen.ToNativeValue(field.Type, []dal.Type{field.Subtype}, v))
+			switch vS := typeutil.String(v); vS {
+			case `now`:
+				def += fmt.Sprintf(" DEFAULT %v", self.defaultCurrentTimeString)
+			default:
+				def += fmt.Sprintf(" DEFAULT %v", gen.ToNativeValue(field.Type, []dal.Type{field.Subtype}, v))
+			}
 		}
 
 		fields = append(fields, def)
 	}
 
 	// Constraints
+	// ---------------------------------------------------------------------------------------------
 	// after we've added all the field definitions, append the PRIMARY KEY () constraint statement
 	// with all of the key fields in the schema.
 	primaryKeys := make([]string, 0)
@@ -653,6 +668,39 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	}
 
 	fields = append(fields, fmt.Sprintf("PRIMARY KEY (%s)", strings.Join(primaryKeys, `, `)))
+
+	// append foreign key constraints
+	for _, fk := range definition.Constraints {
+		if err := fk.Validate(); err != nil {
+			return err
+		}
+
+		locals := sliceutil.Stringify(fk.On)
+		remotes := sliceutil.Stringify(fk.Field)
+
+		// properly wrap field names
+		for i, local := range locals {
+			locals[i] = gen.ToFieldName(local)
+		}
+
+		for i, remote := range remotes {
+			remotes[i] = gen.ToFieldName(remote)
+		}
+
+		constraint := strings.TrimSpace(fmt.Sprintf(
+			self.foreignKeyConstraintFormat,
+			strings.Join(locals, `, `),
+			gen.ToTableName(fk.Collection),
+			strings.Join(remotes, `, `),
+			fk.Options,
+		))
+
+		if constraint != `` {
+			fields = append(fields, constraint)
+		} else {
+			return fmt.Errorf("invalid constraint")
+		}
+	}
 
 	// join all fields on "," and finish building the statement
 	stmt += strings.Join(fields, `, `)
@@ -890,6 +938,15 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 					case dal.ObjectType, dal.RawType:
 						if err := queryGen.ObjectTypeDecode(asBytes, &dest); err == nil {
 							value = dest
+						} else {
+							value = asBytes
+						}
+
+					case dal.ArrayType:
+						var destA []interface{}
+
+						if err := queryGen.ArrayTypeDecode(asBytes, &destA); err == nil {
+							value = destA
 						} else {
 							value = asBytes
 						}

@@ -23,6 +23,9 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 	self.createPrimaryKeyStrFormat = `%s VARCHAR(255)`
 	self.countEstimateQuery = "SELECT reltuples::bigint AS estimate FROM pg_class WHERE oid = to_regclass('%s')"
 	self.countExactQuery = "SELECT COUNT(*) AS exact FROM (SELECT 1 FROM %s LIMIT %d) t"
+	self.foreignKeyConstraintFormat = `FOREIGN KEY(%s) REFERENCES %s (%s) %s`
+	// self.defaultCurrentTimeString = `now() AT TIME ZONE 'utc'`
+	self.defaultCurrentTimeString = `CURRENT_TIMESTAMP`
 
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
@@ -142,9 +145,12 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 								field.Type = dal.TimeType
 
 							} else {
-								if field.Length == objectFieldHintLength {
+								switch field.Length {
+								case SqlObjectFieldHintLength:
 									field.Type = dal.ObjectType
-								} else {
+								case SqlArrayFieldHintLength:
+									field.Type = dal.ArrayType
+								default:
 									field.Type = dal.RawType
 								}
 							}

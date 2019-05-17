@@ -24,11 +24,18 @@ type Record struct {
 	Operation      string                 `json:"operation,omitempty"`
 }
 
-func NewRecord(id interface{}) *Record {
-	return &Record{
-		ID:     id,
-		Fields: make(map[string]interface{}),
+func NewRecord(id interface{}, data ...map[string]interface{}) *Record {
+	record := &Record{
+		ID: id,
 	}
+
+	if len(data) > 0 && len(data[0]) > 0 {
+		record.Fields = data[0]
+	} else {
+		record.Fields = make(map[string]interface{})
+	}
+
+	return record
 }
 
 func NewRecordErr(id interface{}, err error) *Record {

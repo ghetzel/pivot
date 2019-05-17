@@ -16,6 +16,7 @@ const (
 	TimeType         = `time`
 	ObjectType       = `object`
 	RawType          = `raw`
+	ArrayType        = `array`
 )
 
 func (self Type) String() string {
@@ -38,6 +39,8 @@ func ParseFieldType(in string) Type {
 		return ObjectType
 	case `raw`:
 		return RawType
+	case `array`:
+		return ArrayType
 	default:
 		return ``
 	}
