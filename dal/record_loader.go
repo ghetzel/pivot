@@ -63,6 +63,8 @@ func validatePtrToStructType(instance interface{}) error {
 	if vInstance.IsValid() {
 		if vInstance.Kind() == reflect.Ptr {
 			vInstance = vInstance.Elem()
+		} else {
+			return fmt.Errorf("Can only operate on pointer to struct, got %T", instance)
 		}
 
 		if vInstance.Kind() == reflect.Struct {
