@@ -35,6 +35,10 @@ func Render(generator IGenerator, collectionName string, filter *Filter) ([]byte
 
 	//  add fields
 	for _, fieldName := range filter.Fields {
+		if filter.IdentityField != `` && fieldName == `id` {
+			fieldName = filter.IdentityField
+		}
+
 		if err := generator.WithField(fieldName); err != nil {
 			return nil, err
 		}
@@ -42,6 +46,10 @@ func Render(generator IGenerator, collectionName string, filter *Filter) ([]byte
 
 	//  add criteria
 	for _, criterion := range filter.Criteria {
+		if filter.IdentityField != `` && criterion.Field == `id` {
+			criterion.Field = filter.IdentityField
+		}
+
 		if err := generator.WithCriterion(criterion); err != nil {
 			return nil, err
 		}

@@ -76,7 +76,7 @@ bindings:
             <fieldset class="form-group bg-light border rounded p-3" id="{{ underscore $field.name }}">
             {{  if $.vars.value }}
             {{      range $i, $v := coalesce $.vars.value "." }}
-                <div class="form-row mb-1" id="field_{{ underscore $field.name }}_{{ $i }}">
+                <div class="form-row mb-1" id="field_{{ underscore $field.name }}_{{ replace $i `.` `_` -1 }}">
                     <div class="col">
                         <input
                             class="form-control"
@@ -95,7 +95,7 @@ bindings:
                             type="text"
                             class="form-control"
                             placeholder="(value)"
-                            name="records.0.fields.{{ underscore $field.name }}.{{ $i }}"
+                            name="records.0.fields.{{ $field.name }}.{{ $i }}"
                             value="{{ $v }}"
                         >
                     </div>
@@ -103,7 +103,7 @@ bindings:
                     <div class="col-1">
                         <a
                             class="btn btn-default text-danger"
-                            onclick="$('#field_{{ underscore $field.name }}_{{ $i }}').remove()"
+                            onclick="$('#field_{{ underscore $field.name }}_{{ replace $i `.` `_` -1 }}').remove()"
                         >
                             <i class="fa fa-remove"></i>
                         </a>
@@ -119,16 +119,18 @@ bindings:
                 onclick="$(function(){
                     var fs = $('#{{ underscore $field.name }}');
                     var index = fs.children().length;
+                    var id = 'field_{{ underscore $field.name }}_' + index;
 
                     var row = $('<div></div>')
                         .addClass('form-row mb-1')
-                        .attr('id', 'field_{{ underscore $field.name }}_' + index);
+                        .attr('id', id);
 
                     var c1 = $('<div></div>')
                         .addClass('col')
                         .append(
                             $('<input></input>')
-                                .addClass('form-control')
+                                .addClass('form-control pivot-key')
+                                .attr('onchange', '$(\'#'+id+' .pivot-value\').attr(\'name\', \'records.0.fields.{{ $field.name }}.\' + $(this).val())')
                                 {{ if any $field.type `array` `raw` }}
                                 .attr('type', 'number')
                                 .attr('min',  '0')
@@ -142,10 +144,10 @@ bindings:
                         .addClass('col')
                         .append(
                             $('<input></input>')
-                                .addClass('form-control')
+                                .addClass('form-control pivot-value')
                                 .attr('type', 'text')
                                 .attr('placeholder', '(value)')
-                                .attr('name', 'records.0.fields.{{ underscore $field.name }}.' + index)
+                                .attr('name', 'records.0.fields.{{ $field.name }}.' + index)
 
                         );
 

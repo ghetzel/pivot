@@ -5,6 +5,7 @@ type Relationship struct {
 	Collection     *Collection `json:"-"`
 	CollectionName string      `json:"collection,omitempty"`
 	Fields         []string    `json:"fields,omitempty"`
+	Force          bool        `json:"force,omitempty"`
 }
 
 func (self *Relationship) RelatedCollectionName() string {

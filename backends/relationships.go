@@ -103,8 +103,8 @@ ConstraintsLoop:
 			return fmt.Errorf("error in relationship %v: %v", keys, err)
 		}
 
-		if related.Name == parent.Name {
-			log.Debugf("not descending into %v to avoid loop", related.Name)
+		if related.Name == parent.Name && !relationship.Force {
+			log.Warningf("not embedding records from %q to avoid loop", related.Name)
 			continue
 		}
 

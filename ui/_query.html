@@ -134,6 +134,7 @@ includes:
                             <tbody>
                             {{ range $k, $v := $record.fields }}
                             {{   $embed := firstByKey $.bindings.schema.embed "key" $k }}
+                            {{   $constraint := firstByKey $.bindings.schema.constraints "on" $k }}
                             <tr class="elide">
                                 <th>{{ $k }}</th>
                                 <td id="q_{{ $index }}_{{ $k }}">
@@ -159,7 +160,9 @@ includes:
                                     </script>
                                 {{ else }}
                                     {{ if $embed.collection }}
-                                    <pre class="m-0"><a href="/?collection={{ $embed.collection }}&q=id%2Fis%3A{{ $v }}" target="_blank">{{ $v }}</a></pre>
+                                    <pre class="m-0"><a href="/?collection={{ $embed.collection }}&q=id%2Fis%3A{{ $v }}">{{ $v }}</a></pre>
+                                    {{ else if $constraint.collection }}
+                                    <pre class="m-0"><a href="/?collection={{ $constraint.collection }}&q={{ or $constraint.field `id` }}%2Fis%3A{{ $v }}">{{ $v }}</a></pre>
                                     {{ else }}
                                     <pre class="m-0">{{ $v }}</pre>
                                     {{ end }}
