@@ -544,8 +544,11 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 	}
 
 	for _, criterion := range self.Criteria {
+		var anyMatched bool
+
+	ValuesLoop:
 		for _, vI := range criterion.Values {
-			vStr := fmt.Sprintf("%v", vI)
+			vStr := typeutil.String(vI)
 
 			// if the operator isn't of the exact match sort, normalize the criterion value
 			if !IsExactMatchOperator(criterion.Operator) {
@@ -562,14 +565,14 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 			var cmpValue interface{}
 			var cmpValueS string
 
-			if criterion.Field == self.IdentityField {
+			if criterion.Field == self.IdentityField || criterion.Field == `id` {
 				cmpValue = record.ID
 			} else {
 				cmpValue = record.Get(criterion.Field)
 			}
 
 			if cmpValue != nil {
-				cmpValueS = fmt.Sprintf("%v", cmpValue)
+				cmpValueS = typeutil.String(cmpValue)
 
 				// if the operator isn't of the exact match sort, normalize the record field value
 				if !IsExactMatchOperator(criterion.Operator) {
@@ -593,87 +596,75 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 						return false
 					}
 				case dal.FloatType:
-					if vF, err := stringutil.ConvertToFloat(vI); err == nil {
-						if cF, err := stringutil.ConvertToFloat(cmpValue); err == nil {
-							isEqual = (vF == cF)
-						}
-					}
+					isEqual = (typeutil.Float(vI) == typeutil.Float(cmpValue))
 
 				case dal.IntType:
-					if vInt, err := stringutil.ConvertToFloat(vI); err == nil {
-						if cI, err := stringutil.ConvertToFloat(cmpValue); err == nil {
-							isEqual = (vInt == cI)
-						}
-					}
+					isEqual = (typeutil.Int(vI) == typeutil.Int(cmpValue))
 
 				case dal.BooleanType:
-					if vBool, err := stringutil.ConvertToBool(vI); err == nil {
-						if cB, err := stringutil.ConvertToBool(cmpValue); err == nil {
-							isEqual = (vBool == cB)
-						}
-					}
+					isEqual = (typeutil.Bool(vI) == typeutil.Bool(cmpValue))
 
 				default:
 					isEqual = (vI == cmpValue)
 				}
 
-				if !invertQuery && !isEqual || invertQuery && isEqual {
-					return false
+				if !invertQuery && isEqual || invertQuery && !isEqual {
+					anyMatched = true
+					break ValuesLoop
 				}
 
 			case `prefix`:
-				if !strings.HasPrefix(strings.ToLower(cmpValueS), strings.ToLower(vStr)) {
-					return false
+				if strings.HasPrefix(strings.ToLower(cmpValueS), strings.ToLower(vStr)) {
+					anyMatched = true
+					break ValuesLoop
 				}
 
 			case `suffix`:
-				if !strings.HasSuffix(strings.ToLower(cmpValueS), strings.ToLower(vStr)) {
-					return false
+				if strings.HasSuffix(strings.ToLower(cmpValueS), strings.ToLower(vStr)) {
+					anyMatched = true
+					break ValuesLoop
 				}
 
 			case `contains`:
-				if !strings.Contains(strings.ToLower(cmpValueS), strings.ToLower(vStr)) {
-					return false
+				if strings.Contains(strings.ToLower(cmpValueS), strings.ToLower(vStr)) {
+					anyMatched = true
+					break ValuesLoop
 				}
 
 			case `gt`, `lt`, `gte`, `lte`:
-				var cmpValueF float64
-				var vF float64
-
-				if v, err := stringutil.ConvertToFloat(vI); err == nil {
-					vF = v
-
-					if c, err := stringutil.ConvertToFloat(cmpValue); err == nil {
-						cmpValueF = c
-					} else {
-						return false
-					}
-				} else {
-					return false
-				}
+				cmpValueF := typeutil.Float(cmpValue)
+				vF := typeutil.Float(vI)
 
 				switch criterion.Operator {
 				case `gt`:
-					if !(cmpValueF > vF) {
-						return false
+					if cmpValueF > vF {
+						anyMatched = true
+						break ValuesLoop
 					}
 				case `gte`:
-					if !(cmpValueF >= vF) {
-						return false
+					if cmpValueF >= vF {
+						anyMatched = true
+						break ValuesLoop
 					}
 				case `lt`:
-					if !(cmpValueF < vF) {
-						return false
+					if cmpValueF < vF {
+						anyMatched = true
+						break ValuesLoop
 					}
 				case `lte`:
-					if !(cmpValueF <= vF) {
-						return false
+					if cmpValueF <= vF {
+						anyMatched = true
+						break ValuesLoop
 					}
 				}
-
 			default:
 				return false
 			}
+		}
+
+		// if none of the values matched, the criterion is false
+		if !anyMatched {
+			return false
 		}
 	}
 
