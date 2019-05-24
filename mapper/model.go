@@ -162,7 +162,7 @@ func (self *Model) Delete(ids ...interface{}) error {
 
 // Delete all records matching the given query.
 func (self *Model) DeleteQuery(flt interface{}) error {
-	if f, err := self.filterFromInterface(flt); err == nil {
+	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if search := self.db.WithSearch(self.collection, f); search != nil {
@@ -181,7 +181,7 @@ func (self *Model) DeleteQuery(flt interface{}) error {
 // as-is.
 //
 func (self *Model) Find(flt interface{}, into interface{}) error {
-	if f, err := self.filterFromInterface(flt); err == nil {
+	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if search := self.db.WithSearch(self.collection, f); search != nil {
@@ -203,7 +203,7 @@ func (self *Model) Find(flt interface{}, into interface{}) error {
 // The given callback function will be called once per result.
 //
 func (self *Model) FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error {
-	if f, err := self.filterFromInterface(flt); err == nil {
+	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if search := self.db.WithSearch(self.collection, f); search != nil {
@@ -252,7 +252,7 @@ func (self *Model) List(fields []string) (map[string][]interface{}, error) {
 }
 
 func (self *Model) ListWithFilter(fields []string, flt interface{}) (map[string][]interface{}, error) {
-	if f, err := self.filterFromInterface(flt); err == nil {
+	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if search := self.db.WithSearch(self.collection, f); search != nil {
@@ -278,7 +278,7 @@ func (self *Model) ListWithFilter(fields []string, flt interface{}) (map[string]
 }
 
 func (self *Model) Sum(field string, flt interface{}) (float64, error) {
-	if f, err := self.filterFromInterface(flt); err == nil {
+	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if agg := self.db.WithAggregator(self.collection); agg != nil {
@@ -292,7 +292,7 @@ func (self *Model) Sum(field string, flt interface{}) (float64, error) {
 }
 
 func (self *Model) Count(flt interface{}) (uint64, error) {
-	if f, err := self.filterFromInterface(flt); err == nil {
+	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if agg := self.db.WithAggregator(self.collection); agg != nil {
@@ -306,7 +306,7 @@ func (self *Model) Count(flt interface{}) (uint64, error) {
 }
 
 func (self *Model) Minimum(field string, flt interface{}) (float64, error) {
-	if f, err := self.filterFromInterface(flt); err == nil {
+	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if agg := self.db.WithAggregator(self.collection); agg != nil {
@@ -320,7 +320,7 @@ func (self *Model) Minimum(field string, flt interface{}) (float64, error) {
 }
 
 func (self *Model) Maximum(field string, flt interface{}) (float64, error) {
-	if f, err := self.filterFromInterface(flt); err == nil {
+	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if agg := self.db.WithAggregator(self.collection); agg != nil {
@@ -334,7 +334,7 @@ func (self *Model) Maximum(field string, flt interface{}) (float64, error) {
 }
 
 func (self *Model) Average(field string, flt interface{}) (float64, error) {
-	if f, err := self.filterFromInterface(flt); err == nil {
+	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		if agg := self.db.WithAggregator(self.collection); agg != nil {
@@ -348,7 +348,7 @@ func (self *Model) Average(field string, flt interface{}) (float64, error) {
 }
 
 func (self *Model) GroupBy(fields []string, aggregates []filter.Aggregate, flt interface{}) (*dal.RecordSet, error) {
-	if f, err := self.filterFromInterface(flt); err == nil {
+	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
 		for i, agg := range aggregates {
@@ -364,20 +364,6 @@ func (self *Model) GroupBy(fields []string, aggregates []filter.Aggregate, flt i
 		}
 	} else {
 		return nil, err
-	}
-}
-
-func (self *Model) filterFromInterface(in interface{}) (*filter.Filter, error) {
-	if f, ok := in.(filter.Filter); ok {
-		return &f, nil
-	} else if f, ok := in.(*filter.Filter); ok {
-		return f, nil
-	} else if fMap, ok := in.(map[string]interface{}); ok {
-		return filter.FromMap(fMap)
-	} else if fStr, ok := in.(string); ok {
-		return filter.Parse(fStr)
-	} else {
-		return filter.Null(), fmt.Errorf("Expected filter.Filter, map[string]interface{}, or string; got: %T", in)
 	}
 }
 

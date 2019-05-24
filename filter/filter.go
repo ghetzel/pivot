@@ -9,9 +9,11 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
+	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/timeutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/dal"
 )
 
@@ -202,8 +204,22 @@ func All() *Filter {
 	return &f
 }
 
+func Parse(in interface{}) (*Filter, error) {
+	if f, ok := in.(Filter); ok {
+		return &f, nil
+	} else if f, ok := in.(*Filter); ok {
+		return f, nil
+	} else if typeutil.IsMap(in) {
+		return FromMap(maputil.M(in).MapNative())
+	} else if fStr, ok := in.(string); ok {
+		return ParseSpec(fStr)
+	} else {
+		return Null(), fmt.Errorf("Expected filter.Filter, map, or string; got: %T", in)
+	}
+}
+
 // Filter syntax definition
-func Parse(spec string) (*Filter, error) {
+func ParseSpec(spec string) (*Filter, error) {
 	var criterion Criterion
 
 	spec = strings.TrimPrefix(spec, `/`)
@@ -349,6 +365,7 @@ func MustParse(spec string) *Filter {
 }
 
 func (self *Filter) AddCriteria(criteria ...Criterion) *Filter {
+	self.MatchAll = false
 	self.Criteria = append(self.Criteria, criteria...)
 	return self
 }
@@ -430,15 +447,18 @@ func (self *Filter) GetIdentityValue() (interface{}, bool) {
 }
 
 func (self *Filter) IsMatchAll() bool {
-	if self.MatchAll || self.Spec == AllValue {
-		return true
+	if len(self.Criteria) == 0 {
+		if self.MatchAll || self.Spec == AllValue {
+			self.MatchAll = true
+			return true
+		}
 	}
 
 	return false
 }
 
 func (self *Filter) String() string {
-	if self.MatchAll {
+	if self.IsMatchAll() {
 		return AllValue
 	} else {
 		criteria := make([]string, 0)

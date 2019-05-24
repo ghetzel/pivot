@@ -58,7 +58,7 @@ func errpanic(err error) {
 }
 
 func TestAll(t *testing.T) {
-	log.SetLevel(log.DEBUG)
+	log.SetLevel(log.WARNING)
 
 	run := func(b backends.Backend) {
 		t.Logf("[%v] Testing CollectionManagement", b)
