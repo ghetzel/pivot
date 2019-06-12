@@ -46,7 +46,11 @@ func NewModel(db backends.Backend, collection *dal.Collection) *Model {
 		model.collection.IdentityFieldType = v
 	}
 
+	// tell the backend about the collection
 	db.RegisterCollection(collection)
+
+	// ...and tell the collection about the backend
+	collection.SetBackend(db)
 
 	return model
 }

@@ -328,3 +328,93 @@ func TestRecordSetKeys(t *testing.T) {
 	assert.Nil(record.ID)
 	assert.Nil(record.Get(`other`))
 }
+
+func TestRecordConvertRecordValueToStructValue(t *testing.T) {
+	assert := require.New(t)
+
+	groups := NewCollection(`TestRecordPopulateStructWithRelatedStructGroups`, Field{
+		Name: `name`,
+		Type: StringType,
+	})
+
+	users := NewCollection(`TestRecordPopulateStructWithRelatedStructUsers`, Field{
+		Name: `name`,
+		Type: StringType,
+	}, Field{
+		Name:      `group_id`,
+		Type:      IntType,
+		BelongsTo: groups,
+	}, Field{
+		Name: `age`,
+		Type: IntType,
+	})
+
+	backend := new(nullBackend)
+	backend.RegisterCollection(users)
+	backend.RegisterCollection(groups)
+
+	record := NewRecord(nil)
+	actual := new(testUser)
+
+	result, err := record.convertRecordValueToStructValue(users, `group_id`, 8675, actual)
+	assert.NoError(err)
+	assert.Equal(&testGroup{
+		ID: 8675,
+	}, result)
+}
+
+func TestRecordPopulateStructWithRelatedStruct(t *testing.T) {
+	assert := require.New(t)
+
+	var actual testUser
+	var err error
+
+	wanted := &testUser{
+		ID:   555,
+		Name: `Test User`,
+		Age:  22,
+		Group: &testGroup{
+			ID: 8765,
+		},
+	}
+
+	record := NewRecord(555)
+	record.Set(`name`, `Test User`)
+	record.Set(`age`, 22)
+	record.Set(`group_id`, 8765)
+
+	// err = record.Populate(&actual, nil)
+	// assert.NoError(err)
+	// assert.Equal(`Test User`, actual.Name)
+	// assert.Nil(actual.Group) // because we didn't provide a collection, there's no way to populate this field
+	// assert.Equal(22, actual.Age)
+
+	groups := NewCollection(`TestRecordPopulateStructWithRelatedStructGroups`, Field{
+		Name: `name`,
+		Type: StringType,
+	})
+
+	users := NewCollection(`TestRecordPopulateStructWithRelatedStructUsers`, Field{
+		Name: `name`,
+		Type: StringType,
+	}, Field{
+		Name:      `group_id`,
+		Type:      IntType,
+		BelongsTo: groups,
+	}, Field{
+		Name: `age`,
+		Type: IntType,
+	})
+
+	backend := new(nullBackend)
+	backend.RegisterCollection(users)
+	backend.RegisterCollection(groups)
+
+	err = record.Populate(&actual, users)
+	assert.NoError(err)
+	assert.Equal(wanted.ID, actual.ID)
+	assert.Equal(wanted.Name, actual.Name)
+	assert.Equal(wanted.Age, actual.Age)
+	assert.Equal(wanted.Group.ID, actual.Group.ID)
+	assert.Equal(wanted.Group.Name, actual.Group.Name)
+}

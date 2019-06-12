@@ -89,6 +89,18 @@ type Field struct {
 
 	// Used to store the order this field appears in the source database.
 	Index int `json:"index,omitempty"`
+
+	// Specify a relationship between this field and another collection.
+	//
+	// If given a string, it will be interpreted as a collection name and a
+	// constaint against that collection's identity field will be created.
+	//
+	// If given a *Collection, the same behavior as above will occur, but using
+	// the Collection.Name from the given struct.
+	//
+	// If given a Constraint, the constraint will be added to this field's
+	// parent collection with the "On" field set to this field's name.
+	BelongsTo interface{} `json:"belongs_to,omitempty"`
 }
 
 func (self *Field) normalizeType(in interface{}) (interface{}, error) {
@@ -421,5 +433,32 @@ func (self *Field) UnmarshalJSON(b []byte) error {
 		return nil
 	} else {
 		return err
+	}
+}
+
+// Parses the value of BelongsTo into a valid Constraint
+func (self *Field) BelongsToConstraint() *Constraint {
+	if self.BelongsTo != nil {
+		proposed := Constraint{
+			On: self.Name,
+		}
+
+		if cname, ok := self.BelongsTo.(string); ok { // given as string
+			proposed.Collection = cname
+			proposed.Field = DefaultIdentityField
+		} else if col, ok := self.BelongsTo.(*Collection); ok { // given as *Collection
+			proposed.Collection = col.Name
+			proposed.Field = col.KeyFieldNames()
+		} else if con, ok := self.BelongsTo.(Constraint); ok { // given as Constraint
+			proposed = con
+			proposed.On = self.Name
+		} else if con, ok := self.BelongsTo.(*Constraint); ok { // given as *Constraint
+			proposed = *con
+			proposed.On = self.Name
+		}
+
+		return &proposed
+	} else {
+		return nil
 	}
 }

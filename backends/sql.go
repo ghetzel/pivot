@@ -670,7 +670,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	fields = append(fields, fmt.Sprintf("PRIMARY KEY (%s)", strings.Join(primaryKeys, `, `)))
 
 	// append foreign key constraints
-	for _, fk := range definition.Constraints {
+	for _, fk := range definition.GetAllConstraints() {
 		if err := fk.Validate(); err != nil {
 			return err
 		}

@@ -282,7 +282,7 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 			return fmt.Errorf("Could not determine identity field name")
 		}
 
-		if data, err := self.toMap(collection, idFieldName); err == nil {
+		if data, err := self.toMap(collection, idFieldName, into); err == nil {
 			return maputil.TaggedStructFromMap(data, into, RecordStructTag)
 		} else {
 			return fmt.Errorf("Cannot create map from collection: %v", err)
@@ -322,7 +322,7 @@ func (self *Record) Map(fields ...string) map[string]interface{} {
 	return out
 }
 
-func (self *Record) toMap(collection *Collection, idFieldName string) (map[string]interface{}, error) {
+func (self *Record) toMap(collection *Collection, idFieldName string, into interface{}) (map[string]interface{}, error) {
 	data := make(map[string]interface{})
 
 	// populate defaults
@@ -341,6 +341,8 @@ func (self *Record) toMap(collection *Collection, idFieldName string) (map[strin
 		}
 	}
 
+	// special form that interprets an record ID whose value is an array as a sequence of key values
+	// these values are unwrapped into the appropriate struct fields.
 	if typeutil.IsArray(self.ID) {
 		keyFields := collection.KeyFields()
 		keyValues := sliceutil.Sliceify(self.ID)
@@ -360,6 +362,9 @@ func (self *Record) toMap(collection *Collection, idFieldName string) (map[strin
 	for k, v := range self.Fields {
 		// if the field we're setting already exists (i.e.: has a default value), that value
 		// isn't a zero value, but the incoming one IS a zero value, skip.
+		//
+		// this prevents clobbering specifically chosen defaults with type-specific zero values
+		//
 		if existing, ok := data[k]; ok {
 			if tm, ok := existing.(time.Time); ok && tm.IsZero() {
 				continue
@@ -377,6 +382,12 @@ func (self *Record) toMap(collection *Collection, idFieldName string) (map[strin
 	if collection != nil {
 		// format and validate values (including identity)
 		for key, value := range data {
+			if converted, err := self.convertRecordValueToStructValue(collection, key, value, into); err == nil {
+				value = converted
+			} else {
+				continue
+			}
+
 			if key == idFieldName {
 				if idI, err := collection.formatAndValidateId(value, RetrieveOperation, self); err == nil {
 					value = idI
@@ -435,4 +446,49 @@ func (self *Record) appendValue(key string, value ...interface{}) []interface{} 
 	}
 
 	return append(newValue, value...)
+}
+
+func (self *Record) convertRecordValueToStructValue(collection *Collection, key string, value interface{}, into interface{}) (interface{}, error) {
+	if collection != nil {
+		// 1. get field from collection
+		// 2. get relationship from field
+		// 3. get data type of output field
+		// 4. set directly if possible, else:
+		// 5. get related collection
+		// 6. instantate new instance of output field type
+		// 7. populate that instance with record.Populate(newInstance, relatedCollection)
+		//
+		if field, ok := collection.GetField(key); ok {
+			if intoField, err := findStructFieldByTag(into, key); err == nil {
+				if sf := intoField.Field; sf.IsExported() {
+					if constraint := field.BelongsToConstraint(); constraint != nil {
+						if related, err := collection.GetRelatedCollection(constraint.Collection); err == nil {
+							destValue := reflect.ValueOf(sf.Value())
+							destType := destValue.Type()
+
+							if destType.Kind() == reflect.Ptr && destType.Elem().Kind() == reflect.Struct {
+								instance := reflect.New(destType.Elem())
+
+								if instance.CanInterface() {
+									intoNew := instance.Interface()
+
+									return intoNew, maputil.TaggedStructFromMap(map[string]interface{}{
+										related.GetIdentityFieldName(): value,
+									}, intoNew, RecordStructTag)
+								} else {
+									return nil, fmt.Errorf("Cannot populate output field %q of type %v", key, destType)
+								}
+							}
+						} else {
+							return nil, err
+						}
+					}
+				}
+			} else {
+				return nil, err
+			}
+		}
+	}
+
+	return value, nil
 }

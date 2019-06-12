@@ -9,6 +9,39 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type testGroup struct {
+	ID   int    `pivot:"id,identity"`
+	Name string `pivot:"name"`
+}
+
+type testUser struct {
+	ID    int        `pivot:"id,identity"`
+	Name  string     `pivot:"name"`
+	Group *testGroup `pivot:"group_id"`
+	Age   int        `pivot:"age"`
+}
+
+type nullBackend struct {
+	collections map[string]*Collection
+}
+
+func (self *nullBackend) RegisterCollection(def *Collection) {
+	if self.collections == nil {
+		self.collections = make(map[string]*Collection)
+	}
+
+	def.SetBackend(self)
+	self.collections[def.Name] = def
+}
+
+func (self *nullBackend) GetCollection(name string) (*Collection, error) {
+	if c, ok := self.collections[name]; ok {
+		return c, nil
+	} else {
+		return nil, CollectionNotFound
+	}
+}
+
 func TestCollectionMakeRecord(t *testing.T) {
 	assert := require.New(t)
 
@@ -70,6 +103,46 @@ func TestCollectionMakeRecord(t *testing.T) {
 	assert.Equal(11, record.ID)
 	assert.Equal(`tester`, record.Get(`name`))
 	assert.EqualValues(0, record.Get(`age`))
+}
+
+func TestCollectionMakeRecordRelated(t *testing.T) {
+	assert := require.New(t)
+
+	groups := NewCollection(`TestCollectionMakeRecordGroups`, Field{
+		Name: `name`,
+		Type: StringType,
+	})
+
+	users := NewCollection(`TestCollectionMakeRecordUsers`, Field{
+		Name: `name`,
+		Type: StringType,
+	}, Field{
+		Name:      `group_id`,
+		Type:      IntType,
+		BelongsTo: groups,
+	}, Field{
+		Name: `age`,
+		Type: IntType,
+	})
+
+	backend := new(nullBackend)
+	backend.RegisterCollection(users)
+	backend.RegisterCollection(groups)
+
+	record, err := users.MakeRecord(&testUser{
+		Name: `tester`,
+		Group: &testGroup{
+			ID: 5432,
+		},
+		Age: 42,
+	})
+	assert.Nil(err)
+	assert.NotNil(record)
+
+	assert.Zero(record.ID)
+	assert.Equal(`tester`, record.Get(`name`))
+	assert.EqualValues(5432, record.Get(`group_id`))
+	assert.EqualValues(42, record.Get(`age`))
 }
 
 func TestCollectionNewInstance(t *testing.T) {
@@ -236,4 +309,40 @@ func TestCollectionIsExpired(t *testing.T) {
 	assert.True(
 		collection.IsExpired(NewRecord(`test1`).Set(`ttl`, time.Now().Unix()-60)),
 	)
+}
+
+func TestCollectionExtractValueFromRelationship(t *testing.T) {
+	assert := require.New(t)
+
+	groups := NewCollection(`TestCollectionExtractValueFromRelationshipGroups`, Field{
+		Name: `name`,
+		Type: StringType,
+	})
+
+	users := NewCollection(`TestCollectionExtractValueFromRelationshipUsers`, Field{
+		Name: `name`,
+		Type: StringType,
+	}, Field{
+		Name:      `group_id`,
+		Type:      IntType,
+		BelongsTo: groups,
+	}, Field{
+		Name: `age`,
+		Type: IntType,
+	})
+
+	backend := new(nullBackend)
+	backend.RegisterCollection(users)
+	backend.RegisterCollection(groups)
+
+	// test ability for Users to extract key values from Groups
+	f, ok := users.GetField(`group_id`)
+	assert.True(ok)
+	keys, err := users.extractValueFromRelationship(&f, &testGroup{
+		ID: 5432,
+	}, PersistOperation)
+
+	assert.NoError(err)
+	assert.EqualValues(5432, keys)
+
 }

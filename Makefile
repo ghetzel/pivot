@@ -1,7 +1,8 @@
-.PHONY: test deps docs
 
-LOCALS :=$(shell find . -type f -name '*.go')
+LOCALS   := $(shell find . -type f -name '*.go')
+EXAMPLES := $(wildcard examples/*)
 
+.PHONY: test deps docs $(EXAMPLES)
 .EXPORT_ALL_VARIABLES:
 GO111MODULE = on
 
@@ -23,6 +24,9 @@ docs:
 test:
 	go test -count=1 --tags json1 ./...
 
-build:
+$(EXAMPLES):
+	cd $(@) && go build --tags json1 -o ../../bin/example-$(notdir $(@)) *.go
+
+build: $(EXAMPLES)
 	go build --tags json1 -i -o bin/pivot pivot/*.go
 	which pivot && cp -v bin/pivot `which pivot` || true

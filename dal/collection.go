@@ -31,6 +31,10 @@ type Instantiator interface {
 	Constructor() interface{}
 }
 
+type Backend interface {
+	GetCollection(collection string) (*Collection, error)
+}
+
 type Collection struct {
 	// The name of the collection
 	Name string `json:"name"`
@@ -111,17 +115,30 @@ type Collection struct {
 
 	recordType          reflect.Type
 	instanceInitializer InitializerFunc
+	backend             Backend
 }
 
 // Create a new colllection definition with no fields.
-func NewCollection(name string) *Collection {
+func NewCollection(name string, fields ...Field) *Collection {
+	if len(fields) == 0 {
+		fields = make([]Field, 0)
+	}
+
 	return &Collection{
 		Name:                   name,
-		Fields:                 make([]Field, 0),
+		Fields:                 fields,
 		IdentityField:          DefaultIdentityField,
 		IdentityFieldType:      DefaultIdentityFieldType,
 		IdentityFieldValidator: ValidateNotEmpty,
 	}
+}
+
+// Set the backend for this collection.  The Backend interface in this package is a limited subset
+// of the backends.Backend interface that avoids a circular dependency between the two packages.
+// The intent is to allow Collections to retrieve details about other collections registered on the
+// same backend.
+func (self *Collection) SetBackend(backend Backend) {
+	self.backend = backend
 }
 
 // Return the duration until the TimeToLiveField in given record expires within the current collection.
@@ -467,6 +484,15 @@ func (self *Collection) KeyFields() []Field {
 	return keys
 }
 
+// Same as KeyFields, but returns only the field names
+func (self *Collection) KeyFieldNames() (names []string) {
+	for _, kf := range self.KeyFields() {
+		names = append(names, kf.Name)
+	}
+
+	return
+}
+
 // Return the number of keys on that uniquely identify a single record in this Collection.
 func (self *Collection) KeyCount() int {
 	return len(self.KeyFields())
@@ -506,6 +532,12 @@ func (self *Collection) ValueForField(name string, value interface{}, op FieldOp
 		validator = self.IdentityFieldValidator
 		value = self.ConvertValue(name, value)
 	} else if field, ok := self.GetField(name); ok {
+		if v, err := self.extractValueFromRelationship(&field, value, op); err == nil {
+			value = v
+		} else {
+			return nil, err
+		}
+
 		if v, err := field.ConvertValue(value); err == nil {
 			formatter = field.Formatter
 			validator = field.Validator
@@ -534,6 +566,39 @@ func (self *Collection) ValueForField(name string, value interface{}, op FieldOp
 	}
 
 	return value, nil
+}
+
+// Takes a value provided for either persistence to the backend, or as retrieved from the backend, and hammers
+// it into the right shape based on this collection's Constraints.
+func (self *Collection) extractValueFromRelationship(field *Field, input interface{}, op FieldOperation) (interface{}, error) {
+	// if:
+	//	- persisting to backend
+	//	- AND this field has a relationship
+	//	- AND we have a struct
+	//	THEN we need to extract key(s) from that struct
+	if op == PersistOperation {
+		if constraint := field.BelongsToConstraint(); constraint != nil {
+			if resolved := typeutil.ResolveValue(input); typeutil.IsStruct(resolved) {
+				if relatedTo, err := self.GetRelatedCollection(constraint.Collection); err == nil {
+					if relatedRecord, err := relatedTo.MakeRecord(input, op); err == nil {
+						keys := relatedRecord.Keys(relatedTo)
+
+						if len(keys) == 1 {
+							return keys[0], nil
+						} else {
+							return keys, nil
+						}
+					} else {
+						return nil, err
+					}
+				} else {
+					return nil, fmt.Errorf("related collection %q: %v", constraint.Collection, err)
+				}
+			}
+		}
+	}
+
+	return input, nil
 }
 
 func (self *Collection) formatAndValidateId(id interface{}, op FieldOperation, record *Record) (interface{}, error) {
@@ -833,4 +898,41 @@ func (self *Collection) Diff(actual *Collection) []SchemaDelta {
 	}
 
 	return differences
+}
+
+// Retrieve the set of all Constraints on this collection, both explicitly provided
+// via the Constraints field, as well as constraints specified using the "BelongsTo"
+// shorthand on Fields.
+func (self *Collection) GetAllConstraints() (constraints []Constraint) {
+	constraints = self.Constraints
+
+	for _, field := range self.Fields {
+		if proposed := field.BelongsToConstraint(); proposed != nil {
+			var exists bool
+
+			// run through existing constraints. if an equivalent constraint
+			// already exists, replace it
+			for i, c := range constraints {
+				if c.Equal(proposed) {
+					constraints[i] = *proposed
+					exists = true
+					break
+				}
+			}
+
+			if !exists {
+				constraints = append(constraints, *proposed)
+			}
+		}
+	}
+
+	return
+}
+
+func (self *Collection) GetRelatedCollection(name string) (*Collection, error) {
+	if self.backend == nil {
+		return nil, fmt.Errorf("Cannot retrieve related collection details without a registered backend.")
+	} else {
+		return self.backend.GetCollection(name)
+	}
 }
