@@ -8,6 +8,8 @@ import (
 	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
+	"github.com/ghetzel/go-stockutil/structutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 )
 
 var RecordStructTag = `pivot`
@@ -16,13 +18,80 @@ var DefaultStructIdentityFieldName = `ID`
 type fieldDescription struct {
 	OriginalName string
 	RecordKey    string
-	Field        *structs.Field
-	ReflectField reflect.Value
 	Identity     bool
 	OmitEmpty    bool
+	FieldValue   reflect.Value
+	FieldType    reflect.Type
+	DataValue    interface{}
+}
+
+func (self *fieldDescription) Set(value interface{}) error {
+	if self.FieldValue.IsValid() {
+		if self.FieldValue.CanSet() {
+			return typeutil.SetValue(self.FieldValue, value)
+		} else {
+			return fmt.Errorf("cannot set field %q: field is unsettable", self.OriginalName)
+		}
+	} else {
+		return fmt.Errorf("cannot set field %q: no value available", self.OriginalName)
+	}
 }
 
 type Model interface{}
+
+func structFieldToDesc(field *reflect.StructField) *fieldDescription {
+	desc := new(fieldDescription)
+	desc.OriginalName = field.Name
+	desc.RecordKey = field.Name
+
+	if tag := field.Tag.Get(RecordStructTag); tag != `` {
+		tag = strings.TrimSpace(tag)
+		key, rest := stringutil.SplitPair(tag, `,`)
+		options := strings.Split(rest, `,`)
+
+		if key != `` {
+			desc.RecordKey = key
+		}
+
+		for _, opt := range options {
+			switch opt {
+			case `identity`:
+				desc.Identity = true
+			case `omitempty`:
+				desc.OmitEmpty = true
+			}
+		}
+	}
+
+	return desc
+}
+
+func getIdentityFieldName(in interface{}, collection *Collection) string {
+	candidates := make([]string, 0)
+
+	if err := structutil.FieldsFunc(in, func(field *reflect.StructField, value reflect.Value) error {
+		desc := structFieldToDesc(field)
+
+		if desc.Identity {
+			candidates = append(candidates, field.Name)
+		} else if collection != nil && field.Name == collection.GetIdentityFieldName() {
+			candidates = append(candidates, field.Name)
+		} else {
+			switch field.Name {
+			case `id`, `ID`, `Id`:
+				candidates = append(candidates, field.Name)
+			}
+		}
+
+		return nil
+	}); err == nil {
+		if len(candidates) > 0 {
+			return candidates[0]
+		}
+	}
+
+	return ``
+}
 
 // Retrieves the struct field name and key name that represents the identity field for a given struct.
 func getIdentityFieldNameFromStruct(instance interface{}, fallbackIdentityFieldName string) (string, string, error) {
@@ -80,81 +149,36 @@ func validatePtrToStructType(instance interface{}) error {
 	}
 }
 
-func getFieldsForStruct(instance interface{}) (map[string]*fieldDescription, error) {
-	fields := make(map[string]*fieldDescription)
-
-	for _, name := range structs.New(instance).Names() {
-		if desc, err := getFieldForStruct(instance, name); err == nil {
-			fields[name] = desc
-		} else {
-			return nil, err
-		}
-	}
-
-	return fields, nil
-}
-
-func findStructFieldByTag(instance interface{}, nameOrTag string) (*fieldDescription, error) {
-	if desc, err := getFieldForStruct(instance, nameOrTag); err == nil {
-		return desc, nil
-	} else {
-		for _, field := range structs.New(instance).Fields() {
-			if tag := field.Tag(RecordStructTag); tag != `` {
-				if tagName, _ := stringutil.SplitPair(tag, `,`); tagName == nameOrTag {
-					return getFieldForStruct(instance, field.Name())
-				}
-			}
-		}
-	}
-
-	return nil, fmt.Errorf("Could not locate field or tag %q", nameOrTag)
-}
-
+// Retrieve details about a specific field in the given struct. This function parses the `pivot`
+// tag details into discrete values, extracts the concrete value of the field, and returns the
+// reflected Type and Value of the field.
 func getFieldForStruct(instance interface{}, key string) (*fieldDescription, error) {
-	var identity, omitEmpty bool
+	var desc *fieldDescription
 
-	reflectStruct := reflect.ValueOf(instance)
+	// iterate over all exported struct fields
+	if err := structutil.FieldsFunc(instance, func(field *reflect.StructField, value reflect.Value) error {
+		desc = structFieldToDesc(field)
 
-	if reflectStruct.Kind() == reflect.Ptr {
-		reflectStruct = reflectStruct.Elem()
-	}
+		// either the field name OR the name specified in the "pivot" tag will match
+		if field.Name == key || desc.RecordKey == key {
+			desc.FieldValue = value
+			desc.FieldType = value.Type()
 
-	if reflectStruct.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("value must be a struct")
-	}
-
-	if field, ok := structs.New(instance).FieldOk(key); ok {
-		if !field.IsExported() {
-			return nil, fmt.Errorf("Field %q is not exported", key)
-		}
-
-		structName := key
-
-		// read struct tags to determine how values are mapped to struct fields
-		if tag := field.Tag(RecordStructTag); tag != `` {
-			v := strings.Split(tag, `,`)
-
-			// if the first value isn't an empty string, that's what we're calling the field
-			if v[0] != `` {
-				structName = v[0]
+			if value.CanInterface() {
+				desc.DataValue = value.Interface()
 			}
 
-			// set additional flags from tag options
-			if len(v) > 1 {
-				identity = sliceutil.ContainsString(v[1:], `identity`)
-				omitEmpty = sliceutil.ContainsString(v[1:], `omitempty`)
-			}
+			return structutil.StopIterating
+		} else {
+			return nil
 		}
-
-		return &fieldDescription{
-			Field:        field,
-			ReflectField: reflectStruct.FieldByName(field.Name()),
-			Identity:     identity,
-			OmitEmpty:    omitEmpty,
-			OriginalName: key,
-			RecordKey:    structName,
-		}, nil
+	}); err == nil {
+		if desc == nil {
+			return nil, fmt.Errorf("No such field %q", key)
+		} else {
+			return desc, nil
+		}
 	} else {
-		return nil, fmt.Errorf("No such field %q", key)
+		return nil, err
 	}
 }

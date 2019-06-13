@@ -2,7 +2,7 @@
 LOCALS   := $(shell find . -type f -name '*.go')
 EXAMPLES := $(wildcard examples/*)
 
-.PHONY: test deps docs $(EXAMPLES)
+.PHONY: test deps docs $(EXAMPLES) build
 .EXPORT_ALL_VARIABLES:
 GO111MODULE = on
 
@@ -11,12 +11,12 @@ all: deps fmt test build docs
 deps:
 	@go list github.com/mjibson/esc || go get github.com/mjibson/esc/...
 	go get ./...
-	-go mod tidy
 
 fmt:
 	go generate -x ./...
 	gofmt -w $(LOCALS)
 	go vet ./...
+	-go mod tidy
 
 docs:
 	cd docs && make

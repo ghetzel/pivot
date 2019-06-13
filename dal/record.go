@@ -255,14 +255,6 @@ func (self *Record) Populate(into interface{}, collection *Collection) error {
 			return fmt.Errorf("Cannot validate input variable: %v", err)
 		}
 
-		// if the struct we got is a zero value, and we've been given a collection,
-		// use it with NewInstance
-		if collection != nil {
-			if typeutil.IsZero(into) {
-				into = collection.NewInstance()
-			}
-		}
-
 		var idFieldName string
 		var fallbackIdFieldName string
 
@@ -459,29 +451,24 @@ func (self *Record) convertRecordValueToStructValue(collection *Collection, key 
 		// 7. populate that instance with record.Populate(newInstance, relatedCollection)
 		//
 		if field, ok := collection.GetField(key); ok {
-			if intoField, err := findStructFieldByTag(into, key); err == nil {
-				if sf := intoField.Field; sf.IsExported() {
-					if constraint := field.BelongsToConstraint(); constraint != nil {
-						if related, err := collection.GetRelatedCollection(constraint.Collection); err == nil {
-							destValue := reflect.ValueOf(sf.Value())
-							destType := destValue.Type()
+			if intoField, err := getFieldForStruct(into, key); err == nil {
+				if constraint := field.BelongsToConstraint(); constraint != nil {
+					if related, err := collection.GetRelatedCollection(constraint.Collection); err == nil {
+						if intoField.FieldType.Kind() == reflect.Ptr && intoField.FieldType.Elem().Kind() == reflect.Struct {
+							instance := reflect.New(intoField.FieldType.Elem())
 
-							if destType.Kind() == reflect.Ptr && destType.Elem().Kind() == reflect.Struct {
-								instance := reflect.New(destType.Elem())
+							if instance.CanInterface() {
+								intoNew := instance.Interface()
 
-								if instance.CanInterface() {
-									intoNew := instance.Interface()
-
-									return intoNew, maputil.TaggedStructFromMap(map[string]interface{}{
-										related.GetIdentityFieldName(): value,
-									}, intoNew, RecordStructTag)
-								} else {
-									return nil, fmt.Errorf("Cannot populate output field %q of type %v", key, destType)
-								}
+								return intoNew, maputil.TaggedStructFromMap(map[string]interface{}{
+									related.GetIdentityFieldName(): value,
+								}, intoNew, RecordStructTag)
+							} else {
+								return nil, fmt.Errorf("Cannot populate output field %q of type %v", key, intoField.FieldType)
 							}
-						} else {
-							return nil, err
 						}
+					} else {
+						return nil, err
 					}
 				}
 			} else {
@@ -491,4 +478,16 @@ func (self *Record) convertRecordValueToStructValue(collection *Collection, key 
 	}
 
 	return value, nil
+}
+
+func (self *Record) identityFieldDescription() *fieldDescription {
+	desc := new(fieldDescription)
+
+	val := reflect.ValueOf(self)
+	val = val.Elem()
+	desc.FieldType = val.Type()
+	desc.FieldValue = val.FieldByName(`ID`)
+	desc.OriginalName = `ID`
+
+	return desc
 }

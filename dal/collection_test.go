@@ -2,7 +2,6 @@ package dal
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 	"time"
 
@@ -42,10 +41,10 @@ func (self *nullBackend) GetCollection(name string) (*Collection, error) {
 	}
 }
 
-func TestCollectionMakeRecord(t *testing.T) {
+func TestCollectionStructToRecord(t *testing.T) {
 	assert := require.New(t)
 
-	collection := NewCollection(`TestCollectionMakeRecord`)
+	collection := NewCollection(`TestCollectionStructToRecord`)
 	collection.AddFields([]Field{
 		{
 			Name: `name`,
@@ -71,14 +70,12 @@ func TestCollectionMakeRecord(t *testing.T) {
 		ActualAge: 42,
 	}
 
-	record, err := collection.MakeRecord(&testRecord)
+	record, err := collection.StructToRecord(&testRecord)
 	assert.Nil(err)
 	assert.NotNil(record)
 
-	assert.Equal(2, len(record.Fields))
-
 	assert.Nil(record.ID)
-	assert.Equal(`tester`, record.Get(`name`))
+	assert.EqualValues(`tester`, record.Get(`name`))
 	assert.EqualValues(42, record.Get(`age`))
 
 	type TestRecord2 struct {
@@ -94,26 +91,27 @@ func TestCollectionMakeRecord(t *testing.T) {
 		Name: `tester`,
 	}
 
-	record, err = collection.MakeRecord(&testRecord2)
+	record, err = collection.StructToRecord(&testRecord2)
 	assert.Nil(err)
 	assert.NotNil(record)
 
-	assert.Equal(2, len(record.Fields))
+	assert.Equal(3, len(record.Fields))
 
 	assert.Equal(11, record.ID)
 	assert.Equal(`tester`, record.Get(`name`))
+	assert.Equal(false, record.Get(`enabled`))
 	assert.EqualValues(0, record.Get(`age`))
 }
 
-func TestCollectionMakeRecordRelated(t *testing.T) {
+func TestCollectionStructToRecordRelated(t *testing.T) {
 	assert := require.New(t)
 
-	groups := NewCollection(`TestCollectionMakeRecordGroups`, Field{
+	groups := NewCollection(`TestCollectionStructToRecordGroups`, Field{
 		Name: `name`,
 		Type: StringType,
 	})
 
-	users := NewCollection(`TestCollectionMakeRecordUsers`, Field{
+	users := NewCollection(`TestCollectionStructToRecordUsers`, Field{
 		Name: `name`,
 		Type: StringType,
 	}, Field{
@@ -129,7 +127,7 @@ func TestCollectionMakeRecordRelated(t *testing.T) {
 	backend.RegisterCollection(users)
 	backend.RegisterCollection(groups)
 
-	record, err := users.MakeRecord(&testUser{
+	record, err := users.StructToRecord(&testUser{
 		Name: `tester`,
 		Group: &testGroup{
 			ID: 5432,
@@ -143,57 +141,6 @@ func TestCollectionMakeRecordRelated(t *testing.T) {
 	assert.Equal(`tester`, record.Get(`name`))
 	assert.EqualValues(5432, record.Get(`group_id`))
 	assert.EqualValues(42, record.Get(`age`))
-}
-
-func TestCollectionNewInstance(t *testing.T) {
-	assert := require.New(t)
-
-	constantTimeFn := func() time.Time {
-		return time.Date(2006, 1, 2, 15, 4, 5, 0, time.UTC)
-	}
-
-	collection := NewCollection(`TestCollectionNewInstance`)
-	collection.AddFields([]Field{
-		{
-			Name:         `name`,
-			Type:         StringType,
-			DefaultValue: `Bob`,
-		}, {
-			Name:         `enabled`,
-			Type:         BooleanType,
-			DefaultValue: true,
-		}, {
-			Name:         `age`,
-			Type:         IntType,
-			DefaultValue: []string{`WRONG TYPE`},
-		}, {
-			Name:         `created_at`,
-			Type:         TimeType,
-			DefaultValue: constantTimeFn,
-		},
-	}...)
-
-	type TestRecord struct {
-		Name      string    `pivot:"name"`
-		Enabled   bool      `pivot:"enabled,omitempty"`
-		Age       int       `pivot:"age"`
-		CreatedAt time.Time `pivot:"created_at"`
-	}
-
-	collection.SetRecordType(TestRecord{})
-	assert.True(reflect.DeepEqual(
-		collection.recordType,
-		reflect.TypeOf(TestRecord{}),
-	))
-
-	instanceI := collection.NewInstance()
-	instance, ok := instanceI.(*TestRecord)
-	assert.True(ok)
-
-	assert.Equal(`Bob`, instance.Name)
-	assert.True(instance.Enabled)
-	assert.Zero(instance.Age)
-	assert.Equal(constantTimeFn(), instance.CreatedAt)
 }
 
 func TestCollectionValidator(t *testing.T) {
@@ -219,7 +166,7 @@ func TestCollectionValidator(t *testing.T) {
 func TestCollectionMapFromRecord(t *testing.T) {
 	assert := require.New(t)
 
-	collection := NewCollection(`TestCollectionMakeRecord`)
+	collection := NewCollection(`TestCollectionStructToRecord`)
 	collection.IdentityFieldFormatter = func(id interface{}, op FieldOperation) (interface{}, error) {
 		if record, ok := id.(*Record); ok {
 			id = record.ID

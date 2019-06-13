@@ -263,7 +263,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 			// for each record being inserted...
 			for _, record := range recordset.Records {
-				if r, err := collection.MakeRecord(record); err == nil {
+				if r, err := collection.StructToRecord(record); err == nil {
 					record = r
 				} else {
 					return err
@@ -421,7 +421,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 		if tx, err := self.db.Begin(); err == nil {
 			// for each record being updated...
 			for _, record := range recordset.Records {
-				if r, err := collection.MakeRecord(record); err == nil {
+				if r, err := collection.StructToRecord(record); err == nil {
 					record = r
 				} else {
 					return err

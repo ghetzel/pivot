@@ -55,14 +55,6 @@ func NewModel(db backends.Backend, collection *dal.Collection) *Model {
 	return model
 }
 
-func (self *Model) NewInstance(inits ...dal.InitializerFunc) interface{} {
-	if self.collection == nil {
-		panic("Collection-aware instance creation is not supported on anonymous Models")
-	}
-
-	return self.collection.NewInstance(inits...)
-}
-
 func (self *Model) GetBackend() backends.Backend {
 	return self.db
 }
@@ -114,7 +106,7 @@ func (self *Model) Drop() error {
 // Creates and saves a new instance of the model from the given struct or dal.Record.
 //
 func (self *Model) Create(from interface{}) error {
-	if record, err := self.collection.MakeRecord(from); err == nil {
+	if record, err := self.collection.StructToRecord(from); err == nil {
 		return self.db.Insert(self.collection.Name, dal.NewRecordSet(record))
 	} else {
 		return err
@@ -141,7 +133,7 @@ func (self *Model) Exists(id interface{}) bool {
 // Updates and saves an existing instance of the model from the given struct or dal.Record.
 //
 func (self *Model) Update(from interface{}) error {
-	if record, err := self.collection.MakeRecord(from); err == nil {
+	if record, err := self.collection.StructToRecord(from); err == nil {
 		return self.db.Update(self.collection.Name, dal.NewRecordSet(record))
 	} else {
 		return err

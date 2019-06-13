@@ -8,7 +8,6 @@ import (
 type ResultFunc func(ptrToInstance interface{}, err error) // {}
 
 type Mapper interface {
-	NewInstance(inits ...dal.InitializerFunc) interface{}
 	GetBackend() Backend
 	GetCollection() *dal.Collection
 	Migrate() error
