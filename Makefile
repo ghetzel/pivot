@@ -25,7 +25,7 @@ test:
 	go test -count=1 --tags json1 ./...
 
 $(EXAMPLES):
-	cd $(@) && go build --tags json1 -o ../../bin/example-$(notdir $(@)) *.go
+	go build --tags json1 -o bin/example-$(notdir $(@)) $(@)/*.go
 
 build: $(EXAMPLES)
 	go build --tags json1 -i -o bin/pivot pivot/*.go

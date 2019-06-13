@@ -29,7 +29,8 @@ require (
 	github.com/fatih/structs v1.0.0
 	github.com/ghetzel/cli v1.17.0
 	github.com/ghetzel/diecast v1.10.17
-	github.com/ghetzel/go-stockutil v1.7.52
+	github.com/ghetzel/go-stockutil v1.7.54
+	github.com/ghetzel/pivot v2.5.0+incompatible
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd // indirect
 	github.com/glycerine/goconvey v0.0.0-20180728074245-46e3a41ad493 // indirect
@@ -48,6 +49,7 @@ require (
 	github.com/jtolds/gls v4.2.1+incompatible // indirect
 	github.com/lib/pq v1.1.0
 	github.com/mattn/go-sqlite3 v1.9.0
+	github.com/mjibson/esc v0.2.0 // indirect
 	github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
@@ -67,6 +69,7 @@ require (
 	github.com/tinylib/msgp v1.0.2 // indirect
 	github.com/urfave/negroni v1.0.0
 	github.com/willf/bitset v0.0.0-20161202170036-5c3c0fce4884 // indirect
+	golang.org/x/tools v0.0.0-20190613204242-ed0dc450797f // indirect
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2 // indirect

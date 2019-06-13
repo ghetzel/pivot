@@ -55,6 +55,10 @@ func NewModel(db backends.Backend, collection *dal.Collection) *Model {
 	return model
 }
 
+func (self *Model) String() string {
+	return self.collection.Name
+}
+
 func (self *Model) GetBackend() backends.Backend {
 	return self.db
 }

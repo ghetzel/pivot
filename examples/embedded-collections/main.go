@@ -1,110 +1,147 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/mail"
 	"os"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/pivot/v3"
 	"github.com/ghetzel/pivot/v3/backends"
 	"github.com/ghetzel/pivot/v3/dal"
-	"github.com/ghetzel/pivot/v3/mapper"
 )
 
-type Group struct {
-	GID       int       `pivot:"gid,identity"`
-	Name      string    `pivot:"name"`
-	CreatedAt time.Time `pivot:"created_at"`
-	UpdatedAt time.Time `pivot:"updated_at"`
+type Contact struct {
+	ID        int64  `pivot:"id,identity"`
+	FirstName string `pivot:"first_name"`
+	LastName  string `pivot:"last_name"`
+	Address   string `pivot:"address"`
+	City      string `pivot:"city"`
+	State     string `pivot:"state"`
+	Country   string `pivot:"country"`
 }
 
-type User struct {
-	Username  string    `pivot:"id,identity"`
-	Email     string    `pivot:"email"`
-	Group     *Group    `pivot:"group"`
-	CreatedAt time.Time `pivot:"created_at"`
-	UpdatedAt time.Time `pivot:"updated_at"`
+type Item struct {
+	ID          int     `pivot:"id,identity"`
+	Name        string  `pivot:"name"`
+	Description string  `pivot:"description"`
+	Cost        float64 `pivot:"cost"`
+	Currency    string  `pivot:"currency"`
 }
 
-var GroupsTable = &dal.Collection{
-	Name:              `groups`,
-	IdentityField:     `gid`,
-	IdentityFieldType: dal.IntType,
+type Order struct {
+	ID              string    `pivot:"id,identity"`
+	Status          string    `pivot:"status"`
+	Items           []Item    `pivot:"-"`
+	ShippingAddress Contact   `pivot:"shipping_address"`
+	BillingAddress  Contact   `pivot:"billing_address"`
+	CreatedAt       time.Time `pivot:"created_at"`
+	UpdatedAt       time.Time `pivot:"updated_at"`
+}
+
+var ItemsTable = &dal.Collection{
+	Name: `items`,
 	Fields: []dal.Field{
 		{
-			Name:        `name`,
-			Description: `The display name of the group.`,
-			Type:        dal.StringType,
-			Required:    true,
-		}, {
-			Name:         `created_at`,
-			Type:         dal.TimeType,
-			Required:     true,
-			DefaultValue: `now`,
-
-			// set created_at only if it's currently nil
-			Formatter: dal.CurrentTimeIfUnset,
-		}, {
-			Name:         `updated_at`,
-			Type:         dal.TimeType,
-			Required:     true,
-			DefaultValue: `now`,
-		},
-	},
-}
-
-var UsersTable = &dal.Collection{
-	Name: `users`,
-
-	// primary key is the username
-	IdentityField:     `username`,
-	IdentityFieldType: dal.StringType,
-
-	// enforce that usernames be snake_cased and whitespace-trimmed
-	IdentityFieldFormatter: dal.FormatAll(
-		dal.TrimSpace,
-		dal.ChangeCase(`underscore`),
-	),
-
-	Fields: []dal.Field{
-		{
-			Name:     `email`,
+			Name:     `name`,
 			Type:     dal.StringType,
 			Required: true,
-
-			// enforces RFC 5322 formatting on email addresses
-			Formatter: func(email interface{}, inOrOut dal.FieldOperation) (interface{}, error) {
-				if addr, err := mail.ParseAddress(fmt.Sprintf("%v", email)); err == nil {
-					return addr.String(), nil
-				} else {
-					return nil, err
-				}
-			},
 		}, {
-			Name:         `group_id`,
-			Type:         dal.IntType,
-			DefaultValue: true,
-			Required:     true,
-			BelongsTo:    GroupsTable,
-		}, {
-			Name:     `created_at`,
-			Type:     dal.TimeType,
+			Name:     `description`,
+			Type:     dal.StringType,
 			Required: true,
-
-			// set created_at only if it's currently nil
-			Formatter: dal.CurrentTimeIfUnset,
 		}, {
-			Name:     `updated_at`,
-			Type:     dal.TimeType,
+			Name:     `cost`,
+			Type:     dal.FloatType,
 			Required: true,
-
-			// set updated_at to the current time, every time
-			Formatter: dal.CurrentTime,
+		}, {
+			Name:     `currency`,
+			Type:     dal.StringType,
+			Required: true,
 		},
 	},
 }
+
+var OrdersTable = &dal.Collection{
+	Name: `items`,
+	Fields: []dal.Field{
+		{
+			Name:         `status`,
+			Type:         dal.StringType,
+			Required:     true,
+			DefaultValue: `pending`,
+			Validator: dal.ValidateIsOneOf(
+				`pending`,
+				`received`,
+				`processing`,
+				`shipped`,
+				`delivered`,
+				`canceled`,
+			),
+		}, {
+			Name:     `shipping_address`,
+			Type:     dal.IntType,
+			Required: true,
+		}, {
+			Name:     `billing_address`,
+			Type:     dal.IntType,
+			Required: true,
+		}, {
+			Name:     `currency`,
+			Type:     dal.StringType,
+			Required: true,
+		},
+	},
+}
+
+var OrdersItemsTable = &dal.Collection{
+	Fields: []dal.Field{
+		{
+			Name:      `order_id`,
+			Type:      dal.StringType,
+			Required:  true,
+			BelongsTo: OrdersTable,
+		}, {
+			Name:      `item_id`,
+			Type:      dal.IntType,
+			Required:  true,
+			BelongsTo: ItemsTable,
+		},
+	},
+}
+
+var ContactsTable = &dal.Collection{
+	Name: `contacts`,
+	Fields: []dal.Field{
+		{
+			Name:     `first_name`,
+			Type:     dal.StringType,
+			Required: true,
+		}, {
+			Name: `last_name`,
+			Type: dal.StringType,
+		}, {
+			Name: `address`,
+			Type: dal.StringType,
+		}, {
+			Name:     `city`,
+			Type:     dal.StringType,
+			Required: true,
+		}, {
+			Name:     `state`,
+			Type:     dal.StringType,
+			Required: true,
+		}, {
+			Name:     `country`,
+			Type:     dal.StringType,
+			Required: true,
+		},
+	},
+}
+
+var Contacts pivot.Model
+var Items pivot.Model
+var Orders pivot.Model
+var OrdersItems pivot.Model
 
 func main() {
 	var connectionString string
@@ -117,55 +154,24 @@ func main() {
 
 	// setup a connection to the database
 	if db, err := pivot.NewDatabase(connectionString); err == nil {
-		db = backends.NewEmbeddedRecordBackend(db)
+		db.SetBackend(backends.NewEmbeddedRecordBackend(db.GetBackend()))
 
 		// make sure we can actually talk to the database
 		if err := db.Ping(10 * time.Second); err != nil {
 			log.Fatalf("Database connection test failed: %v", err)
 		}
 
-		Users := mapper.NewModel(db, UsersTable)
-		Groups := mapper.NewModel(db, GroupsTable)
+		Contacts = db.AttachCollection(ContactsTable)
+		Items = db.AttachCollection(ItemsTable)
+		Orders = db.AttachCollection(OrdersTable)
+		OrdersItems = db.AttachCollection(OrdersItemsTable)
 
-		// creates the table, and fails if the existing schema does not match the
-		// UsersTable collection definition above
-		if err := Groups.Migrate(); err != nil {
-			log.Fatalf("migrating groups table failed: %v", err)
-		}
+		// create tables as necessary
+		log.FatalfIf("migrate failed: %v", db.Migrate())
 
-		// creates the table, and fails if the existing schema does not match the
-		// UsersTable collection definition above
-		if err := Users.Migrate(); err != nil {
-			log.Fatalf("migrating users table failed: %v", err)
-		}
+		// load data into tables
+		log.FatalfIf("load fixtures failed: %v", db.LoadFixtures(`./examples/embedded-collections/fixtures/*.json`))
 
-		// CREATE
-		// -----------------------------------------------------------------------------------------
-
-		// make a user object resembling user input
-		user := User{
-			Username: "  Test\nUser  ",
-			Email:    "test.user+testing@example.com",
-			Group: &Group{
-				GID:  4,
-				Name: `Test Group`,
-			},
-		}
-
-		// create the user
-		if err := Users.Create(&user); err != nil {
-			log.Fatalf("failed to create user: %v", err)
-		}
-
-		var readback User
-
-		// read back the user
-		if err := Users.Get(user.Username, &readback); err != nil {
-			log.Fatalf("failed to retrieve user: %v", err)
-		}
-
-		// print out what we've done
-		log.Printf("User %q created email=%q group=%+v", readback.Username, readback.Email, readback.Group)
 	} else {
 		log.Fatalf("failed to instantiate database: %v", err)
 	}
