@@ -288,6 +288,12 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 		self.placeholderIndex = 0
 	}()
 
+	inputValues, err := self.populateInputValues()
+
+	if err != nil {
+		return err
+	}
+
 	switch self.Type {
 	case SqlSelectStatement:
 		self.Push([]byte(`SELECT `))
@@ -363,22 +369,8 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 		self.Push([]byte(strings.Join(fieldNames, `, `)))
 		self.Push([]byte(`) VALUES (`))
 
-		values := make([]string, 0)
-
-		for _, field := range maputil.StringKeys(self.InputData) {
-			v, _ := self.InputData[field]
-			values = append(values, fmt.Sprintf("\u2983%s\u2984", field))
-
-			if vv, err := self.PrepareInputValue(field, v); err == nil {
-				self.inputValues = append(self.inputValues, vv)
-			} else {
-				return err
-			}
-		}
-
-		self.Push([]byte(strings.Join(values, `, `)))
+		self.Push([]byte(strings.Join(inputValues, `, `)))
 		self.Push([]byte(`)`))
-
 	case SqlUpdateStatement:
 		if len(self.InputData) == 0 {
 			return fmt.Errorf("UPDATE statements must specify input data")
@@ -394,15 +386,6 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 		sort.Strings(fieldNames)
 
 		for _, field := range fieldNames {
-			value, _ := self.InputData[field]
-
-			// do this first because we want the unmodified field name
-			if vv, err := self.PrepareInputValue(field, value); err == nil {
-				self.inputValues = append(self.inputValues, vv)
-			} else {
-				return err
-			}
-
 			field := self.ToFieldName(field)
 			updatePairs = append(updatePairs, fmt.Sprintf("%s = \u2983%s\u2984", field, field))
 		}
@@ -423,6 +406,23 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 	self.applyPlaceholders()
 
 	return nil
+}
+
+func (self *Sql) populateInputValues() ([]string, error) {
+	values := make([]string, 0)
+
+	for _, field := range maputil.StringKeys(self.InputData) {
+		v, _ := self.InputData[field]
+		values = append(values, fmt.Sprintf("\u2983%s\u2984", field))
+
+		if vv, err := self.PrepareInputValue(field, v); err == nil {
+			self.inputValues = append(self.inputValues, vv)
+		} else {
+			return nil, err
+		}
+	}
+
+	return values, nil
 }
 
 func (self *Sql) WithField(field string) error {
@@ -547,7 +547,9 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 	for _, vI := range criterion.Values {
 		if value, err := stringutil.ToString(vI); err == nil {
 			if typedValue, err := self.valueToNativeRepresentation(criterion.Type, vI); err == nil {
-				if rangepair, ok := vI.(sqlRangeValue); ok {
+				if typedValue == nil {
+					value = `NULL`
+				} else if rangepair, ok := vI.(sqlRangeValue); ok {
 					typedValue = rangepair
 					self.values = append(self.values, rangepair.lower)
 					self.values = append(self.values, rangepair.upper)

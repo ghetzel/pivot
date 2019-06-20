@@ -453,7 +453,15 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 				// add all non-ID fields to the record's Fields set
 				for k, v := range record.Fields {
 					if k != collection.IdentityField {
-						queryGen.InputData[k] = v
+						if field, ok := collection.GetField(k); ok {
+							if converted, err := field.ConvertValue(v); err == nil {
+								queryGen.InputData[k] = converted
+							} else {
+								return fmt.Errorf("field %v: %v", field.Name, err)
+							}
+						} else {
+							querylog.Warningf("Nonexistent field %q on collection %q", k, collection.Name)
+						}
 					}
 				}
 

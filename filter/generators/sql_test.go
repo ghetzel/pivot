@@ -104,12 +104,12 @@ func TestSqlSelects(t *testing.T) {
 			},
 			`enabled/null`: {
 				query:   `SELECT ` + field + ` FROM foo WHERE (enabled IS NULL)`,
-				values:  []interface{}{nil},
+				values:  []interface{}{},
 				mapping: DefaultSqlTypeMapping,
 			},
 			`enabled/not:null`: {
 				query:   `SELECT ` + field + ` FROM foo WHERE (enabled IS NOT NULL)`,
-				values:  []interface{}{nil},
+				values:  []interface{}{},
 				mapping: DefaultSqlTypeMapping,
 			},
 			`age/lt:21`: {
@@ -203,8 +203,8 @@ func TestSqlSelects(t *testing.T) {
 			gen.TypeMapping = expected.mapping
 			actual, err := filter.Render(gen, `foo`, f)
 			assert.Nil(err)
-			assert.Equal(expected.query, string(actual[:]))
-			assert.Equal(expected.values, gen.GetValues())
+			assert.Equal(expected.query, string(actual[:]), spec)
+			assert.EqualValues(expected.values, gen.GetValues(), spec)
 		}
 	}
 }
@@ -266,7 +266,7 @@ func TestSqlInserts(t *testing.T) {
 		},
 	}
 
-	for _, expected := range tests {
+	for spec, expected := range tests {
 		f := filter.New()
 
 		gen := NewSqlGenerator()
@@ -287,7 +287,7 @@ func TestSqlInserts(t *testing.T) {
 			vv = append(vv, v)
 		}
 
-		assert.Equal(vv, gen.GetValues())
+		assert.EqualValues(vv, gen.GetValues(), spec)
 	}
 }
 
@@ -354,7 +354,7 @@ func TestSqlUpdates(t *testing.T) {
 
 		actual, err := filter.Render(gen, `foo`, f)
 		assert.Nil(err)
-		assert.Equal(expected, string(actual[:]))
+		assert.Equal(expected, string(actual[:]), expected)
 	}
 
 }
@@ -404,16 +404,12 @@ func TestSqlDeletes(t *testing.T) {
 			},
 		},
 		`enabled/null`: {
-			query: `DELETE FROM foo WHERE (enabled IS NULL)`,
-			values: []interface{}{
-				nil,
-			},
+			query:  `DELETE FROM foo WHERE (enabled IS NULL)`,
+			values: []interface{}{},
 		},
 		`enabled/not:null`: {
-			query: `DELETE FROM foo WHERE (enabled IS NOT NULL)`,
-			values: []interface{}{
-				nil,
-			},
+			query:  `DELETE FROM foo WHERE (enabled IS NOT NULL)`,
+			values: []interface{}{},
 		},
 		`age/lt:21`: {
 			query: `DELETE FROM foo WHERE (age < ?)`,
@@ -490,8 +486,8 @@ func TestSqlDeletes(t *testing.T) {
 		gen.Type = SqlDeleteStatement
 		actual, err := filter.Render(gen, `foo`, f)
 		assert.Nil(err)
-		assert.Equal(expected.query, string(actual[:]))
-		assert.Equal(expected.values, gen.GetValues())
+		assert.Equal(expected.query, string(actual[:]), spec)
+		assert.Equal(expected.values, gen.GetValues(), spec)
 	}
 }
 

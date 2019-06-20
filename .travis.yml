@@ -5,6 +5,8 @@ go:
 - "1.12"
 - master
 
+dist: xenial
+
 # sudo is required for docker
 sudo: required
 

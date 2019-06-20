@@ -96,7 +96,11 @@ func (self *Field) normalizeType(in interface{}) (interface{}, error) {
 
 	switch self.Type {
 	case StringType:
-		in = variant.String()
+		if !self.Required && variant.IsZero() {
+			in = nil
+		} else {
+			in = variant.String()
+		}
 	case BooleanType:
 		in = variant.Bool()
 	case IntType:

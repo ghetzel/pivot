@@ -41,11 +41,11 @@ func TestFieldConvertValueString(t *testing.T) {
 	// -------------------------------------------------------------------------
 	value, err = field.ConvertValue(``)
 	assert.NoError(err)
-	assert.Equal(``, value)
+	assert.Nil(value)
 
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
-	assert.Equal(``, value)
+	assert.Nil(value)
 
 	value, err = field.ConvertValue(`things`)
 	assert.NoError(err)
