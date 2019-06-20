@@ -172,6 +172,7 @@ func main() {
 		// load data into tables
 		log.FatalfIf("load fixtures failed: %v", db.LoadFixtures(`./examples/embedded-collections/fixtures/*.json`))
 
+		// TODO: need to actually demonstrate how embedding works
 	} else {
 		log.Fatalf("failed to instantiate database: %v", err)
 	}

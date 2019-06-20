@@ -138,13 +138,15 @@ func TestAll(t *testing.T) {
 		var waiter sync.WaitGroup
 
 		// go shouldRun(&waiter, `dynamodb`, func() { setupTestDynamoDB(run) })
-		// go shouldRun(&waiter, `redis`, func() { setupTestRedis(run) })
+		go shouldRun(&waiter, `redis`, func() { setupTestRedis(`4.0.14`, run) })
+		go shouldRun(&waiter, `redis`, func() { setupTestRedis(`5.0`, run) })
 		go shouldRun(&waiter, `mongo`, func() { setupTestMongo(`3.2`, run) })
 		go shouldRun(&waiter, `mongo`, func() { setupTestMongo(`3.4`, run) })
 		go shouldRun(&waiter, `mongo`, func() { setupTestMongo(`3.6`, run) })
 		go shouldRun(&waiter, `mongo`, func() { setupTestMongo(`4.0`, run) })
 		go shouldRun(&waiter, `psql`, func() { setupTestPostgres(`9`, run) })
 		go shouldRun(&waiter, `psql`, func() { setupTestPostgres(`10`, run) })
+		go shouldRun(&waiter, `psql`, func() { setupTestPostgres(`11`, run) })
 		// go shouldRun(&waiter, `mysql`, func() { setupTestMysql(`5`, run) })
 		// go shouldRun(&waiter, `mysql`, func() { setupTestMysql(`8`, run) })
 		go shouldRun(&waiter, `sqlite`, func() { setupTestSqlite(run) })
@@ -209,12 +211,16 @@ func setupTestSqlite(run testRunnerFunc) {
 	}
 }
 
-func setupTestRedis(run testRunnerFunc) {
-	if b, err := makeBackend(`redis://localhost:6379/testing?autoregister=true`); err == nil {
-		run(b)
-	} else {
-		fmt.Fprintf(os.Stderr, "Failed to create backend: %v\n", err)
-	}
+func setupTestRedis(version string, run testRunnerFunc) {
+	docker(`redis`, version, nil, func(res *dockertest.Resource) (backends.Backend, error) {
+		if b, err := makeBackend(
+			fmt.Sprintf("redis://localhost:%v/testing?autoregister=true", res.GetPort("6379/tcp")),
+		); err == nil {
+			return b, b.Ping(time.Second)
+		} else {
+			return nil, err
+		}
+	}, run)
 }
 
 func setupTestSqliteWithBleveIndexer(run testRunnerFunc) {
