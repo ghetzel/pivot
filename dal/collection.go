@@ -7,6 +7,7 @@ import (
 
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/structutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 )
 
@@ -23,12 +24,8 @@ const (
 var DefaultIdentityField = `id`
 var DefaultIdentityFieldType Type = IntType
 
-// Used by consumers Collection.NewInstance that wish to modify the instance
-// before returning it
-type InitializerFunc func(interface{}) interface{} // {}
-
-type Instantiator interface {
-	Constructor() interface{}
+type Backend interface {
+	GetCollection(collection string) (*Collection, error)
 }
 
 type Collection struct {
@@ -109,19 +106,31 @@ type Collection struct {
 	// validator when validation requires checking multiple fields at once.
 	PreSaveValidator CollectionValidatorFunc `json:"-"`
 
-	recordType          reflect.Type
-	instanceInitializer InitializerFunc
+	recordType reflect.Type
+	backend    Backend
 }
 
 // Create a new colllection definition with no fields.
-func NewCollection(name string) *Collection {
+func NewCollection(name string, fields ...Field) *Collection {
+	if len(fields) == 0 {
+		fields = make([]Field, 0)
+	}
+
 	return &Collection{
 		Name:                   name,
-		Fields:                 make([]Field, 0),
+		Fields:                 fields,
 		IdentityField:          DefaultIdentityField,
 		IdentityFieldType:      DefaultIdentityFieldType,
 		IdentityFieldValidator: ValidateNotEmpty,
 	}
+}
+
+// Set the backend for this collection.  The Backend interface in this package is a limited subset
+// of the backends.Backend interface that avoids a circular dependency between the two packages.
+// The intent is to allow Collections to retrieve details about other collections registered on the
+// same backend.
+func (self *Collection) SetBackend(backend Backend) {
+	self.backend = backend
 }
 
 // Return the duration until the TimeToLiveField in given record expires within the current collection.
@@ -251,20 +260,8 @@ func (self *Collection) ApplyDefinition(definition *Collection) error {
 	return nil
 }
 
+// Deprecated: this functionality has been removed.
 func (self *Collection) SetRecordType(in interface{}) *Collection {
-	inV := reflect.ValueOf(in)
-
-	if inV.Kind() == reflect.Ptr {
-		inV = inV.Elem()
-	}
-
-	inT := inV.Type()
-
-	switch inT.Kind() {
-	case reflect.Struct, reflect.Map:
-		self.recordType = inT
-	}
-
 	return self
 }
 
@@ -274,90 +271,6 @@ func (self *Collection) HasRecordType() bool {
 	}
 
 	return false
-}
-
-func (self *Collection) NewInstance(initializers ...InitializerFunc) interface{} {
-	if self.recordType == nil {
-		panic("Cannot create instance without a registered type")
-	}
-
-	var instance interface{}
-	var instanceV reflect.Value
-
-	switch self.recordType.Kind() {
-	case reflect.Map:
-		instanceV = reflect.MakeMap(self.recordType)
-		instance = instanceV.Interface()
-	default:
-		instance = reflect.New(self.recordType).Interface()
-		instanceV = reflect.ValueOf(instance).Elem()
-	}
-
-	structFields, _ := getFieldsForStruct(instance)
-
-	for _, field := range self.Fields {
-		var zeroValue interface{}
-
-		if field.DefaultValue == nil {
-			zeroValue = field.GetTypeInstance()
-		} else {
-			zeroValue = field.GetDefaultValue()
-		}
-
-		if zeroV := reflect.ValueOf(zeroValue); zeroV.IsValid() {
-			switch instanceV.Kind() {
-			case reflect.Map:
-				mapKeyT := instanceV.Type().Key()
-				mapValueT := instanceV.Type().Elem()
-
-				keyV := reflect.ValueOf(field.Name)
-
-				if keyV.IsValid() {
-					if !keyV.Type().AssignableTo(mapKeyT) {
-						if keyV.Type().ConvertibleTo(mapKeyT) {
-							keyV = keyV.Convert(mapKeyT)
-						} else {
-							continue
-						}
-					}
-
-					if !zeroV.Type().AssignableTo(mapValueT) {
-						if zeroV.Type().ConvertibleTo(mapValueT) {
-							zeroV = zeroV.Convert(mapValueT)
-						} else {
-							continue
-						}
-					}
-
-					instanceV.SetMapIndex(keyV, zeroV)
-				}
-
-			case reflect.Struct:
-				if structFields != nil {
-					if fieldDescr, ok := structFields[field.Name]; ok {
-						typeutil.SetValue(fieldDescr.ReflectField, zeroValue)
-					}
-				}
-			}
-		}
-	}
-
-	// apply schema-wide initializer if specified
-	if self.instanceInitializer != nil {
-		instance = self.instanceInitializer(instance)
-	}
-
-	// apply any call-time initializers
-	for _, init := range initializers {
-		instance = init(instance)
-	}
-
-	// apply the instance-specific initializer (if implemented)
-	if init, ok := instance.(Instantiator); ok {
-		instance = init.Constructor()
-	}
-
-	return instance
 }
 
 // Populate a given Record with the default values (if any) of all fields in the Collection.
@@ -467,6 +380,15 @@ func (self *Collection) KeyFields() []Field {
 	return keys
 }
 
+// Same as KeyFields, but returns only the field names
+func (self *Collection) KeyFieldNames() (names []string) {
+	for _, kf := range self.KeyFields() {
+		names = append(names, kf.Name)
+	}
+
+	return
+}
+
 // Return the number of keys on that uniquely identify a single record in this Collection.
 func (self *Collection) KeyCount() int {
 	return len(self.KeyFields())
@@ -506,6 +428,12 @@ func (self *Collection) ValueForField(name string, value interface{}, op FieldOp
 		validator = self.IdentityFieldValidator
 		value = self.ConvertValue(name, value)
 	} else if field, ok := self.GetField(name); ok {
+		if v, err := self.extractValueFromRelationship(&field, value, op); err == nil {
+			value = v
+		} else {
+			return nil, err
+		}
+
 		if v, err := field.ConvertValue(value); err == nil {
 			formatter = field.Formatter
 			validator = field.Validator
@@ -536,6 +464,37 @@ func (self *Collection) ValueForField(name string, value interface{}, op FieldOp
 	return value, nil
 }
 
+// Takes a value provided for either persistence to the backend, or as retrieved from the backend, and hammers
+// it into the right shape based on this collection's Constraints.
+func (self *Collection) extractValueFromRelationship(field *Field, input interface{}, op FieldOperation) (interface{}, error) {
+	// if:
+	//	- persisting to backend
+	//	- AND this field has a relationship
+	//	- AND we have a struct
+	//	THEN we need to extract key(s) from that struct
+	if constraint := field.BelongsToConstraint(); constraint != nil {
+		if resolved := typeutil.ResolveValue(input); typeutil.IsStruct(resolved) {
+			if relatedTo, err := self.GetRelatedCollection(constraint.Collection); err == nil {
+				if relatedRecord, err := relatedTo.StructToRecord(input); err == nil {
+					keys := relatedRecord.Keys(relatedTo)
+
+					if len(keys) == 1 {
+						return keys[0], nil
+					} else {
+						return keys, nil
+					}
+				} else {
+					return nil, err
+				}
+			} else {
+				return nil, fmt.Errorf("related collection %q: %v", constraint.Collection, err)
+			}
+		}
+	}
+
+	return input, nil
+}
+
 func (self *Collection) formatAndValidateId(id interface{}, op FieldOperation, record *Record) (interface{}, error) {
 	// if specified, apply a formatter to the ID
 	if self.IdentityFieldFormatter != nil {
@@ -558,137 +517,102 @@ func (self *Collection) formatAndValidateId(id interface{}, op FieldOperation, r
 	return id, nil
 }
 
-// Generates a Record instance from the given value based on this collection's schema.
-func (self *Collection) MakeRecord(in interface{}, ops ...FieldOperation) (*Record, error) {
-	var idFieldName string
-	var op FieldOperation
+func (self *Collection) EmptyRecord() *Record {
+	record := NewRecord(nil)
+	self.FillDefaults(record)
 
-	if len(ops) > 0 {
-		op = ops[0]
-	} else {
-		op = PersistOperation
-	}
+	return record
+}
+
+// Generates a Record suitable for persistence in a backend from the given struct.
+func (self *Collection) StructToRecord(in interface{}) (*Record, error) {
+	var idDesc *fieldDescription
 
 	if err := validatePtrToStructType(in); err != nil {
 		return nil, err
 	}
 
+	output := self.EmptyRecord()
+
 	// if the argument is already a record, return it as-is
 	if record, ok := in.(*Record); ok {
-		self.FillDefaults(record)
+		output.ID = record.ID
+
+		// this is a roundabout way of ensuring that generated IDs are written back to the record
+		// we were given as input
+		idDesc = record.identityFieldDescription()
 
 		// we're returning the record we were given, but first we need to validate and format it
 		for key, value := range record.Fields {
-			if v, err := self.ValueForField(key, value, op); err == nil {
-				record.Set(key, v)
+			if v, err := self.ValueForField(key, value, PersistOperation); err == nil {
+				output.Set(key, v)
 			} else if IsFieldNotFoundErr(err) {
-				delete(record.Fields, key)
+				continue
 			} else {
 				return nil, err
 			}
 		}
+	} else {
+		idFieldName := getIdentityFieldName(in, self)
 
-		// validate ID value
-		if idI, err := self.formatAndValidateId(record.ID, op, record); err == nil {
-			record.ID = idI
-		} else {
+		// iterate through all struct fields and fill the output Record with values
+		if err := structutil.FieldsFunc(in, func(field *reflect.StructField, value reflect.Value) error {
+			desc := structFieldToDesc(field)
+			desc.FieldValue = value
+			desc.FieldType = value.Type()
+
+			// skip omitted fields
+			if desc.RecordKey == `-` {
+				return nil
+			}
+
+			// don't clobber existing fields with empty data, except for bools, whose
+			// zero value is meaningful
+			if typeutil.IsZero(value) && value.Kind() != reflect.Bool && desc.OmitEmpty {
+				return nil
+			}
+
+			// extract value from struct and put it in the appropriate place in the output Record
+			if value.CanInterface() {
+				fieldValue := value.Interface()
+
+				if idFieldName != `` && field.Name == idFieldName {
+					output.ID = fieldValue
+
+					// set this so that generated IDs are written back to the struct we were given as input
+					idDesc = desc
+				} else if v, err := self.ValueForField(desc.RecordKey, fieldValue, PersistOperation); err == nil {
+					output.Set(desc.RecordKey, v)
+				} else if !IsFieldNotFoundErr(err) {
+					return err
+				}
+			}
+
+			return nil
+		}); err != nil {
 			return nil, err
 		}
-
-		// validate whole record (if specified)
-		if err := self.ValidateRecord(record, op); err != nil {
-			return nil, err
-		}
-
-		return record, nil
 	}
 
-	// create the record we're going to populate
-	record := NewRecord(nil)
+	// validate the ID is cool and good
+	if idI, err := self.formatAndValidateId(output.ID, PersistOperation, output); err == nil {
+		output.ID = idI
 
-	// populate it with default values
-	self.FillDefaults(record)
-
-	// get details for the fields present on the given input struct
-	if fields, err := getFieldsForStruct(in); err == nil {
-		// for each field descriptor...
-		for tagName, fieldDescr := range fields {
-			if fieldDescr.Field.IsExported() {
-				value := fieldDescr.Field.Value()
-
-				// set the ID field if this field is explicitly marked as the identity
-				if fieldDescr.Identity && !typeutil.IsZero(fieldDescr.Field) {
-					idFieldName = tagName
-					record.ID = value
-				} else if finalValue, err := self.ValueForField(tagName, value, op); err == nil {
-					// if we're supposed to skip empty values, and this value is indeed empty, skip
-					if fieldDescr.OmitEmpty && typeutil.IsZero(finalValue) {
-						continue
-					}
-
-					// set the value in the output record
-					record.Set(tagName, finalValue)
-
-					// make sure the corresponding value in the input struct matches
-					typeutil.SetValue(fieldDescr.ReflectField, finalValue)
-				}
+		if idDesc != nil {
+			if err := idDesc.Set(output.ID); err != nil {
+				return nil, fmt.Errorf("failed to writeback ID to input object: %v", err)
 			}
 		}
-
-		// an identity column was not explicitly specified, so try to find the column that matches
-		// our identity field name
-		if record.ID == nil {
-			for tagName, fieldDescr := range fields {
-				if tagName == self.GetIdentityFieldName() {
-					if fieldDescr.Field.IsExported() {
-						// skip fields containing a zero value
-						if !typeutil.IsZero(fieldDescr.Field) {
-							idFieldName = tagName
-							record.ID = fieldDescr.Field.Value()
-							delete(record.Fields, tagName)
-							break
-						}
-					}
-				}
-			}
-		}
-
-		// an ID still wasn't found, so try the field called "id"
-		for _, fieldName := range []string{`id`, `ID`, `Id`} {
-			if record.ID == nil {
-				if f, ok := fields[fieldName]; ok {
-					if !f.Field.IsZero() {
-						idFieldName = fieldName
-						record.ID = f.Field.Value()
-						delete(record.Fields, fieldName)
-						break
-					}
-				}
-			}
-		}
-
-		if idI, err := self.formatAndValidateId(record.ID, op, record); err == nil {
-			record.ID = idI
-
-			// make sure the corresponding ID in the input struct matches
-			if fieldDescr, ok := fields[idFieldName]; ok {
-				if err := typeutil.SetValue(fieldDescr.ReflectField, idI); err != nil {
-					return nil, fmt.Errorf("failed to writeback value to %q: %v", idFieldName, err)
-				}
-			}
-		} else {
-			return nil, err
-		}
-
-		// validate whole record (if specified)
-		if err := self.ValidateRecord(record, op); err != nil {
-			return nil, err
-		}
-
-		return record, nil
 	} else {
 		return nil, err
 	}
+
+	// validate whole record
+	if err := self.ValidateRecord(output, PersistOperation); err != nil {
+		return nil, err
+	}
+
+	return output, nil
 }
 
 // Convert the given record into a map.
@@ -833,4 +757,47 @@ func (self *Collection) Diff(actual *Collection) []SchemaDelta {
 	}
 
 	return differences
+}
+
+// Retrieve the set of all Constraints on this collection, both explicitly provided
+// via the Constraints field, as well as constraints specified using the "BelongsTo"
+// shorthand on Fields.
+func (self *Collection) GetAllConstraints() (constraints []Constraint) {
+	constraints = self.Constraints
+
+	for _, field := range self.Fields {
+		if proposed := field.BelongsToConstraint(); proposed != nil {
+			var exists bool
+
+			// run through existing constraints. if an equivalent constraint
+			// already exists, replace it
+			for i, c := range constraints {
+				if c.Equal(proposed) {
+					constraints[i] = *proposed
+					exists = true
+					break
+				}
+			}
+
+			if !exists {
+				constraints = append(constraints, *proposed)
+			}
+		}
+	}
+
+	return
+}
+
+// Retrieves a Collection by name from the backend this Collection is registered to.
+func (self *Collection) GetRelatedCollection(name string) (*Collection, error) {
+	if self.backend == nil {
+		return nil, fmt.Errorf("Cannot retrieve related collection details without a registered backend.")
+	} else {
+		return self.backend.GetCollection(name)
+	}
+}
+
+// Deprecated: use StructToRecord instead
+func (self *Collection) MakeRecord(in interface{}, ops ...FieldOperation) (*Record, error) {
+	return self.StructToRecord(in)
 }

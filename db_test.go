@@ -145,7 +145,7 @@ func TestAll(t *testing.T) {
 		go shouldRun(&waiter, `mongo`, func() { setupTestMongo(`4.0`, run) })
 		go shouldRun(&waiter, `psql`, func() { setupTestPostgres(`9`, run) })
 		go shouldRun(&waiter, `psql`, func() { setupTestPostgres(`10`, run) })
-		go shouldRun(&waiter, `mysql`, func() { setupTestMysql(`5`, run) })
+		// go shouldRun(&waiter, `mysql`, func() { setupTestMysql(`5`, run) })
 		// go shouldRun(&waiter, `mysql`, func() { setupTestMysql(`8`, run) })
 		go shouldRun(&waiter, `sqlite`, func() { setupTestSqlite(run) })
 		go shouldRun(&waiter, `sqlite`, func() { setupTestSqliteWithAdditionalBleveIndexer(run) })

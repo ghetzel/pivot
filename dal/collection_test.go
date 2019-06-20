@@ -2,17 +2,49 @@ package dal
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
-func TestCollectionMakeRecord(t *testing.T) {
+type testGroup struct {
+	ID   int    `pivot:"id,identity"`
+	Name string `pivot:"name"`
+}
+
+type testUser struct {
+	ID    int        `pivot:"id,identity"`
+	Name  string     `pivot:"name"`
+	Group *testGroup `pivot:"group_id"`
+	Age   int        `pivot:"age"`
+}
+
+type nullBackend struct {
+	collections map[string]*Collection
+}
+
+func (self *nullBackend) RegisterCollection(def *Collection) {
+	if self.collections == nil {
+		self.collections = make(map[string]*Collection)
+	}
+
+	def.SetBackend(self)
+	self.collections[def.Name] = def
+}
+
+func (self *nullBackend) GetCollection(name string) (*Collection, error) {
+	if c, ok := self.collections[name]; ok {
+		return c, nil
+	} else {
+		return nil, CollectionNotFound
+	}
+}
+
+func TestCollectionStructToRecord(t *testing.T) {
 	assert := require.New(t)
 
-	collection := NewCollection(`TestCollectionMakeRecord`)
+	collection := NewCollection(`TestCollectionStructToRecord`)
 	collection.AddFields([]Field{
 		{
 			Name: `name`,
@@ -38,14 +70,12 @@ func TestCollectionMakeRecord(t *testing.T) {
 		ActualAge: 42,
 	}
 
-	record, err := collection.MakeRecord(&testRecord)
+	record, err := collection.StructToRecord(&testRecord)
 	assert.Nil(err)
 	assert.NotNil(record)
 
-	assert.Equal(2, len(record.Fields))
-
 	assert.Nil(record.ID)
-	assert.Equal(`tester`, record.Get(`name`))
+	assert.EqualValues(`tester`, record.Get(`name`))
 	assert.EqualValues(42, record.Get(`age`))
 
 	type TestRecord2 struct {
@@ -61,66 +91,56 @@ func TestCollectionMakeRecord(t *testing.T) {
 		Name: `tester`,
 	}
 
-	record, err = collection.MakeRecord(&testRecord2)
+	record, err = collection.StructToRecord(&testRecord2)
 	assert.Nil(err)
 	assert.NotNil(record)
 
-	assert.Equal(2, len(record.Fields))
+	assert.Equal(3, len(record.Fields))
 
 	assert.Equal(11, record.ID)
 	assert.Equal(`tester`, record.Get(`name`))
+	assert.Equal(false, record.Get(`enabled`))
 	assert.EqualValues(0, record.Get(`age`))
 }
 
-func TestCollectionNewInstance(t *testing.T) {
+func TestCollectionStructToRecordRelated(t *testing.T) {
 	assert := require.New(t)
 
-	constantTimeFn := func() time.Time {
-		return time.Date(2006, 1, 2, 15, 4, 5, 0, time.UTC)
-	}
+	groups := NewCollection(`TestCollectionStructToRecordGroups`, Field{
+		Name: `name`,
+		Type: StringType,
+	})
 
-	collection := NewCollection(`TestCollectionNewInstance`)
-	collection.AddFields([]Field{
-		{
-			Name:         `name`,
-			Type:         StringType,
-			DefaultValue: `Bob`,
-		}, {
-			Name:         `enabled`,
-			Type:         BooleanType,
-			DefaultValue: true,
-		}, {
-			Name:         `age`,
-			Type:         IntType,
-			DefaultValue: []string{`WRONG TYPE`},
-		}, {
-			Name:         `created_at`,
-			Type:         TimeType,
-			DefaultValue: constantTimeFn,
+	users := NewCollection(`TestCollectionStructToRecordUsers`, Field{
+		Name: `name`,
+		Type: StringType,
+	}, Field{
+		Name:      `group_id`,
+		Type:      IntType,
+		BelongsTo: groups,
+	}, Field{
+		Name: `age`,
+		Type: IntType,
+	})
+
+	backend := new(nullBackend)
+	backend.RegisterCollection(users)
+	backend.RegisterCollection(groups)
+
+	record, err := users.StructToRecord(&testUser{
+		Name: `tester`,
+		Group: &testGroup{
+			ID: 5432,
 		},
-	}...)
+		Age: 42,
+	})
+	assert.Nil(err)
+	assert.NotNil(record)
 
-	type TestRecord struct {
-		Name      string    `pivot:"name"`
-		Enabled   bool      `pivot:"enabled,omitempty"`
-		Age       int       `pivot:"age"`
-		CreatedAt time.Time `pivot:"created_at"`
-	}
-
-	collection.SetRecordType(TestRecord{})
-	assert.True(reflect.DeepEqual(
-		collection.recordType,
-		reflect.TypeOf(TestRecord{}),
-	))
-
-	instanceI := collection.NewInstance()
-	instance, ok := instanceI.(*TestRecord)
-	assert.True(ok)
-
-	assert.Equal(`Bob`, instance.Name)
-	assert.True(instance.Enabled)
-	assert.Zero(instance.Age)
-	assert.Equal(constantTimeFn(), instance.CreatedAt)
+	assert.Zero(record.ID)
+	assert.Equal(`tester`, record.Get(`name`))
+	assert.EqualValues(5432, record.Get(`group_id`))
+	assert.EqualValues(42, record.Get(`age`))
 }
 
 func TestCollectionValidator(t *testing.T) {
@@ -146,7 +166,7 @@ func TestCollectionValidator(t *testing.T) {
 func TestCollectionMapFromRecord(t *testing.T) {
 	assert := require.New(t)
 
-	collection := NewCollection(`TestCollectionMakeRecord`)
+	collection := NewCollection(`TestCollectionStructToRecord`)
 	collection.IdentityFieldFormatter = func(id interface{}, op FieldOperation) (interface{}, error) {
 		if record, ok := id.(*Record); ok {
 			id = record.ID
@@ -236,4 +256,40 @@ func TestCollectionIsExpired(t *testing.T) {
 	assert.True(
 		collection.IsExpired(NewRecord(`test1`).Set(`ttl`, time.Now().Unix()-60)),
 	)
+}
+
+func TestCollectionExtractValueFromRelationship(t *testing.T) {
+	assert := require.New(t)
+
+	groups := NewCollection(`TestCollectionExtractValueFromRelationshipGroups`, Field{
+		Name: `name`,
+		Type: StringType,
+	})
+
+	users := NewCollection(`TestCollectionExtractValueFromRelationshipUsers`, Field{
+		Name: `name`,
+		Type: StringType,
+	}, Field{
+		Name:      `group_id`,
+		Type:      IntType,
+		BelongsTo: groups,
+	}, Field{
+		Name: `age`,
+		Type: IntType,
+	})
+
+	backend := new(nullBackend)
+	backend.RegisterCollection(users)
+	backend.RegisterCollection(groups)
+
+	// test ability for Users to extract key values from Groups
+	f, ok := users.GetField(`group_id`)
+	assert.True(ok)
+	keys, err := users.extractValueFromRelationship(&f, &testGroup{
+		ID: 5432,
+	}, PersistOperation)
+
+	assert.NoError(err)
+	assert.EqualValues(5432, keys)
+
 }

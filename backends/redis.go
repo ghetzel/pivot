@@ -308,7 +308,7 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 		keyLen := collection.KeyCount()
 
 		for _, record := range recordset.Records {
-			if r, err := collection.MakeRecord(record); err == nil {
+			if r, err := collection.StructToRecord(record); err == nil {
 				record = r
 			} else {
 				return err

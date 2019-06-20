@@ -106,11 +106,6 @@ func (self *RecordSet) PopulateFromRecords(into interface{}, schema *Collection)
 			// make a new zero-valued instance of the slice type
 			elem := reflect.New(sliceType)
 
-			// if we have a registered collection, use its
-			if schema != nil && schema.HasRecordType() {
-				elem = reflect.ValueOf(schema.NewInstance())
-			}
-
 			// populate that type with data from this record
 			if err := record.Populate(elem.Interface(), schema); err == nil {
 				// if the slice elements are pointers, we can append the pointer we just created as-is

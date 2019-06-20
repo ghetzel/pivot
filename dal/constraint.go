@@ -1,6 +1,9 @@
 package dal
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 type Constraint struct {
 	// Represents the name (or array of names) of the local field the constraint is being applied to.
@@ -33,4 +36,16 @@ func (self Constraint) Validate() error {
 	}
 
 	return nil
+}
+
+func (self Constraint) Equal(other *Constraint) bool {
+	if self.On == other.On {
+		if self.Collection == other.Collection {
+			if reflect.DeepEqual(self.Field, other.Field) {
+				return true
+			}
+		}
+	}
+
+	return false
 }

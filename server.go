@@ -39,7 +39,7 @@ type Server struct {
 	ConnectOptions   backends.ConnectOptions
 	UiDirectory      string
 	Autoexpand       bool
-	backend          DB
+	backend          Backend
 	endpoints        []util.Endpoint
 	routeMap         map[string]util.EndpointResponseFunc
 	schemaDefs       []string
@@ -742,7 +742,7 @@ func filterFromRequest(req *http.Request, filterIn interface{}, defaultLimit int
 	return f, nil
 }
 
-func backendForRequest(server *Server, req *http.Request, backend DB) DB {
+func backendForRequest(server *Server, req *http.Request, backend Backend) Backend {
 	nx := httputil.Q(req, `noexpand`)
 	skipKeys := make([]string, 0)
 	useEmbeddedBackend := server.Autoexpand

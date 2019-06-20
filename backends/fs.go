@@ -219,7 +219,7 @@ func (self *FilesystemBackend) Retrieve(name string, id interface{}, fields ...s
 func (self *FilesystemBackend) Update(name string, recordset *dal.RecordSet, target ...string) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		for _, record := range recordset.Records {
-			if r, err := collection.MakeRecord(record); err == nil {
+			if r, err := collection.StructToRecord(record); err == nil {
 				record = r
 			} else {
 				return err

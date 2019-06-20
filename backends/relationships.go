@@ -62,7 +62,7 @@ func PopulateRelationships(backend Backend, parent *dal.Collection, record *dal.
 	// these constraints are addded as implicitly-defined embeds (unless otherwise specified)
 	//
 ConstraintsLoop:
-	for _, constraint := range parent.Constraints {
+	for _, constraint := range parent.GetAllConstraints() {
 		if constraint.NoEmbed {
 			// don't add this as an implicit embed
 			continue

@@ -1,0 +1,12 @@
+// names and other made-up things pulled from https://jsonplaceholder.typicode.com
+[{
+    "id": 1000,
+    "fields": {
+        "first_name": "Leanne",
+        "last_name":  "Graham",
+        "address": "556 Kulas St.",
+        "city": "Gwenborough",
+        "state": "ZT",
+        "country": "us"
+    }
+}]

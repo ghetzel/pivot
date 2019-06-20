@@ -8,6 +8,7 @@ import (
 	"path"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/ghetzel/go-stockutil/fileutil"
@@ -20,7 +21,7 @@ import (
 )
 
 // create handy type aliases to avoid importing from all over the place
-type DB = backends.Backend
+type Backend = backends.Backend
 type Model = backends.Mapper
 type Collection = dal.Collection
 type Record = dal.Record
@@ -65,7 +66,7 @@ func NewDatabaseWithOptions(connection string, options backends.ConnectOptions) 
 				}
 			}
 
-			return backend, nil
+			return newdb(backend), nil
 		} else {
 			return nil, err
 		}
@@ -115,7 +116,7 @@ func LoadSchemataFromFile(filename string) ([]*dal.Collection, error) {
 }
 
 // Calls LoadSchemataFromFile from all *.json files in the given directory.
-func ApplySchemata(fileOrDirPath string, db DB) error {
+func ApplySchemata(fileOrDirPath string, db Backend) error {
 	var loadedCollections []*dal.Collection
 	var filenames []string
 
@@ -170,23 +171,25 @@ func ApplySchemata(fileOrDirPath string, db DB) error {
 }
 
 // Loads a JSON-encoded array of dal.Record objects from a file into the given DB backend instance.
-func LoadFixturesFromFile(filename string, db DB) error {
+func LoadFixturesFromFile(filename string, db Backend) error {
 	filename = fileutil.MustExpandUser(filename)
 
 	if file, err := os.Open(filename); err == nil {
-		defer file.Close()
+		commentRemover := fileutil.NewReadManipulator(file, fileutil.RemoveLinesWithPrefix(`//`, true))
+		defer commentRemover.Close()
 
 		var records []*dal.Record
 
-		if err := json.NewDecoder(file).Decode(&records); err == nil {
+		if err := json.NewDecoder(commentRemover).Decode(&records); err == nil {
 			var collections []string
 
-			for i, record := range records {
-				if record.CollectionName != `` {
-					collections = append(collections, record.CollectionName)
-				} else {
-					return fmt.Errorf("Cannot import fixture file %q, record %d: no collection specified", filename, i)
+			for _, record := range records {
+				// if no collection name was explicitly provided, infer it from the filename
+				if record.CollectionName == `` {
+					record.CollectionName = strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
 				}
+
+				collections = append(collections, record.CollectionName)
 			}
 
 			collections = sliceutil.UniqueStrings(collections)
@@ -231,9 +234,19 @@ func LoadFixturesFromFile(filename string, db DB) error {
 }
 
 // Calls LoadFixturesFromFile from all *.json files in the given directory.
-func LoadFixtures(fileOrDirPath string, db DB) error {
-	if fileutil.DirExists(fileOrDirPath) {
-		if filenames, err := filepath.Glob(filepath.Join(fileOrDirPath, `*.json`)); err == nil {
+func LoadFixtures(fileOrDirPath string, db Backend) error {
+	if fileutil.DirExists(fileOrDirPath) || strings.Contains(fileOrDirPath, `*`) {
+		var glob string
+
+		// if it looks like we were given a wildcard, trust it.  otherwise,
+		// add one ourselves.
+		if strings.Contains(fileOrDirPath, `*`) {
+			glob = fileOrDirPath
+		} else {
+			glob = filepath.Join(fileOrDirPath, `*.json`)
+		}
+
+		if filenames, err := filepath.Glob(glob); err == nil {
 			sort.Strings(filenames)
 
 			for _, filename := range filenames {
@@ -254,7 +267,7 @@ func LoadFixtures(fileOrDirPath string, db DB) error {
 }
 
 // A panicky version of backends.Backend.GetCollection
-func MustGetCollection(db DB, name string) *dal.Collection {
+func MustGetCollection(db Backend, name string) *dal.Collection {
 	if collection, err := db.GetCollection(name); err == nil {
 		return collection
 	} else {

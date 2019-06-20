@@ -173,7 +173,7 @@ func (self *MongoBackend) Retrieve(name string, id interface{}, fields ...string
 func (self *MongoBackend) Insert(name string, records *dal.RecordSet) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		for _, record := range records.Records {
-			if _, err := collection.MakeRecord(record); err == nil {
+			if _, err := collection.StructToRecord(record); err == nil {
 				data := self.prepareValuesForWrite(record.Fields)
 
 				if record.ID == nil {
@@ -200,7 +200,7 @@ func (self *MongoBackend) Insert(name string, records *dal.RecordSet) error {
 func (self *MongoBackend) Update(name string, records *dal.RecordSet, target ...string) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		for _, record := range records.Records {
-			if _, err := collection.MakeRecord(record); err == nil {
+			if _, err := collection.StructToRecord(record); err == nil {
 				data := self.prepareValuesForWrite(record.Fields)
 
 				if record.ID == nil {
