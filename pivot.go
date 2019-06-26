@@ -205,9 +205,8 @@ func LoadFixturesFromFile(filename string, db Backend) error {
 
 						var err error
 
-						if db.Exists(collection.Name, record.ID) {
-							err = db.Update(collection.Name, dal.NewRecordSet(record))
-						} else {
+						// attempt an Update, and if that fails, try it as an Insert
+						if err = db.Update(collection.Name, dal.NewRecordSet(record)); err != nil {
 							err = db.Insert(collection.Name, dal.NewRecordSet(record))
 						}
 
