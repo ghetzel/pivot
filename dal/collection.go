@@ -94,6 +94,9 @@ type Collection struct {
 	// a Field Formatter function.
 	IdentityFieldFormatter FieldFormatterFunc `json:"-"`
 
+	// Specifies that IDs should be automatically generated using a formatter function
+	AutoIdentity string `json:"autoidentity"`
+
 	// A function that validates the value of an identity key before create and update operations.
 	// Operates the same as a Field Validator function.
 	IdentityFieldValidator FieldValidatorFunc `json:"-"`
@@ -496,6 +499,21 @@ func (self *Collection) extractValueFromRelationship(field *Field, input interfa
 }
 
 func (self *Collection) formatAndValidateId(id interface{}, op FieldOperation, record *Record) (interface{}, error) {
+	switch self.AutoIdentity {
+	case ``:
+		break
+	default:
+		if fn, err := GetFormatter(self.AutoIdentity, nil); err == nil {
+			if i, err := fn(id, PersistOperation); err == nil {
+				id = i
+			} else {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	}
+
 	// if specified, apply a formatter to the ID
 	if self.IdentityFieldFormatter != nil {
 		// NOTE: because we want the option to generate IDs based on the values of other record fields,
