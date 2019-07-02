@@ -67,6 +67,7 @@ require (
 	github.com/tinylib/msgp v1.0.2 // indirect
 	github.com/urfave/negroni v1.0.0
 	github.com/willf/bitset v0.0.0-20161202170036-5c3c0fce4884 // indirect
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2 // indirect
