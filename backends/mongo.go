@@ -143,6 +143,10 @@ func (self *MongoBackend) Ping(timeout time.Duration) error {
 
 func (self *MongoBackend) Exists(name string, id interface{}) bool {
 	if collection, err := self.GetCollection(name); err == nil {
+		if record, ok := id.(*dal.Record); ok {
+			id = record.ID
+		}
+
 		if n, err := self.db.C(collection.Name).FindId(self.getId(id)).Count(); err == nil && n == 1 {
 			return true
 		}

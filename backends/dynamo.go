@@ -436,7 +436,9 @@ func dynamoToRecordKeyFilter(collection *dal.Collection, id interface{}) (*filte
 	flt.IdentityField = collection.IdentityField
 
 	// if the rangeKey exists, then the id value must be a slice/array containing both parts
-	if typeutil.IsArray(id) {
+	if record, ok := id.(*dal.Record); ok {
+		hashValue = sliceutil.First(record.ID)
+	} else if typeutil.IsArray(id) {
 		if v, ok := sliceutil.At(id, 0); ok && v != nil {
 			hashValue = v
 		}

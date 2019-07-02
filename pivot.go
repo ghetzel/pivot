@@ -14,6 +14,7 @@ import (
 	"github.com/ghetzel/go-stockutil/fileutil"
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/backends"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
@@ -205,7 +206,13 @@ func LoadFixturesFromFile(filename string, db Backend) error {
 
 						var err error
 
-						if db.Exists(collection.Name, record.ID) {
+						if typeutil.IsArray(record.ID) {
+							if err := record.SetKeys(collection, dal.PersistOperation, sliceutil.Sliceify(record.ID)...); err != nil {
+								return fmt.Errorf("%s id %v: %v", name, record.ID, err)
+							}
+						}
+
+						if db.Exists(collection.Name, record) {
 							err = db.Update(collection.Name, dal.NewRecordSet(record))
 						} else {
 							err = db.Insert(collection.Name, dal.NewRecordSet(record))

@@ -132,6 +132,10 @@ func (self *RedisBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 func (self *RedisBackend) Exists(name string, id interface{}) bool {
 	if collection, err := self.GetCollection(name); err == nil {
+		if record, ok := id.(*dal.Record); ok {
+			id = record.ID
+		}
+
 		if ids := sliceutil.Sliceify(id); len(ids) == collection.KeyCount() {
 			if i, err := redis.Int(self.run(`EXISTS`, self.key(collection.Name, ids...))); err == nil && i == 1 {
 				return true

@@ -182,6 +182,10 @@ func (self *FilesystemBackend) Insert(collectionName string, recordset *dal.Reco
 func (self *FilesystemBackend) Exists(name string, id interface{}) bool {
 	if collection, err := self.GetCollection(name); err == nil {
 		if dataRoot, err := self.getDataRoot(collection.Name, true); err == nil {
+			if record, ok := id.(*dal.Record); ok {
+				id = record.ID
+			}
+
 			if filename := self.makeFilename(collection, fmt.Sprintf("%v", id), true); filename != `` {
 				if stat, err := os.Stat(filepath.Join(dataRoot, filename)); err == nil {
 					if stat.Size() > 0 {
