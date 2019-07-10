@@ -29,7 +29,7 @@ require (
 	github.com/fatih/structs v1.0.0
 	github.com/ghetzel/cli v1.17.0
 	github.com/ghetzel/diecast v1.10.17
-	github.com/ghetzel/go-stockutil v1.7.54
+	github.com/ghetzel/go-stockutil v1.7.57
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd // indirect
 	github.com/glycerine/goconvey v0.0.0-20180728074245-46e3a41ad493 // indirect
@@ -67,7 +67,6 @@ require (
 	github.com/tinylib/msgp v1.0.2 // indirect
 	github.com/urfave/negroni v1.0.0
 	github.com/willf/bitset v0.0.0-20161202170036-5c3c0fce4884 // indirect
-	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2 // indirect

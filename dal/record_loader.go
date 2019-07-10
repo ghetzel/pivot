@@ -10,9 +10,10 @@ import (
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/structutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
+	"github.com/ghetzel/pivot/v3/util"
 )
 
-var RecordStructTag = `pivot`
+var RecordStructTag = util.RecordStructTag
 var DefaultStructIdentityFieldName = `ID`
 
 type fieldDescription struct {

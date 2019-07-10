@@ -100,8 +100,10 @@ github.com/ghetzel/go-stockutil v1.5.49/go.mod h1:Y2IAZKZNEGeZZD46Cwd94CoA1Oh+Bx
 github.com/ghetzel/go-stockutil v1.6.17 h1:PWaItT+zQrPQu/4fwiM+hAojvD7oo5PQA4IDONjaXD8=
 github.com/ghetzel/go-stockutil v1.6.17/go.mod h1:+m7v45hx86ukaOof7faN1mFqW+PtmUbRwBG9Lt8ftEk=
 github.com/ghetzel/go-stockutil v1.7.13/go.mod h1:HJK8kysGnJqC4GN3FMA03o5FTQFilGNkNwi1mjE+8Gs=
-github.com/ghetzel/go-stockutil v1.7.54 h1:/ENaoYC9HYCTHNh6Iqcrij5ZFu3qvTd1fntQPssN+1A=
-github.com/ghetzel/go-stockutil v1.7.54/go.mod h1:FtzDdP6TJg+0cEyojnnV7jlZs0EzYce01+l3A/4iTUs=
+github.com/ghetzel/go-stockutil v1.7.56 h1:mYEGYq9rbSGArid1bGfadhE6Klc94JzavVr2MbzSlgM=
+github.com/ghetzel/go-stockutil v1.7.56/go.mod h1:APFUrwYb8tHZaGB6ZsiI1UuXnxlWpgzM9ZsFBqmYkjM=
+github.com/ghetzel/go-stockutil v1.7.57 h1:iE7PUEK2Yj6TG3PvJl7C+UDblg1byN6MRIus2UCIQag=
+github.com/ghetzel/go-stockutil v1.7.57/go.mod h1:APFUrwYb8tHZaGB6ZsiI1UuXnxlWpgzM9ZsFBqmYkjM=
 github.com/ghetzel/go-webfriend v0.9.23 h1:VDXVXUzOIGlAbz1ihgMe7/rAeqrNZ+SHW0+28V80EpM=
 github.com/ghetzel/go-webfriend v0.9.23/go.mod h1:4tjKFGdCtac9eXJ8Hz48DSCoiwjhzynwFFiyhsLfMnI=
 github.com/ghetzel/go-webfriend v0.9.40 h1:yTK+owpwiOycRSaZWzxWoQE3cDO/BX83mpvFPs9/bJ4=
@@ -343,8 +345,6 @@ golang.org/x/net v0.0.0-20180906233101-161cd47e91fd/go.mod h1:mL1N/T3taQHkDXs73r
 golang.org/x/net v0.0.0-20181114220301-adae6a3d119a/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20190108225652-1e06a53dbb7e h1:bRhVy7zSSasaqNksaRZiA5EEI+Ei4I1nO5Jh72wfHlg=
 golang.org/x/net v0.0.0-20190108225652-1e06a53dbb7e/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
-golang.org/x/net v0.0.0-20190420063019-afa5a82059c6 h1:HdqqaWmYAUI7/dmByKKEw+yxDksGSo+9GjkUc9Zp34E=
-golang.org/x/net v0.0.0-20190420063019-afa5a82059c6/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=
 golang.org/x/net v0.0.0-20190620200207-3b0461eec859 h1:R/3boaszxrf1GEUWTVDzSKVwLmSJpwZ1yqXm8j0v2QI=
 golang.org/x/net v0.0.0-20190620200207-3b0461eec859/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
 golang.org/x/oauth2 v0.0.0-20190130055435-99b60b757ec1 h1:VeAkjQVzKLmu+JnFcK96TPbkuaTIqwGGAzQ9hgwPjVg=

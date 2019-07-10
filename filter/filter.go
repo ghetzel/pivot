@@ -15,6 +15,7 @@ import (
 	"github.com/ghetzel/go-stockutil/timeutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/dal"
+	"github.com/ghetzel/pivot/v3/util"
 )
 
 var CriteriaSeparator = `/`
@@ -209,6 +210,8 @@ func Parse(in interface{}) (*Filter, error) {
 		return &f, nil
 	} else if f, ok := in.(*Filter); ok {
 		return f, nil
+	} else if elem := typeutil.ResolveValue(in); typeutil.IsStruct(elem) {
+		return FromMap(typeutil.V(elem).MapNative(util.RecordStructTag))
 	} else if typeutil.IsMap(in) {
 		return FromMap(maputil.M(in).MapNative())
 	} else if fStr, ok := in.(string); ok {

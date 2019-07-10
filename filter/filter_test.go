@@ -198,3 +198,63 @@ func TestFilterCopy(t *testing.T) {
 		},
 	}, f2.Criteria)
 }
+
+func TestFilterParseStruct(t *testing.T) {
+	assert := require.New(t)
+
+	type fCoolObject struct {
+		Name    string `pivot:"name"`
+		Enabled bool
+		Age     int `pivot:",wwuuuuuut"`
+	}
+
+	f, err := Parse(fCoolObject{
+		Name:    `test1`,
+		Enabled: true,
+		Age:     42,
+	})
+
+	assert.Nil(err)
+	assert.Equal(3, len(f.Criteria))
+
+	values, ok := f.GetValues(`name`)
+	assert.True(ok)
+	assert.Equal([]interface{}{`test1`}, values)
+
+	values, ok = f.GetValues(`Enabled`)
+	assert.True(ok)
+	assert.Equal([]interface{}{true}, values)
+
+	values, ok = f.GetValues(`Age`)
+	assert.True(ok)
+	assert.Equal([]interface{}{42}, values)
+}
+
+func TestFilterParsePtrToStruct(t *testing.T) {
+	assert := require.New(t)
+
+	type fCoolObject struct {
+		Name    string `pivot:"name"`
+		Enabled bool
+		Age     int `pivot:",omitempty"`
+	}
+
+	f, err := Parse(&fCoolObject{
+		Name: `test1`,
+	})
+
+	assert.Nil(err)
+	assert.Equal(2, len(f.Criteria))
+
+	values, ok := f.GetValues(`name`)
+	assert.True(ok)
+	assert.Equal([]interface{}{`test1`}, values)
+
+	values, ok = f.GetValues(`Enabled`)
+	assert.True(ok)
+	assert.Equal([]interface{}{false}, values)
+
+	values, ok = f.GetValues(`Age`)
+	assert.False(ok)
+	assert.Nil(values)
+}
