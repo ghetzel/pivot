@@ -18,16 +18,16 @@ Pivot is organized into multiple sub-packages that perform various functions:
 ## Supported Backends
 Below is a table describing which data systems are currently supported.  For systems with **Backend** support, Pivot can create and delete collections, and create/retrieve/update/delete records by their primary key / ID.  If a system has **Indexer** support, Pivot can perform arbitrary queries against collections using a standard filter syntax, and return the results as a set of standard Record objects.
 
-| Product          | Backend | Indexer   |
-| ---------------- | ------- | --------- |
-| MySQL / MariaDB  | X       | X         |
-| PostgreSQL       | X       | X         |
-| SQLite 3.x       | X       | X         |
-| Filesystem       | X       | X         |
-| MongoDB          | X       | X         |
-| Amazon DynamoDB  | X       | _partial_ | NOTE: supports queries that involve Range Key and Sort Key *only*
-| Redis            | X       |           |
-| Elasticsearch    |         | X         |
+| Product          | Backend | Indexer   | Notes |
+| ---------------- | ------- | --------- | ----- |
+| MySQL / MariaDB  | X       | X         |       |
+| PostgreSQL       | X       | X         |       |
+| SQLite 3.x       | X       | X         |       |
+| Filesystem       | X       | X         |       |
+| MongoDB          | X       | X         |       |
+| Amazon DynamoDB  | X       | _partial_ | Supports queries that involve Range Key and Sort Key *only* |
+| Redis            | X       |           |       |
+| Elasticsearch    |         | X         |       |
 
 ## How: Examples
 
