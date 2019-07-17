@@ -19,6 +19,9 @@ name/Bob/age/42
 
 # Where "product" contains the string "usb" and "price" is less than 5.00
 product/contains:usb/price/lt:5.00
+
+# Where "product" contains the string "usb" and "price" is between 10.00 (inclusive) and 20.01 (exclusive)
+product/contains:usb/price/range:10|20.01
 ```
 
 ## General Form
