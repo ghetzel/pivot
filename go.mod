@@ -28,15 +28,15 @@ require (
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/fatih/structs v1.0.0
 	github.com/ghetzel/cli v1.17.0
-	github.com/ghetzel/diecast v1.10.17
-	github.com/ghetzel/go-stockutil v1.7.57
+	github.com/ghetzel/diecast v1.12.2
+	github.com/ghetzel/go-stockutil v1.8.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd // indirect
 	github.com/glycerine/goconvey v0.0.0-20180728074245-46e3a41ad493 // indirect
 	github.com/go-ini/ini v1.34.0 // indirect
 	github.com/go-sql-driver/mysql v1.3.0
 	github.com/golang/snappy v0.0.0-20160407051505-cef980a12b31 // indirect
-	github.com/gomodule/redigo v0.0.0-20180627144507-2cd21d9966bf
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
 	github.com/gotestyourself/gotestyourself v2.1.0+incompatible // indirect
 	github.com/hashicorp/golang-lru v0.0.0-20180201235237-0fb14efe8c47
