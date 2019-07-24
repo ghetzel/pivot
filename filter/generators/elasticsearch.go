@@ -8,6 +8,7 @@ import (
 )
 
 // Elasticsearch Generator
+var DefaultMinVersionCompat = float64(6)
 
 type Elasticsearch struct {
 	filter.Generator
@@ -18,12 +19,18 @@ type Elasticsearch struct {
 	values      []interface{}
 	facetFields []string
 	aggregateBy []filter.Aggregate
+	compat      float64
 }
 
 func NewElasticsearchGenerator() *Elasticsearch {
 	return &Elasticsearch{
 		Generator: filter.Generator{},
+		compat:    DefaultMinVersionCompat,
 	}
+}
+
+func (self *Elasticsearch) SetMinimumVersion(v float64) {
+	self.compat = v
 }
 
 func (self *Elasticsearch) Initialize(collectionName string) error {
@@ -65,7 +72,13 @@ func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
 	}
 
 	if len(flt.Fields) > 0 {
-		payload[`fields`] = flt.Fields
+		if self.compat >= 5 {
+			payload[`_source`] = map[string]interface{}{
+				`include`: flt.Fields,
+			}
+		} else {
+			payload[`fields`] = flt.Fields
+		}
 	}
 
 	if len(flt.Sort) > 0 {
