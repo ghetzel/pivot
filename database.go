@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ghetzel/pivot/v3/backends"
+	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/mapper"
 )
 
@@ -18,15 +19,28 @@ type DB interface {
 	SetBackend(Backend)
 }
 
+type schemaModel struct {
+	Collection *dal.Collection
+	Model      Model
+}
+
+func (self *schemaModel) String() string {
+	if self.Collection != nil {
+		return self.Collection.Name
+	} else {
+		return ``
+	}
+}
+
 type db struct {
 	backends.Backend
-	models map[string]Model
+	models []*schemaModel
 }
 
 func newdb(backend backends.Backend) *db {
 	return &db{
 		Backend: backend,
-		models:  make(map[string]Model),
+		models:  make([]*schemaModel, 0),
 	}
 }
 
@@ -39,16 +53,29 @@ func (self *db) SetBackend(backend Backend) {
 }
 
 func (self *db) AttachCollection(collection *Collection) Model {
-	model := mapper.NewModel(self, collection)
+	if collection == nil {
+		panic("cannot attach nil Collection")
+	}
 
-	self.models[collection.Name] = model
-	return model
+	for _, sm := range self.models {
+		if sm.String() == collection.Name {
+			panic(fmt.Sprintf("Collection %q is already registered", collection.Name))
+		}
+	}
+
+	sm := &schemaModel{
+		Collection: collection,
+		Model:      mapper.NewModel(self, collection),
+	}
+
+	self.models = append(self.models, sm)
+	return sm.Model
 }
 
 func (self *db) Migrate() error {
-	for name, model := range self.models {
-		if err := model.Migrate(); err != nil {
-			return fmt.Errorf("failed to migrate %s: %v", name, err)
+	for _, sm := range self.models {
+		if err := sm.Model.Migrate(); err != nil {
+			return fmt.Errorf("failed to migrate %v: %v", sm, err)
 		}
 	}
 
@@ -56,8 +83,8 @@ func (self *db) Migrate() error {
 }
 
 func (self *db) Models() (models []Model) {
-	for _, model := range self.models {
-		models = append(models, model)
+	for _, sm := range self.models {
+		models = append(models, sm.Model)
 	}
 
 	return
