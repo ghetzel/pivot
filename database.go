@@ -11,6 +11,7 @@ import (
 type DB interface {
 	backends.Backend
 	AttachCollection(*Collection) Model
+	C(string) *Collection
 	Migrate() error
 	Models() []Model
 	ApplySchemata(fileOrDirPath string) error
@@ -50,6 +51,15 @@ func (self *db) GetBackend() Backend {
 
 func (self *db) SetBackend(backend Backend) {
 	self.Backend = backend
+}
+
+// A version of GetCollection that panics if the collection does not exist.
+func (self *db) C(name string) *Collection {
+	if collection, err := self.GetCollection(name); err == nil {
+		return collection
+	} else {
+		panic("C(" + name + "): " + err.Error())
+	}
 }
 
 func (self *db) AttachCollection(collection *Collection) Model {
