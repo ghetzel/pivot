@@ -11,6 +11,71 @@ bindings:
         noexpand: true
     fallback: {}
 ---
+{{ if (qs "raw" ``) }}
+<div class="editor-placeholder">
+    <div id="editor"></div>
+</div>
+
+<div class="editor-footer text-right pt-4 pb-4">
+    <button
+        type="submit"
+        class="btn btn-primary mr-2"
+        onclick="$.ajax({
+            method:  'post',
+            url:     '/api/collections/{{ qs `collection` }}/records/',
+            data:    cm.getValue(),
+            success: function(){
+                console.log('YAY')
+            },
+        })"
+    >Save &amp; Continue Editing</button>
+
+    <button
+        type="submit"
+        class="btn btn-primary mr-2"
+        onclick="$.ajax({
+            method:  'post',
+            url:     '/api/collections/{{ qs `collection` }}/records/',
+            data:    cm.getValue(),
+            success: function(){
+                console.log('YAY')
+            },
+        })"
+    >Save</button>
+</div>
+
+<script>
+    $(function(){
+        window.cm = CodeMirror(document.getElementById('editor'), {
+            mode: {
+                name:       'javascript',
+                globalVars: true,
+            },
+            theme:             'monokai',
+            autoCloseBrackets: true,
+            matchBrackets:     true,
+            indentUnit:        4,
+            indentWithTabs:    false,
+            tabSize:           4,
+            lineNumbers:       true,
+            autofocus:         true,
+            styleActiveLine:   true,
+            styleSelectedText: true,
+            viewportMargin:    Infinity,
+        });
+
+        var autosize = function() {
+            var body = $('.editor-placeholder');
+            cm.setSize(null, $(window).height() - body.offset().top - $('.editor-footer').outerHeight());
+        }
+
+        $(window).on('resize', autosize);
+
+        autosize();
+        window.cm.setValue('{{ jsonify $.bindings.record }}');
+    });
+</script>
+{{ else }}
 <form
     id="editor"
     class="container"
@@ -219,3 +284,4 @@ bindings:
         </button>
     </div>
 </form>
+{{ end }}

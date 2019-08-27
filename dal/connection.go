@@ -3,9 +3,6 @@ package dal
 import (
 	"fmt"
 	"net/url"
-	"os"
-	"os/user"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -101,7 +98,6 @@ func (self *ConnectionString) SetCredentials(username string, password string) {
 // Reads a .netrc-style file and loads the appropriate credentials.  The host component of
 // this connection string is matched with the netrc "machine" field.
 func (self *ConnectionString) LoadCredentialsFromNetrc(filename string) error {
-
 	if u := self.URI.User; u == nil && filename != `` {
 		filename = fileutil.MustExpandUser(filename)
 
@@ -245,22 +241,16 @@ func MakeConnectionString(scheme string, host string, dataset string, options ma
 }
 
 func prepareURI(uri *url.URL) error {
-	if strings.HasPrefix(uri.Path, `/.`) {
-		if cwd, err := os.Getwd(); err == nil {
-			if abs, err := filepath.Abs(cwd); err == nil {
-				uri.Path = strings.Replace(uri.Path, `/.`, abs, 1)
-			} else {
-				return err
-			}
-		} else {
-			return err
-		}
-	} else if strings.HasPrefix(uri.Path, `/~`) {
-		if usr, err := user.Current(); err == nil {
-			uri.Path = strings.Replace(uri.Path, `/~`, usr.HomeDir, 1)
-		} else {
-			return err
-		}
+	if v, err := fileutil.ExpandUser(uri.Host); err == nil {
+		uri.Host = v
+	} else {
+		return fmt.Errorf("host: %v", err)
+	}
+
+	if v, err := fileutil.ExpandUser(uri.Path); err == nil {
+		uri.Path = v
+	} else {
+		return fmt.Errorf("path: %v", err)
 	}
 
 	return nil

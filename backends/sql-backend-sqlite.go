@@ -5,12 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path"
-	"path/filepath"
-	"strings"
 
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
-	"github.com/ghetzel/go-stockutil/pathutil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/v3/dal"
@@ -145,7 +142,7 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 		}
 	}
 
-	dataset := path.Join(self.conn.Dataset(), self.conn.Host())
+	dataset := path.Join(self.conn.Host(), self.conn.Dataset())
 
 	var dsn string
 
@@ -153,20 +150,6 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	case `memory`, `:memory:`, ``:
 		return `sqlite3`, `:memory:`, nil
 	default:
-		if strings.HasPrefix(dataset, `~`) {
-			if v, err := pathutil.ExpandUser(dataset); err == nil {
-				dataset = v
-			} else {
-				return ``, ``, err
-			}
-		} else if strings.HasPrefix(dataset, `.`) {
-			if v, err := filepath.Abs(dataset); err == nil {
-				dataset = v
-			} else {
-				return ``, ``, err
-			}
-		}
-
 		switch dataset {
 		case `temporary`, `:temporary:`:
 			if tmp, err := ioutil.TempFile(``, `pivot-`); err == nil {
