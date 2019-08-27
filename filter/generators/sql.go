@@ -18,7 +18,7 @@ import (
 	"github.com/ghetzel/pivot/v3/filter"
 )
 
-const sqlMaxPlaceholders = 1024
+var SqlMaxPlaceholders = 16384
 
 type sqlRangeValue struct {
 	lower interface{}
@@ -458,7 +458,7 @@ func (self *Sql) GetValues() []interface{} {
 // UPDATE queries (kinda backwards), we have this placeholder system.
 //
 // Anywhere in the SQL query where a user input value would appear, the sequence ⦃field⦄ appears
-// (not the use of Unicode characters U+2983 and U+2984 surrounding the field name.)
+// (note the use of Unicode characters U+2983 and U+2984 surrounding the field name.)
 //
 // This function goes through the final payload just before it's finalized and replaces these
 // sequences with the syntax-appropriate placeholders for that field.  This ensures that the
@@ -468,7 +468,7 @@ func (self *Sql) GetValues() []interface{} {
 func (self *Sql) applyPlaceholders() {
 	payload := string(self.Payload())
 
-	for i := 0; i < sqlMaxPlaceholders; i++ {
+	for i := 0; i < SqlMaxPlaceholders; i++ {
 		if match := rxutil.Match("(?P<field>\xe2\xa6\x83[^\xe2\xa6\x84]+\xe2\xa6\x84)", payload); match != nil {
 			field := match.Group(`field`)
 			field = strings.TrimPrefix(field, "\u2983")
