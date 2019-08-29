@@ -14,7 +14,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func (self *SqlBackend) initializePostgres() (string, string, error) {
+func preinitializePostgres(self *SqlBackend) {
 	// tell the backend cool details about generating compatible SQL
 	self.queryGenTypeMapping = generators.PostgresTypeMapping
 	self.queryGenNormalizerFormat = "regexp_replace(lower(%v), '[\\:\\[\\]\\*]+', ' ')"
@@ -26,7 +26,9 @@ func (self *SqlBackend) initializePostgres() (string, string, error) {
 	self.foreignKeyConstraintFormat = `FOREIGN KEY(%s) REFERENCES %s (%s) %s`
 	// self.defaultCurrentTimeString = `now() AT TIME ZONE 'utc'`
 	self.defaultCurrentTimeString = `CURRENT_TIMESTAMP`
+}
 
+func initializePostgres(self *SqlBackend) (string, string, error) {
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
 		keyStmt := `SELECT ` +

@@ -63,6 +63,9 @@ var backendMap = map[string]BackendFunc{
 	`redis`:      NewRedisBackend,
 }
 
+// Register a new or replacement backend for the given connection string scheme.
+// For example, registering backend "foo" will allow Pivot to handle "foo://"
+// connection strings.
 func RegisterBackend(name string, fn BackendFunc) {
 	backendMap[name] = fn
 }
@@ -77,6 +80,7 @@ func startPeriodicPinger(interval time.Duration, backend Backend) {
 	}
 }
 
+// Instantiate the appropriate Backend for the given connection string.
 func MakeBackend(connection dal.ConnectionString) (Backend, error) {
 	var autopingInterval time.Duration
 

@@ -115,10 +115,12 @@ func TestFilterFromMap(t *testing.T) {
 		`f1`:       `v1`,
 		`int:f2`:   2,
 		`float:f3`: `gte:3`,
+		`id`:       []string{`1`, `3`, `5`},
+		`other`:    `2|4|6`,
 	})
 
 	assert.Nil(err)
-	assert.Equal(3, len(f.Criteria))
+	assert.Equal(5, len(f.Criteria))
 
 	for _, criterion := range f.Criteria {
 		switch criterion.Field {
@@ -133,6 +135,12 @@ func TestFilterFromMap(t *testing.T) {
 			assert.True(dal.FloatType == criterion.Type)
 			assert.Equal(`gte`, criterion.Operator)
 			assert.Equal([]interface{}{`3`}, criterion.Values)
+
+		case `id`:
+			assert.EqualValues([]interface{}{`1`, `3`, `5`}, criterion.Values)
+
+		case `other`:
+			assert.EqualValues([]interface{}{`2`, `4`, `6`}, criterion.Values)
 		default:
 			t.Errorf("Unknown field %q", criterion.Field)
 		}

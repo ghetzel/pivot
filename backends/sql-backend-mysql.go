@@ -12,7 +12,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func (self *SqlBackend) initializeMysql() (string, string, error) {
+func preinitializeMysql(self *SqlBackend) {
 	// tell the backend cool details about generating compatible SQL
 	self.queryGenTypeMapping = generators.MysqlTypeMapping
 	self.queryGenNormalizerFormat = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(%v, ':', ' '), '[', ' '), ']', ' '), '*', ' '))"
@@ -21,7 +21,9 @@ func (self *SqlBackend) initializeMysql() (string, string, error) {
 	self.createPrimaryKeyStrFormat = `%s VARCHAR(255) NOT NULL`
 	self.foreignKeyConstraintFormat = `FOREIGN KEY(%s) REFERENCES %s (%s) %s`
 	self.defaultCurrentTimeString = `CURRENT_TIMESTAMP`
+}
 
+func initializeMysql(self *SqlBackend) (string, string, error) {
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
 		if f, err := filter.FromMap(map[string]interface{}{

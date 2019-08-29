@@ -175,6 +175,7 @@ func FromMap(in map[string]interface{}) (*Filter, error) {
 
 	for typeField, opValue := range in {
 		fType, fName := SplitModifierToken(typeField)
+
 		var vOper string
 		var vValues interface{}
 
@@ -182,6 +183,13 @@ func FromMap(in map[string]interface{}) (*Filter, error) {
 			vOper, vValues = SplitModifierToken(pair)
 		} else {
 			vValues = opValue
+		}
+
+		// handle the case where multiple|values|are|given|like|this
+		if typeutil.IsScalar(vValues) {
+			if vS := typeutil.String(vValues); strings.Contains(vS, ValueSeparator) {
+				vValues = strings.Split(vS, ValueSeparator)
+			}
 		}
 
 		rv.AddCriteria(Criterion{
@@ -218,6 +226,14 @@ func Parse(in interface{}) (*Filter, error) {
 		return ParseSpec(fStr)
 	} else {
 		return Null(), fmt.Errorf("Expected filter.Filter, map, or string; got: %T", in)
+	}
+}
+
+func MustParse(in interface{}) *Filter {
+	if flt, err := Parse(in); err == nil {
+		return flt
+	} else {
+		panic("filter: " + err.Error())
 	}
 }
 
@@ -357,14 +373,6 @@ func ParseSpec(spec string) (*Filter, error) {
 	}
 
 	return rv, nil
-}
-
-func MustParse(spec string) *Filter {
-	if f, err := Parse(spec); err == nil {
-		return f
-	} else {
-		panic(err.Error())
-	}
 }
 
 func (self *Filter) AddCriteria(criteria ...Criterion) *Filter {

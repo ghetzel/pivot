@@ -3,6 +3,9 @@ package dal
 import (
 	"fmt"
 	"strings"
+
+	"github.com/ghetzel/go-stockutil/log"
+	"github.com/ghetzel/go-stockutil/maputil"
 )
 
 type Type string
@@ -79,14 +82,24 @@ const (
 )
 
 type SchemaDelta struct {
-	Type       DeltaType
-	Issue      DeltaIssue
-	Message    string
-	Collection string
-	Name       string
-	Parameter  string
-	Desired    interface{}
-	Actual     interface{}
+	Type           DeltaType
+	Issue          DeltaIssue
+	Message        string
+	Collection     string
+	Name           string
+	Parameter      string
+	Desired        interface{}
+	Actual         interface{}
+	ReferenceField *Field
+}
+
+func (self SchemaDelta) DesiredField(from Field) *Field {
+	field := &from
+	maputil.M(field).Set(self.Parameter, self.Desired)
+
+	log.Noticef("DESIRED: %+v", self.Actual)
+
+	return field
 }
 
 func (self SchemaDelta) String() string {
@@ -106,4 +119,8 @@ func (self SchemaDelta) String() string {
 	}
 
 	return msg
+}
+
+type Migratable interface {
+	Migrate(diff []*SchemaDelta) error
 }

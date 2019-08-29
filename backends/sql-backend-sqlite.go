@@ -15,7 +15,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func (self *SqlBackend) initializeSqlite() (string, string, error) {
+func preinitializeSqlite(self *SqlBackend) {
 	// tell the backend cool details about generating compatible SQL
 	self.queryGenTypeMapping = generators.SqliteTypeMapping
 	self.queryGenNormalizerFormat = "LOWER(REPLACE(REPLACE(REPLACE(REPLACE(%v, ':', ' '), '[', ' '), ']', ' '), '*', ' '))"
@@ -24,7 +24,9 @@ func (self *SqlBackend) initializeSqlite() (string, string, error) {
 	self.createPrimaryKeyStrFormat = `%s TEXT NOT NULL`
 	self.foreignKeyConstraintFormat = `FOREIGN KEY(%s) REFERENCES %s(%s) %s`
 	self.defaultCurrentTimeString = `CURRENT_TIMESTAMP`
+}
 
+func initializeSqlite(self *SqlBackend) (string, string, error) {
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
 		var uniqueConstraints []string

@@ -660,7 +660,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 	}
 
 	if useInStatement {
-		criterionStr = criterionStr + outFieldName + ` `
+		criterionStr = criterionStr + self.ToFieldName(outFieldName) + ` `
 
 		if criterion.Operator == `not` || criterion.Operator == `unlike` {
 			criterionStr = criterionStr + `NOT `

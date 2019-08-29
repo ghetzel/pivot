@@ -25,6 +25,40 @@ var SqlArrayFieldHintLength = 131069
 var InitialPingTimeout = time.Duration(10) * time.Second
 var sqlMaxExactCountRows = 10000
 
+type SqlPreInitFunc func(*SqlBackend)
+type SqlInitFunc func(*SqlBackend) (string, string, error)
+
+var sqlPreInitFuncs = make(map[string]SqlPreInitFunc)
+var sqlInitFuncs = make(map[string]SqlInitFunc)
+
+func RegisterSqlPreInitFunc(scheme string, fn SqlPreInitFunc) {
+	if fn != nil {
+		sqlPreInitFuncs[scheme] = fn
+	}
+}
+
+func RegisterSqlInitFunc(scheme string, fn SqlInitFunc) {
+	if fn != nil {
+		sqlInitFuncs[scheme] = fn
+	}
+}
+
+func init() {
+	// setup scheme aliases (e.g.: psql:// -> postgresql://)
+	dal.AddConnectionSchemeAlias(`psql`, `postgresql`)
+	dal.AddConnectionSchemeAlias(`postgres`, `postgresql`)
+
+	// setup (optional) pre-initializers
+	RegisterSqlPreInitFunc(`mysql`, preinitializeMysql)
+	RegisterSqlPreInitFunc(`sqlite`, preinitializeSqlite)
+	RegisterSqlPreInitFunc(`postgresql`, preinitializePostgres)
+
+	// setup *required* initializers
+	RegisterSqlInitFunc(`mysql`, initializeMysql)
+	RegisterSqlInitFunc(`sqlite`, initializeSqlite)
+	RegisterSqlInitFunc(`postgresql`, initializePostgres)
+}
+
 type sqlTableDetails struct {
 	Index        int
 	Name         string
@@ -79,6 +113,10 @@ func NewSqlBackend(connection dal.ConnectionString) Backend {
 		knownCollections:    make(map[string]bool),
 	}
 
+	if fn, ok := sqlPreInitFuncs[connection.Backend()]; ok && fn != nil {
+		fn(backend)
+	}
+
 	backend.indexer = backend
 	return backend
 }
@@ -97,14 +135,7 @@ func (self *SqlBackend) Supports(features ...BackendFeature) bool {
 }
 
 func (self *SqlBackend) String() string {
-	switch dbtype := self.conn.Backend(); dbtype {
-	case `postgres`, `postgresql`, `psql`:
-		return `postgresql`
-	case `mysql`, `sqlite`:
-		return dbtype
-	default:
-		return ``
-	}
+	return self.conn.Backend()
 }
 
 func (self *SqlBackend) GetConnectionString() *dal.ConnectionString {
@@ -190,15 +221,10 @@ func (self *SqlBackend) Initialize() error {
 	var err error
 
 	// setup driver-specific settings
-	switch self.String() {
-	case `sqlite`:
-		name, dsn, err = self.initializeSqlite()
-	case `mysql`:
-		name, dsn, err = self.initializeMysql()
-	case `postgresql`:
-		name, dsn, err = self.initializePostgres()
-	default:
-		return fmt.Errorf("Unsupported backend %q", backend)
+	if fn, ok := sqlInitFuncs[self.conn.Backend()]; ok && fn != nil {
+		name, dsn, err = fn(self)
+	} else {
+		return fmt.Errorf("undefined or nil initializer function for SQL type %q", self.conn.Backend())
 	}
 
 	if err != nil {
@@ -565,6 +591,53 @@ func (self *SqlBackend) ListCollections() ([]string, error) {
 	return maputil.StringKeys(&self.registeredCollections), nil
 }
 
+func (self *SqlBackend) schemaColumnClause(field *dal.Field, gen *generators.Sql) (string, error) {
+	var def string
+
+	// This is weird...
+	//
+	// So Array, Object, and Raw fields are stored using the same datatype (BLOB), which
+	// means that when we read back the schema definition, we don't have a decisive way of
+	// knowing whether that field should be treated as Raw or Object/Array.  So we create Object/Array fields
+	// with a specific length.  This serves as a hint to us that we should treat this field as a certain type.
+	//
+	// We could also do this with comments, but not all SQL servers necessarily support comments on
+	// table schemata, so this feels more reliable in practical usage.
+	//
+	switch field.Type {
+	case dal.ObjectType:
+		field.Length = SqlObjectFieldHintLength
+	case dal.ArrayType:
+		field.Length = SqlArrayFieldHintLength
+	}
+
+	if nativeType, err := gen.ToNativeType(field.Type, []dal.Type{field.Subtype}, field.Length); err == nil {
+		def = fmt.Sprintf("%s %s", gen.ToFieldName(field.Name), nativeType)
+	} else {
+		return ``, err
+	}
+
+	if field.Required {
+		def += ` NOT NULL`
+	}
+
+	if field.Unique {
+		def += ` UNIQUE`
+	}
+
+	// if the default value is neither nil nor a function
+	if v := field.DefaultValue; v != nil && !typeutil.IsFunction(field.DefaultValue) {
+		switch vS := typeutil.String(v); vS {
+		case `now`:
+			def += fmt.Sprintf(" DEFAULT %v", self.defaultCurrentTimeString)
+		default:
+			def += fmt.Sprintf(" DEFAULT %v", gen.ToNativeValue(field.Type, []dal.Type{field.Subtype}, v))
+		}
+	}
+
+	return def, nil
+}
+
 func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	// -- sqlite3
 	// CREATE TABLE foo (
@@ -619,50 +692,11 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	}
 
 	for _, field := range definition.Fields {
-		var def string
-
-		// This is weird...
-		//
-		// So Array, Object, and Raw fields are stored using the same datatype (BLOB), which
-		// means that when we read back the schema definition, we don't have a decisive way of
-		// knowing whether that field should be treated as Raw or Object/Array.  So we create Object/Array fields
-		// with a specific length.  This serves as a hint to us that we should treat this field as a certain type.
-		//
-		// We could also do this with comments, but not all SQL servers necessarily support comments on
-		// table schemata, so this feels more reliable in practical usage.
-		//
-		switch field.Type {
-		case dal.ObjectType:
-			field.Length = SqlObjectFieldHintLength
-		case dal.ArrayType:
-			field.Length = SqlArrayFieldHintLength
-		}
-
-		if nativeType, err := gen.ToNativeType(field.Type, []dal.Type{field.Subtype}, field.Length); err == nil {
-			def = fmt.Sprintf("%s %s", gen.ToFieldName(field.Name), nativeType)
+		if clause, err := self.schemaColumnClause(&field, gen); err == nil {
+			fields = append(fields, clause)
 		} else {
-			return err
+			return fmt.Errorf("field %v: %v", field.Name, err)
 		}
-
-		if field.Required {
-			def += ` NOT NULL`
-		}
-
-		if field.Unique {
-			def += ` UNIQUE`
-		}
-
-		// if the default value is neither nil nor a function
-		if v := field.DefaultValue; v != nil && !typeutil.IsFunction(field.DefaultValue) {
-			switch vS := typeutil.String(v); vS {
-			case `now`:
-				def += fmt.Sprintf(" DEFAULT %v", self.defaultCurrentTimeString)
-			default:
-				def += fmt.Sprintf(" DEFAULT %v", gen.ToNativeValue(field.Type, []dal.Type{field.Subtype}, v))
-			}
-		}
-
-		fields = append(fields, def)
 	}
 
 	// Constraints
@@ -1022,37 +1056,63 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 	}
 }
 
-// func (self *SqlBackend) Migrate(diff []dal.SchemaDelta) error {
-// 	for _, delta := range diff {
-// 		switch delta.Issue {
-// 		case dal.CollectionKeyNameIssue, dal.CollectionKeyTypeIssue:
-// 			return fmt.Errorf("Cannot alter key name or type for %T", self)
+func (self *SqlBackend) generateAlterStatement(delta *dal.SchemaDelta) (string, error) {
+	if collection, err := self.getCollectionFromCache(delta.Collection); err == nil {
+		gen := self.makeQueryGen(collection)
+		stmt := fmt.Sprintf("ALTER TABLE %s ", gen.ToTableName(collection.Name))
 
-// 		case dal.FieldMissingIssue:
-// 			// ALTER TABLE ADD COLUMN ...
-// 			if collection, err := self.getCollectionFromCache(delta.Collection); err == nil {
-// 				if field, ok := collection.GetField(delta.Name); ok {
+		switch delta.Issue {
+		case dal.CollectionKeyNameIssue, dal.CollectionKeyTypeIssue:
+			return ``, fmt.Errorf("Cannot alter key name or type for %T", self)
 
-// 				} else {
-// 					return fmt.Errorf("Cannot add field %q: not in collection %q", delta.Name, delta.Collection)
-// 				}
-// 			} else {
-// 				return fmt.Errorf("Cannot add field %q: %v", delta.Name, err)
-// 			}
+		case dal.FieldMissingIssue:
+			if delta.ReferenceField == nil {
+				return ``, fmt.Errorf("field %v: new field specification not available", delta.Name)
+			}
 
-// 		case dal.FieldNameIssue:
-// 			// ALTER TABLE ADD COLUMN ...
-// 		case dal.FieldLengthIssue:
-// 			// ALTER TABLE  ...
-// 		case dal.FieldTypeIssue:
-// 			// ALTER TABLE  ...
-// 		case dal.FieldPropertyIssue:
-// 			// ...
-// 		}
-// 	}
+			if clause, err := self.schemaColumnClause(delta.ReferenceField, gen); err == nil {
+				stmt += `ADD ` + clause
+			} else {
+				return ``, fmt.Errorf("field %v: %v", delta.Name, err)
+			}
 
-// 	return fmt.Errorf("Not Implemented")
-// }
+		case dal.FieldTypeIssue:
+			if field, ok := collection.GetField(delta.Name); ok {
+				if clause, err := self.schemaColumnClause(delta.DesiredField(field), gen); err == nil {
+					stmt += `MODIFY ` + clause
+				} else {
+					return ``, fmt.Errorf("field %v: %v", field.Name, err)
+				}
+			} else {
+				return ``, fmt.Errorf("Cannot modify field %q: not in collection %q", delta.Name, delta.Collection)
+			}
+
+		default:
+			return ``, fmt.Errorf("NI: %+v", delta)
+			// case dal.FieldNameIssue:
+			// 	// ALTER TABLE ADD COLUMN ...
+			// case dal.FieldLengthIssue:
+			// 	// ALTER TABLE  ...
+			// case dal.FieldPropertyIssue:
+			// 	// ...
+		}
+
+		return stmt, nil
+	} else {
+		return ``, fmt.Errorf("Cannot add field %q: %v", delta.Name, err)
+	}
+}
+
+func (self *SqlBackend) Migrate(diff []dal.SchemaDelta) error {
+	// for _, delta := range diff {
+	// 	if statement, err := self.generateAlterStatement(delta); err == nil {
+	// 	} else {
+	// 		return err
+	// 	}
+	// }
+
+	return nil
+}
 
 func (self *SqlBackend) refreshAllCollections() error {
 	if !self.conn.OptBool(`autoregister`, DefaultAutoregister) {

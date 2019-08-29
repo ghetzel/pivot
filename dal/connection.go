@@ -14,6 +14,12 @@ import (
 	"github.com/jdxcode/netrc"
 )
 
+var schemeAliasMap = make(map[string]string)
+
+func AddConnectionSchemeAlias(from string, to string) {
+	schemeAliasMap[from] = to
+}
+
 type ConnectionString struct {
 	URI     *url.URL
 	Options map[string]interface{}
@@ -50,6 +56,11 @@ func (self *ConnectionString) String() string {
 // Returns the backend and protocol components of the string.
 func (self *ConnectionString) Scheme() (string, string) {
 	backend, protocol := stringutil.SplitPair(self.URI.Scheme, `+`)
+
+	if actual, ok := schemeAliasMap[backend]; ok && actual != `` {
+		backend = actual
+	}
+
 	return backend, strings.Trim(protocol, `/`)
 }
 
@@ -206,6 +217,14 @@ func ParseConnectionString(conn string) (ConnectionString, error) {
 		}
 	} else {
 		return ConnectionString{}, err
+	}
+}
+
+func MustParseConnectionString(conn string) ConnectionString {
+	if cs, err := ParseConnectionString(conn); err == nil {
+		return cs
+	} else {
+		panic(err.Error())
 	}
 }
 

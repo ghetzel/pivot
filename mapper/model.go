@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"sort"
 
+	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/backends"
@@ -88,13 +89,17 @@ func (self *Model) Migrate() error {
 	}
 
 	if diffs := self.collection.Diff(actualCollection); diffs != nil {
-		msg := fmt.Sprintf("Actual schema for collection '%s' differs from desired schema:\n", self.collection.Name)
+		if migratable, ok := self.db.(dal.Migratable); ok {
+			return migratable.Migrate(diffs)
+		} else {
+			merr := fmt.Errorf("Actual schema for collection '%s' differs from desired schema", self.collection.Name)
 
-		for _, err := range diffs {
-			msg += fmt.Sprintf("  %v\n", err)
+			for _, diff := range diffs {
+				merr = log.AppendError(merr, fmt.Errorf(diff.String()))
+			}
+
+			return merr
 		}
-
-		return fmt.Errorf(msg)
 	}
 
 	// overlay the definition onto whatever the backend came back with

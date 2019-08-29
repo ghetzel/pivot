@@ -293,8 +293,8 @@ func (self *Field) Format(value interface{}, op FieldOperation) (interface{}, er
 	}
 }
 
-func (self *Field) Diff(other *Field) []SchemaDelta {
-	diff := make([]SchemaDelta, 0)
+func (self *Field) Diff(other *Field) []*SchemaDelta {
+	diff := make([]*SchemaDelta, 0)
 	mine := structs.New(self)
 	theirs := structs.New(other)
 
@@ -320,7 +320,7 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 					if theirV, ok := theirField.Value().(int); ok {
 						// It is okay for lengths to exceed, but not be less than, our desired length
 						if theirV < myV {
-							diff = append(diff, SchemaDelta{
+							diff = append(diff, &SchemaDelta{
 								Type:      FieldDelta,
 								Issue:     FieldLengthIssue,
 								Message:   `length is shorter than desired`,
@@ -365,7 +365,7 @@ func (self *Field) Diff(other *Field) []SchemaDelta {
 				}
 
 				if myV != theirV {
-					diff = append(diff, SchemaDelta{
+					diff = append(diff, &SchemaDelta{
 						Type:      FieldDelta,
 						Issue:     deltaIssue,
 						Message:   `values do not match`,

@@ -709,11 +709,11 @@ func (self *Collection) Check() error {
 }
 
 // Determine the differences (if any) between this Collection definition and another.
-func (self *Collection) Diff(actual *Collection) []SchemaDelta {
-	differences := make([]SchemaDelta, 0)
+func (self *Collection) Diff(actual *Collection) []*SchemaDelta {
+	differences := make([]*SchemaDelta, 0)
 
 	if self.Name != actual.Name {
-		differences = append(differences, SchemaDelta{
+		differences = append(differences, &SchemaDelta{
 			Type:       CollectionDelta,
 			Issue:      CollectionNameIssue,
 			Message:    `names do not match`,
@@ -726,7 +726,7 @@ func (self *Collection) Diff(actual *Collection) []SchemaDelta {
 	if self.GetIdentityFieldName() != actual.GetIdentityFieldName() {
 		differences = append(
 			differences,
-			SchemaDelta{
+			&SchemaDelta{
 				Type:       CollectionDelta,
 				Issue:      CollectionKeyNameIssue,
 				Message:    `does not match`,
@@ -739,7 +739,7 @@ func (self *Collection) Diff(actual *Collection) []SchemaDelta {
 	}
 
 	if self.IdentityFieldType != actual.IdentityFieldType {
-		differences = append(differences, SchemaDelta{
+		differences = append(differences, &SchemaDelta{
 			Type:       CollectionDelta,
 			Issue:      CollectionKeyTypeIssue,
 			Message:    `does not match`,
@@ -760,12 +760,13 @@ func (self *Collection) Diff(actual *Collection) []SchemaDelta {
 				differences = append(differences, diff...)
 			}
 		} else {
-			differences = append(differences, SchemaDelta{
-				Type:       FieldDelta,
-				Issue:      FieldMissingIssue,
-				Message:    `is missing`,
-				Collection: self.Name,
-				Name:       myField.Name,
+			differences = append(differences, &SchemaDelta{
+				Type:           FieldDelta,
+				Issue:          FieldMissingIssue,
+				Message:        `is missing`,
+				Collection:     self.Name,
+				Name:           myField.Name,
+				ReferenceField: &myField,
 			})
 		}
 	}
