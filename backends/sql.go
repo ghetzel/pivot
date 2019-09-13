@@ -17,6 +17,7 @@ import (
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/ghetzel/pivot/v3/filter/generators"
+	"github.com/ghetzel/pivot/v3/util"
 )
 
 var SqlObjectFieldHintLength = 131071
@@ -57,6 +58,8 @@ func init() {
 	RegisterSqlInitFunc(`mysql`, initializeMysql)
 	RegisterSqlInitFunc(`sqlite`, initializeSqlite)
 	RegisterSqlInitFunc(`postgresql`, initializePostgres)
+
+	util.DisableFeature(`sql-migrate`)
 }
 
 type sqlTableDetails struct {
@@ -799,10 +802,6 @@ func (self *SqlBackend) GetCollection(name string) (*dal.Collection, error) {
 			return nil, dal.CollectionNotFound
 		}
 
-		if detected, ok := self.detectedCollections[name]; ok {
-			return detected, nil
-		}
-
 		if collection, err := self.getCollectionFromCache(name); err == nil {
 			return collection, nil
 		} else {
@@ -1063,7 +1062,15 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 }
 
 func (self *SqlBackend) generateAlterStatement(delta *dal.SchemaDelta) (string, []interface{}, error) {
-	if collection, err := self.GetCollection(delta.Collection); err == nil {
+	var collection *dal.Collection
+
+	if detected, ok := self.detectedCollections[delta.Collection]; ok {
+		collection = detected
+	} else if c, err := self.GetCollection(delta.Collection); err == nil {
+		collection = c
+	}
+
+	if collection != nil {
 		gen := self.makeQueryGen(collection)
 		stmt := fmt.Sprintf("ALTER TABLE %s ", gen.ToTableName(collection.Name))
 
@@ -1110,6 +1117,10 @@ func (self *SqlBackend) generateAlterStatement(delta *dal.SchemaDelta) (string, 
 }
 
 func (self *SqlBackend) Migrate() error {
+	if !util.Features(`sql-migrate`) {
+		return nil
+	}
+
 	var diff []*dal.SchemaDelta
 
 	self.registeredCollections.Range(func(key, value interface{}) bool {

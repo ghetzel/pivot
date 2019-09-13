@@ -10,7 +10,8 @@ import (
 
 func TestSqlAlterStatements(t *testing.T) {
 	assert := require.New(t)
-	b := NewSqlBackend(dal.MustParseConnectionString(`psql://`)).(*SqlBackend)
+	b := NewSqlBackend(dal.MustParseConnectionString(`sqlite://temporary`)).(*SqlBackend)
+	assert.NoError(b.Initialize())
 
 	have := &dal.Collection{
 		Name:          `TestSqlAlterStatements`,
@@ -51,6 +52,7 @@ func TestSqlAlterStatements(t *testing.T) {
 	}
 
 	b.RegisterCollection(have)
+	assert.NoError(b.Migrate())
 
 	for _, delta := range want.Diff(have) {
 		stmt, _, err := b.generateAlterStatement(delta)
