@@ -323,10 +323,11 @@ func (self *Sql) Finalize(f *filter.Filter) error {
 				// add the fields we're grouping by if they weren't already explicitly added by the filter
 				for _, groupBy := range self.groupBy {
 					if !sliceutil.ContainsString(fieldNames, groupBy) {
-						fieldNames = append(fieldNames, groupBy)
+						fieldNames = append(fieldNames, self.ToFieldName(groupBy))
 					}
 				}
 
+				// add aggregation function calls
 				for _, aggpair := range self.aggregateBy {
 					fName := self.ToAggregatedFieldName(aggpair.Aggregation, aggpair.Field)
 					fName = fmt.Sprintf("%v AS "+self.TypeMapping.FieldNameFormat, fName, aggpair.Field)

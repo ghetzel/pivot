@@ -53,7 +53,7 @@ func TestSqlAlterStatements(t *testing.T) {
 	b.RegisterCollection(have)
 
 	for _, delta := range want.Diff(have) {
-		stmt, err := b.generateAlterStatement(delta)
+		stmt, _, err := b.generateAlterStatement(delta)
 		assert.NoError(err)
 
 		// TODO: this is the wrong order, need to work out whats going on

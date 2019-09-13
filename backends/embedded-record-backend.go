@@ -132,6 +132,14 @@ func (self *EmbeddedRecordBackend) Supports(feature ...BackendFeature) bool {
 	return self.backend.Supports(feature...)
 }
 
+func (self *EmbeddedRecordBackend) Migrate() error {
+	if migratable, ok := self.backend.(dal.Migratable); ok {
+		return migratable.Migrate()
+	} else {
+		return nil
+	}
+}
+
 // fulfill the Indexer interface
 // -------------------------------------------------------------------------------------------------
 func (self *EmbeddedRecordBackend) GetBackend() Backend {

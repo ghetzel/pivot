@@ -88,18 +88,21 @@ func (self *Model) Migrate() error {
 		actualCollection = c
 	}
 
+	// TODO: uncommenting this produces an infinite loop; investigate
+	// if migratable, ok := self.db.(dal.Migratable); ok {
+	// 	return migratable.Migrate()
+	// }
+
 	if diffs := self.collection.Diff(actualCollection); diffs != nil {
-		if migratable, ok := self.db.(dal.Migratable); ok {
-			return migratable.Migrate(diffs)
-		} else {
-			merr := fmt.Errorf("Actual schema for collection '%s' differs from desired schema", self.collection.Name)
+		merr := fmt.Errorf("Actual schema for collection '%s' differs from desired schema", self.collection.Name)
 
-			for _, diff := range diffs {
-				merr = log.AppendError(merr, fmt.Errorf(diff.String()))
-			}
-
-			return merr
+		for _, diff := range diffs {
+			merr = log.AppendError(merr, fmt.Errorf("- %s", diff.String()))
 		}
+
+		return merr
+	} else {
+		log.Debugf("Collection %q is up-to-date with the given schema", self.collection.Name)
 	}
 
 	// overlay the definition onto whatever the backend came back with

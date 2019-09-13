@@ -69,8 +69,6 @@ func initializeSqlite(self *SqlBackend) (string, string, error) {
 
 			queryGen := self.makeQueryGen(nil)
 
-			var foundPrimaryKey bool
-
 			for rows.Next() {
 				var i, required, pk int
 				var column, columnType string
@@ -121,14 +119,13 @@ func initializeSqlite(self *SqlBackend) (string, string, error) {
 					}
 
 					if pk == 1 {
-						if !foundPrimaryKey {
-							field.Identity = true
-							foundPrimaryKey = true
-							collection.IdentityField = column
-							collection.IdentityFieldType = field.Type
-						} else {
-							field.Key = true
-						}
+						field.Identity = true
+						field.Unique = true
+						collection.IdentityField = column
+						collection.IdentityFieldType = field.Type
+					} else if pk > 1 {
+						field.Key = true
+						field.Unique = false
 					}
 
 					// add field to the collection we're building

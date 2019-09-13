@@ -313,11 +313,11 @@ func (self *Field) Diff(other *Field) []*SchemaDelta {
 			//  DefaultValue:
 			//		this is a value that is interpreted by the backend and may not be retrievable after definition
 			//
-			case `NativeType`, `Description`, `DefaultValue`, `Validator`, `Formatter`, `FormatterConfig`, `ValidatorConfig`:
+			case `NativeType`, `Description`, `DefaultValue`, `Validator`, `Formatter`, `FormatterConfig`, `ValidatorConfig`, `Key`:
 				continue
 			case `Length`:
-				if myV, ok := myField.Value().(int); ok {
-					if theirV, ok := theirField.Value().(int); ok {
+				if myV := typeutil.Int(myField.Value()); myV > 0 {
+					if theirV := typeutil.Int(theirField.Value()); theirV > 0 {
 						// It is okay for lengths to exceed, but not be less than, our desired length
 						if theirV < myV {
 							diff = append(diff, &SchemaDelta{

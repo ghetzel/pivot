@@ -122,5 +122,5 @@ func (self SchemaDelta) String() string {
 }
 
 type Migratable interface {
-	Migrate(diff []*SchemaDelta) error
+	Migrate() error
 }

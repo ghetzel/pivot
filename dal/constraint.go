@@ -18,6 +18,9 @@ type Constraint struct {
 	// Provides backend-specific additional options for the constraint.
 	Options string `json:"options,omitempty"`
 
+	// Specifies the local field that related records will be put into.  Defaults to the field specified in On.
+	Into string `json:"into,omitempty"`
+
 	// Whether to omit this constraint when determining embedded collections.
 	NoEmbed bool `json:"noembed,omitempty"`
 }

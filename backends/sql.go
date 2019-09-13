@@ -102,6 +102,8 @@ type SqlBackend struct {
 	dropTableQuery             string
 	registeredCollections      sync.Map
 	knownCollections           map[string]bool
+	detectedCollections        map[string]*dal.Collection
+	initialized                bool
 }
 
 func NewSqlBackend(connection dal.ConnectionString) Backend {
@@ -111,6 +113,7 @@ func NewSqlBackend(connection dal.ConnectionString) Backend {
 		dropTableQuery:      `DROP TABLE %s`,
 		aggregator:          make(map[string]Aggregator),
 		knownCollections:    make(map[string]bool),
+		detectedCollections: make(map[string]*dal.Collection),
 	}
 
 	if fn, ok := sqlPreInitFuncs[connection.Backend()]; ok && fn != nil {
@@ -256,7 +259,6 @@ func (self *SqlBackend) Initialize() error {
 
 	// setup aggregators (currently this is just the SQL implementation)
 	self.aggregator[``] = self
-
 	return nil
 }
 
@@ -797,6 +799,10 @@ func (self *SqlBackend) GetCollection(name string) (*dal.Collection, error) {
 			return nil, dal.CollectionNotFound
 		}
 
+		if detected, ok := self.detectedCollections[name]; ok {
+			return detected, nil
+		}
+
 		if collection, err := self.getCollectionFromCache(name); err == nil {
 			return collection, nil
 		} else {
@@ -1056,39 +1062,39 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 	}
 }
 
-func (self *SqlBackend) generateAlterStatement(delta *dal.SchemaDelta) (string, error) {
-	if collection, err := self.getCollectionFromCache(delta.Collection); err == nil {
+func (self *SqlBackend) generateAlterStatement(delta *dal.SchemaDelta) (string, []interface{}, error) {
+	if collection, err := self.GetCollection(delta.Collection); err == nil {
 		gen := self.makeQueryGen(collection)
 		stmt := fmt.Sprintf("ALTER TABLE %s ", gen.ToTableName(collection.Name))
 
 		switch delta.Issue {
 		case dal.CollectionKeyNameIssue, dal.CollectionKeyTypeIssue:
-			return ``, fmt.Errorf("Cannot alter key name or type for %T", self)
+			return ``, nil, fmt.Errorf("Cannot alter key name or type for %T", self)
 
 		case dal.FieldMissingIssue:
 			if delta.ReferenceField == nil {
-				return ``, fmt.Errorf("field %v: new field specification not available", delta.Name)
+				return ``, nil, fmt.Errorf("field %v: new field specification not available", delta.Name)
 			}
 
 			if clause, err := self.schemaColumnClause(delta.ReferenceField, gen); err == nil {
 				stmt += `ADD ` + clause
 			} else {
-				return ``, fmt.Errorf("field %v: %v", delta.Name, err)
+				return ``, nil, fmt.Errorf("field %v: %v", delta.Name, err)
 			}
 
-		case dal.FieldTypeIssue:
+		case dal.FieldTypeIssue, dal.FieldPropertyIssue:
 			if field, ok := collection.GetField(delta.Name); ok {
 				if clause, err := self.schemaColumnClause(delta.DesiredField(field), gen); err == nil {
 					stmt += `MODIFY ` + clause
 				} else {
-					return ``, fmt.Errorf("field %v: %v", field.Name, err)
+					return ``, nil, fmt.Errorf("field %v: %v", field.Name, err)
 				}
 			} else {
-				return ``, fmt.Errorf("Cannot modify field %q: not in collection %q", delta.Name, delta.Collection)
+				return ``, nil, fmt.Errorf("Cannot modify field %q: not in collection %q", delta.Name, delta.Collection)
 			}
 
 		default:
-			return ``, fmt.Errorf("NI: %+v", delta)
+			return ``, nil, fmt.Errorf("NI: %+v", delta)
 			// case dal.FieldNameIssue:
 			// 	// ALTER TABLE ADD COLUMN ...
 			// case dal.FieldLengthIssue:
@@ -1097,21 +1103,51 @@ func (self *SqlBackend) generateAlterStatement(delta *dal.SchemaDelta) (string, 
 			// 	// ...
 		}
 
-		return stmt, nil
+		return stmt, gen.GetValues(), nil
 	} else {
-		return ``, fmt.Errorf("Cannot add field %q: %v", delta.Name, err)
+		return ``, nil, fmt.Errorf("Collection %q not detected on server", delta.Collection)
 	}
 }
 
-func (self *SqlBackend) Migrate(diff []dal.SchemaDelta) error {
-	// for _, delta := range diff {
-	// 	if statement, err := self.generateAlterStatement(delta); err == nil {
-	// 	} else {
-	// 		return err
-	// 	}
-	// }
+func (self *SqlBackend) Migrate() error {
+	var diff []*dal.SchemaDelta
 
-	return nil
+	self.registeredCollections.Range(func(key, value interface{}) bool {
+		name := typeutil.String(key)
+		registered := value.(*dal.Collection)
+
+		if detected, ok := self.detectedCollections[name]; ok {
+			diff = append(diff, registered.Diff(detected)...)
+		}
+
+		return true
+	})
+
+	if len(diff) > 0 {
+		// start transaction
+		if tx, err := self.db.Begin(); err == nil {
+			// populate statements
+			for _, delta := range diff {
+				if stmt, values, err := self.generateAlterStatement(delta); err == nil {
+					querylog.Debugf("[%v] %s %v", self, string(stmt[:]), values)
+
+					if _, err := tx.Exec(stmt, values...); err != nil {
+						defer tx.Rollback()
+						return err
+					}
+				} else {
+					return err
+				}
+			}
+
+			// commit transaction
+			return tx.Commit()
+		} else {
+			return err
+		}
+	} else {
+		return nil
+	}
 }
 
 func (self *SqlBackend) refreshAllCollections() error {
@@ -1166,6 +1202,8 @@ func (self *SqlBackend) refreshCollectionFromDatabase(name string, definition *d
 		name,
 	); err == nil {
 		if len(collection.Fields) > 0 {
+			self.detectedCollections[collection.Name] = collection
+
 			if definition != nil {
 				// we've read the collection back from the database, but in the process we've lost
 				// some local values that only existed on the definition itself.  we need to copy those into
