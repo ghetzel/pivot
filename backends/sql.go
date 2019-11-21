@@ -675,83 +675,101 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	//     [enabled     BIT,
 	//     [created_at] [DATETIME] DEFAULT CURRENT_TIMESTAMP
 	// );
-
-	if definition.IdentityField == `` {
-		definition.IdentityField = dal.DefaultIdentityField
-	}
-
 	gen := self.makeQueryGen(definition)
-
-	stmt := fmt.Sprintf("CREATE TABLE %s (", gen.ToTableName(definition.Name))
-
-	fields := []string{}
+	stmt := ``
 	values := make([]interface{}, 0)
 
-	if definition.IdentityField != `` {
-		switch definition.IdentityFieldType {
-		case dal.StringType:
-			fields = append(fields, fmt.Sprintf(self.createPrimaryKeyStrFormat, gen.ToFieldName(definition.IdentityField)))
-		default:
-			fields = append(fields, fmt.Sprintf(self.createPrimaryKeyIntFormat, gen.ToFieldName(definition.IdentityField)))
-		}
-	}
+	if definition.View {
+		vq := ``
 
-	for _, field := range definition.Fields {
-		if clause, err := self.schemaColumnClause(&field, gen); err == nil {
-			fields = append(fields, clause)
+		if typeutil.IsArray(definition.ViewQuery) {
+			lines := sliceutil.Stringify(definition.ViewQuery)
+
+			for i, line := range lines {
+				lines[i] = strings.TrimSpace(line)
+			}
+
+			vq = strings.Join(lines, ` `)
 		} else {
-			return fmt.Errorf("field %v: %v", field.Name, err)
+			vq = typeutil.String(definition.ViewQuery)
 		}
+
+		stmt = fmt.Sprintf("CREATE %s VIEW %s AS %s", definition.ViewKeywords, gen.ToTableName(definition.Name), vq)
+	} else {
+		if definition.IdentityField == `` {
+			definition.IdentityField = dal.DefaultIdentityField
+		}
+
+		stmt += fmt.Sprintf("CREATE TABLE %s (", gen.ToTableName(definition.Name))
+		fields := []string{}
+
+		if definition.IdentityField != `` {
+			switch definition.IdentityFieldType {
+			case dal.StringType:
+				fields = append(fields, fmt.Sprintf(self.createPrimaryKeyStrFormat, gen.ToFieldName(definition.IdentityField)))
+			default:
+				fields = append(fields, fmt.Sprintf(self.createPrimaryKeyIntFormat, gen.ToFieldName(definition.IdentityField)))
+			}
+		}
+
+		for _, field := range definition.Fields {
+			if clause, err := self.schemaColumnClause(&field, gen); err == nil {
+				fields = append(fields, clause)
+			} else {
+				return fmt.Errorf("field %v: %v", field.Name, err)
+			}
+		}
+
+		// Constraints
+		// ---------------------------------------------------------------------------------------------
+		// after we've added all the field definitions, append the PRIMARY KEY () constraint statement
+		// with all of the key fields in the schema.
+		primaryKeys := make([]string, 0)
+
+		for _, k := range definition.KeyFields() {
+			primaryKeys = append(primaryKeys, gen.ToFieldName(k.Name))
+		}
+
+		fields = append(fields, fmt.Sprintf("PRIMARY KEY (%s)", strings.Join(primaryKeys, `, `)))
+
+		// append foreign key constraints
+		for _, fk := range definition.GetAllConstraints() {
+			if err := fk.Validate(); err != nil {
+				return err
+			}
+
+			locals := sliceutil.Stringify(fk.On)
+			remotes := sliceutil.Stringify(fk.Field)
+
+			// properly wrap field names
+			for i, local := range locals {
+				locals[i] = gen.ToFieldName(local)
+			}
+
+			for i, remote := range remotes {
+				remotes[i] = gen.ToFieldName(remote)
+			}
+
+			constraint := strings.TrimSpace(fmt.Sprintf(
+				self.foreignKeyConstraintFormat,
+				strings.Join(locals, `, `),
+				gen.ToTableName(fk.Collection),
+				strings.Join(remotes, `, `),
+				fk.Options,
+			))
+
+			if constraint != `` {
+				fields = append(fields, constraint)
+			} else {
+				return fmt.Errorf("invalid constraint")
+			}
+		}
+
+		// join all fields on "," and finish building the statement
+		stmt += strings.Join(fields, `, `)
+		stmt += `)`
+
 	}
-
-	// Constraints
-	// ---------------------------------------------------------------------------------------------
-	// after we've added all the field definitions, append the PRIMARY KEY () constraint statement
-	// with all of the key fields in the schema.
-	primaryKeys := make([]string, 0)
-
-	for _, k := range definition.KeyFields() {
-		primaryKeys = append(primaryKeys, gen.ToFieldName(k.Name))
-	}
-
-	fields = append(fields, fmt.Sprintf("PRIMARY KEY (%s)", strings.Join(primaryKeys, `, `)))
-
-	// append foreign key constraints
-	for _, fk := range definition.GetAllConstraints() {
-		if err := fk.Validate(); err != nil {
-			return err
-		}
-
-		locals := sliceutil.Stringify(fk.On)
-		remotes := sliceutil.Stringify(fk.Field)
-
-		// properly wrap field names
-		for i, local := range locals {
-			locals[i] = gen.ToFieldName(local)
-		}
-
-		for i, remote := range remotes {
-			remotes[i] = gen.ToFieldName(remote)
-		}
-
-		constraint := strings.TrimSpace(fmt.Sprintf(
-			self.foreignKeyConstraintFormat,
-			strings.Join(locals, `, `),
-			gen.ToTableName(fk.Collection),
-			strings.Join(remotes, `, `),
-			fk.Options,
-		))
-
-		if constraint != `` {
-			fields = append(fields, constraint)
-		} else {
-			return fmt.Errorf("invalid constraint")
-		}
-	}
-
-	// join all fields on "," and finish building the statement
-	stmt += strings.Join(fields, `, `)
-	stmt += `)`
 
 	if tx, err := self.db.Begin(); err == nil {
 		querylog.Debugf("[%v] %s %v", self, string(stmt[:]), values)

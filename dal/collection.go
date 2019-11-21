@@ -109,6 +109,15 @@ type Collection struct {
 	// validator when validation requires checking multiple fields at once.
 	PreSaveValidator CollectionValidatorFunc `json:"-"`
 
+	// Specifies that this collection is a read-only view on data that is queried by the underlying database engine.
+	View bool `json:"view,omitempty"`
+
+	// Specify additional keywords in the view creation to modify how it is created.
+	ViewKeywords string `json:"view_keywords,omitempty"`
+
+	// A query object that is passed to the underlying database engine.
+	ViewQuery interface{} `json:"view_query,omitempty"`
+
 	recordType reflect.Type
 	backend    Backend
 }

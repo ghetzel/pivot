@@ -304,6 +304,10 @@ func (self *FilesystemBackend) ListCollections() ([]string, error) {
 }
 
 func (self *FilesystemBackend) CreateCollection(definition *dal.Collection) error {
+	if definition.View {
+		return fmt.Errorf("View-type collections are not supported on this backend.")
+	}
+
 	if err := self.writeObject(definition, `schema`, false, definition); err == nil {
 		self.RegisterCollection(definition)
 		return nil

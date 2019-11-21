@@ -13,7 +13,6 @@ require (
 	github.com/blevesearch/go-porterstemmer v1.0.2 // indirect
 	github.com/blevesearch/segment v0.0.0-20160915185041-762005e7a34f // indirect
 	github.com/boltdb/bolt v0.0.0-20171120010307-9da317453632 // indirect
-	github.com/c-bata/go-prompt v0.2.2 // indirect
 	github.com/containerd/continuity v0.0.0-20180919190352-508d86ade3c2 // indirect
 	github.com/couchbase/vellum v0.0.0-20180314210611-5083a469fcef // indirect
 	github.com/cznic/b v0.0.0-20180115125044-35e9bbe41f07 // indirect
@@ -55,7 +54,6 @@ require (
 	github.com/orcaman/concurrent-map v0.0.0-20180319144342-a05df785d2dc
 	github.com/ory/dockertest v3.3.2+incompatible
 	github.com/philhofer/fwd v1.0.0 // indirect
-	github.com/pkg/term v0.0.0-20180730021639-bffc007b7fd5 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20170806203942-52369c62f446 // indirect
 	github.com/sirupsen/logrus v1.0.6 // indirect
 	github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d // indirect
@@ -74,3 +72,5 @@ require (
 	gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528
 	gotest.tools v2.1.0+incompatible // indirect
 )
+
+go 1.13

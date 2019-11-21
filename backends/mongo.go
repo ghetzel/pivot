@@ -240,6 +240,10 @@ func (self *MongoBackend) Delete(name string, ids ...interface{}) error {
 }
 
 func (self *MongoBackend) CreateCollection(definition *dal.Collection) error {
+	if definition.View {
+		return fmt.Errorf("View-type collections are not supported on this backend.")
+	}
+
 	if _, err := self.GetCollection(definition.Name); err == nil {
 		return fmt.Errorf("Collection %v already exists", definition.Name)
 	} else if dal.IsCollectionNotFoundErr(err) {

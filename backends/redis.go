@@ -228,6 +228,10 @@ func (self *RedisBackend) ListCollections() ([]string, error) {
 func (self *RedisBackend) CreateCollection(definition *dal.Collection) error {
 	querylog.Debugf("[%v] Create collection %v", self, definition.Name)
 
+	if definition.View {
+		return fmt.Errorf("View-type collections are not supported on this backend.")
+	}
+
 	// write the schema definition to the schema key
 	if data, err := json.Marshal(definition); err == nil {
 		schemaKey := self.key(definition.Name, `__schema__`)

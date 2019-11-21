@@ -261,7 +261,12 @@ func (self *DynamoBackend) Delete(name string, ids ...interface{}) error {
 }
 
 func (self *DynamoBackend) CreateCollection(definition *dal.Collection) error {
+	if definition.View {
+		return fmt.Errorf("View-type collections are not supported on this backend.")
+	}
+
 	return fmt.Errorf("Not Implemented")
+
 }
 
 func (self *DynamoBackend) DeleteCollection(name string) error {
