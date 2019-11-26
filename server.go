@@ -113,7 +113,7 @@ func (self *Server) ListenAndServe() error {
 		for _, schema := range loadedCollections {
 			if _, err := self.backend.GetCollection(schema.Name); err == nil {
 				continue
-			} else if dal.IsCollectionNotFoundErr(err) {
+			} else if dal.ShouldCreateCollection(schema, err) {
 				if err := self.backend.CreateCollection(schema); err == nil {
 					log.Noticef("[%v] Created collection %q", self.backend, schema.Name)
 				} else {

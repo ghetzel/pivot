@@ -72,7 +72,7 @@ func (self *Model) Migrate() error {
 	var actualCollection *dal.Collection
 
 	// create the collection if it doesn't exist
-	if c, err := self.db.GetCollection(self.collection.Name); dal.IsCollectionNotFoundErr(err) {
+	if c, err := self.db.GetCollection(self.collection.Name); dal.ShouldCreateCollection(self.collection, err) {
 		if err := self.db.CreateCollection(self.collection); err == nil {
 			if c, err := self.db.GetCollection(self.collection.Name); err == nil {
 				actualCollection = c

@@ -118,6 +118,9 @@ type Collection struct {
 	// A query object that is passed to the underlying database engine.
 	ViewQuery interface{} `json:"view_query,omitempty"`
 
+	// Specifies that creating this collection on the backend should always be attempted.
+	AlwaysCreate bool `json:"create,omitempty"`
+
 	recordType reflect.Type
 	backend    Backend
 }
@@ -135,6 +138,24 @@ func NewCollection(name string, fields ...Field) *Collection {
 		IdentityFieldType:      DefaultIdentityFieldType,
 		IdentityFieldValidator: ValidateNotEmpty,
 	}
+}
+
+// Takes a collection definition and any errors encountered while retrieving it, and determines
+// whether a CreateCollection() call should be made.
+func ShouldCreateCollection(collection *Collection, errs ...error) bool {
+	if collection != nil {
+		if collection.AlwaysCreate {
+			return true
+		}
+	}
+
+	for _, err := range errs {
+		if IsCollectionNotFoundErr(err) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // Set the backend for this collection.  The Backend interface in this package is a limited subset
