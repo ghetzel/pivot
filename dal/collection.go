@@ -660,6 +660,13 @@ func (self *Collection) StructToRecord(in interface{}) (*Record, error) {
 		return nil, err
 	}
 
+	// finally, remove readonly fields that we shouldn't attempt to change
+	for _, field := range self.Fields {
+		if field.ReadOnly {
+			delete(output.Fields, field.Name)
+		}
+	}
+
 	return output, nil
 }
 

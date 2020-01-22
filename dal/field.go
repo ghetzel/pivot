@@ -101,6 +101,9 @@ type Field struct {
 	// If given a Constraint, the constraint will be added to this field's
 	// parent collection with the "On" field set to this field's name.
 	BelongsTo interface{} `json:"belongs_to,omitempty"`
+
+	// Specifies that the field may not be updated, only read.  Attempts to update the field will be silently discarded.
+	ReadOnly bool `json:"readonly,omitempty"`
 }
 
 func (self *Field) normalizeType(in interface{}) (interface{}, error) {
