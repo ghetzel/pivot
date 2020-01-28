@@ -316,8 +316,27 @@ func (self *Field) Diff(other *Field) []*SchemaDelta {
 			//  DefaultValue:
 			//		this is a value that is interpreted by the backend and may not be retrievable after definition
 			//
-			case `NativeType`, `Description`, `DefaultValue`, `Validator`, `Formatter`, `FormatterConfig`, `ValidatorConfig`, `Key`:
+			case `NativeType`, `Description`, `Validator`, `Formatter`, `FormatterConfig`, `ValidatorConfig`, `Key`, `ReadOnly`:
 				continue
+			case `DefaultValue`:
+				myDefault := myField.Value()
+				theirDefault := theirField.Value()
+
+				if typeutil.IsScalar(myDefault) {
+					if typeutil.IsScalar(theirDefault) {
+						if myDefault != theirDefault {
+							diff = append(diff, &SchemaDelta{
+								Type:      FieldDelta,
+								Issue:     FieldPropertyIssue,
+								Message:   `default values do not match`,
+								Name:      self.Name,
+								Parameter: `DefaultValue`,
+								Desired:   myDefault,
+								Actual:    theirDefault,
+							})
+						}
+					}
+				}
 			case `Length`:
 				if myV := typeutil.Int(myField.Value()); myV > 0 {
 					if theirV := typeutil.Int(theirField.Value()); theirV > 0 {

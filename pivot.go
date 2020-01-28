@@ -28,12 +28,13 @@ type Collection = dal.Collection
 type Record = dal.Record
 type RecordSet = dal.RecordSet
 type Filter = filter.Filter
+type ConnectOptions = backends.ConnectOptions
 
 var MonitorCheckInterval = time.Duration(10) * time.Second
 var NetrcFile = ``
 
 // Create a new database connection with the given options.
-func NewDatabaseWithOptions(connection string, options backends.ConnectOptions) (DB, error) {
+func NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error) {
 	if cs, err := dal.ParseConnectionString(connection); err == nil {
 		if NetrcFile != `` {
 			if err := cs.LoadCredentialsFromNetrc(NetrcFile); err != nil {
@@ -78,7 +79,7 @@ func NewDatabaseWithOptions(connection string, options backends.ConnectOptions) 
 
 // Create a new database connection with the default options.
 func NewDatabase(connection string) (DB, error) {
-	return NewDatabaseWithOptions(connection, backends.ConnectOptions{})
+	return NewDatabaseWithOptions(connection, ConnectOptions{})
 }
 
 // Loads and registers a JSON-encoded array of dal.Collection objects into the given DB backend instance.
@@ -117,22 +118,24 @@ func LoadSchemataFromFile(filename string) ([]*dal.Collection, error) {
 }
 
 // Calls LoadSchemataFromFile from all *.json files in the given directory.
-func ApplySchemata(fileOrDirPath string, db Backend) error {
-	var loadedCollections []*dal.Collection
+func LoadSchemata(fileOrDirPaths ...string) ([]*dal.Collection, error) {
+	var loaded []*dal.Collection
 	var filenames []string
 
-	if fileutil.DirExists(fileOrDirPath) {
-		if fns, err := filepath.Glob(filepath.Join(fileOrDirPath, `*.json`)); err == nil {
-			filenames = fns
+	for _, fileOrDirPath := range fileOrDirPaths {
+		if fileutil.DirExists(fileOrDirPath) {
+			if fns, err := filepath.Glob(filepath.Join(fileOrDirPath, `*.json`)); err == nil {
+				filenames = append(filenames, fns...)
+			} else {
+				return nil, fmt.Errorf("Cannot list directory %q: %v", fileOrDirPath, err)
+			}
+		} else if fileutil.IsNonemptyFile(fileOrDirPath) {
+			filenames = append(filenames, fileOrDirPath)
+		} else if fns, err := filepath.Glob(fileOrDirPath); err == nil {
+			filenames = append(filenames, fns...)
 		} else {
-			return fmt.Errorf("Cannot list directory %q: %v", fileOrDirPath, err)
+			return nil, fmt.Errorf("Cannot load schemata from %q", fileOrDirPath)
 		}
-	} else if fileutil.IsNonemptyFile(fileOrDirPath) {
-		filenames = append(filenames, fileOrDirPath)
-	} else if fns, err := filepath.Glob(fileOrDirPath); err == nil {
-		filenames = fns
-	} else {
-		return fmt.Errorf("Cannot load schemata from %q", fileOrDirPath)
 	}
 
 	sort.Strings(filenames)
@@ -144,31 +147,38 @@ func ApplySchemata(fileOrDirPath string, db Backend) error {
 			}
 
 			log.Infof("Loaded %d definitions from %v", len(collections), filename)
-
-			for _, collection := range collections {
-				db.RegisterCollection(collection)
-				loadedCollections = append(loadedCollections, collection)
-			}
+			loaded = append(loaded, collections...)
 		} else {
-			return fmt.Errorf("Cannot load schema file %q: %v", filename, err)
+			return nil, fmt.Errorf("Cannot load schema file %q: %v", filename, err)
 		}
 	}
 
-	for _, schema := range loadedCollections {
-		if _, err := db.GetCollection(schema.Name); err == nil {
-			continue
-		} else if dal.IsCollectionNotFoundErr(err) {
-			if err := db.CreateCollection(schema); err == nil {
-				log.Noticef("[%v] Created collection %q", db, schema.Name)
+	return loaded, nil
+}
+
+// Creates all non-existent schemata in the given directory.
+func ApplySchemata(fileOrDirPath string, db Backend) error {
+	if collections, err := LoadSchemata(fileOrDirPath); err == nil {
+		for _, schema := range collections {
+			db.RegisterCollection(schema)
+
+			if _, err := db.GetCollection(schema.Name); err == nil {
+				continue
+			} else if dal.IsCollectionNotFoundErr(err) {
+				if err := db.CreateCollection(schema); err == nil {
+					log.Noticef("[%v] Created collection %q", db, schema.Name)
+				} else {
+					log.Errorf("Cannot create collection %q: %v", schema.Name, err)
+				}
 			} else {
-				log.Errorf("Cannot create collection %q: %v", schema.Name, err)
+				return fmt.Errorf("Cannot verify collection %q: %v", schema.Name, err)
 			}
-		} else {
-			return fmt.Errorf("Cannot verify collection %q: %v", schema.Name, err)
 		}
-	}
 
-	return nil
+		return nil
+	} else {
+		return err
+	}
 }
 
 // Loads a JSON-encoded array of dal.Record objects from a file into the given DB backend instance.

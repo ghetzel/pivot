@@ -82,7 +82,7 @@ func main() {
 	app.Commands = []cli.Command{
 		{
 			Name:      `web`,
-			Usage:     `Start a web server UI.`,
+			Usage:     `Start the local REST API and data browser web application.`,
 			ArgsUsage: `[CONNECTION_STRING [INDEXER_CONNECTION_STRING]]`,
 			Flags: []cli.Flag{
 				cli.StringFlag{
@@ -152,8 +152,94 @@ func main() {
 					os.Exit(3)
 				}
 			},
-		},
-		{
+		}, {
+			Name:      `diff`,
+			Usage:     `Print the difference between the loaded schema and the given connection.`,
+			ArgsUsage: `CONNECTION_STRING [COLLECTION ..]`,
+			Flags:     []cli.Flag{},
+			Action: func(c *cli.Context) {
+				var backend string
+				var config pivot.Configuration
+
+				if cnf, err := pivot.LoadConfigFile(c.GlobalString(`config`)); err == nil {
+					config = cnf.ForEnv(os.Getenv(`PIVOT_ENV`))
+					log.Infof("Loaded configuration file from %v env=%v", c.GlobalString(`config`), os.Getenv(`PIVOT_ENV`))
+				} else if !os.IsNotExist(err) {
+					log.Fatalf("Configuration error: %v", err)
+				}
+
+				if cs := c.Args().First(); cs != `` {
+					backend = cs
+				} else {
+					backend = config.Backend
+				}
+
+				config.AutocreateCollections = false
+				config.Autoexpand = false
+
+				if backend == `` {
+					log.Fatalf("Must specify a backend to connect to.")
+				}
+
+				if db, err := pivot.NewDatabaseWithOptions(backend, pivot.ConnectOptions{}); err == nil {
+					args := c.Args()
+					var collections []string
+
+					if len(args) > 1 {
+						collections = args[1:]
+					} else if all, err := db.ListCollections(); err == nil {
+						collections = all
+					} else {
+						log.Fatalf("failed to retrieve collections: %v", err)
+					}
+
+					if loaded, err := pivot.LoadSchemata(c.GlobalStringSlice(`schema`)...); err == nil {
+						log.Infof("Checking %d collections against %d schemata", len(collections), len(loaded))
+
+					CollectionLoop:
+						for _, c := range collections {
+							if actual, err := db.GetCollection(c); err == nil {
+								var schema *dal.Collection
+
+								for _, lc := range loaded {
+									if lc.Name == actual.Name {
+										if lc.View {
+											log.Infof("%s: skipping view", lc.Name)
+											continue CollectionLoop
+										}
+
+										schema = lc
+										break
+									}
+								}
+
+								if schema != nil {
+									deltas := schema.Diff(actual)
+
+									if len(deltas) == 0 {
+										log.Noticef("%s: up-to-date", actual.Name)
+									} else {
+										log.Warningf("%s: %d differences", actual.Name, len(deltas))
+
+										for _, delta := range deltas {
+											log.Warningf("\t%v", delta)
+										}
+									}
+								} else {
+									log.Warningf("no schema found for database collection %q", actual.Name)
+								}
+							} else {
+								log.Warningf("failed to retrieve collection: %v", err)
+							}
+						}
+					} else {
+						log.Fatalf("schema: %v", err)
+					}
+				} else {
+					log.Fatalf("connect: %v", err)
+				}
+			},
+		}, {
 			Name:      `copy`,
 			Usage:     `Copies data from one datasource to another`,
 			ArgsUsage: `SOURCE DESTINATION`,

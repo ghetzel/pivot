@@ -25,7 +25,7 @@ func preinitializePostgres(self *SqlBackend) {
 	self.countExactQuery = "SELECT COUNT(*) AS exact FROM (SELECT 1 FROM %s LIMIT %d) t"
 	self.foreignKeyConstraintFormat = `FOREIGN KEY(%s) REFERENCES %s (%s) %s`
 	// self.defaultCurrentTimeString = `now() AT TIME ZONE 'utc'`
-	self.defaultCurrentTimeString = `CURRENT_TIMESTAMP`
+	self.defaultCurrentTimeString = `current_timestamp`
 }
 
 func initializePostgres(self *SqlBackend) (string, string, error) {
@@ -71,6 +71,9 @@ func initializePostgres(self *SqlBackend) (string, string, error) {
 			return nil, err
 		}
 
+		// log.Errorf("%s", strings.Repeat(`-`, 69))
+		// log.Errorf("%v: primary=%+v foreign=%+v unique=%+v", collectionName, primaryKeys, foreignKeys, uniqueKeys)
+
 		if f, err := filter.FromMap(map[string]interface{}{
 			`table_catalog`: datasetName,
 			`table_name`:    collectionName,
@@ -80,7 +83,7 @@ func initializePostgres(self *SqlBackend) (string, string, error) {
 				`ordinal_position`,
 				`column_name`,
 				`data_type`,
-				`character_octet_length`,
+				`character_maximum_length`,
 				`is_nullable`,
 				`column_default`,
 			}
@@ -102,12 +105,12 @@ func initializePostgres(self *SqlBackend) (string, string, error) {
 					// for each field in the schema description for this table...
 					for rows.Next() {
 						var i int
-						var octetLength sql.NullInt64
+						var charMaxLength sql.NullInt64
 						var column, columnType, nullable string
 						var defaultValue sql.NullString
 
 						// populate variables from column values
-						if err := rows.Scan(&i, &column, &columnType, &octetLength, &nullable, &defaultValue); err == nil {
+						if err := rows.Scan(&i, &column, &columnType, &charMaxLength, &nullable, &defaultValue); err == nil {
 							// start building the dal.Field
 							field := dal.Field{
 								Name:       column,
@@ -117,19 +120,34 @@ func initializePostgres(self *SqlBackend) (string, string, error) {
 
 							// set default value if it's not NULL
 							if defaultValue.Valid && !stringutil.IsSurroundedBy(defaultValue.String, `nextval(`, `)`) {
-								field.DefaultValue = stringutil.Autotype(defaultValue.String)
+								dv := defaultValue.String
+								dv = strings.TrimSuffix(dv, `::text`)
+								dv = stringutil.Unwrap(dv, `'`, `'`)
+
+								switch strings.ToLower(dv) {
+								case `now()`, `current_timestamp`, self.defaultCurrentTimeString:
+									dv = `now`
+								}
+
+								field.DefaultValue = stringutil.Autotype(dv)
 							}
 
 							// tease out type, length, and precision from the native type
 							// e.g: DOULBE(8,12) -> "DOUBLE", 8, 12
 							columnType = strings.ToUpper(columnType)
-							field.Length = int(octetLength.Int64)
+							field.Length = int(charMaxLength.Int64)
 							// field.Precision =
 
 							// map native types to DAL types
 							if strings.Contains(columnType, `CHAR`) || strings.HasSuffix(columnType, `TEXT`) {
-								field.Type = dal.StringType
-
+								switch field.Length {
+								case SqlObjectFieldHintLength:
+									field.Type = dal.ObjectType
+								case SqlArrayFieldHintLength:
+									field.Type = dal.ArrayType
+								default:
+									field.Type = dal.StringType
+								}
 							} else if strings.HasPrefix(columnType, `BOOL`) {
 								field.Type = dal.BooleanType
 
@@ -147,14 +165,7 @@ func initializePostgres(self *SqlBackend) (string, string, error) {
 								field.Type = dal.TimeType
 
 							} else {
-								switch field.Length {
-								case SqlObjectFieldHintLength:
-									field.Type = dal.ObjectType
-								case SqlArrayFieldHintLength:
-									field.Type = dal.ArrayType
-								default:
-									field.Type = dal.RawType
-								}
+								field.Type = dal.RawType
 							}
 
 							// figure out keying
@@ -171,7 +182,10 @@ func initializePostgres(self *SqlBackend) (string, string, error) {
 							}
 
 							// add field to the collection we're building
-							collection.Fields = append(collection.Fields, field)
+							if !field.Identity {
+								// log.Errorf("\t%v.%v: nullable=%v default=%v pk=%v fk=%v len=%v", collectionName, column, nullable, defaultValue.String, field.Identity, field.Key, field.Length)
+								collection.Fields = append(collection.Fields, field)
+							}
 						} else {
 							return nil, err
 						}
