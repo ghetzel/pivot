@@ -3,10 +3,10 @@ bindings:
 -   name:     results
     resource: '/api/collections/{{ qs `id` }}/where/{{ or (qs `q`) `all` }}'
     params:
-        limit:  '{{ qs `limit` }}'
-        offset: '{{ qs `offset` }}'
-        sort:   '{{ qs `sort` }}'
-        fields: '{{ qs `fields` }}'
+        limit:  '{{ qs `limit` `25` }}'
+        offset: '{{ qs `offset` `0` }}'
+        sort:   '{{ qs `sort` `` }}'
+        fields: '{{ qs `fields` `` }}'
         noexpand: true
 
 -   name:     schema

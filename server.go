@@ -191,6 +191,17 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			httputil.RespondJSON(w, &status)
 		})
 
+	router.Get(`/api/collections`,
+		func(w http.ResponseWriter, req *http.Request) {
+			backend := backendForRequest(self, req, self.backend)
+
+			if names, err := backend.ListCollections(); err == nil {
+				httputil.RespondJSON(w, names)
+			} else {
+				httputil.RespondJSON(w, err)
+			}
+		})
+
 	// Querying
 	// ---------------------------------------------------------------------------------------------
 	queryHandler := func(w http.ResponseWriter, req *http.Request) {

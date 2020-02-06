@@ -6,6 +6,8 @@ import (
 	"github.com/ghetzel/pivot/v3/filter"
 )
 
+var ElasticsearchExactMatchQueryType = `term`
+
 func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[string]interface{}, error) {
 	c := make(map[string]interface{})
 
@@ -24,7 +26,7 @@ func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[
 			gen.values = append(gen.values, value)
 
 			or_terms = append(or_terms, map[string]interface{}{
-				`term`: map[string]interface{}{
+				ElasticsearchExactMatchQueryType: map[string]interface{}{
 					criterion.Field: value,
 				},
 			})
@@ -32,7 +34,7 @@ func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[
 			if v, ok := gen.options[`multifield`]; ok {
 				if vS, ok := v.(string); ok {
 					or_terms = append(or_terms, map[string]interface{}{
-						`term`: map[string]interface{}{
+						ElasticsearchExactMatchQueryType: map[string]interface{}{
 							(criterion.Field + `.` + vS): value,
 						},
 					})
@@ -91,7 +93,7 @@ func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map
 				and_not = append(and_not, map[string]interface{}{
 					`bool`: map[string]interface{}{
 						`must_not`: map[string]interface{}{
-							`term`: map[string]interface{}{
+							ElasticsearchExactMatchQueryType: map[string]interface{}{
 								criterion.Field: value,
 							},
 						},
