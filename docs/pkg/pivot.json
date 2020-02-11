@@ -723,52 +723,6 @@
             "Signature": "MustGetCollection(db Backend, name string) *dal.Collection",
             "Source": "ewoJaWYgY29sbGVjdGlvbiwgZXJyIDo9IGRiLkdldENvbGxlY3Rpb24obmFtZSk7IGVyciA9PSBuaWwgewoJCXJldHVybiBjb2xsZWN0aW9uCgl9IGVsc2UgewoJCXBhbmljKGZtdC5TcHJpbnRmKCJDYW5ub3QgZ2V0IGNvbGxlY3Rpb24gJXE6ICV2IiwgbmFtZSwgZXJyKSkKCX0KfQ==",
             "IsPackageLevel": true
-        },
-        {
-            "Name": "NewDatabase",
-            "Comment": "Create a new database connection with the default options.",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "string"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "DB"
-                },
-                {
-                    "Type": "error"
-                }
-            ],
-            "Signature": "NewDatabase(connection string) (DB, error)",
-            "Source": "ewoJcmV0dXJuIE5ld0RhdGFiYXNlV2l0aE9wdGlvbnMoY29ubmVjdGlvbiwgQ29ubmVjdE9wdGlvbnN7fSkKfQ==",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewDatabaseWithOptions",
-            "Comment": "Create a new database connection with the given options.",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "string"
-                },
-                {
-                    "Name": "options",
-                    "Type": "ConnectOptions"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "DB"
-                },
-                {
-                    "Type": "error"
-                }
-            ],
-            "Signature": "NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)",
-            "Source": "ewoJaWYgY3MsIGVyciA6PSBkYWwuUGFyc2VDb25uZWN0aW9uU3RyaW5nKGNvbm5lY3Rpb24pOyBlcnIgPT0gbmlsIHsKCQlpZiBOZXRyY0ZpbGUgIT0gYGAgewoJCQlpZiBlcnIgOj0gY3MuTG9hZENyZWRlbnRpYWxzRnJvbU5ldHJjKE5ldHJjRmlsZSk7IGVyciAhPSBuaWwgewoJCQkJcmV0dXJuIG5pbCwgZXJyCgkJCX0KCQl9CgkJaWYgYmFja2VuZCwgZXJyIDo9IGJhY2tlbmRzLk1ha2VCYWNrZW5kKGNzKTsgZXJyID09IG5pbCB7CgkJCWlmIG9wdGlvbnMuSW5kZXhlciAhPSBgYCB7CgkJCQlpZiBpY3MsIGVyciA6PSBkYWwuUGFyc2VDb25uZWN0aW9uU3RyaW5nKG9wdGlvbnMuSW5kZXhlcik7IGVyciA9PSBuaWwgewoJCQkJCWlmIE5ldHJjRmlsZSAhPSBgYCB7CgkJCQkJCWlmIGVyciA6PSBpY3MuTG9hZENyZWRlbnRpYWxzRnJvbU5ldHJjKE5ldHJjRmlsZSk7IGVyciAhPSBuaWwgewoJCQkJCQkJcmV0dXJuIG5pbCwgZXJyCgkJCQkJCX0KCQkJCQl9CgkJCQkJaWYgZXJyIDo9IGJhY2tlbmQuU2V0SW5kZXhlcihpY3MpOyBlcnIgIT0gbmlsIHsKCQkJCQkJcmV0dXJuIG5pbCwgZXJyCgkJCQkJfQoJCQkJfSBlbHNlIHsKCQkJCQlyZXR1cm4gbmlsLCBlcnIKCQkJCX0KCQkJfQoJCQlpZiAhb3B0aW9ucy5Ta2lwSW5pdGlhbGl6ZSB7CgkJCQlpZiBlcnIgOj0gYmFja2VuZC5Jbml0aWFsaXplKCk7IGVyciAhPSBuaWwgewoJCQkJCXJldHVybiBuaWwsIGVycgoJCQkJfQoJCQl9CgkJCXJldHVybiBuZXdkYihiYWNrZW5kKSwgbmlsCgkJfSBlbHNlIHsKCQkJcmV0dXJuIG5pbCwgZXJyCgkJfQoJfSBlbHNlIHsKCQlyZXR1cm4gbmlsLCBlcnIKCX0KfQ==",
-            "IsPackageLevel": true
         }
     ],
     "Tests": [
@@ -867,6 +821,54 @@
         },
         "DB": {
             "Name": "DB",
+            "Methods": [
+                {
+                    "Name": "NewDatabaseWithOptions",
+                    "Comment": "Create a new database connection with the given options.",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "options",
+                            "Type": "ConnectOptions"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "DB"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)",
+                    "Source": "ewoJaWYgY3MsIGVyciA6PSBkYWwuUGFyc2VDb25uZWN0aW9uU3RyaW5nKGNvbm5lY3Rpb24pOyBlcnIgPT0gbmlsIHsKCQlpZiBOZXRyY0ZpbGUgIT0gYGAgewoJCQlpZiBlcnIgOj0gY3MuTG9hZENyZWRlbnRpYWxzRnJvbU5ldHJjKE5ldHJjRmlsZSk7IGVyciAhPSBuaWwgewoJCQkJcmV0dXJuIG5pbCwgZXJyCgkJCX0KCQl9CgkJaWYgYmFja2VuZCwgZXJyIDo9IGJhY2tlbmRzLk1ha2VCYWNrZW5kKGNzKTsgZXJyID09IG5pbCB7CgkJCWlmIG9wdGlvbnMuSW5kZXhlciAhPSBgYCB7CgkJCQlpZiBpY3MsIGVyciA6PSBkYWwuUGFyc2VDb25uZWN0aW9uU3RyaW5nKG9wdGlvbnMuSW5kZXhlcik7IGVyciA9PSBuaWwgewoJCQkJCWlmIE5ldHJjRmlsZSAhPSBgYCB7CgkJCQkJCWlmIGVyciA6PSBpY3MuTG9hZENyZWRlbnRpYWxzRnJvbU5ldHJjKE5ldHJjRmlsZSk7IGVyciAhPSBuaWwgewoJCQkJCQkJcmV0dXJuIG5pbCwgZXJyCgkJCQkJCX0KCQkJCQl9CgkJCQkJaWYgZXJyIDo9IGJhY2tlbmQuU2V0SW5kZXhlcihpY3MpOyBlcnIgIT0gbmlsIHsKCQkJCQkJcmV0dXJuIG5pbCwgZXJyCgkJCQkJfQoJCQkJfSBlbHNlIHsKCQkJCQlyZXR1cm4gbmlsLCBlcnIKCQkJCX0KCQkJfQoJCQlpZiAhb3B0aW9ucy5Ta2lwSW5pdGlhbGl6ZSB7CgkJCQlpZiBlcnIgOj0gYmFja2VuZC5Jbml0aWFsaXplKCk7IGVyciAhPSBuaWwgewoJCQkJCXJldHVybiBuaWwsIGVycgoJCQkJfQoJCQl9CgkJCXJldHVybiBuZXdkYihiYWNrZW5kKSwgbmlsCgkJfSBlbHNlIHsKCQkJcmV0dXJuIG5pbCwgZXJyCgkJfQoJfSBlbHNlIHsKCQlyZXR1cm4gbmlsLCBlcnIKCX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewDatabase",
+                    "Comment": "Create a new database connection with the default options.",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "DB"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "NewDatabase(connection string) (DB, error)",
+                    "Source": "ewoJcmV0dXJuIE5ld0RhdGFiYXNlV2l0aE9wdGlvbnMoY29ubmVjdGlvbiwgQ29ubmVjdE9wdGlvbnN7fSkKfQ==",
+                    "IsPackageLevel": true
+                }
+            ],
             "Source": "dHlwZSBEQiBpbnRlcmZhY2UgewoJYmFja2VuZHMuQmFja2VuZAoJQXR0YWNoQ29sbGVjdGlvbigqQ29sbGVjdGlvbikgTW9kZWwKCUMoc3RyaW5nKSAqQ29sbGVjdGlvbgoJTWlncmF0ZSgpIGVycm9yCglNb2RlbHMoKSBbXU1vZGVsCglBcHBseVNjaGVtYXRhKGZpbGVPckRpclBhdGggc3RyaW5nKSBlcnJvcgoJTG9hZEZpeHR1cmVzKGZpbGVPckRpclBhdGggc3RyaW5nKSBlcnJvcgoJR2V0QmFja2VuZCgpIEJhY2tlbmQKCVNldEJhY2tlbmQoQmFja2VuZCkKfQ=="
         },
         "Filter": {
@@ -2680,7 +2682,7 @@
                     "IsPackageLevel": true
                 },
                 {
-                    "Name": "NewFileBackend",
+                    "Name": "NewRedisBackend",
                     "Arguments": [
                         {
                             "Name": "connection",
@@ -2692,59 +2694,8 @@
                             "Type": "Backend"
                         }
                     ],
-                    "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewFilesystemBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewMongoBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewSqlBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewSqlBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJYmFja2VuZCA6PSAmU3FsQmFja2VuZHtjb25uOiAmY29ubmVjdGlvbiwgcXVlcnlHZW5UeXBlTWFwcGluZzogZ2VuZXJhdG9ycy5EZWZhdWx0U3FsVHlwZU1hcHBpbmcsIGRyb3BUYWJsZVF1ZXJ5OiBgRFJPUCBUQUJMRSAlc2AsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwga25vd25Db2xsZWN0aW9uczogbWFrZShtYXBbc3RyaW5nXWJvb2wpLCBkZXRlY3RlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKX0KCWlmIGZuLCBvayA6PSBzcWxQcmVJbml0RnVuY3NbY29ubmVjdGlvbi5CYWNrZW5kKCldOyBvayAmJiBmbiAhPSBuaWwgewoJCWZuKGJhY2tlbmQpCgl9CgliYWNrZW5kLmluZGV4ZXIgPSBiYWNrZW5kCglyZXR1cm4gYmFja2VuZAp9",
+                    "Signature": "NewRedisBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZSZWRpc0JhY2tlbmR7Y3M6IGNvbm5lY3Rpb24sIGtleVByZWZpeDogcmVkaXNEZWZhdWx0S2V5UHJlZml4LCB0aW1lb3V0OiByZWRpc0RlZmF1bHRQaW5nVGltZW91dH0KfQ==",
                     "IsPackageLevel": true
                 },
                 {
@@ -2963,7 +2914,7 @@
                             "IsPackageLevel": true
                         },
                         {
-                            "Name": "NewRedisBackend",
+                            "Name": "NewSqlBackend",
                             "Arguments": [
                                 {
                                     "Name": "connection",
@@ -2975,8 +2926,59 @@
                                     "Type": "Backend"
                                 }
                             ],
-                            "Signature": "NewRedisBackend(connection dal.ConnectionString) Backend",
-                            "Source": "ewoJcmV0dXJuICZSZWRpc0JhY2tlbmR7Y3M6IGNvbm5lY3Rpb24sIGtleVByZWZpeDogcmVkaXNEZWZhdWx0S2V5UHJlZml4LCB0aW1lb3V0OiByZWRpc0RlZmF1bHRQaW5nVGltZW91dH0KfQ==",
+                            "Signature": "NewSqlBackend(connection dal.ConnectionString) Backend",
+                            "Source": "ewoJYmFja2VuZCA6PSAmU3FsQmFja2VuZHtjb25uOiAmY29ubmVjdGlvbiwgcXVlcnlHZW5UeXBlTWFwcGluZzogZ2VuZXJhdG9ycy5EZWZhdWx0U3FsVHlwZU1hcHBpbmcsIGRyb3BUYWJsZVF1ZXJ5OiBgRFJPUCBUQUJMRSAlc2AsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwga25vd25Db2xsZWN0aW9uczogbWFrZShtYXBbc3RyaW5nXWJvb2wpLCBkZXRlY3RlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKX0KCWlmIGZuLCBvayA6PSBzcWxQcmVJbml0RnVuY3NbY29ubmVjdGlvbi5CYWNrZW5kKCldOyBvayAmJiBmbiAhPSBuaWwgewoJCWZuKGJhY2tlbmQpCgl9CgliYWNrZW5kLmluZGV4ZXIgPSBiYWNrZW5kCglyZXR1cm4gYmFja2VuZAp9",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "NewFileBackend",
+                            "Arguments": [
+                                {
+                                    "Name": "connection",
+                                    "Type": "dal.ConnectionString"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "Backend"
+                                }
+                            ],
+                            "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
+                            "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "NewFilesystemBackend",
+                            "Arguments": [
+                                {
+                                    "Name": "connection",
+                                    "Type": "dal.ConnectionString"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "Backend"
+                                }
+                            ],
+                            "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
+                            "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "NewMongoBackend",
+                            "Arguments": [
+                                {
+                                    "Name": "connection",
+                                    "Type": "dal.ConnectionString"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "Backend"
+                                }
+                            ],
+                            "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
+                            "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
                             "IsPackageLevel": true
                         }
                     ],
@@ -10996,31 +10998,6 @@
                     "IsPackageLevel": true
                 },
                 {
-                    "Name": "GetValidator",
-                    "Comment": "Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.",
-                    "Arguments": [
-                        {
-                            "Name": "name",
-                            "Type": "string"
-                        },
-                        {
-                            "Name": "args",
-                            "Type": "interface{}"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "FieldValidatorFunc"
-                        },
-                        {
-                            "Type": "error"
-                        }
-                    ],
-                    "Signature": "GetValidator(name string, args interface{}) (FieldValidatorFunc, error)",
-                    "Source": "ewoJc3dpdGNoIG5hbWUgewoJY2FzZSBgb25lLW9mYDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJcmV0dXJuIFZhbGlkYXRlSXNPbmVPZihzbGljZXV0aWwuU2xpY2VpZnkoYXJncykuLi4pLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCJNdXN0IHNwZWNpZnkgYW4gYXJyYXkgb2YgdmFsdWVzIGZvciB2YWxpZGF0b3IgJ29uZS1vZiciKQoJCX0KCWNhc2UgYG5vdC16ZXJvYDoKCQlyZXR1cm4gVmFsaWRhdGVOb25aZXJvLCBuaWwKCWNhc2UgYG5vdC1lbXB0eWA6CgkJcmV0dXJuIFZhbGlkYXRlTm90RW1wdHksIG5pbAoJY2FzZSBgcG9zaXRpdmUtaW50ZWdlcmA6CgkJcmV0dXJuIFZhbGlkYXRlUG9zaXRpdmVJbnRlZ2VyLCBuaWwKCWNhc2UgYHBvc2l0aXZlLW9yLXplcm8taW50ZWdlcmA6CgkJcmV0dXJuIFZhbGlkYXRlUG9zaXRpdmVPclplcm9JbnRlZ2VyLCBuaWwKCWNhc2UgYHVybGA6CgkJcmV0dXJuIFZhbGlkYXRlSXNVUkwsIG5pbAoJY2FzZSBgbWF0Y2hgLCBgbWF0Y2gtYWxsYDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJcmV0dXJuIFZhbGlkYXRlTWF0Y2hBbGwoc2xpY2V1dGlsLlN0cmluZ2lmeShhcmdzKS4uLiksIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIk11c3Qgc3BlY2lmeSBhbiBhcnJheSBvZiB2YWx1ZXMgZm9yIHZhbGlkYXRvciAnbWF0Y2gnIikKCQl9CgljYXNlIGBtYXRjaC1hbnlgOgoJCWlmIHR5cGV1dGlsLklzQXJyYXkoYXJncykgewoJCQlyZXR1cm4gVmFsaWRhdGVNYXRjaEFueShzbGljZXV0aWwuU3RyaW5naWZ5KGFyZ3MpLi4uKSwgbmlsCgkJfSBlbHNlIHsKCQkJcmV0dXJuIG5pbCwgZm10LkVycm9yZigiTXVzdCBzcGVjaWZ5IGFuIGFycmF5IG9mIHZhbHVlcyBmb3IgdmFsaWRhdG9yICdtYXRjaC1hbnknIikKCQl9CglkZWZhdWx0OgoJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIlVua25vd24gdmFsaWRhdG9yICVxIiwgbmFtZSkKCX0KfQ==",
-                    "IsPackageLevel": true
-                },
-                {
                     "Name": "IsCollectionNotFoundErr",
                     "Arguments": [
                         {
@@ -11135,42 +11112,6 @@
                     "IsPackageLevel": true
                 },
                 {
-                    "Name": "ValidateAll",
-                    "Comment": "Validate that all of the given validator functions pass.",
-                    "Arguments": [
-                        {
-                            "Name": "validators",
-                            "Type": "...FieldValidatorFunc"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "FieldValidatorFunc"
-                        }
-                    ],
-                    "Signature": "ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc",
-                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30pIGVycm9yIHsKCQlmb3IgXywgdmFsaWRhdG9yIDo9IHJhbmdlIHZhbGlkYXRvcnMgewoJCQlpZiBlcnIgOj0gdmFsaWRhdG9yKHZhbHVlKTsgZXJyICE9IG5pbCB7CgkJCQlyZXR1cm4gZXJyCgkJCX0KCQl9CgkJcmV0dXJuIG5pbAoJfQp9",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "ValidateIsOneOf",
-                    "Comment": "Validate that the given value is among the given choices.",
-                    "Arguments": [
-                        {
-                            "Name": "choices",
-                            "Type": "...interface{}"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "FieldValidatorFunc"
-                        }
-                    ],
-                    "Signature": "ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc",
-                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30pIGVycm9yIHsKCQlmb3IgXywgY2hvaWNlIDo9IHJhbmdlIGNob2ljZXMgewoJCQlpZiBvaywgZXJyIDo9IHN0cmluZ3V0aWwuUmVsYXhlZEVxdWFsKGNob2ljZSwgdmFsdWUpOyBlcnIgPT0gbmlsICYmIG9rIHsKCQkJCXJldHVybiBuaWwKCQkJfQoJCX0KCQlyZXR1cm4gZm10LkVycm9yZigidmFsdWUgbXVzdCBiZSBvbmUgb2Y6ICUrdiIsIGNob2ljZXMpCgl9Cn0=",
-                    "IsPackageLevel": true
-                },
-                {
                     "Name": "ValidateIsURL",
                     "Comment": "Validate that the value is a URL with a non-empty scheme and host component.",
                     "Arguments": [
@@ -11186,42 +11127,6 @@
                     ],
                     "Signature": "ValidateIsURL(value interface{}) error",
                     "Source": "ewoJaWYgdSwgZXJyIDo9IHVybC5QYXJzZSh0eXBldXRpbC5TdHJpbmcodmFsdWUpKTsgZXJyID09IG5pbCB7CgkJaWYgdS5TY2hlbWUgPT0gYGAgfHwgdS5Ib3N0ID09IGBgIHx8IHUuUGF0aCA9PSBgYCB7CgkJCXJldHVybiBmbXQuRXJyb3JmKCJJbnZhbGlkIFVSTCIpCgkJfQoJfSBlbHNlIHsKCQlyZXR1cm4gZXJyCgl9CglyZXR1cm4gbmlsCn0=",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "ValidateMatchAll",
-                    "Comment": "Validate that the given value matches all of the given regular expressions.",
-                    "Arguments": [
-                        {
-                            "Name": "patterns",
-                            "Type": "...string"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "FieldValidatorFunc"
-                        }
-                    ],
-                    "Signature": "ValidateMatchAll(patterns ...string) FieldValidatorFunc",
-                    "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBpbnRlcmZhY2V7fSkgZXJyb3IgewoJCWZvciBfLCByeCA6PSByYW5nZSBwcnggewoJCQlpZiAhcnguTWF0Y2hTdHJpbmcodHlwZXV0aWwuU3RyaW5nKHZhbHVlKSkgewoJCQkJcmV0dXJuIGZtdC5FcnJvcmYoIlZhbHVlIGRvZXMgbm90IG1hdGNoIHBhdHRlcm4gJXEiLCByeC5TdHJpbmcoKSkKCQkJfQoJCX0KCQlyZXR1cm4gbmlsCgl9Cn0=",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "ValidateMatchAny",
-                    "Comment": "Validate that the given value matches at least one of the given regular expressions.",
-                    "Arguments": [
-                        {
-                            "Name": "patterns",
-                            "Type": "...string"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "FieldValidatorFunc"
-                        }
-                    ],
-                    "Signature": "ValidateMatchAny(patterns ...string) FieldValidatorFunc",
-                    "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBpbnRlcmZhY2V7fSkgZXJyb3IgewoJCWZvciBfLCByeCA6PSByYW5nZSBwcnggewoJCQlpZiByeC5NYXRjaFN0cmluZyh0eXBldXRpbC5TdHJpbmcodmFsdWUpKSB7CgkJCQlyZXR1cm4gbmlsCgkJCX0KCQl9CgkJcmV0dXJuIGZtdC5FcnJvcmYoIlZhbHVlIGRvZXMgbm90IG1hdGNoIGFueSB2YWxpZCBwYXR0ZXJuIikKCX0KfQ==",
                     "IsPackageLevel": true
                 },
                 {
@@ -11294,27 +11199,6 @@
                     ],
                     "Signature": "ValidatePositiveOrZeroInteger(value interface{}) error",
                     "Source": "ewoJaWYgdiwgZXJyIDo9IHN0cmluZ3V0aWwuQ29udmVydFRvSW50ZWdlcih2YWx1ZSk7IGVyciA9PSBuaWwgewoJCWlmIHYgPCAwIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoImV4cGVjdGVkIHZhbHVlID49IDAsIGdvdDogJXYiLCB2KQoJCX0KCX0gZWxzZSB7CgkJcmV0dXJuIGVycgoJfQoJcmV0dXJuIG5pbAp9",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "ValidatorFromMap",
-                    "Comment": "Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.",
-                    "Arguments": [
-                        {
-                            "Name": "in",
-                            "Type": "map[string]interface{}"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "FieldValidatorFunc"
-                        },
-                        {
-                            "Type": "error"
-                        }
-                    ],
-                    "Signature": "ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)",
-                    "Source": "ewoJdmFsaWRhdG9ycyA6PSBtYWtlKFtdRmllbGRWYWxpZGF0b3JGdW5jLCAwKQoJZm9yIG5hbWUsIGRlZm4gOj0gcmFuZ2UgaW4gewoJCWlmIHZhbGlkYXRvciwgZXJyIDo9IEdldFZhbGlkYXRvcihuYW1lLCBkZWZuKTsgZXJyID09IG5pbCB7CgkJCXZhbGlkYXRvcnMgPSBhcHBlbmQodmFsaWRhdG9ycywgdmFsaWRhdG9yKQoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkludmFsaWQgdmFsaWRhdG9yIGNvbmZpZ3VyYXRpb24gJXY6ICV2IiwgbmFtZSwgZXJyKQoJCX0KCX0KCXJldHVybiBWYWxpZGF0ZUFsbCh2YWxpZGF0b3JzLi4uKSwgbmlsCn0=",
                     "IsPackageLevel": true
                 }
             ],
@@ -13356,6 +13240,126 @@
                 },
                 "FieldValidatorFunc": {
                     "Name": "FieldValidatorFunc",
+                    "Methods": [
+                        {
+                            "Name": "ValidatorFromMap",
+                            "Comment": "Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.",
+                            "Arguments": [
+                                {
+                                    "Name": "in",
+                                    "Type": "map[string]interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "FieldValidatorFunc"
+                                },
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)",
+                            "Source": "ewoJdmFsaWRhdG9ycyA6PSBtYWtlKFtdRmllbGRWYWxpZGF0b3JGdW5jLCAwKQoJZm9yIG5hbWUsIGRlZm4gOj0gcmFuZ2UgaW4gewoJCWlmIHZhbGlkYXRvciwgZXJyIDo9IEdldFZhbGlkYXRvcihuYW1lLCBkZWZuKTsgZXJyID09IG5pbCB7CgkJCXZhbGlkYXRvcnMgPSBhcHBlbmQodmFsaWRhdG9ycywgdmFsaWRhdG9yKQoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkludmFsaWQgdmFsaWRhdG9yIGNvbmZpZ3VyYXRpb24gJXY6ICV2IiwgbmFtZSwgZXJyKQoJCX0KCX0KCXJldHVybiBWYWxpZGF0ZUFsbCh2YWxpZGF0b3JzLi4uKSwgbmlsCn0=",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "GetValidator",
+                            "Comment": "Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.",
+                            "Arguments": [
+                                {
+                                    "Name": "name",
+                                    "Type": "string"
+                                },
+                                {
+                                    "Name": "args",
+                                    "Type": "interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "FieldValidatorFunc"
+                                },
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "GetValidator(name string, args interface{}) (FieldValidatorFunc, error)",
+                            "Source": "ewoJc3dpdGNoIG5hbWUgewoJY2FzZSBgb25lLW9mYDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJcmV0dXJuIFZhbGlkYXRlSXNPbmVPZihzbGljZXV0aWwuU2xpY2VpZnkoYXJncykuLi4pLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCJNdXN0IHNwZWNpZnkgYW4gYXJyYXkgb2YgdmFsdWVzIGZvciB2YWxpZGF0b3IgJ29uZS1vZiciKQoJCX0KCWNhc2UgYG5vdC16ZXJvYDoKCQlyZXR1cm4gVmFsaWRhdGVOb25aZXJvLCBuaWwKCWNhc2UgYG5vdC1lbXB0eWA6CgkJcmV0dXJuIFZhbGlkYXRlTm90RW1wdHksIG5pbAoJY2FzZSBgcG9zaXRpdmUtaW50ZWdlcmA6CgkJcmV0dXJuIFZhbGlkYXRlUG9zaXRpdmVJbnRlZ2VyLCBuaWwKCWNhc2UgYHBvc2l0aXZlLW9yLXplcm8taW50ZWdlcmA6CgkJcmV0dXJuIFZhbGlkYXRlUG9zaXRpdmVPclplcm9JbnRlZ2VyLCBuaWwKCWNhc2UgYHVybGA6CgkJcmV0dXJuIFZhbGlkYXRlSXNVUkwsIG5pbAoJY2FzZSBgbWF0Y2hgLCBgbWF0Y2gtYWxsYDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJcmV0dXJuIFZhbGlkYXRlTWF0Y2hBbGwoc2xpY2V1dGlsLlN0cmluZ2lmeShhcmdzKS4uLiksIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIk11c3Qgc3BlY2lmeSBhbiBhcnJheSBvZiB2YWx1ZXMgZm9yIHZhbGlkYXRvciAnbWF0Y2gnIikKCQl9CgljYXNlIGBtYXRjaC1hbnlgOgoJCWlmIHR5cGV1dGlsLklzQXJyYXkoYXJncykgewoJCQlyZXR1cm4gVmFsaWRhdGVNYXRjaEFueShzbGljZXV0aWwuU3RyaW5naWZ5KGFyZ3MpLi4uKSwgbmlsCgkJfSBlbHNlIHsKCQkJcmV0dXJuIG5pbCwgZm10LkVycm9yZigiTXVzdCBzcGVjaWZ5IGFuIGFycmF5IG9mIHZhbHVlcyBmb3IgdmFsaWRhdG9yICdtYXRjaC1hbnknIikKCQl9CglkZWZhdWx0OgoJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIlVua25vd24gdmFsaWRhdG9yICVxIiwgbmFtZSkKCX0KfQ==",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "ValidateMatchAll",
+                            "Comment": "Validate that the given value matches all of the given regular expressions.",
+                            "Arguments": [
+                                {
+                                    "Name": "patterns",
+                                    "Type": "...string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "FieldValidatorFunc"
+                                }
+                            ],
+                            "Signature": "ValidateMatchAll(patterns ...string) FieldValidatorFunc",
+                            "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBpbnRlcmZhY2V7fSkgZXJyb3IgewoJCWZvciBfLCByeCA6PSByYW5nZSBwcnggewoJCQlpZiAhcnguTWF0Y2hTdHJpbmcodHlwZXV0aWwuU3RyaW5nKHZhbHVlKSkgewoJCQkJcmV0dXJuIGZtdC5FcnJvcmYoIlZhbHVlIGRvZXMgbm90IG1hdGNoIHBhdHRlcm4gJXEiLCByeC5TdHJpbmcoKSkKCQkJfQoJCX0KCQlyZXR1cm4gbmlsCgl9Cn0=",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "ValidateMatchAny",
+                            "Comment": "Validate that the given value matches at least one of the given regular expressions.",
+                            "Arguments": [
+                                {
+                                    "Name": "patterns",
+                                    "Type": "...string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "FieldValidatorFunc"
+                                }
+                            ],
+                            "Signature": "ValidateMatchAny(patterns ...string) FieldValidatorFunc",
+                            "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBpbnRlcmZhY2V7fSkgZXJyb3IgewoJCWZvciBfLCByeCA6PSByYW5nZSBwcnggewoJCQlpZiByeC5NYXRjaFN0cmluZyh0eXBldXRpbC5TdHJpbmcodmFsdWUpKSB7CgkJCQlyZXR1cm4gbmlsCgkJCX0KCQl9CgkJcmV0dXJuIGZtdC5FcnJvcmYoIlZhbHVlIGRvZXMgbm90IG1hdGNoIGFueSB2YWxpZCBwYXR0ZXJuIikKCX0KfQ==",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "ValidateAll",
+                            "Comment": "Validate that all of the given validator functions pass.",
+                            "Arguments": [
+                                {
+                                    "Name": "validators",
+                                    "Type": "...FieldValidatorFunc"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "FieldValidatorFunc"
+                                }
+                            ],
+                            "Signature": "ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc",
+                            "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30pIGVycm9yIHsKCQlmb3IgXywgdmFsaWRhdG9yIDo9IHJhbmdlIHZhbGlkYXRvcnMgewoJCQlpZiBlcnIgOj0gdmFsaWRhdG9yKHZhbHVlKTsgZXJyICE9IG5pbCB7CgkJCQlyZXR1cm4gZXJyCgkJCX0KCQl9CgkJcmV0dXJuIG5pbAoJfQp9",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "ValidateIsOneOf",
+                            "Comment": "Validate that the given value is among the given choices.",
+                            "Arguments": [
+                                {
+                                    "Name": "choices",
+                                    "Type": "...interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "FieldValidatorFunc"
+                                }
+                            ],
+                            "Signature": "ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc",
+                            "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30pIGVycm9yIHsKCQlmb3IgXywgY2hvaWNlIDo9IHJhbmdlIGNob2ljZXMgewoJCQlpZiBvaywgZXJyIDo9IHN0cmluZ3V0aWwuUmVsYXhlZEVxdWFsKGNob2ljZSwgdmFsdWUpOyBlcnIgPT0gbmlsICYmIG9rIHsKCQkJCXJldHVybiBuaWwKCQkJfQoJCX0KCQlyZXR1cm4gZm10LkVycm9yZigidmFsdWUgbXVzdCBiZSBvbmUgb2Y6ICUrdiIsIGNob2ljZXMpCgl9Cn0=",
+                            "IsPackageLevel": true
+                        }
+                    ],
                     "Source": "dHlwZSBGaWVsZFZhbGlkYXRvckZ1bmMgZnVuYyhpbnRlcmZhY2V7fSkgZXJyb3I="
                 },
                 "Migratable": {
