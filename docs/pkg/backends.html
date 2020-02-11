@@ -5,8 +5,8 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link href="_/bootstrap.min.css" rel="stylesheet" />
-        <link href="_/site.css" rel="stylesheet" />
+        <link href="-/bootstrap.min.css" rel="stylesheet" />
+        <link href="-/site.css" rel="stylesheet" />
         <title>pivot - Golang Package Documentation</title>
     </head>
     <body>
@@ -91,7 +91,7 @@
                         </li>
 
                         <li class="">
-                            <a href="_/about">About</a>
+                            <a href="-/about">About</a>
                         </li>
                     </ul>
                 </div>
@@ -146,6 +146,36 @@
     <li>
 		
 		<a href="#DefaultQueryImplementation">func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#NewDynamoBackend">func NewDynamoBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#NewFileBackend">func NewFileBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#NewFilesystemBackend">func NewFilesystemBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#NewMongoBackend">func NewMongoBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#NewSqlBackend">func NewSqlBackend(connection dal.ConnectionString) Backend</a>
 		
 	</li>
 	
@@ -5001,6 +5031,61 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 
 
+<h3 id="NewDynamoBackend" data-kind="f">
+	func <a title="View Source" href="">NewDynamoBackend</a>
+	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+<h3 id="NewFileBackend" data-kind="f">
+	func <a title="View Source" href="">NewFileBackend</a>
+	<a class="permalink" href="#NewFileBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+<h3 id="NewFilesystemBackend" data-kind="f">
+	func <a title="View Source" href="">NewFilesystemBackend</a>
+	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+<h3 id="NewMongoBackend" data-kind="f">
+	func <a title="View Source" href="">NewMongoBackend</a>
+	<a class="permalink" href="#NewMongoBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+<h3 id="NewSqlBackend" data-kind="f">
+	func <a title="View Source" href="">NewSqlBackend</a>
+	<a class="permalink" href="#NewSqlBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
 <h3 id="PopulateRecordSetPageDetails" data-kind="f">
 	func <a title="View Source" href="">PopulateRecordSetPageDetails</a>
 	<a class="permalink" href="#PopulateRecordSetPageDetails">&#182;</a>
@@ -5162,81 +5247,6 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
 </div>
-
-
-
-
-<h4 id="NewDynamoBackend" data-kind="f">
-	func <a title="View Source" href="">NewDynamoBackend</a>
-	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-<h4 id="NewFilesystemBackend" data-kind="f">
-	func <a title="View Source" href="">NewFilesystemBackend</a>
-	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-<h4 id="NewFileBackend" data-kind="f">
-	func <a title="View Source" href="">NewFileBackend</a>
-	<a class="permalink" href="#NewFileBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-<h4 id="NewSqlBackend" data-kind="f">
-	func <a title="View Source" href="">NewSqlBackend</a>
-	<a class="permalink" href="#NewSqlBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-<h4 id="NewMongoBackend" data-kind="f">
-	func <a title="View Source" href="">NewMongoBackend</a>
-	<a class="permalink" href="#NewMongoBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -11490,8 +11500,8 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
             </div>
         </div>
 
-        <script src="_/jquery-2.0.3.min.js"></script>
-        <script src="_/bootstrap.min.js"></script>
-        <script src="_/site.js"></script>
+        <script src="-/jquery-2.0.3.min.js"></script>
+        <script src="-/bootstrap.min.js"></script>
+        <script src="-/site.js"></script>
     </body>
 </html>
