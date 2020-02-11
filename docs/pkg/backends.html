@@ -43,52 +43,30 @@
                             </a>
                             <ul class="dropdown-menu">
                                 
-<li>
-    <a href="pkg/pivot.html">pivot</a>
-</li>
-
-
-<li>
-    <a href="pkg/backends.html">backends</a>
-</li>
-
-
-
-<li>
-    <a href="pkg/client.html">client</a>
-</li>
-
-
-
-<li>
-    <a href="pkg/dal.html">dal</a>
-</li>
-
-
-
-<li>
-    <a href="pkg/filter.html">filter</a>
-</li>
-
-
-<li>
-    <a href="pkg/filter/generators.html">filter/generators</a>
-</li>
-
-
-
-
-<li>
-    <a href="pkg/mapper.html">mapper</a>
-</li>
-
-
-
-<li>
-    <a href="pkg/util.html">util</a>
-</li>
-
-
+                                <li>
+                                    <a href="/pivot/pkg/backends.html">backends</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/client.html">client</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/dal.html">dal</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/filter.html">filter</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/filter/generators.html">filter/generators</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/mapper.html">mapper</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/pivot.html">pivot</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/util.html">util</a>
+                                </li>
                             </ul>
                         </li>
 
@@ -106,7 +84,7 @@
 <div class="clearfix" id="x-projnav">
 	<a href="URL"><strong>pivot:</strong></a>
 	
-	<a href="pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">backends</span>
+	<a href="/pivot/pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">backends</span>
 	
 
 	<span class="pull-right">
@@ -153,7 +131,31 @@
 	
     <li>
 		
+		<a href="#NewDynamoBackend">func NewDynamoBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#NewFileBackend">func NewFileBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
 		<a href="#NewFilesystemBackend">func NewFilesystemBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#NewMongoBackend">func NewMongoBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#NewRedisBackend">func NewRedisBackend(connection dal.ConnectionString) Backend</a>
 		
 	</li>
 	
@@ -5009,6 +5011,28 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 
 
+<h3 id="NewDynamoBackend" data-kind="f">
+	func <a title="View Source" href="">NewDynamoBackend</a>
+	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+<h3 id="NewFileBackend" data-kind="f">
+	func <a title="View Source" href="">NewFileBackend</a>
+	<a class="permalink" href="#NewFileBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
 <h3 id="NewFilesystemBackend" data-kind="f">
 	func <a title="View Source" href="">NewFilesystemBackend</a>
 	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
@@ -5016,6 +5040,28 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+<h3 id="NewMongoBackend" data-kind="f">
+	func <a title="View Source" href="">NewMongoBackend</a>
+	<a class="permalink" href="#NewMongoBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+<h3 id="NewRedisBackend" data-kind="f">
+	func <a title="View Source" href="">NewRedisBackend</a>
+	<a class="permalink" href="#NewRedisBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -5181,66 +5227,6 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
 </div>
-
-
-
-
-<h4 id="NewRedisBackend" data-kind="f">
-	func <a title="View Source" href="">NewRedisBackend</a>
-	<a class="permalink" href="#NewRedisBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-<h4 id="NewMongoBackend" data-kind="f">
-	func <a title="View Source" href="">NewMongoBackend</a>
-	<a class="permalink" href="#NewMongoBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-<h4 id="NewFileBackend" data-kind="f">
-	func <a title="View Source" href="">NewFileBackend</a>
-	<a class="permalink" href="#NewFileBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-<h4 id="NewDynamoBackend" data-kind="f">
-	func <a title="View Source" href="">NewDynamoBackend</a>
-	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-
-
-
-
 
 
 

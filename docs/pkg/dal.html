@@ -43,52 +43,30 @@
                             </a>
                             <ul class="dropdown-menu">
                                 
-<li>
-    <a href="pkg/pivot.html">pivot</a>
-</li>
-
-
-<li>
-    <a href="pkg/backends.html">backends</a>
-</li>
-
-
-
-<li>
-    <a href="pkg/client.html">client</a>
-</li>
-
-
-
-<li>
-    <a href="pkg/dal.html">dal</a>
-</li>
-
-
-
-<li>
-    <a href="pkg/filter.html">filter</a>
-</li>
-
-
-<li>
-    <a href="pkg/filter/generators.html">filter/generators</a>
-</li>
-
-
-
-
-<li>
-    <a href="pkg/mapper.html">mapper</a>
-</li>
-
-
-
-<li>
-    <a href="pkg/util.html">util</a>
-</li>
-
-
+                                <li>
+                                    <a href="/pivot/pkg/backends.html">backends</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/client.html">client</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/dal.html">dal</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/filter.html">filter</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/filter/generators.html">filter/generators</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/mapper.html">mapper</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/pivot.html">pivot</a>
+                                </li>
+                                <li>
+                                    <a href="/pivot/pkg/util.html">util</a>
+                                </li>
                             </ul>
                         </li>
 
@@ -106,7 +84,7 @@
 <div class="clearfix" id="x-projnav">
 	<a href="URL"><strong>pivot:</strong></a>
 	
-	<a href="pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">dal</span>
+	<a href="/pivot/pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">dal</span>
 	
 
 	<span class="pull-right">
@@ -153,12 +131,6 @@
 	
     <li>
 		
-		<a href="#ChangeCase">func ChangeCase(cases ...string) FieldFormatterFunc</a>
-		
-	</li>
-	
-    <li>
-		
 		<strong>
 			<a href="#CurrentTime">func CurrentTime(value interface{}, op FieldOperation) (interface{}, error)</a>
 		</strong>
@@ -176,57 +148,7 @@
     <li>
 		
 		<strong>
-			<a href="#DeriveFromFields">func DeriveFromFields(format string, fields ...string) FieldFormatterFunc</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#FormatAll">func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#FormatterFromMap">func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)</a>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
-			<a href="#GenerateEncodedUUID">func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
 			<a href="#GenerateUUID">func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error)</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#GetFormatter">func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)</a>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
-			<a href="#GetValidator">func GetValidator(name string, args interface{}) (FieldValidatorFunc, error)</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
-			<a href="#IfUnset">func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc</a>
 		</strong>
 		
 	</li>
@@ -258,20 +180,6 @@
     <li>
 		
 		<strong>
-			<a href="#NowPlusDuration">func NowPlusDuration(duration time.Duration) FieldFormatterFunc</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#Replace">func Replace(pairs []interface{}) FieldFormatterFunc</a>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
 			<a href="#ShouldCreateCollection">func ShouldCreateCollection(collection *Collection, errs ...error) bool</a>
 		</strong>
 		
@@ -286,39 +194,7 @@
     <li>
 		
 		<strong>
-			<a href="#ValidateAll">func ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
-			<a href="#ValidateIsOneOf">func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
 			<a href="#ValidateIsURL">func ValidateIsURL(value interface{}) error</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
-			<a href="#ValidateMatchAll">func ValidateMatchAll(patterns ...string) FieldValidatorFunc</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
-			<a href="#ValidateMatchAny">func ValidateMatchAny(patterns ...string) FieldValidatorFunc</a>
 		</strong>
 		
 	</li>
@@ -351,14 +227,6 @@
 		
 		<strong>
 			<a href="#ValidatePositiveOrZeroInteger">func ValidatePositiveOrZeroInteger(value interface{}) error</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
-			<a href="#ValidatorFromMap">func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)</a>
 		</strong>
 		
 	</li>
@@ -2061,17 +1929,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 
-<h3 id="ChangeCase" data-kind="f">
-	func <a title="View Source" href="">ChangeCase</a>
-	<a class="permalink" href="#ChangeCase">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ChangeCase(cases ...string) FieldFormatterFunc</pre>
-</div>
-
-
-
 <h3 id="CurrentTime" data-kind="f">
 	func <a title="View Source" href="">CurrentTime</a>
 	<a class="permalink" href="#CurrentTime">&#182;</a>
@@ -2100,56 +1957,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </p>
 
 
-<h3 id="DeriveFromFields" data-kind="f">
-	func <a title="View Source" href="">DeriveFromFields</a>
-	<a class="permalink" href="#DeriveFromFields">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func DeriveFromFields(format string, fields ...string) FieldFormatterFunc</pre>
-</div>
-
-
-<p><p>Extracts values from the given Record and generates a deterministic output based on those values.</p>
-</p>
-
-
-<h3 id="FormatAll" data-kind="f">
-	func <a title="View Source" href="">FormatAll</a>
-	<a class="permalink" href="#FormatAll">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc</pre>
-</div>
-
-
-
-<h3 id="FormatterFromMap" data-kind="f">
-	func <a title="View Source" href="">FormatterFromMap</a>
-	<a class="permalink" href="#FormatterFromMap">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)</pre>
-</div>
-
-
-
-<h3 id="GenerateEncodedUUID" data-kind="f">
-	func <a title="View Source" href="">GenerateEncodedUUID</a>
-	<a class="permalink" href="#GenerateEncodedUUID">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc</pre>
-</div>
-
-
-<p><p>Same as GenerateUUID, but allows for a custom representation of the underlying bytes.</p>
-</p>
-
-
 <h3 id="GenerateUUID" data-kind="f">
 	func <a title="View Source" href="">GenerateUUID</a>
 	<a class="permalink" href="#GenerateUUID">&#182;</a>
@@ -2161,45 +1968,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 <p><p>Generates a V4 UUID value if the existing value is empty.</p>
-</p>
-
-
-<h3 id="GetFormatter" data-kind="f">
-	func <a title="View Source" href="">GetFormatter</a>
-	<a class="permalink" href="#GetFormatter">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)</pre>
-</div>
-
-
-
-<h3 id="GetValidator" data-kind="f">
-	func <a title="View Source" href="">GetValidator</a>
-	<a class="permalink" href="#GetValidator">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func GetValidator(name string, args interface{}) (FieldValidatorFunc, error)</pre>
-</div>
-
-
-<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
-</p>
-
-
-<h3 id="IfUnset" data-kind="f">
-	func <a title="View Source" href="">IfUnset</a>
-	<a class="permalink" href="#IfUnset">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc</pre>
-</div>
-
-
-<p><p>Only evaluates the given formatter if the current value of the field is empty.</p>
 </p>
 
 
@@ -2247,31 +2015,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 
-<h3 id="NowPlusDuration" data-kind="f">
-	func <a title="View Source" href="">NowPlusDuration</a>
-	<a class="permalink" href="#NowPlusDuration">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NowPlusDuration(duration time.Duration) FieldFormatterFunc</pre>
-</div>
-
-
-<p><p>Returns the current time with an added offset when the field is persisted.</p>
-</p>
-
-
-<h3 id="Replace" data-kind="f">
-	func <a title="View Source" href="">Replace</a>
-	<a class="permalink" href="#Replace">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func Replace(pairs []interface{}) FieldFormatterFunc</pre>
-</div>
-
-
-
 <h3 id="ShouldCreateCollection" data-kind="f">
 	func <a title="View Source" href="">ShouldCreateCollection</a>
 	<a class="permalink" href="#ShouldCreateCollection">&#182;</a>
@@ -2297,34 +2040,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 
-<h3 id="ValidateAll" data-kind="f">
-	func <a title="View Source" href="">ValidateAll</a>
-	<a class="permalink" href="#ValidateAll">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc</pre>
-</div>
-
-
-<p><p>Validate that all of the given validator functions pass.</p>
-</p>
-
-
-<h3 id="ValidateIsOneOf" data-kind="f">
-	func <a title="View Source" href="">ValidateIsOneOf</a>
-	<a class="permalink" href="#ValidateIsOneOf">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc</pre>
-</div>
-
-
-<p><p>Validate that the given value is among the given choices.</p>
-</p>
-
-
 <h3 id="ValidateIsURL" data-kind="f">
 	func <a title="View Source" href="">ValidateIsURL</a>
 	<a class="permalink" href="#ValidateIsURL">&#182;</a>
@@ -2336,34 +2051,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 <p><p>Validate that the value is a URL with a non-empty scheme and host component.</p>
-</p>
-
-
-<h3 id="ValidateMatchAll" data-kind="f">
-	func <a title="View Source" href="">ValidateMatchAll</a>
-	<a class="permalink" href="#ValidateMatchAll">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateMatchAll(patterns ...string) FieldValidatorFunc</pre>
-</div>
-
-
-<p><p>Validate that the given value matches all of the given regular expressions.</p>
-</p>
-
-
-<h3 id="ValidateMatchAny" data-kind="f">
-	func <a title="View Source" href="">ValidateMatchAny</a>
-	<a class="permalink" href="#ValidateMatchAny">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateMatchAny(patterns ...string) FieldValidatorFunc</pre>
-</div>
-
-
-<p><p>Validate that the given value matches at least one of the given regular expressions.</p>
 </p>
 
 
@@ -2420,20 +2107,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 <p><p>Validate that the given value is an integer &gt;= 0.</p>
-</p>
-
-
-<h3 id="ValidatorFromMap" data-kind="f">
-	func <a title="View Source" href="">ValidatorFromMap</a>
-	<a class="permalink" href="#ValidatorFromMap">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)</pre>
-</div>
-
-
-<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
 </p>
 
 
@@ -3939,6 +3612,153 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 
+<h4 id="FormatterFromMap" data-kind="f">
+	func <a title="View Source" href="">FormatterFromMap</a>
+	<a class="permalink" href="#FormatterFromMap">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)</pre>
+</div>
+
+
+
+
+<h4 id="GetFormatter" data-kind="f">
+	func <a title="View Source" href="">GetFormatter</a>
+	<a class="permalink" href="#GetFormatter">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)</pre>
+</div>
+
+
+
+
+<h4 id="FormatAll" data-kind="f">
+	func <a title="View Source" href="">FormatAll</a>
+	<a class="permalink" href="#FormatAll">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc</pre>
+</div>
+
+
+
+
+<h4 id="ChangeCase" data-kind="f">
+	func <a title="View Source" href="">ChangeCase</a>
+	<a class="permalink" href="#ChangeCase">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ChangeCase(cases ...string) FieldFormatterFunc</pre>
+</div>
+
+
+
+
+<h4 id="Replace" data-kind="f">
+	func <a title="View Source" href="">Replace</a>
+	<a class="permalink" href="#Replace">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func Replace(pairs []interface{}) FieldFormatterFunc</pre>
+</div>
+
+
+
+
+<h4 id="GenerateEncodedUUID" data-kind="f">
+	func <a title="View Source" href="">GenerateEncodedUUID</a>
+	<a class="permalink" href="#GenerateEncodedUUID">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Same as GenerateUUID, but allows for a custom representation of the underlying bytes.</p>
+</p>
+
+
+
+
+<h4 id="IfUnset" data-kind="f">
+	func <a title="View Source" href="">IfUnset</a>
+	<a class="permalink" href="#IfUnset">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Only evaluates the given formatter if the current value of the field is empty.</p>
+</p>
+
+
+
+
+<h4 id="DeriveFromFields" data-kind="f">
+	func <a title="View Source" href="">DeriveFromFields</a>
+	<a class="permalink" href="#DeriveFromFields">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func DeriveFromFields(format string, fields ...string) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Extracts values from the given Record and generates a deterministic output based on those values.</p>
+</p>
+
+
+
+
+<h4 id="NowPlusDuration" data-kind="f">
+	func <a title="View Source" href="">NowPlusDuration</a>
+	<a class="permalink" href="#NowPlusDuration">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NowPlusDuration(duration time.Duration) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Returns the current time with an added offset when the field is persisted.</p>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3973,6 +3793,114 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	
 	<pre>type FieldValidatorFunc func(interface{}) error</pre>
 </div>
+
+
+
+
+<h4 id="ValidatorFromMap" data-kind="f">
+	func <a title="View Source" href="">ValidatorFromMap</a>
+	<a class="permalink" href="#ValidatorFromMap">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)</pre>
+</div>
+
+<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
+</p>
+
+
+
+
+<h4 id="GetValidator" data-kind="f">
+	func <a title="View Source" href="">GetValidator</a>
+	<a class="permalink" href="#GetValidator">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GetValidator(name string, args interface{}) (FieldValidatorFunc, error)</pre>
+</div>
+
+<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
+</p>
+
+
+
+
+<h4 id="ValidateMatchAll" data-kind="f">
+	func <a title="View Source" href="">ValidateMatchAll</a>
+	<a class="permalink" href="#ValidateMatchAll">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateMatchAll(patterns ...string) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that the given value matches all of the given regular expressions.</p>
+</p>
+
+
+
+
+<h4 id="ValidateMatchAny" data-kind="f">
+	func <a title="View Source" href="">ValidateMatchAny</a>
+	<a class="permalink" href="#ValidateMatchAny">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateMatchAny(patterns ...string) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that the given value matches at least one of the given regular expressions.</p>
+</p>
+
+
+
+
+<h4 id="ValidateAll" data-kind="f">
+	func <a title="View Source" href="">ValidateAll</a>
+	<a class="permalink" href="#ValidateAll">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that all of the given validator functions pass.</p>
+</p>
+
+
+
+
+<h4 id="ValidateIsOneOf" data-kind="f">
+	func <a title="View Source" href="">ValidateIsOneOf</a>
+	<a class="permalink" href="#ValidateIsOneOf">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that the given value is among the given choices.</p>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
