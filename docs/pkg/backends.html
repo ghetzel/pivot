@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link href="_/bootstrap.min.css" rel="stylesheet" integrity="sha384-8+rznmq/k0KZkJlZhnuPEVkbRD7tA0wcFEjY48dajGWn3Xc1MasJwS8/tJ7OEsKW" />
         <link href="_/site.css" rel="stylesheet" />
-        <title>pivot :: owndoc</title>
+        <title>pivot - Golang Package Documentation</title>
     </head>
     <body>
         <nav class="navbar navbar-default" role="navigation">
@@ -146,42 +146,6 @@
     <li>
 		
 		<a href="#DefaultQueryImplementation">func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewDynamoBackend">func NewDynamoBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewFileBackend">func NewFileBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewFilesystemBackend">func NewFilesystemBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewMongoBackend">func NewMongoBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewRedisBackend">func NewRedisBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewSqlBackend">func NewSqlBackend(connection dal.ConnectionString) Backend</a>
 		
 	</li>
 	
@@ -5037,72 +5001,6 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 
 
-<h3 id="NewDynamoBackend" data-kind="f">
-	func <a title="View Source" href="">NewDynamoBackend</a>
-	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewFileBackend" data-kind="f">
-	func <a title="View Source" href="">NewFileBackend</a>
-	<a class="permalink" href="#NewFileBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewFilesystemBackend" data-kind="f">
-	func <a title="View Source" href="">NewFilesystemBackend</a>
-	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewMongoBackend" data-kind="f">
-	func <a title="View Source" href="">NewMongoBackend</a>
-	<a class="permalink" href="#NewMongoBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewRedisBackend" data-kind="f">
-	func <a title="View Source" href="">NewRedisBackend</a>
-	<a class="permalink" href="#NewRedisBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewSqlBackend" data-kind="f">
-	func <a title="View Source" href="">NewSqlBackend</a>
-	<a class="permalink" href="#NewSqlBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
 <h3 id="PopulateRecordSetPageDetails" data-kind="f">
 	func <a title="View Source" href="">PopulateRecordSetPageDetails</a>
 	<a class="permalink" href="#PopulateRecordSetPageDetails">&#182;</a>
@@ -5251,6 +5149,96 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 <p><p>Instantiate the appropriate Backend for the given connection string.</p>
 </p>
+
+
+
+
+<h4 id="NewFilesystemBackend" data-kind="f">
+	func <a title="View Source" href="">NewFilesystemBackend</a>
+	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewFileBackend" data-kind="f">
+	func <a title="View Source" href="">NewFileBackend</a>
+	<a class="permalink" href="#NewFileBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewDynamoBackend" data-kind="f">
+	func <a title="View Source" href="">NewDynamoBackend</a>
+	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewMongoBackend" data-kind="f">
+	func <a title="View Source" href="">NewMongoBackend</a>
+	<a class="permalink" href="#NewMongoBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewRedisBackend" data-kind="f">
+	func <a title="View Source" href="">NewRedisBackend</a>
+	<a class="permalink" href="#NewRedisBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewSqlBackend" data-kind="f">
+	func <a title="View Source" href="">NewSqlBackend</a>
+	<a class="permalink" href="#NewSqlBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

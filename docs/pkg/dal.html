@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link href="_/bootstrap.min.css" rel="stylesheet" integrity="sha384-8+rznmq/k0KZkJlZhnuPEVkbRD7tA0wcFEjY48dajGWn3Xc1MasJwS8/tJ7OEsKW" />
         <link href="_/site.css" rel="stylesheet" />
-        <title>pivot :: owndoc</title>
+        <title>pivot - Golang Package Documentation</title>
     </head>
     <body>
         <nav class="navbar navbar-default" role="navigation">
@@ -216,14 +216,6 @@
     <li>
 		
 		<strong>
-			<a href="#GetValidator">func GetValidator(name string, args interface{}) (FieldValidatorFunc, error)</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
 			<a href="#IfUnset">func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc</a>
 		</strong>
 		
@@ -284,39 +276,7 @@
     <li>
 		
 		<strong>
-			<a href="#ValidateAll">func ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
-			<a href="#ValidateIsOneOf">func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
 			<a href="#ValidateIsURL">func ValidateIsURL(value interface{}) error</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
-			<a href="#ValidateMatchAll">func ValidateMatchAll(patterns ...string) FieldValidatorFunc</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
-			<a href="#ValidateMatchAny">func ValidateMatchAny(patterns ...string) FieldValidatorFunc</a>
 		</strong>
 		
 	</li>
@@ -349,14 +309,6 @@
 		
 		<strong>
 			<a href="#ValidatePositiveOrZeroInteger">func ValidatePositiveOrZeroInteger(value interface{}) error</a>
-		</strong>
-		
-	</li>
-	
-    <li>
-		
-		<strong>
-			<a href="#ValidatorFromMap">func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)</a>
 		</strong>
 		
 	</li>
@@ -2173,20 +2125,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 
-<h3 id="GetValidator" data-kind="f">
-	func <a title="View Source" href="">GetValidator</a>
-	<a class="permalink" href="#GetValidator">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func GetValidator(name string, args interface{}) (FieldValidatorFunc, error)</pre>
-</div>
-
-
-<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
-</p>
-
-
 <h3 id="IfUnset" data-kind="f">
 	func <a title="View Source" href="">IfUnset</a>
 	<a class="permalink" href="#IfUnset">&#182;</a>
@@ -2295,34 +2233,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 
-<h3 id="ValidateAll" data-kind="f">
-	func <a title="View Source" href="">ValidateAll</a>
-	<a class="permalink" href="#ValidateAll">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc</pre>
-</div>
-
-
-<p><p>Validate that all of the given validator functions pass.</p>
-</p>
-
-
-<h3 id="ValidateIsOneOf" data-kind="f">
-	func <a title="View Source" href="">ValidateIsOneOf</a>
-	<a class="permalink" href="#ValidateIsOneOf">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc</pre>
-</div>
-
-
-<p><p>Validate that the given value is among the given choices.</p>
-</p>
-
-
 <h3 id="ValidateIsURL" data-kind="f">
 	func <a title="View Source" href="">ValidateIsURL</a>
 	<a class="permalink" href="#ValidateIsURL">&#182;</a>
@@ -2334,34 +2244,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 <p><p>Validate that the value is a URL with a non-empty scheme and host component.</p>
-</p>
-
-
-<h3 id="ValidateMatchAll" data-kind="f">
-	func <a title="View Source" href="">ValidateMatchAll</a>
-	<a class="permalink" href="#ValidateMatchAll">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateMatchAll(patterns ...string) FieldValidatorFunc</pre>
-</div>
-
-
-<p><p>Validate that the given value matches all of the given regular expressions.</p>
-</p>
-
-
-<h3 id="ValidateMatchAny" data-kind="f">
-	func <a title="View Source" href="">ValidateMatchAny</a>
-	<a class="permalink" href="#ValidateMatchAny">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateMatchAny(patterns ...string) FieldValidatorFunc</pre>
-</div>
-
-
-<p><p>Validate that the given value matches at least one of the given regular expressions.</p>
 </p>
 
 
@@ -2418,20 +2300,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 <p><p>Validate that the given value is an integer &gt;= 0.</p>
-</p>
-
-
-<h3 id="ValidatorFromMap" data-kind="f">
-	func <a title="View Source" href="">ValidatorFromMap</a>
-	<a class="permalink" href="#ValidatorFromMap">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)</pre>
-</div>
-
-
-<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
 </p>
 
 
@@ -3971,6 +3839,114 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	
 	<pre>type FieldValidatorFunc func(interface{}) error</pre>
 </div>
+
+
+
+
+<h4 id="ValidatorFromMap" data-kind="f">
+	func <a title="View Source" href="">ValidatorFromMap</a>
+	<a class="permalink" href="#ValidatorFromMap">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)</pre>
+</div>
+
+<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
+</p>
+
+
+
+
+<h4 id="GetValidator" data-kind="f">
+	func <a title="View Source" href="">GetValidator</a>
+	<a class="permalink" href="#GetValidator">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GetValidator(name string, args interface{}) (FieldValidatorFunc, error)</pre>
+</div>
+
+<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
+</p>
+
+
+
+
+<h4 id="ValidateMatchAll" data-kind="f">
+	func <a title="View Source" href="">ValidateMatchAll</a>
+	<a class="permalink" href="#ValidateMatchAll">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateMatchAll(patterns ...string) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that the given value matches all of the given regular expressions.</p>
+</p>
+
+
+
+
+<h4 id="ValidateMatchAny" data-kind="f">
+	func <a title="View Source" href="">ValidateMatchAny</a>
+	<a class="permalink" href="#ValidateMatchAny">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateMatchAny(patterns ...string) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that the given value matches at least one of the given regular expressions.</p>
+</p>
+
+
+
+
+<h4 id="ValidateAll" data-kind="f">
+	func <a title="View Source" href="">ValidateAll</a>
+	<a class="permalink" href="#ValidateAll">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that all of the given validator functions pass.</p>
+</p>
+
+
+
+
+<h4 id="ValidateIsOneOf" data-kind="f">
+	func <a title="View Source" href="">ValidateIsOneOf</a>
+	<a class="permalink" href="#ValidateIsOneOf">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that the given value is among the given choices.</p>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
