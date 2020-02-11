@@ -19,7 +19,7 @@ fmt:
 	-go mod tidy
 
 docs:
-	owndoc render
+	owndoc render --property rootpath=/pivot/
 
 test:
 	go test -count=1 --tags json1 ./...
