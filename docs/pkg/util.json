@@ -1,0 +1,185 @@
+{
+    "Name": "util",
+    "CanonicalImportPath": "github.com/ghetzel/pivot/util",
+    "ImportPath": "util",
+    "ParentPackage": "pivot",
+    "URL": "https://github.com/ghetzel/pivot",
+    "Synopsis": "",
+    "MainFunction": false,
+    "CommentWordCount": 0,
+    "LineCount": 59,
+    "SourceLineCount": 44,
+    "FunctionCount": 4,
+    "TypeCount": 3,
+    "ConstantCount": 0,
+    "VariableCount": 1,
+    "Statistics": {
+        "Mean": 0,
+        "StdDev": 0,
+        "GeometricMean": 0,
+        "HarmonicMean": 0,
+        "Median": 0,
+        "Minimum": 0,
+        "Maximum": 0
+    },
+    "Files": [
+        {
+            "Name": "features.go",
+            "Size": 474,
+            "LineCount": 32,
+            "SourceLineCount": 24,
+            "FunctionCount": 4,
+            "TypeCount": 0,
+            "ConstantCount": 0,
+            "VariableCount": 0
+        },
+        {
+            "Name": "http.go",
+            "Imports": [
+                {
+                    "PackageName": "net/http",
+                    "Alias": "http"
+                }
+            ],
+            "Size": 249,
+            "LineCount": 15,
+            "SourceLineCount": 11,
+            "FunctionCount": 0,
+            "TypeCount": 2,
+            "ConstantCount": 0,
+            "VariableCount": 0
+        },
+        {
+            "Name": "types.go",
+            "Size": 272,
+            "LineCount": 12,
+            "SourceLineCount": 9,
+            "FunctionCount": 0,
+            "TypeCount": 1,
+            "ConstantCount": 0,
+            "VariableCount": 1
+        }
+    ],
+    "Variables": [
+        {
+            "Name": "RecordStructTag",
+            "Expression": "`pivot`"
+        }
+    ],
+    "Functions": [
+        {
+            "Name": "AnyFeatures",
+            "Arguments": [
+                {
+                    "Name": "names",
+                    "Type": "...string"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "bool"
+                }
+            ],
+            "Signature": "AnyFeatures(names ...string) bool",
+            "Source": "ewoJZm9yIF8sIG5hbWUgOj0gcmFuZ2UgbmFtZXMgewoJCWlmIHYsIG9rIDo9IGZlYXR1cmVzW25hbWVdOyBvayAmJiB2IHsKCQkJcmV0dXJuIHRydWUKCQl9Cgl9CglyZXR1cm4gZmFsc2UKfQ==",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "DisableFeature",
+            "Arguments": [
+                {
+                    "Name": "name",
+                    "Type": "string"
+                }
+            ],
+            "Signature": "DisableFeature(name string)",
+            "Source": "ewoJZmVhdHVyZXNbbmFtZV0gPSBmYWxzZQp9",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "EnableFeature",
+            "Arguments": [
+                {
+                    "Name": "name",
+                    "Type": "string"
+                }
+            ],
+            "Signature": "EnableFeature(name string)",
+            "Source": "ewoJZmVhdHVyZXNbbmFtZV0gPSB0cnVlCn0=",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "Features",
+            "Arguments": [
+                {
+                    "Name": "names",
+                    "Type": "...string"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "bool"
+                }
+            ],
+            "Signature": "Features(names ...string) bool",
+            "Source": "ewoJZm9yIF8sIG5hbWUgOj0gcmFuZ2UgbmFtZXMgewoJCWlmIHYsIG9rIDo9IGZlYXR1cmVzW25hbWVdOyAhb2sgfHwgIXYgewoJCQlyZXR1cm4gZmFsc2UKCQl9Cgl9CglyZXR1cm4gdHJ1ZQp9",
+            "IsPackageLevel": true
+        }
+    ],
+    "Types": {
+        "Endpoint": {
+            "Name": "Endpoint",
+            "MetaType": "struct",
+            "Fields": [
+                {
+                    "Name": "BackendName",
+                    "Type": "string"
+                },
+                {
+                    "Name": "Method",
+                    "Type": "string"
+                },
+                {
+                    "Name": "Path",
+                    "Type": "string"
+                },
+                {
+                    "Name": "Handler",
+                    "Type": "EndpointResponseFunc"
+                }
+            ],
+            "Source": "dHlwZSBFbmRwb2ludCBzdHJ1Y3QgewoJQmFja2VuZE5hbWUgc3RyaW5nCglNZXRob2QgICAgICBzdHJpbmcKCVBhdGggICAgICAgIHN0cmluZwoJSGFuZGxlciAgICAgRW5kcG9pbnRSZXNwb25zZUZ1bmMKfQ=="
+        },
+        "EndpointResponseFunc": {
+            "Name": "EndpointResponseFunc",
+            "Source": "dHlwZSBFbmRwb2ludFJlc3BvbnNlRnVuYyBmdW5jKCpodHRwLlJlcXVlc3QsIG1hcFtzdHJpbmddc3RyaW5nKSAoaW50LCBpbnRlcmZhY2V7fSwgZXJyb3Ip"
+        },
+        "Status": {
+            "Name": "Status",
+            "MetaType": "struct",
+            "Fields": [
+                {
+                    "Name": "OK",
+                    "Type": "bool"
+                },
+                {
+                    "Name": "Application",
+                    "Type": "string"
+                },
+                {
+                    "Name": "Version",
+                    "Type": "string"
+                },
+                {
+                    "Name": "Backend",
+                    "Type": "string"
+                },
+                {
+                    "Name": "Indexer",
+                    "Type": "string"
+                }
+            ],
+            "Source": "dHlwZSBTdGF0dXMgc3RydWN0IHsKCU9LICAgICAgICAgIGJvb2wgICBganNvbjoib2siYAoJQXBwbGljYXRpb24gc3RyaW5nIGBqc29uOiJhcHBsaWNhdGlvbiJgCglWZXJzaW9uICAgICBzdHJpbmcgYGpzb246InZlcnNpb24iYAoJQmFja2VuZCAgICAgc3RyaW5nIGBqc29uOiJiYWNrZW5kLG9taXRlbXB0eSJgCglJbmRleGVyICAgICBzdHJpbmcgYGpzb246ImluZGV4ZXIsb21pdGVtcHR5ImAKfQ=="
+        }
+    }
+}

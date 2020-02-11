@@ -1,0 +1,2676 @@
+{
+    "Name": "filter",
+    "CanonicalImportPath": "github.com/ghetzel/pivot/filter",
+    "ImportPath": "filter",
+    "ParentPackage": "pivot",
+    "URL": "https://github.com/ghetzel/pivot",
+    "Synopsis": "",
+    "MainFunction": false,
+    "CommentWordCount": 3,
+    "LineCount": 1131,
+    "SourceLineCount": 893,
+    "FunctionCount": 36,
+    "TypeCount": 9,
+    "ConstantCount": 9,
+    "VariableCount": 11,
+    "Statistics": {
+        "Mean": 0.0041,
+        "StdDev": 0.0346,
+        "GeometricMean": 0,
+        "HarmonicMean": 0,
+        "Median": 0,
+        "Minimum": 0,
+        "Maximum": 0.3
+    },
+    "Files": [
+        {
+            "Name": "filter.go",
+            "Imports": [
+                {
+                    "PackageName": "fmt",
+                    "Alias": "fmt"
+                },
+                {
+                    "PackageName": "net/url",
+                    "Alias": "url"
+                },
+                {
+                    "PackageName": "regexp",
+                    "Alias": "regexp"
+                },
+                {
+                    "PackageName": "strconv",
+                    "Alias": "strconv"
+                },
+                {
+                    "PackageName": "strings",
+                    "Alias": "strings"
+                },
+                {
+                    "PackageName": "time",
+                    "Alias": "time"
+                },
+                {
+                    "PackageName": "github.com/fatih/structs",
+                    "Alias": "structs"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/maputil",
+                    "Alias": "maputil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
+                    "Alias": "sliceutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/stringutil",
+                    "Alias": "stringutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/timeutil",
+                    "Alias": "timeutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
+                    "Alias": "typeutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/dal",
+                    "Alias": "dal"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/util",
+                    "Alias": "util"
+                }
+            ],
+            "Size": 15269,
+            "LineCount": 712,
+            "SourceLineCount": 565,
+            "FunctionCount": 30,
+            "TypeCount": 7,
+            "ConstantCount": 9,
+            "VariableCount": 11
+        },
+        {
+            "Name": "filter_matches_record_test.go",
+            "Imports": [
+                {
+                    "PackageName": "testing",
+                    "Alias": "testing"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/dal",
+                    "Alias": "dal"
+                },
+                {
+                    "PackageName": "github.com/stretchr/testify/require",
+                    "Alias": "require"
+                }
+            ],
+            "Size": 3481,
+            "LineCount": 60,
+            "SourceLineCount": 49,
+            "FunctionCount": 0,
+            "TypeCount": 0,
+            "ConstantCount": 0,
+            "VariableCount": 0
+        },
+        {
+            "Name": "filter_test.go",
+            "Imports": [
+                {
+                    "PackageName": "testing",
+                    "Alias": "testing"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/dal",
+                    "Alias": "dal"
+                },
+                {
+                    "PackageName": "github.com/stretchr/testify/require",
+                    "Alias": "require"
+                }
+            ],
+            "Size": 5981,
+            "LineCount": 269,
+            "SourceLineCount": 211,
+            "FunctionCount": 0,
+            "TypeCount": 0,
+            "ConstantCount": 0,
+            "VariableCount": 0
+        },
+        {
+            "Name": "generator.go",
+            "Size": 1817,
+            "LineCount": 90,
+            "SourceLineCount": 68,
+            "FunctionCount": 6,
+            "TypeCount": 2,
+            "ConstantCount": 0,
+            "VariableCount": 0
+        }
+    ],
+    "Constants": [
+        {
+            "Name": "AndConjunction",
+            "Type": "ConjunctionType",
+            "Immutable": true,
+            "Expression": "``"
+        },
+        {
+            "Name": "Average",
+            "Immutable": true
+        },
+        {
+            "Name": "Count",
+            "Immutable": true
+        },
+        {
+            "Name": "First",
+            "Type": "Aggregation",
+            "Immutable": true,
+            "Expression": "iota"
+        },
+        {
+            "Name": "Last",
+            "Immutable": true
+        },
+        {
+            "Name": "Maximum",
+            "Immutable": true
+        },
+        {
+            "Name": "Minimum",
+            "Immutable": true
+        },
+        {
+            "Name": "OrConjunction",
+            "Immutable": true,
+            "Expression": "`or`"
+        },
+        {
+            "Name": "Sum",
+            "Immutable": true
+        }
+    ],
+    "Variables": [
+        {
+            "Name": "AllValue",
+            "Expression": "`all`"
+        },
+        {
+            "Name": "CriteriaSeparator",
+            "Expression": "`/`"
+        },
+        {
+            "Name": "DefaultIdentityField",
+            "Expression": "`id`"
+        },
+        {
+            "Name": "DefaultNormalizerFunc"
+        },
+        {
+            "Name": "FieldLengthDelimiter",
+            "Expression": "`#`"
+        },
+        {
+            "Name": "FieldTermSeparator",
+            "Expression": "`/`"
+        },
+        {
+            "Name": "ModifierDelimiter",
+            "Expression": "`:`"
+        },
+        {
+            "Name": "QueryUnescapeValues",
+            "Expression": "false"
+        },
+        {
+            "Name": "SortAscending",
+            "Expression": "`+`"
+        },
+        {
+            "Name": "SortDescending",
+            "Expression": "`-`"
+        },
+        {
+            "Name": "ValueSeparator",
+            "Expression": "`|`"
+        }
+    ],
+    "Functions": [
+        {
+            "Name": "IsExactMatchOperator",
+            "Arguments": [
+                {
+                    "Name": "operator",
+                    "Type": "string"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "bool"
+                }
+            ],
+            "Signature": "IsExactMatchOperator(operator string) bool",
+            "Source": "ewoJc3dpdGNoIG9wZXJhdG9yIHsKCWNhc2UgYGAsIGBpc2AsIGBub3RgLCBgZ3RgLCBgZ3RlYCwgYGx0YCwgYGx0ZWA6CgkJcmV0dXJuIHRydWUKCX0KCXJldHVybiBmYWxzZQp9",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "IsInvertingOperator",
+            "Arguments": [
+                {
+                    "Name": "operator",
+                    "Type": "string"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "bool"
+                }
+            ],
+            "Signature": "IsInvertingOperator(operator string) bool",
+            "Source": "ewoJc3dpdGNoIG9wZXJhdG9yIHsKCWNhc2UgYG5vdGAsIGB1bmxpa2VgOgoJCXJldHVybiB0cnVlCgl9CglyZXR1cm4gZmFsc2UKfQ==",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "Render",
+            "Arguments": [
+                {
+                    "Name": "generator",
+                    "Type": "IGenerator"
+                },
+                {
+                    "Name": "collectionName",
+                    "Type": "string"
+                },
+                {
+                    "Name": "filter",
+                    "Type": "*Filter"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "[]byte"
+                },
+                {
+                    "Type": "error"
+                }
+            ],
+            "Signature": "Render(generator IGenerator, collectionName string, filter *Filter) ([]byte, error)",
+            "Source": "ewoJaWYgZXJyIDo9IGdlbmVyYXRvci5Jbml0aWFsaXplKGNvbGxlY3Rpb25OYW1lKTsgZXJyICE9IG5pbCB7CgkJcmV0dXJuIG5pbCwgZXJyCgl9Cglmb3Iga2V5LCB2YWx1ZSA6PSByYW5nZSBmaWx0ZXIuT3B0aW9ucyB7CgkJaWYgZXJyIDo9IGdlbmVyYXRvci5TZXRPcHRpb24oa2V5LCB2YWx1ZSk7IGVyciAhPSBuaWwgewoJCQlyZXR1cm4gbmlsLCBlcnIKCQl9Cgl9Cglmb3IgXywgZmllbGROYW1lIDo9IHJhbmdlIGZpbHRlci5GaWVsZHMgewoJCWlmIGZpbHRlci5JZGVudGl0eUZpZWxkICE9IGBgICYmIGZpZWxkTmFtZSA9PSBgaWRgIHsKCQkJZmllbGROYW1lID0gZmlsdGVyLklkZW50aXR5RmllbGQKCQl9CgkJaWYgZXJyIDo9IGdlbmVyYXRvci5XaXRoRmllbGQoZmllbGROYW1lKTsgZXJyICE9IG5pbCB7CgkJCXJldHVybiBuaWwsIGVycgoJCX0KCX0KCWZvciBfLCBjcml0ZXJpb24gOj0gcmFuZ2UgZmlsdGVyLkNyaXRlcmlhIHsKCQlpZiBmaWx0ZXIuSWRlbnRpdHlGaWVsZCAhPSBgYCAmJiBjcml0ZXJpb24uRmllbGQgPT0gYGlkYCB7CgkJCWNyaXRlcmlvbi5GaWVsZCA9IGZpbHRlci5JZGVudGl0eUZpZWxkCgkJfQoJCWlmIGVyciA6PSBnZW5lcmF0b3IuV2l0aENyaXRlcmlvbihjcml0ZXJpb24pOyBlcnIgIT0gbmlsIHsKCQkJcmV0dXJuIG5pbCwgZXJyCgkJfQoJfQoJaWYgZXJyIDo9IGdlbmVyYXRvci5GaW5hbGl6ZShmaWx0ZXIpOyBlcnIgIT0gbmlsIHsKCQlyZXR1cm4gbmlsLCBlcnIKCX0KCXJldHVybiBnZW5lcmF0b3IuUGF5bG9hZCgpLCBuaWwKfQ==",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "SplitModifierToken",
+            "Arguments": [
+                {
+                    "Name": "in",
+                    "Type": "string"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "string"
+                },
+                {
+                    "Type": "string"
+                }
+            ],
+            "Signature": "SplitModifierToken(in string) (string, string)",
+            "Source": "ewoJcGFydHMgOj0gc3RyaW5ncy5TcGxpdE4oaW4sIE1vZGlmaWVyRGVsaW1pdGVyLCAyKQoJaWYgbGVuKHBhcnRzKSA9PSAxIHsKCQlyZXR1cm4gYGAsIHBhcnRzWzBdCgl9IGVsc2UgewoJCXJldHVybiBwYXJ0c1swXSwgcGFydHNbMV0KCX0KfQ==",
+            "IsPackageLevel": true
+        }
+    ],
+    "Tests": [
+        {
+            "Name": "TestFilterCopy",
+            "Arguments": [
+                {
+                    "Name": "t",
+                    "Type": "*testing.T"
+                }
+            ],
+            "Signature": "TestFilterCopy(t *testing.T)",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmMSwgZXJyIDo9IFBhcnNlKGBpZC80MmApCglhc3NlcnQuTmlsKGVycikKCWYyIDo9IENvcHkoZjEpCglhc3NlcnQuRXF1YWwoW11Dcml0ZXJpb257e1R5cGU6IGRhbC5BdXRvVHlwZSwgRmllbGQ6IGBpZGAsIFZhbHVlczogW11pbnRlcmZhY2V7fXtgNDJgfX19LCBmMS5Dcml0ZXJpYSkKCWYyLkFkZENyaXRlcmlhKENyaXRlcmlvbntUeXBlOiBkYWwuU3RyaW5nVHlwZSwgRmllbGQ6IGBuYW1lYCwgVmFsdWVzOiBbXWludGVyZmFjZXt9e2B0ZXN0YH19KQoJYXNzZXJ0LkVxdWFsKFtdQ3JpdGVyaW9ue3tUeXBlOiBkYWwuQXV0b1R5cGUsIEZpZWxkOiBgaWRgLCBWYWx1ZXM6IFtdaW50ZXJmYWNle317YDQyYH19fSwgZjEuQ3JpdGVyaWEpCglhc3NlcnQuRXF1YWwoW11Dcml0ZXJpb257e1R5cGU6IGRhbC5BdXRvVHlwZSwgRmllbGQ6IGBpZGAsIFZhbHVlczogW11pbnRlcmZhY2V7fXtgNDJgfX0sIHtUeXBlOiBkYWwuU3RyaW5nVHlwZSwgRmllbGQ6IGBuYW1lYCwgVmFsdWVzOiBbXWludGVyZmFjZXt9e2B0ZXN0YH19fSwgZjIuQ3JpdGVyaWEpCn0=",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "TestFilterFromMap",
+            "Arguments": [
+                {
+                    "Name": "t",
+                    "Type": "*testing.T"
+                }
+            ],
+            "Signature": "TestFilterFromMap(t *testing.T)",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmLCBlcnIgOj0gRnJvbU1hcChtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BmMWA6IGB2MWAsIGBpbnQ6ZjJgOiAyLCBgZmxvYXQ6ZjNgOiBgZ3RlOjNgLCBgaWRgOiBbXXN0cmluZ3tgMWAsIGAzYCwgYDVgfSwgYG90aGVyYDogYDJ8NHw2YH0pCglhc3NlcnQuTmlsKGVycikKCWFzc2VydC5FcXVhbCg1LCBsZW4oZi5Dcml0ZXJpYSkpCglmb3IgXywgY3JpdGVyaW9uIDo9IHJhbmdlIGYuQ3JpdGVyaWEgewoJCXN3aXRjaCBjcml0ZXJpb24uRmllbGQgewoJCWNhc2UgYGYxYDoKCQkJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317YHYxYH0sIGNyaXRlcmlvbi5WYWx1ZXMpCgkJY2FzZSBgZjJgOgoJCQlhc3NlcnQuVHJ1ZShkYWwuSW50VHlwZSA9PSBjcml0ZXJpb24uVHlwZSkKCQkJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317Mn0sIGNyaXRlcmlvbi5WYWx1ZXMpCgkJY2FzZSBgZjNgOgoJCQlhc3NlcnQuVHJ1ZShkYWwuRmxvYXRUeXBlID09IGNyaXRlcmlvbi5UeXBlKQoJCQlhc3NlcnQuRXF1YWwoYGd0ZWAsIGNyaXRlcmlvbi5PcGVyYXRvcikKCQkJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317YDNgfSwgY3JpdGVyaW9uLlZhbHVlcykKCQljYXNlIGBpZGA6CgkJCWFzc2VydC5FcXVhbFZhbHVlcyhbXWludGVyZmFjZXt9e2AxYCwgYDNgLCBgNWB9LCBjcml0ZXJpb24uVmFsdWVzKQoJCWNhc2UgYG90aGVyYDoKCQkJYXNzZXJ0LkVxdWFsVmFsdWVzKFtdaW50ZXJmYWNle317YDJgLCBgNGAsIGA2YH0sIGNyaXRlcmlvbi5WYWx1ZXMpCgkJZGVmYXVsdDoKCQkJdC5FcnJvcmYoIlVua25vd24gZmllbGQgJXEiLCBjcml0ZXJpb24uRmllbGQpCgkJfQoJfQp9",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "TestFilterGetSort",
+            "Arguments": [
+                {
+                    "Name": "t",
+                    "Type": "*testing.T"
+                }
+            ],
+            "Signature": "TestFilterGetSort(t *testing.T)",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmLCBlcnIgOj0gUGFyc2UoYG5hbWUvdGVzdC8tYWdlLzQvK2dyb3VwL29uZWApCglhc3NlcnQuTmlsKGVycikKCXNvcnRCeSA6PSBmLkdldFNvcnQoKQoJYXNzZXJ0LkVxdWFsKDIsIGxlbihzb3J0QnkpKQoJYXNzZXJ0LkVxdWFsKGBhZ2VgLCBzb3J0QnlbMF0uRmllbGQpCglhc3NlcnQuVHJ1ZShzb3J0QnlbMF0uRGVzY2VuZGluZykKCWFzc2VydC5FcXVhbChgZ3JvdXBgLCBzb3J0QnlbMV0uRmllbGQpCglhc3NlcnQuRmFsc2Uoc29ydEJ5WzFdLkRlc2NlbmRpbmcpCn0=",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "TestFilterIdOnly",
+            "Arguments": [
+                {
+                    "Name": "t",
+                    "Type": "*testing.T"
+                }
+            ],
+            "Signature": "TestFilterIdOnly(t *testing.T)",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmIDo9IE1ha2VGaWx0ZXIoQWxsVmFsdWUpCglmLkZpZWxkcyA9IFtdc3RyaW5ne2YuSWRlbnRpdHlGaWVsZH0KCWFzc2VydC5UcnVlKGYuSWRPbmx5KCkpCglmID0gTWFrZUZpbHRlcihBbGxWYWx1ZSkKCWFzc2VydC5GYWxzZShmLklkT25seSgpKQp9",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "TestFilterIdentity",
+            "Arguments": [
+                {
+                    "Name": "t",
+                    "Type": "*testing.T"
+                }
+            ],
+            "Signature": "TestFilterIdentity(t *testing.T)",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglzcGVjIDo9IGBzdHIjMTY6bmFtZS9wcmVmaXg6Zm9vYAoJZmlsdGVyLCBlcnIgOj0gUGFyc2Uoc3BlYykKCWFzc2VydC5OaWwoZXJyKQoJYXNzZXJ0LkVxdWFsKDEsIGxlbihmaWx0ZXIuQ3JpdGVyaWEpKQoJYXNzZXJ0LkVxdWFsKGRhbC5TdHJpbmdUeXBlLCBmaWx0ZXIuQ3JpdGVyaWFbMF0uVHlwZSkKCWFzc2VydC5FcXVhbCgxNiwgZmlsdGVyLkNyaXRlcmlhWzBdLkxlbmd0aCkKCWFzc2VydC5FcXVhbChgbmFtZWAsIGZpbHRlci5Dcml0ZXJpYVswXS5GaWVsZCkKCWFzc2VydC5FcXVhbChgcHJlZml4YCwgZmlsdGVyLkNyaXRlcmlhWzBdLk9wZXJhdG9yKQoJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317YGZvb2B9LCBmaWx0ZXIuQ3JpdGVyaWFbMF0uVmFsdWVzKQoJYXNzZXJ0LkVxdWFsKHNwZWMsIGZpbHRlci5TdHJpbmcoKSkKfQ==",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "TestFilterMatchesRecord",
+            "Arguments": [
+                {
+                    "Name": "t",
+                    "Type": "*testing.T"
+                }
+            ],
+            "Signature": "TestFilterMatchesRecord(t *testing.T)",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglhc3NlcnQuVHJ1ZShNdXN0UGFyc2UoYGlkLzFgKS5NYXRjaGVzUmVjb3JkKGRhbC5OZXdSZWNvcmQoMSkpKQoJYXNzZXJ0LlRydWUoTXVzdFBhcnNlKGBpZC8xYCkuTWF0Y2hlc1JlY29yZChkYWwuTmV3UmVjb3JkKGAxYCkpKQoJYXNzZXJ0LlRydWUoTXVzdFBhcnNlKGBpZC9pczoxYCkuTWF0Y2hlc1JlY29yZChkYWwuTmV3UmVjb3JkKDEpKSkKCWFzc2VydC5UcnVlKE11c3RQYXJzZShgaWQvaXM6MWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZChgMWApKSkKCWFzc2VydC5UcnVlKE11c3RQYXJzZShgaW50OmlkLzFgKS5NYXRjaGVzUmVjb3JkKGRhbC5OZXdSZWNvcmQoMSkpKQoJYXNzZXJ0LlRydWUoTXVzdFBhcnNlKGBzdHI6aWQvMWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZChgMWApKSkKCWFzc2VydC5GYWxzZShNdXN0UGFyc2UoYHN0cjppZC9pczoxYCkuTWF0Y2hlc1JlY29yZChkYWwuTmV3UmVjb3JkKDEpKSkKCWFzc2VydC5UcnVlKE11c3RQYXJzZShgaWQvbm90OjFgKS5NYXRjaGVzUmVjb3JkKGRhbC5OZXdSZWNvcmQoMikpKQoJYXNzZXJ0LlRydWUoTXVzdFBhcnNlKGBpZC9ub3Q6MWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZChgMmApKSkKCWFzc2VydC5UcnVlKE11c3RQYXJzZShgaWQvMS90ZXN0L3RydWVgKS5NYXRjaGVzUmVjb3JkKGRhbC5OZXdSZWNvcmQoMSkuU2V0KGB0ZXN0YCwgdHJ1ZSkpKQoJYXNzZXJ0LlRydWUoTXVzdFBhcnNlKGBpZC8xL3Rlc3QvdHJ1ZWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgxKS5TZXQoYHRlc3RgLCBgdHJ1ZWApKSkKCWFzc2VydC5UcnVlKE11c3RQYXJzZShgaWQvMS9ib29sOnRlc3QvdHJ1ZWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgxKS5TZXQoYHRlc3RgLCB0cnVlKSkpCglhc3NlcnQuVHJ1ZShNdXN0UGFyc2UoYGlkLzEvc3RyOnRlc3QvdHJ1ZWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgxKS5TZXQoYHRlc3RgLCBgdHJ1ZWApKSkKCWFzc2VydC5GYWxzZShNdXN0UGFyc2UoYGlkLzEvdGVzdC90cnVlYCkuTWF0Y2hlc1JlY29yZChkYWwuTmV3UmVjb3JkKDEpLlNldChgdGVzdGAsIGZhbHNlKSkpCglhc3NlcnQuRmFsc2UoTXVzdFBhcnNlKGBpZC8xL3Rlc3QvdHJ1ZWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgxKS5TZXQoYHRlc3RgLCBgZmFsc2VgKSkpCglhc3NlcnQuRmFsc2UoTXVzdFBhcnNlKGBpZC8xL3Rlc3QvdHJ1ZWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgxKS5TZXQoYHRlc3RgLCAxKSkpCglhc3NlcnQuRmFsc2UoTXVzdFBhcnNlKGBpZC8xL3Rlc3QvdHJ1ZWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgxKS5TZXQoYHRlc3RgLCBgMWApKSkKCWFzc2VydC5GYWxzZShNdXN0UGFyc2UoYGlkLzEvdGVzdC9mYWxzZWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgxKS5TZXQoYHRlc3RgLCAwKSkpCglhc3NlcnQuRmFsc2UoTXVzdFBhcnNlKGBpZC8xL3Rlc3QvZmFsc2VgKS5NYXRjaGVzUmVjb3JkKGRhbC5OZXdSZWNvcmQoMSkuU2V0KGB0ZXN0YCwgYDBgKSkpCglhc3NlcnQuRmFsc2UoTXVzdFBhcnNlKGBpZC8xL3N0cjp0ZXN0L3RydWVgKS5NYXRjaGVzUmVjb3JkKGRhbC5OZXdSZWNvcmQoMSkuU2V0KGB0ZXN0YCwgdHJ1ZSkpKQoJYXNzZXJ0LkZhbHNlKE11c3RQYXJzZShgaWQvZ3Q6MWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgwKSkpCglhc3NlcnQuRmFsc2UoTXVzdFBhcnNlKGBpZC9ndDoxYCkuTWF0Y2hlc1JlY29yZChkYWwuTmV3UmVjb3JkKDEpKSkKCWFzc2VydC5UcnVlKE11c3RQYXJzZShgaWQvZ3Q6MWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgyKSkpCglhc3NlcnQuRmFsc2UoTXVzdFBhcnNlKGBpZC9ndGU6MWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgwKSkpCglhc3NlcnQuVHJ1ZShNdXN0UGFyc2UoYGlkL2d0ZToxYCkuTWF0Y2hlc1JlY29yZChkYWwuTmV3UmVjb3JkKDEpKSkKCWFzc2VydC5UcnVlKE11c3RQYXJzZShgaWQvZ3RlOjFgKS5NYXRjaGVzUmVjb3JkKGRhbC5OZXdSZWNvcmQoMikpKQoJYXNzZXJ0LkZhbHNlKE11c3RQYXJzZShgaWQvbHQ6MWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgyKSkpCglhc3NlcnQuRmFsc2UoTXVzdFBhcnNlKGBpZC9sdDoxYCkuTWF0Y2hlc1JlY29yZChkYWwuTmV3UmVjb3JkKDEpKSkKCWFzc2VydC5UcnVlKE11c3RQYXJzZShgaWQvbHQ6MWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgwKSkpCglhc3NlcnQuRmFsc2UoTXVzdFBhcnNlKGBpZC9sdGU6MWApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgyKSkpCglhc3NlcnQuVHJ1ZShNdXN0UGFyc2UoYGlkL2x0ZToxYCkuTWF0Y2hlc1JlY29yZChkYWwuTmV3UmVjb3JkKDEpKSkKCWFzc2VydC5UcnVlKE11c3RQYXJzZShgaWQvbHRlOjFgKS5NYXRjaGVzUmVjb3JkKGRhbC5OZXdSZWNvcmQoMCkpKQoJYXNzZXJ0LlRydWUoTXVzdFBhcnNlKGBuYW1lL2NvbnRhaW5zOm9sZGApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgR29sZGVucm9kYCkpKQoJYXNzZXJ0LlRydWUoTXVzdFBhcnNlKGBuYW1lL3ByZWZpeDpnb2xkYCkuTWF0Y2hlc1JlY29yZChkYWwuTmV3UmVjb3JkKDEpLlNldChgbmFtZWAsIGBHb2xkYCkpKQoJYXNzZXJ0LlRydWUoTXVzdFBhcnNlKGBuYW1lL3ByZWZpeDpHb2xkYCkuTWF0Y2hlc1JlY29yZChkYWwuTmV3UmVjb3JkKDEpLlNldChgbmFtZWAsIGBHb2xkYCkpKQoJYXNzZXJ0LlRydWUoTXVzdFBhcnNlKGBuYW1lL3N1ZmZpeDpyb2RgKS5NYXRjaGVzUmVjb3JkKGRhbC5OZXdSZWNvcmQoMSkuU2V0KGBuYW1lYCwgYEdvbGRlbnJvZGApKSkKCWFzc2VydC5UcnVlKE11c3RQYXJzZShgbmFtZS9zdWZmaXg6YXBwbGV8b3JhbmdlfHJvZGApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgR29sZGVucm9kYCkpKQoJYXNzZXJ0LlRydWUoTXVzdFBhcnNlKGBuYW1lL2NvbnRhaW5zOm9sZGVuIHJvZGApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgR29sZGVuIHJvZGApKSkKCWFzc2VydC5UcnVlKE11c3RQYXJzZShgbmFtZS9Hb2xkZW4gcm9kYCkuTWF0Y2hlc1JlY29yZChkYWwuTmV3UmVjb3JkKDEpLlNldChgbmFtZWAsIGBHb2xkZW4gcm9kYCkpKQoJYXNzZXJ0LlRydWUoTXVzdFBhcnNlKGBuYW1lL2xpa2U6Z29sZGVuIHJvZGApLk1hdGNoZXNSZWNvcmQoZGFsLk5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgR29sZGVuIHJvZGApKSkKfQ==",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "TestFilterParse",
+            "Arguments": [
+                {
+                    "Name": "t",
+                    "Type": "*testing.T"
+                }
+            ],
+            "Signature": "TestFilterParse(t *testing.T)",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglDcml0ZXJpYVNlcGFyYXRvciA9IGAvYAoJRmllbGRUZXJtU2VwYXJhdG9yID0gYC9gCgl0ZXN0cyA6PSBtYXBbc3RyaW5nXWZ1bmMoKkZpbHRlciwgZXJyb3Ipe0FsbFZhbHVlOiBmdW5jKGYgKkZpbHRlciwgZXJyIGVycm9yKSB7CgkJYXNzZXJ0Lk5pbChlcnIpCgkJYXNzZXJ0LlRydWUoZi5NYXRjaEFsbCkKCQlhc3NlcnQuRXF1YWwoZi5TcGVjLCBBbGxWYWx1ZSkKCQlhc3NlcnQuRXF1YWwoMCwgbGVuKGYuQ3JpdGVyaWEpKQoJfSwgYGsxL2NvbnRhaW5zOnYxL2ludDprMi9sdDp2MmF8djJiYDogZnVuYyhmICpGaWx0ZXIsIGVyciBlcnJvcikgewoJCWFzc2VydC5OaWwoZXJyKQoJCWFzc2VydC5FcXVhbCgyLCBsZW4oZi5Dcml0ZXJpYSkpCgkJYXNzZXJ0LlRydWUoZGFsLkF1dG9UeXBlID09IGYuQ3JpdGVyaWFbMF0uVHlwZSkKCQlhc3NlcnQuRXF1YWwoYGsxYCwgZi5Dcml0ZXJpYVswXS5GaWVsZCkKCQlhc3NlcnQuRXF1YWwoYGNvbnRhaW5zYCwgZi5Dcml0ZXJpYVswXS5PcGVyYXRvcikKCQlhc3NlcnQuRXF1YWwoW11pbnRlcmZhY2V7fXtgdjFgfSwgZi5Dcml0ZXJpYVswXS5WYWx1ZXMpCgkJYXNzZXJ0LlRydWUoZGFsLkludFR5cGUgPT0gZi5Dcml0ZXJpYVsxXS5UeXBlKQoJCWFzc2VydC5FcXVhbChgazJgLCBmLkNyaXRlcmlhWzFdLkZpZWxkKQoJCWFzc2VydC5FcXVhbChgbHRgLCBmLkNyaXRlcmlhWzFdLk9wZXJhdG9yKQoJCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2B2MmFgLCBgdjJiYH0sIGYuQ3JpdGVyaWFbMV0uVmFsdWVzKQoJfX0KCWZvciBzcGVjLCBmbiA6PSByYW5nZSB0ZXN0cyB7CgkJZiwgZXJyIDo9IFBhcnNlKHNwZWMpCgkJZm4oZiwgZXJyKQoJfQp9",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "TestFilterParseAltDelimiters",
+            "Arguments": [
+                {
+                    "Name": "t",
+                    "Type": "*testing.T"
+                }
+            ],
+            "Signature": "TestFilterParseAltDelimiters(t *testing.T)",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljcywgZnRzIDo9IENyaXRlcmlhU2VwYXJhdG9yLCBGaWVsZFRlcm1TZXBhcmF0b3IKCUNyaXRlcmlhU2VwYXJhdG9yID0gYCBgCglGaWVsZFRlcm1TZXBhcmF0b3IgPSBgPWAKCXRlc3RzIDo9IG1hcFtzdHJpbmddZnVuYygqRmlsdGVyLCBlcnJvcil7QWxsVmFsdWU6IGZ1bmMoZiAqRmlsdGVyLCBlcnIgZXJyb3IpIHsKCQlhc3NlcnQuTmlsKGVycikKCQlhc3NlcnQuVHJ1ZShmLk1hdGNoQWxsKQoJCWFzc2VydC5FcXVhbChmLlNwZWMsIEFsbFZhbHVlKQoJCWFzc2VydC5FcXVhbCgwLCBsZW4oZi5Dcml0ZXJpYSkpCgl9LCBgazE9Y29udGFpbnM6djEgaW50OmsyPWx0OnYyYXx2MmJgOiBmdW5jKGYgKkZpbHRlciwgZXJyIGVycm9yKSB7CgkJYXNzZXJ0Lk5pbChlcnIpCgkJYXNzZXJ0LkVxdWFsKDIsIGxlbihmLkNyaXRlcmlhKSkKCQlhc3NlcnQuVHJ1ZShkYWwuQXV0b1R5cGUgPT0gZi5Dcml0ZXJpYVswXS5UeXBlKQoJCWFzc2VydC5FcXVhbChgazFgLCBmLkNyaXRlcmlhWzBdLkZpZWxkKQoJCWFzc2VydC5FcXVhbChgY29udGFpbnNgLCBmLkNyaXRlcmlhWzBdLk9wZXJhdG9yKQoJCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2B2MWB9LCBmLkNyaXRlcmlhWzBdLlZhbHVlcykKCQlhc3NlcnQuVHJ1ZShkYWwuSW50VHlwZSA9PSBmLkNyaXRlcmlhWzFdLlR5cGUpCgkJYXNzZXJ0LkVxdWFsKGBrMmAsIGYuQ3JpdGVyaWFbMV0uRmllbGQpCgkJYXNzZXJ0LkVxdWFsKGBsdGAsIGYuQ3JpdGVyaWFbMV0uT3BlcmF0b3IpCgkJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317YHYyYWAsIGB2MmJgfSwgZi5Dcml0ZXJpYVsxXS5WYWx1ZXMpCgl9fQoJZm9yIHNwZWMsIGZuIDo9IHJhbmdlIHRlc3RzIHsKCQlmLCBlcnIgOj0gUGFyc2Uoc3BlYykKCQlmbihmLCBlcnIpCgl9CglDcml0ZXJpYVNlcGFyYXRvciwgRmllbGRUZXJtU2VwYXJhdG9yID0gY3MsIGZ0cwp9",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "TestFilterParsePtrToStruct",
+            "Arguments": [
+                {
+                    "Name": "t",
+                    "Type": "*testing.T"
+                }
+            ],
+            "Signature": "TestFilterParsePtrToStruct(t *testing.T)",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl0eXBlIGZDb29sT2JqZWN0IHN0cnVjdCB7CgkJTmFtZSAgICBzdHJpbmcgYHBpdm90OiJuYW1lImAKCQlFbmFibGVkIGJvb2wKCQlBZ2UgICAgIGludCBgcGl2b3Q6IixvbWl0ZW1wdHkiYAoJfQoJZiwgZXJyIDo9IFBhcnNlKCZmQ29vbE9iamVjdHtOYW1lOiBgdGVzdDFgfSkKCWFzc2VydC5OaWwoZXJyKQoJYXNzZXJ0LkVxdWFsKDIsIGxlbihmLkNyaXRlcmlhKSkKCXZhbHVlcywgb2sgOj0gZi5HZXRWYWx1ZXMoYG5hbWVgKQoJYXNzZXJ0LlRydWUob2spCglhc3NlcnQuRXF1YWwoW11pbnRlcmZhY2V7fXtgdGVzdDFgfSwgdmFsdWVzKQoJdmFsdWVzLCBvayA9IGYuR2V0VmFsdWVzKGBFbmFibGVkYCkKCWFzc2VydC5UcnVlKG9rKQoJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317ZmFsc2V9LCB2YWx1ZXMpCgl2YWx1ZXMsIG9rID0gZi5HZXRWYWx1ZXMoYEFnZWApCglhc3NlcnQuRmFsc2Uob2spCglhc3NlcnQuTmlsKHZhbHVlcykKfQ==",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "TestFilterParseStruct",
+            "Arguments": [
+                {
+                    "Name": "t",
+                    "Type": "*testing.T"
+                }
+            ],
+            "Signature": "TestFilterParseStruct(t *testing.T)",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl0eXBlIGZDb29sT2JqZWN0IHN0cnVjdCB7CgkJTmFtZSAgICBzdHJpbmcgYHBpdm90OiJuYW1lImAKCQlFbmFibGVkIGJvb2wKCQlBZ2UgICAgIGludCBgcGl2b3Q6Iix3d3V1dXV1dXQiYAoJfQoJZiwgZXJyIDo9IFBhcnNlKGZDb29sT2JqZWN0e05hbWU6IGB0ZXN0MWAsIEVuYWJsZWQ6IHRydWUsIEFnZTogNDJ9KQoJYXNzZXJ0Lk5pbChlcnIpCglhc3NlcnQuRXF1YWwoMywgbGVuKGYuQ3JpdGVyaWEpKQoJdmFsdWVzLCBvayA6PSBmLkdldFZhbHVlcyhgbmFtZWApCglhc3NlcnQuVHJ1ZShvaykKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2B0ZXN0MWB9LCB2YWx1ZXMpCgl2YWx1ZXMsIG9rID0gZi5HZXRWYWx1ZXMoYEVuYWJsZWRgKQoJYXNzZXJ0LlRydWUob2spCglhc3NlcnQuRXF1YWwoW11pbnRlcmZhY2V7fXt0cnVlfSwgdmFsdWVzKQoJdmFsdWVzLCBvayA9IGYuR2V0VmFsdWVzKGBBZ2VgKQoJYXNzZXJ0LlRydWUob2spCglhc3NlcnQuRXF1YWwoW11pbnRlcmZhY2V7fXs0Mn0sIHZhbHVlcykKfQ==",
+            "IsPackageLevel": true
+        }
+    ],
+    "Types": {
+        "Aggregate": {
+            "Name": "Aggregate",
+            "MetaType": "struct",
+            "Fields": [
+                {
+                    "Name": "Aggregation",
+                    "Type": "Aggregation"
+                },
+                {
+                    "Name": "Field",
+                    "Type": "string"
+                }
+            ],
+            "Source": "dHlwZSBBZ2dyZWdhdGUgc3RydWN0IHsKCUFnZ3JlZ2F0aW9uIEFnZ3JlZ2F0aW9uCglGaWVsZCAgICAgICBzdHJpbmcKfQ=="
+        },
+        "Aggregation": {
+            "Name": "Aggregation",
+            "MetaType": "int",
+            "Source": "dHlwZSBBZ2dyZWdhdGlvbiBpbnQ="
+        },
+        "ConjunctionType": {
+            "Name": "ConjunctionType",
+            "MetaType": "string",
+            "Source": "dHlwZSBDb25qdW5jdGlvblR5cGUgc3RyaW5n"
+        },
+        "Criterion": {
+            "Name": "Criterion",
+            "MetaType": "struct",
+            "Methods": [
+                {
+                    "Name": "IsExactMatch",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "bool"
+                        }
+                    ],
+                    "Signature": "IsExactMatch() bool",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "String",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "string"
+                        }
+                    ],
+                    "Signature": "String() string",
+                    "IsPackageLevel": false
+                }
+            ],
+            "Fields": [
+                {
+                    "Name": "Type",
+                    "Type": "dal.Type"
+                },
+                {
+                    "Name": "Length",
+                    "Type": "int"
+                },
+                {
+                    "Name": "Field",
+                    "Type": "string"
+                },
+                {
+                    "Name": "Operator",
+                    "Type": "string"
+                },
+                {
+                    "Name": "Values",
+                    "Type": "[]interface{}"
+                },
+                {
+                    "Name": "Aggregation",
+                    "Type": "Aggregation"
+                }
+            ],
+            "Source": "dHlwZSBDcml0ZXJpb24gc3RydWN0IHsKCVR5cGUgICAgICAgIGRhbC5UeXBlICAgICAgYGpzb246InR5cGUsb21pdGVtcHR5ImAKCUxlbmd0aCAgICAgIGludCAgICAgICAgICAgYGpzb246Imxlbmd0aCxvbWl0ZW1wdHkiYAoJRmllbGQgICAgICAgc3RyaW5nICAgICAgICBganNvbjoiZmllbGQiYAoJT3BlcmF0b3IgICAgc3RyaW5nICAgICAgICBganNvbjoib3BlcmF0b3Isb21pdGVtcHR5ImAKCVZhbHVlcyAgICAgIFtdaW50ZXJmYWNle30gYGpzb246InZhbHVlcyJgCglBZ2dyZWdhdGlvbiBBZ2dyZWdhdGlvbiAgIGBqc29uOiJhZ2dyZWdhdGlvbixvbWl0ZW1wdHkiYAp9"
+        },
+        "Filter": {
+            "Name": "Filter",
+            "MetaType": "struct",
+            "Methods": [
+                {
+                    "Name": "AddCriteria",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "criteria",
+                            "Type": "...Criterion"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        }
+                    ],
+                    "Signature": "AddCriteria(criteria ...Criterion) *Filter",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "All",
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        }
+                    ],
+                    "Signature": "All() *Filter",
+                    "Source": "ewoJZiA6PSBNYWtlRmlsdGVyKEFsbFZhbHVlKQoJcmV0dXJuICZmCn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "ApplyOptions",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "in",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "ApplyOptions(in interface{}) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "BoundedBy",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "limit",
+                            "Type": "int"
+                        },
+                        {
+                            "Name": "offset",
+                            "Type": "int"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        }
+                    ],
+                    "Signature": "BoundedBy(limit int, offset int) *Filter",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Copy",
+                    "Arguments": [
+                        {
+                            "Name": "other",
+                            "Type": "*Filter"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Filter"
+                        }
+                    ],
+                    "Signature": "Copy(other *Filter) Filter",
+                    "Source": "ewoJcmV0dXJuICpvdGhlcgp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "CriteriaFields",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "[]string"
+                        }
+                    ],
+                    "Signature": "CriteriaFields() []string",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "FromMap",
+                    "Arguments": [
+                        {
+                            "Name": "in",
+                            "Type": "map[string]interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "FromMap(in map[string]interface{}) (*Filter, error)",
+                    "Source": "ewoJcnYgOj0gTWFrZUZpbHRlcigpCglmb3IgdHlwZUZpZWxkLCBvcFZhbHVlIDo9IHJhbmdlIGluIHsKCQlmVHlwZSwgZk5hbWUgOj0gU3BsaXRNb2RpZmllclRva2VuKHR5cGVGaWVsZCkKCQl2YXIgdk9wZXIgc3RyaW5nCgkJdmFyIHZWYWx1ZXMgaW50ZXJmYWNle30KCQlpZiBwYWlyLCBvayA6PSBvcFZhbHVlLihzdHJpbmcpOyBvayB7CgkJCXZPcGVyLCB2VmFsdWVzID0gU3BsaXRNb2RpZmllclRva2VuKHBhaXIpCgkJfSBlbHNlIHsKCQkJdlZhbHVlcyA9IG9wVmFsdWUKCQl9CgkJaWYgdHlwZXV0aWwuSXNTY2FsYXIodlZhbHVlcykgewoJCQlpZiB2UyA6PSB0eXBldXRpbC5TdHJpbmcodlZhbHVlcyk7IHN0cmluZ3MuQ29udGFpbnModlMsIFZhbHVlU2VwYXJhdG9yKSB7CgkJCQl2VmFsdWVzID0gc3RyaW5ncy5TcGxpdCh2UywgVmFsdWVTZXBhcmF0b3IpCgkJCX0KCQl9CgkJcnYuQWRkQ3JpdGVyaWEoQ3JpdGVyaW9ue1R5cGU6IGRhbC5UeXBlKGZUeXBlKSwgRmllbGQ6IGZOYW1lLCBPcGVyYXRvcjogdk9wZXIsIFZhbHVlczogc2xpY2V1dGlsLlNsaWNlaWZ5KHZWYWx1ZXMpfSkKCX0KCXJldHVybiAmcnYsIG5pbAp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "GetFirstValue",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "interface{}"
+                        },
+                        {
+                            "Type": "bool"
+                        }
+                    ],
+                    "Signature": "GetFirstValue() (interface{}, bool)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "GetIdentityValue",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "interface{}"
+                        },
+                        {
+                            "Type": "bool"
+                        }
+                    ],
+                    "Signature": "GetIdentityValue() (interface{}, bool)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "GetSort",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "[]SortBy"
+                        }
+                    ],
+                    "Signature": "GetSort() []SortBy",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "GetValues",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "field",
+                            "Type": "string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "[]interface{}"
+                        },
+                        {
+                            "Type": "bool"
+                        }
+                    ],
+                    "Signature": "GetValues(field string) ([]interface{}, bool)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "IdOnly",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "bool"
+                        }
+                    ],
+                    "Signature": "IdOnly() bool",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "IsMatchAll",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "bool"
+                        }
+                    ],
+                    "Signature": "IsMatchAll() bool",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "MakeFilter",
+                    "Arguments": [
+                        {
+                            "Name": "specs",
+                            "Type": "...string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Filter"
+                        }
+                    ],
+                    "Signature": "MakeFilter(specs ...string) Filter",
+                    "Source": "ewoJc3BlYyA6PSBzdHJpbmdzLkpvaW4oc3BlY3MsIENyaXRlcmlhU2VwYXJhdG9yKQoJZiA6PSBGaWx0ZXJ7U3BlYzogc3BlYywgQ3JpdGVyaWE6IG1ha2UoW11Dcml0ZXJpb24sIDApLCBTb3J0OiBtYWtlKFtdc3RyaW5nLCAwKSwgRmllbGRzOiBtYWtlKFtdc3RyaW5nLCAwKSwgT3B0aW9uczogbWFrZShtYXBbc3RyaW5nXWludGVyZmFjZXt9KSwgUGFnaW5hdGU6IHRydWUsIElkZW50aXR5RmllbGQ6IERlZmF1bHRJZGVudGl0eUZpZWxkLCBOb3JtYWxpemVyOiBEZWZhdWx0Tm9ybWFsaXplckZ1bmN9CglpZiBzcGVjID09IEFsbFZhbHVlIHsKCQlmLk1hdGNoQWxsID0gdHJ1ZQoJfQoJcmV0dXJuIGYKfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "MatchesRecord",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "record",
+                            "Type": "*dal.Record"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "bool"
+                        }
+                    ],
+                    "Signature": "MatchesRecord(record *dal.Record) bool",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "MustParse",
+                    "Arguments": [
+                        {
+                            "Name": "in",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        }
+                    ],
+                    "Signature": "MustParse(in interface{}) *Filter",
+                    "Source": "ewoJaWYgZmx0LCBlcnIgOj0gUGFyc2UoaW4pOyBlcnIgPT0gbmlsIHsKCQlyZXR1cm4gZmx0Cgl9IGVsc2UgewoJCXBhbmljKCJmaWx0ZXI6ICIgKyBlcnIuRXJyb3IoKSkKCX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "New",
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        }
+                    ],
+                    "Signature": "New() *Filter",
+                    "Source": "ewoJcmV0dXJuICZGaWx0ZXJ7Q3JpdGVyaWE6IG1ha2UoW11Dcml0ZXJpb24sIDApLCBTb3J0OiBtYWtlKFtdc3RyaW5nLCAwKSwgRmllbGRzOiBtYWtlKFtdc3RyaW5nLCAwKSwgT3B0aW9uczogbWFrZShtYXBbc3RyaW5nXWludGVyZmFjZXt9KSwgUGFnaW5hdGU6IHRydWUsIElkZW50aXR5RmllbGQ6IERlZmF1bHRJZGVudGl0eUZpZWxkLCBOb3JtYWxpemVyOiBEZWZhdWx0Tm9ybWFsaXplckZ1bmN9Cn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewFromMap",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "in",
+                            "Type": "map[string]interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "NewFromMap(in map[string]interface{}) (*Filter, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "NewFromSpec",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "specs",
+                            "Type": "...string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "NewFromSpec(specs ...string) (*Filter, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Null",
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        }
+                    ],
+                    "Signature": "Null() *Filter",
+                    "Source": "ewoJZiA6PSBNYWtlRmlsdGVyKGBgKQoJcmV0dXJuICZmCn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "Parse",
+                    "Arguments": [
+                        {
+                            "Name": "in",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Parse(in interface{}) (*Filter, error)",
+                    "Source": "ewoJaWYgZiwgb2sgOj0gaW4uKEZpbHRlcik7IG9rIHsKCQlyZXR1cm4gJmYsIG5pbAoJfSBlbHNlIGlmIGYsIG9rIDo9IGluLigqRmlsdGVyKTsgb2sgewoJCXJldHVybiBmLCBuaWwKCX0gZWxzZSBpZiBlbGVtIDo9IHR5cGV1dGlsLlJlc29sdmVWYWx1ZShpbik7IHR5cGV1dGlsLklzU3RydWN0KGVsZW0pIHsKCQlyZXR1cm4gRnJvbU1hcCh0eXBldXRpbC5WKGVsZW0pLk1hcE5hdGl2ZSh1dGlsLlJlY29yZFN0cnVjdFRhZykpCgl9IGVsc2UgaWYgdHlwZXV0aWwuSXNNYXAoaW4pIHsKCQlyZXR1cm4gRnJvbU1hcChtYXB1dGlsLk0oaW4pLk1hcE5hdGl2ZSgpKQoJfSBlbHNlIGlmIGZTdHIsIG9rIDo9IGluLihzdHJpbmcpOyBvayB7CgkJcmV0dXJuIFBhcnNlU3BlYyhmU3RyKQoJfSBlbHNlIHsKCQlyZXR1cm4gTnVsbCgpLCBmbXQuRXJyb3JmKCJFeHBlY3RlZCBmaWx0ZXIuRmlsdGVyLCBtYXAsIG9yIHN0cmluZzsgZ290OiAlVCIsIGluKQoJfQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "ParseSpec",
+                    "Comment": "Filter syntax definition",
+                    "Arguments": [
+                        {
+                            "Name": "spec",
+                            "Type": "string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "ParseSpec(spec string) (*Filter, error)",
+                    "Source": "ewoJdmFyIGNyaXRlcmlvbiBDcml0ZXJpb24KCXNwZWMgPSBzdHJpbmdzLlRyaW1QcmVmaXgoc3BlYywgYC9gKQoJaWYgc3BlYyA9PSBBbGxWYWx1ZSB7CgkJcmV0dXJuIEFsbCgpLCBuaWwKCX0KCXJ2ViA6PSBNYWtlRmlsdGVyKHNwZWMpCglydiA6PSAmcnZWCgljcml0ZXJpYVByZSA6PSBzdHJpbmdzLlNwbGl0KHNwZWMsIENyaXRlcmlhU2VwYXJhdG9yKQoJY3JpdGVyaWEgOj0gbWFrZShbXXN0cmluZywgMCkKCWlmIENyaXRlcmlhU2VwYXJhdG9yID09IEZpZWxkVGVybVNlcGFyYXRvciB7CgkJY3JpdGVyaWEgPSBjcml0ZXJpYVByZQoJfSBlbHNlIHsKCQlmb3IgXywgZmllbGRUZXJtIDo9IHJhbmdlIGNyaXRlcmlhUHJlIHsKCQkJcGFydHMgOj0gc3RyaW5ncy5TcGxpdE4oZmllbGRUZXJtLCBGaWVsZFRlcm1TZXBhcmF0b3IsIDIpCgkJCWNyaXRlcmlhID0gYXBwZW5kKGNyaXRlcmlhLCBwYXJ0cy4uLikKCQl9Cgl9Cglzd2l0Y2ggewoJY2FzZSBzcGVjID09IGBgOgoJCW51bGxGaWx0ZXIgOj0gTWFrZUZpbHRlcihgYCkKCQlyZXR1cm4gJm51bGxGaWx0ZXIsIG5pbAoJY2FzZSBzcGVjID09IEFsbFZhbHVlOgoJCXJldHVybiBydiwgbmlsCgljYXNlIGxlbihjcml0ZXJpYSkgPj0gMjoKCQlmb3IgaSwgdG9rZW4gOj0gcmFuZ2UgY3JpdGVyaWEgewoJCQlpZiAoaSAlIDIpID09IDAgewoJCQkJdmFyIGFkZFNvcnRBc2MgKmJvb2wKCQkJCWlmIHN0cmluZ3MuSGFzUHJlZml4KHRva2VuLCBTb3J0QXNjZW5kaW5nKSB7CgkJCQkJdiA6PSB0cnVlCgkJCQkJYWRkU29ydEFzYyA9ICZ2CgkJCQl9IGVsc2UgaWYgc3RyaW5ncy5IYXNQcmVmaXgodG9rZW4sIFNvcnREZXNjZW5kaW5nKSB7CgkJCQkJdiA6PSBmYWxzZQoJCQkJCWFkZFNvcnRBc2MgPSAmdgoJCQkJfQoJCQkJdG9rZW4gPSBzdHJpbmdzLlRyaW1QcmVmaXgodG9rZW4sIFNvcnREZXNjZW5kaW5nKQoJCQkJdG9rZW4gPSBzdHJpbmdzLlRyaW1QcmVmaXgodG9rZW4sIFNvcnRBc2NlbmRpbmcpCgkJCQlmVHlwZSwgZk5hbWUgOj0gU3BsaXRNb2RpZmllclRva2VuKHRva2VuKQoJCQkJaWYgZlR5cGUgPT0gYGAgewoJCQkJCWNyaXRlcmlvbiA9IENyaXRlcmlvbntGaWVsZDogZk5hbWUsIFR5cGU6IGRhbC5BdXRvVHlwZX0KCQkJCX0gZWxzZSB7CgkJCQkJdHlwZUxlbmd0aFBhaXIgOj0gc3RyaW5ncy5TcGxpdE4oZlR5cGUsIEZpZWxkTGVuZ3RoRGVsaW1pdGVyLCAyKQoJCQkJCWlmIGxlbih0eXBlTGVuZ3RoUGFpcikgPT0gMSB7CgkJCQkJCWNyaXRlcmlvbiA9IENyaXRlcmlvbntUeXBlOiBzbGljZXV0aWwuT3IoZGFsLlR5cGUoZlR5cGUpLCBkYWwuU3RyaW5nVHlwZSkuKGRhbC5UeXBlKSwgRmllbGQ6IGZOYW1lfQoJCQkJCX0gZWxzZSB7CgkJCQkJCWlmIHYsIGVyciA6PSBzdHJjb252LlBhcnNlVWludCh0eXBlTGVuZ3RoUGFpclsxXSwgMTAsIDMyKTsgZXJyID09IG5pbCB7CgkJCQkJCQljcml0ZXJpb24gPSBDcml0ZXJpb257VHlwZTogc2xpY2V1dGlsLk9yKGRhbC5UeXBlKHR5cGVMZW5ndGhQYWlyWzBdKSwgZGFsLlN0cmluZ1R5cGUpLihkYWwuVHlwZSksIExlbmd0aDogaW50KHYpLCBGaWVsZDogZk5hbWV9CgkJCQkJCX0gZWxzZSB7CgkJCQkJCQlyZXR1cm4gcnYsIGVycgoJCQkJCQl9CgkJCQkJfQoJCQkJfQoJCQkJaWYgYWRkU29ydEFzYyAhPSBuaWwgewoJCQkJCWlmICphZGRTb3J0QXNjID09IHRydWUgewoJCQkJCQlydi5Tb3J0ID0gYXBwZW5kKHJ2LlNvcnQsIGNyaXRlcmlvbi5GaWVsZCkKCQkJCQl9IGVsc2UgewoJCQkJCQlydi5Tb3J0ID0gYXBwZW5kKHJ2LlNvcnQsIFNvcnREZXNjZW5kaW5nK2NyaXRlcmlvbi5GaWVsZCkKCQkJCQl9CgkJCQl9CgkJCX0gZWxzZSB7CgkJCQl2T3BlciwgdlZhbHVlIDo9IFNwbGl0TW9kaWZpZXJUb2tlbih0b2tlbikKCQkJCWNyaXRlcmlvbi5WYWx1ZXMgPSBtYWtlKFtdaW50ZXJmYWNle30sIDApCgkJCQlpZiB2T3BlciAhPSBgYCB7CgkJCQkJY3JpdGVyaW9uLk9wZXJhdG9yID0gdk9wZXIKCQkJCX0KCQkJCWZvciBfLCB2IDo9IHJhbmdlIHN0cmluZ3MuU3BsaXQodlZhbHVlLCBWYWx1ZVNlcGFyYXRvcikgewoJCQkJCXZhciB2YWx1ZSBpbnRlcmZhY2V7fQoJCQkJCXZhbHVlID0gdgoJCQkJCWlmIGNyaXRlcmlvbi5UeXBlID09IGRhbC5UaW1lVHlwZSB7CgkJCQkJCWZhY3RvciA6PSAxCgkJCQkJCWlmIHN0cmluZ3MuSGFzUHJlZml4KHYsIGAtYCkgewoJCQkJCQkJdiA9IHZbMTpdCgkJCQkJCQlmYWN0b3IgPSAtMQoJCQkJCQl9CgkJCQkJCWlmIGRlbHRhLCBlcnIgOj0gdGltZXV0aWwuUGFyc2VEdXJhdGlvbih2KTsgZXJyID09IG5pbCB7CgkJCQkJCQl2YWx1ZSA9IHRpbWUuTm93KCkuQWRkKHRpbWUuRHVyYXRpb24oZmFjdG9yKSAqIGRlbHRhKQoJCQkJCQl9IGVsc2UgaWYgdG0sIGVyciA6PSBzdHJpbmd1dGlsLkNvbnZlcnRUb1RpbWUodik7IGVyciA9PSBuaWwgewoJCQkJCQkJdmFsdWUgPSB0bQoJCQkJCQl9CgkJCQkJfQoJCQkJCWNyaXRlcmlvbi5WYWx1ZXMgPSBhcHBlbmQoY3JpdGVyaW9uLlZhbHVlcywgdmFsdWUpCgkJCQl9CgkJCQlpZiBRdWVyeVVuZXNjYXBlVmFsdWVzIHsKCQkJCQlmb3IgaSwgdmFsdWUgOj0gcmFuZ2UgY3JpdGVyaW9uLlZhbHVlcyB7CgkJCQkJCWlmIHYsIGVyciA6PSB1cmwuUXVlcnlVbmVzY2FwZShmbXQuU3ByaW50ZigiJXYiLCB2YWx1ZSkpOyBlcnIgPT0gbmlsIHsKCQkJCQkJCWNyaXRlcmlvbi5WYWx1ZXNbaV0gPSB2CgkJCQkJCX0gZWxzZSB7CgkJCQkJCQlyZXR1cm4gcnYsIGVycgoJCQkJCQl9CgkJCQkJfQoJCQkJfQoJCQkJcnYuQ3JpdGVyaWEgPSBhcHBlbmQocnYuQ3JpdGVyaWEsIGNyaXRlcmlvbikKCQkJfQoJCX0KCWRlZmF1bHQ6CgkJcmV0dXJuIHJ2LCBmbXQuRXJyb3JmKCJJbnZhbGlkIGZpbHRlciBzcGVjOiAlcyIsIHNwZWMpCgl9CglyZXR1cm4gcnYsIG5pbAp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "SortBy",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "fields",
+                            "Type": "...string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        }
+                    ],
+                    "Signature": "SortBy(fields ...string) *Filter",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "String",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "string"
+                        }
+                    ],
+                    "Signature": "String() string",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "WithFields",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "fields",
+                            "Type": "...string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Filter"
+                        }
+                    ],
+                    "Signature": "WithFields(fields ...string) *Filter",
+                    "IsPackageLevel": false
+                }
+            ],
+            "Fields": [
+                {
+                    "Name": "Spec",
+                    "Type": "string"
+                },
+                {
+                    "Name": "MatchAll",
+                    "Type": "bool"
+                },
+                {
+                    "Name": "Offset",
+                    "Type": "int"
+                },
+                {
+                    "Name": "Limit",
+                    "Type": "int"
+                },
+                {
+                    "Name": "Criteria",
+                    "Type": "[]Criterion"
+                },
+                {
+                    "Name": "Sort",
+                    "Type": "[]string"
+                },
+                {
+                    "Name": "Fields",
+                    "Type": "[]string"
+                },
+                {
+                    "Name": "Options",
+                    "Type": "map[string]interface{}"
+                },
+                {
+                    "Name": "Paginate",
+                    "Type": "bool"
+                },
+                {
+                    "Name": "IdentityField",
+                    "Type": "string"
+                },
+                {
+                    "Name": "Normalizer",
+                    "Type": "NormalizerFunc"
+                },
+                {
+                    "Name": "Conjunction",
+                    "Type": "ConjunctionType"
+                }
+            ],
+            "Source": "dHlwZSBGaWx0ZXIgc3RydWN0IHsKCVNwZWMgICAgICAgICAgc3RyaW5nCglNYXRjaEFsbCAgICAgIGJvb2wKCU9mZnNldCAgICAgICAgaW50CglMaW1pdCAgICAgICAgIGludAoJQ3JpdGVyaWEgICAgICBbXUNyaXRlcmlvbgoJU29ydCAgICAgICAgICBbXXN0cmluZwoJRmllbGRzICAgICAgICBbXXN0cmluZwoJT3B0aW9ucyAgICAgICBtYXBbc3RyaW5nXWludGVyZmFjZXt9CglQYWdpbmF0ZSAgICAgIGJvb2wKCUlkZW50aXR5RmllbGQgc3RyaW5nCglOb3JtYWxpemVyICAgIE5vcm1hbGl6ZXJGdW5jIGBqc29uOiItIiBic29uOiItIiBwaXZvdDoiLSJgCglDb25qdW5jdGlvbiAgIENvbmp1bmN0aW9uVHlwZQp9"
+        },
+        "Generator": {
+            "Name": "Generator",
+            "MetaType": "struct",
+            "Methods": [
+                {
+                    "Name": "Finalize",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "_",
+                            "Type": "*Filter"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Finalize(_ *Filter) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Payload",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "[]byte"
+                        }
+                    ],
+                    "Signature": "Payload() []byte",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Push",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "data",
+                            "Type": "[]byte"
+                        }
+                    ],
+                    "Signature": "Push(data []byte)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Reset",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Signature": "Reset()",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Set",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "data",
+                            "Type": "[]byte"
+                        }
+                    ],
+                    "Signature": "Set(data []byte)",
+                    "IsPackageLevel": false
+                }
+            ],
+            "Source": "dHlwZSBHZW5lcmF0b3Igc3RydWN0IHsKCUlHZW5lcmF0b3IKCn0K",
+            "HasUnexportedFields": true
+        },
+        "IGenerator": {
+            "Name": "IGenerator",
+            "Source": "dHlwZSBJR2VuZXJhdG9yIGludGVyZmFjZSB7CglJbml0aWFsaXplKHN0cmluZykgZXJyb3IKCUZpbmFsaXplKCpGaWx0ZXIpIGVycm9yCglQdXNoKFtdYnl0ZSkKCVNldChbXWJ5dGUpCglQYXlsb2FkKCkgW11ieXRlCglXaXRoQ3JpdGVyaW9uKENyaXRlcmlvbikgZXJyb3IKCU9yQ3JpdGVyaW9uKENyaXRlcmlvbikgZXJyb3IKCVdpdGhGaWVsZChzdHJpbmcpIGVycm9yCglHcm91cEJ5RmllbGQoc3RyaW5nKSBlcnJvcgoJQWdncmVnYXRlQnlGaWVsZChBZ2dyZWdhdGlvbiwgc3RyaW5nKSBlcnJvcgoJU2V0T3B0aW9uKHN0cmluZywgaW50ZXJmYWNle30pIGVycm9yCglHZXRWYWx1ZXMoKSBbXWludGVyZmFjZXt9CglSZXNldCgpCn0="
+        },
+        "NormalizerFunc": {
+            "Name": "NormalizerFunc",
+            "Source": "dHlwZSBOb3JtYWxpemVyRnVuYyBmdW5jKGluIHN0cmluZykgc3RyaW5nIC8vIHt9Cg=="
+        },
+        "SortBy": {
+            "Name": "SortBy",
+            "MetaType": "struct",
+            "Fields": [
+                {
+                    "Name": "Field",
+                    "Type": "string"
+                },
+                {
+                    "Name": "Descending",
+                    "Type": "bool"
+                }
+            ],
+            "Source": "dHlwZSBTb3J0Qnkgc3RydWN0IHsKCUZpZWxkICAgICAgc3RyaW5nCglEZXNjZW5kaW5nIGJvb2wKfQ=="
+        }
+    },
+    "Packages": [
+        {
+            "Name": "generators",
+            "CanonicalImportPath": "github.com/ghetzel/pivot/filter/generators",
+            "ImportPath": "filter/generators",
+            "ParentPackage": "filter",
+            "URL": "https://github.com/ghetzel/pivot",
+            "Synopsis": "",
+            "MainFunction": false,
+            "CommentWordCount": 16,
+            "LineCount": 3101,
+            "SourceLineCount": 2613,
+            "FunctionCount": 43,
+            "TypeCount": 9,
+            "ConstantCount": 4,
+            "VariableCount": 13,
+            "Statistics": {
+                "Mean": 0.0132,
+                "StdDev": 0.1049,
+                "GeometricMean": 0,
+                "HarmonicMean": 0,
+                "Median": 0,
+                "Minimum": 0,
+                "Maximum": 1
+            },
+            "Files": [
+                {
+                    "Name": "elasticsearch-util.go",
+                    "Imports": [
+                        {
+                            "PackageName": "fmt",
+                            "Alias": "fmt"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/pivot/v3/filter",
+                            "Alias": "filter"
+                        }
+                    ],
+                    "Size": 4609,
+                    "LineCount": 184,
+                    "SourceLineCount": 150,
+                    "FunctionCount": 0,
+                    "TypeCount": 0,
+                    "ConstantCount": 0,
+                    "VariableCount": 1
+                },
+                {
+                    "Name": "elasticsearch.go",
+                    "Imports": [
+                        {
+                            "PackageName": "encoding/json",
+                            "Alias": "json"
+                        },
+                        {
+                            "PackageName": "fmt",
+                            "Alias": "fmt"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/pivot/v3/filter",
+                            "Alias": "filter"
+                        }
+                    ],
+                    "Size": 3551,
+                    "LineCount": 166,
+                    "SourceLineCount": 135,
+                    "FunctionCount": 10,
+                    "TypeCount": 1,
+                    "ConstantCount": 0,
+                    "VariableCount": 1
+                },
+                {
+                    "Name": "mongodb-util.go",
+                    "Imports": [
+                        {
+                            "PackageName": "fmt",
+                            "Alias": "fmt"
+                        },
+                        {
+                            "PackageName": "regexp",
+                            "Alias": "regexp"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/go-stockutil/stringutil",
+                            "Alias": "stringutil"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/pivot/v3/filter",
+                            "Alias": "filter"
+                        }
+                    ],
+                    "Size": 4664,
+                    "LineCount": 194,
+                    "SourceLineCount": 162,
+                    "FunctionCount": 0,
+                    "TypeCount": 0,
+                    "ConstantCount": 0,
+                    "VariableCount": 0
+                },
+                {
+                    "Name": "mongodb.go",
+                    "Imports": [
+                        {
+                            "PackageName": "encoding/json",
+                            "Alias": "json"
+                        },
+                        {
+                            "PackageName": "fmt",
+                            "Alias": "fmt"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/go-stockutil/stringutil",
+                            "Alias": "stringutil"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/pivot/v3/filter",
+                            "Alias": "filter"
+                        }
+                    ],
+                    "Size": 2982,
+                    "LineCount": 145,
+                    "SourceLineCount": 115,
+                    "FunctionCount": 9,
+                    "TypeCount": 1,
+                    "ConstantCount": 0,
+                    "VariableCount": 0
+                },
+                {
+                    "Name": "mongodb_test.go",
+                    "Imports": [
+                        {
+                            "PackageName": "testing",
+                            "Alias": "testing"
+                        },
+                        {
+                            "PackageName": "encoding/json",
+                            "Alias": "json"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/pivot/v3/filter",
+                            "Alias": "filter"
+                        },
+                        {
+                            "PackageName": "github.com/stretchr/testify/require",
+                            "Alias": "require"
+                        }
+                    ],
+                    "Size": 4527,
+                    "LineCount": 217,
+                    "SourceLineCount": 206,
+                    "FunctionCount": 0,
+                    "TypeCount": 0,
+                    "ConstantCount": 0,
+                    "VariableCount": 0
+                },
+                {
+                    "Name": "sql.go",
+                    "Imports": [
+                        {
+                            "PackageName": "bytes",
+                            "Alias": "bytes"
+                        },
+                        {
+                            "PackageName": "encoding/json",
+                            "Alias": "json"
+                        },
+                        {
+                            "PackageName": "fmt",
+                            "Alias": "fmt"
+                        },
+                        {
+                            "PackageName": "reflect",
+                            "Alias": "reflect"
+                        },
+                        {
+                            "PackageName": "sort",
+                            "Alias": "sort"
+                        },
+                        {
+                            "PackageName": "strings",
+                            "Alias": "strings"
+                        },
+                        {
+                            "PackageName": "time",
+                            "Alias": "time"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/go-stockutil/maputil",
+                            "Alias": "maputil"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/go-stockutil/rxutil",
+                            "Alias": "rxutil"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
+                            "Alias": "sliceutil"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/go-stockutil/stringutil",
+                            "Alias": "stringutil"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
+                            "Alias": "typeutil"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/pivot/v3/dal",
+                            "Alias": "dal"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/pivot/v3/filter",
+                            "Alias": "filter"
+                        }
+                    ],
+                    "Size": 29807,
+                    "LineCount": 1060,
+                    "SourceLineCount": 857,
+                    "FunctionCount": 24,
+                    "TypeCount": 7,
+                    "ConstantCount": 4,
+                    "VariableCount": 11
+                },
+                {
+                    "Name": "sql_test.go",
+                    "Imports": [
+                        {
+                            "PackageName": "fmt",
+                            "Alias": "fmt"
+                        },
+                        {
+                            "PackageName": "sort",
+                            "Alias": "sort"
+                        },
+                        {
+                            "PackageName": "strings",
+                            "Alias": "strings"
+                        },
+                        {
+                            "PackageName": "testing",
+                            "Alias": "testing"
+                        },
+                        {
+                            "PackageName": "time",
+                            "Alias": "time"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/go-stockutil/maputil",
+                            "Alias": "maputil"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/pivot/v3/dal",
+                            "Alias": "dal"
+                        },
+                        {
+                            "PackageName": "github.com/ghetzel/pivot/v3/filter",
+                            "Alias": "filter"
+                        },
+                        {
+                            "PackageName": "github.com/stretchr/testify/require",
+                            "Alias": "require"
+                        }
+                    ],
+                    "Size": 29849,
+                    "LineCount": 1135,
+                    "SourceLineCount": 988,
+                    "FunctionCount": 0,
+                    "TypeCount": 0,
+                    "ConstantCount": 0,
+                    "VariableCount": 0
+                }
+            ],
+            "Constants": [
+                {
+                    "Name": "SqlDeleteStatement",
+                    "Immutable": true
+                },
+                {
+                    "Name": "SqlInsertStatement",
+                    "Immutable": true
+                },
+                {
+                    "Name": "SqlSelectStatement",
+                    "Type": "SqlStatementType",
+                    "Immutable": true,
+                    "Expression": "iota"
+                },
+                {
+                    "Name": "SqlUpdateStatement",
+                    "Immutable": true
+                }
+            ],
+            "Variables": [
+                {
+                    "Name": "CassandraTypeMapping"
+                },
+                {
+                    "Name": "DefaultMinVersionCompat",
+                    "Expression": "float64(6)",
+                    "Comment": "Elasticsearch Generator"
+                },
+                {
+                    "Name": "DefaultSqlTypeMapping",
+                    "Expression": "GenericTypeMapping"
+                },
+                {
+                    "Name": "ElasticsearchExactMatchQueryType",
+                    "Expression": "`term`"
+                },
+                {
+                    "Name": "GenericTypeMapping"
+                },
+                {
+                    "Name": "MysqlTypeMapping"
+                },
+                {
+                    "Name": "NoTypeMapping",
+                    "Expression": "SqlTypeMapping{}"
+                },
+                {
+                    "Name": "PostgresJsonTypeMapping"
+                },
+                {
+                    "Name": "PostgresTypeMapping"
+                },
+                {
+                    "Name": "SqlJsonTypeDecoder"
+                },
+                {
+                    "Name": "SqlJsonTypeEncoder"
+                },
+                {
+                    "Name": "SqlMaxPlaceholders",
+                    "Expression": "16384"
+                },
+                {
+                    "Name": "SqliteTypeMapping"
+                }
+            ],
+            "Tests": [
+                {
+                    "Name": "TestMongodb",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestMongodb(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl0ZXN0cyA6PSBtYXBbc3RyaW5nXW1vbmdvUXZ7YGFsbGA6IHtxdWVyeTogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXt9LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317fX0sIGBpZC8xYDoge3F1ZXJ5OiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BfaWRgOiBgMWB9LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoMSl9fSwgYGlkL25vdDoxYDoge3F1ZXJ5OiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BfaWRgOiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2AkbmVgOiBmbG9hdDY0KDEpfX0sIHZhbHVlczogW11pbnRlcmZhY2V7fXtpbnQ2NCgxKX19LCBgbmFtZS9Cb2IgSm9obnNvbmA6IHtxdWVyeTogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgbmFtZWA6IGBCb2IgSm9obnNvbmB9LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317YEJvYiBKb2huc29uYH19LCBgYWdlLzIxYDoge3F1ZXJ5OiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BhZ2VgOiBmbG9hdDY0KDIxKX0sIHZhbHVlczogW11pbnRlcmZhY2V7fXtpbnQ2NCgyMSl9fSwgYGVuYWJsZWQvdHJ1ZWA6IHtxdWVyeTogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgZW5hYmxlZGA6IHRydWV9LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317dHJ1ZX19LCBgZW5hYmxlZC9mYWxzZWA6IHtxdWVyeTogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgZW5hYmxlZGA6IGZhbHNlfSwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ZhbHNlfX0sIGBlbmFibGVkL251bGxgOiB7cXVlcnk6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YCRvcmA6IFtdaW50ZXJmYWNle317bWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgZW5hYmxlZGA6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YCRleGlzdHNgOiBmYWxzZX19LCBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BlbmFibGVkYDogbmlsfX19LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317bmlsfX0sIGBlbmFibGVkL25vdDpudWxsYDoge3F1ZXJ5OiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2AkYW5kYDogW11pbnRlcmZhY2V7fXttYXBbc3RyaW5nXWludGVyZmFjZXt9e2BlbmFibGVkYDogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgJGV4aXN0c2A6IHRydWV9fSwgbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgZW5hYmxlZGA6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YCRub3RgOiBuaWx9fX19LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317bmlsfX0sIGBhZ2UvbHQ6MjFgOiB7cXVlcnk6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YGFnZWA6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YCRsdGA6IGZsb2F0NjQoMjEpfX0sIHZhbHVlczogW11pbnRlcmZhY2V7fXtpbnQ2NCgyMSl9fSwgYGFnZS9sdGU6MjFgOiB7cXVlcnk6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YGFnZWA6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YCRsdGVgOiBmbG9hdDY0KDIxKX19LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoMjEpfX0sIGBhZ2UvZ3Q6MjFgOiB7cXVlcnk6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YGFnZWA6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YCRndGA6IGZsb2F0NjQoMjEpfX0sIHZhbHVlczogW11pbnRlcmZhY2V7fXtpbnQ2NCgyMSl9fSwgYGFnZS9ndGU6MjFgOiB7cXVlcnk6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YGFnZWA6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YCRndGVgOiBmbG9hdDY0KDIxKX19LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoMjEpfX0sIGBmYWN0b3IvbHQ6My4xNDE1OTdgOiB7cXVlcnk6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YGZhY3RvcmA6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YCRsdGA6IGZsb2F0NjQoMy4xNDE1OTcpfX0sIHZhbHVlczogW11pbnRlcmZhY2V7fXtmbG9hdDY0KDMuMTQxNTk3KX19LCBgZmFjdG9yL2x0ZTozLjE0MTU5N2A6IHtxdWVyeTogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgZmFjdG9yYDogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgJGx0ZWA6IGZsb2F0NjQoMy4xNDE1OTcpfX0sIHZhbHVlczogW11pbnRlcmZhY2V7fXtmbG9hdDY0KDMuMTQxNTk3KX19LCBgZmFjdG9yL2d0OjMuMTQxNTk3YDoge3F1ZXJ5OiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BmYWN0b3JgOiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2AkZ3RgOiBmbG9hdDY0KDMuMTQxNTk3KX19LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317ZmxvYXQ2NCgzLjE0MTU5Nyl9fSwgYGZhY3Rvci9ndGU6My4xNDE1OTdgOiB7cXVlcnk6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YGZhY3RvcmA6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YCRndGVgOiBmbG9hdDY0KDMuMTQxNTk3KX19LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317ZmxvYXQ2NCgzLjE0MTU5Nyl9fSwgYG5hbWUvY29udGFpbnM6b2JgOiB7cXVlcnk6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YG5hbWVgOiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2AkcmVnZXhgOiBgLipvYi4qYCwgYCRvcHRpb25zYDogYHNpYH19LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317YG9iYH19LCBgbmFtZS9wcmVmaXg6b2JgOiB7cXVlcnk6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YG5hbWVgOiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2AkcmVnZXhgOiBgXm9iLipgLCBgJG9wdGlvbnNgOiBgc2lgfX0sIHZhbHVlczogW11pbnRlcmZhY2V7fXtgb2JgfX0sIGBuYW1lL3N1ZmZpeDpvYmA6IHtxdWVyeTogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgbmFtZWA6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YCRyZWdleGA6IGAuKm9iJGAsIGAkb3B0aW9uc2A6IGBzaWB9fSwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2BvYmB9fSwgYGFnZS83L25hbWUvdGVkYDoge3F1ZXJ5OiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2AkYW5kYDogW11pbnRlcmZhY2V7fXttYXBbc3RyaW5nXWludGVyZmFjZXt9e2BhZ2VgOiBmbG9hdDY0KDcpfSwgbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgbmFtZWA6IGB0ZWRgfX19LCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoNyksIGB0ZWRgfX19Cglmb3Igc3BlYywgZXhwZWN0ZWQgOj0gcmFuZ2UgdGVzdHMgewoJCWYsIGVyciA6PSBmaWx0ZXIuUGFyc2Uoc3BlYykKCQlhc3NlcnQuTmlsKGVycikKCQlnZW4gOj0gTmV3TW9uZ29EQkdlbmVyYXRvcigpCgkJYWN0dWFsLCBlcnIgOj0gZmlsdGVyLlJlbmRlcihnZW4sIGBmb29gLCBmKQoJCWFzc2VydC5Ob0Vycm9yKGVycikKCQl2YXIgcXVlcnkgbWFwW3N0cmluZ11pbnRlcmZhY2V7fQoJCWFzc2VydC5Ob0Vycm9yKGpzb24uVW5tYXJzaGFsKGFjdHVhbCwgJnF1ZXJ5KSkKCQlhc3NlcnQuRXF1YWwoZXhwZWN0ZWQucXVlcnksIHF1ZXJ5LCAiZmlsdGVyOiAldiIsIHNwZWMpCgkJYXNzZXJ0LkVxdWFsKGV4cGVjdGVkLnZhbHVlcywgZ2VuLkdldFZhbHVlcygpLCAiZmlsdGVyOiAldiIsIHNwZWMpCgl9Cn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlBulkDelete",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlBulkDelete(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmLCBlcnIgOj0gZmlsdGVyLlBhcnNlKGBuYW1lL25vdDpCb2J8RnJhbmt8U3RldmVgKQoJYXNzZXJ0Lk5pbChlcnIpCglnZW4gOj0gTmV3U3FsR2VuZXJhdG9yKCkKCWdlbi5UeXBlID0gU3FsRGVsZXRlU3RhdGVtZW50CglzcWwsIGVyciA6PSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCglhc3NlcnQuTmlsKGVycikKCWFzc2VydC5FcXVhbChgREVMRVRFIEZST00gZm9vIFdIRVJFIChuYW1lIE5PVCBJTig/LCA/LCA/KSlgLCBzdHJpbmcoc3FsWzpdKSkKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2BCb2JgLCBgRnJhbmtgLCBgU3RldmVgfSwgZ2VuLkdldFZhbHVlcygpKQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlBulkDeleteWithNormalizers",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlBulkDeleteWithNormalizers(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmLCBlcnIgOj0gZmlsdGVyLlBhcnNlKGBuYW1lL3VubGlrZTpCb2J8RnJhbmt8U3RldmVgKQoJYXNzZXJ0Lk5pbChlcnIpCglnZW4gOj0gTmV3U3FsR2VuZXJhdG9yKCkKCWdlbi5UeXBlID0gU3FsRGVsZXRlU3RhdGVtZW50CglnZW4uTm9ybWFsaXplRmllbGRzID0gW11zdHJpbmd7YG5hbWVgfQoJZ2VuLk5vcm1hbGl6ZXJGb3JtYXQgPSBgTE9XRVIoJXMpYAoJc3FsLCBlcnIgOj0gZmlsdGVyLlJlbmRlcihnZW4sIGBmb29gLCBmKQoJYXNzZXJ0Lk5pbChlcnIpCglhc3NlcnQuRXF1YWwoYERFTEVURSBGUk9NIGZvbyBXSEVSRSAoTE9XRVIobmFtZSkgTk9UIElOKExPV0VSKD8pLCBMT1dFUig/KSwgTE9XRVIoPykpKWAsIHN0cmluZyhzcWxbOl0pKQoJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317YEJvYmAsIGBGcmFua2AsIGBTdGV2ZWB9LCBnZW4uR2V0VmFsdWVzKCkpCn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlDeletes",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlDeletes(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl0ZXN0cyA6PSBtYXBbc3RyaW5nXXF2e2BhbGxgOiB7cXVlcnk6IGBERUxFVEUgRlJPTSBmb29gLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317fX0sIGBpZC8xYDoge3F1ZXJ5OiBgREVMRVRFIEZST00gZm9vIFdIRVJFIChpZCA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpfX0sIGBpZC9ub3Q6MWA6IHtxdWVyeTogYERFTEVURSBGUk9NIGZvbyBXSEVSRSAoaWQgPD4gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoMSl9fSwgYG5hbWUvQm9iIEpvaG5zb25gOiB7cXVlcnk6IGBERUxFVEUgRlJPTSBmb28gV0hFUkUgKG5hbWUgPSA/KWAsIHZhbHVlczogW11pbnRlcmZhY2V7fXtgQm9iIEpvaG5zb25gfX0sIGBhZ2UvMjFgOiB7cXVlcnk6IGBERUxFVEUgRlJPTSBmb28gV0hFUkUgKGFnZSA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDIxKX19LCBgZW5hYmxlZC90cnVlYDoge3F1ZXJ5OiBgREVMRVRFIEZST00gZm9vIFdIRVJFIChlbmFibGVkID0gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317dHJ1ZX19LCBgZW5hYmxlZC9mYWxzZWA6IHtxdWVyeTogYERFTEVURSBGUk9NIGZvbyBXSEVSRSAoZW5hYmxlZCA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ZhbHNlfX0sIGBlbmFibGVkL251bGxgOiB7cXVlcnk6IGBERUxFVEUgRlJPTSBmb28gV0hFUkUgKGVuYWJsZWQgSVMgTlVMTClgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317fX0sIGBlbmFibGVkL25vdDpudWxsYDoge3F1ZXJ5OiBgREVMRVRFIEZST00gZm9vIFdIRVJFIChlbmFibGVkIElTIE5PVCBOVUxMKWAsIHZhbHVlczogW11pbnRlcmZhY2V7fXt9fSwgYGFnZS9sdDoyMWA6IHtxdWVyeTogYERFTEVURSBGUk9NIGZvbyBXSEVSRSAoYWdlIDwgPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoMjEpfX0sIGBhZ2UvbHRlOjIxYDoge3F1ZXJ5OiBgREVMRVRFIEZST00gZm9vIFdIRVJFIChhZ2UgPD0gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoMjEpfX0sIGBhZ2UvZ3Q6MjFgOiB7cXVlcnk6IGBERUxFVEUgRlJPTSBmb28gV0hFUkUgKGFnZSA+ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDIxKX19LCBgYWdlL2d0ZToyMWA6IHtxdWVyeTogYERFTEVURSBGUk9NIGZvbyBXSEVSRSAoYWdlID49ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDIxKX19LCBgZmFjdG9yL2x0OjMuMTQxNTk3YDoge3F1ZXJ5OiBgREVMRVRFIEZST00gZm9vIFdIRVJFIChmYWN0b3IgPCA/KWAsIHZhbHVlczogW11pbnRlcmZhY2V7fXtmbG9hdDY0KDMuMTQxNTk3KX19LCBgZmFjdG9yL2x0ZTozLjE0MTU5N2A6IHtxdWVyeTogYERFTEVURSBGUk9NIGZvbyBXSEVSRSAoZmFjdG9yIDw9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2Zsb2F0NjQoMy4xNDE1OTcpfX0sIGBmYWN0b3IvZ3Q6My4xNDE1OTdgOiB7cXVlcnk6IGBERUxFVEUgRlJPTSBmb28gV0hFUkUgKGZhY3RvciA+ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2Zsb2F0NjQoMy4xNDE1OTcpfX0sIGBmYWN0b3IvZ3RlOjMuMTQxNTk3YDoge3F1ZXJ5OiBgREVMRVRFIEZST00gZm9vIFdIRVJFIChmYWN0b3IgPj0gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317ZmxvYXQ2NCgzLjE0MTU5Nyl9fSwgYG5hbWUvY29udGFpbnM6b2JgOiB7cXVlcnk6IGBERUxFVEUgRlJPTSBmb28gV0hFUkUgKG5hbWUgTElLRSA/KWAsIHZhbHVlczogW11pbnRlcmZhY2V7fXtgJSVvYiUlYH19LCBgbmFtZS9wcmVmaXg6b2JgOiB7cXVlcnk6IGBERUxFVEUgRlJPTSBmb28gV0hFUkUgKG5hbWUgTElLRSA/KWAsIHZhbHVlczogW11pbnRlcmZhY2V7fXtgb2IlJWB9fSwgYG5hbWUvc3VmZml4Om9iYDoge3F1ZXJ5OiBgREVMRVRFIEZST00gZm9vIFdIRVJFIChuYW1lIExJS0UgPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317YCUlb2JgfX0sIGBhZ2UvNy9uYW1lL3RlZGA6IHtxdWVyeTogYERFTEVURSBGUk9NIGZvbyBXSEVSRSAoYWdlID0gPykgQU5EIChuYW1lID0gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoNyksIGB0ZWRgfX19Cglmb3Igc3BlYywgZXhwZWN0ZWQgOj0gcmFuZ2UgdGVzdHMgewoJCWYsIGVyciA6PSBmaWx0ZXIuUGFyc2Uoc3BlYykKCQlhc3NlcnQuTmlsKGVycikKCQlnZW4gOj0gTmV3U3FsR2VuZXJhdG9yKCkKCQlnZW4uVHlwZSA9IFNxbERlbGV0ZVN0YXRlbWVudAoJCWFjdHVhbCwgZXJyIDo9IGZpbHRlci5SZW5kZXIoZ2VuLCBgZm9vYCwgZikKCQlhc3NlcnQuTmlsKGVycikKCQlhc3NlcnQuRXF1YWwoZXhwZWN0ZWQucXVlcnksIHN0cmluZyhhY3R1YWxbOl0pLCBzcGVjKQoJCWFzc2VydC5FcXVhbChleHBlY3RlZC52YWx1ZXMsIGdlbi5HZXRWYWx1ZXMoKSwgc3BlYykKCX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlFieldQuoting",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlFieldQuoting(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmLCBlcnIgOj0gZmlsdGVyLlBhcnNlKGBhZ2UvNy9uYW1lL3RlZC9tdWx0aSBmaWVsZC90cnVlYCkKCWFzc2VydC5OaWwoZXJyKQoJZm9yIGZvcm1hdCwgcXVvdGVjaGFyIDo9IHJhbmdlIG1hcFtzdHJpbmddc3RyaW5ne2BgOiBgYCwgYCVxYDogYCJgLCAiYCVzYCI6ICJgIn0gewoJCWdlbiA6PSBOZXdTcWxHZW5lcmF0b3IoKQoJCWlmIGZvcm1hdCAhPSBgYCB7CgkJCWdlbi5UeXBlTWFwcGluZy5GaWVsZE5hbWVGb3JtYXQgPSBmb3JtYXQKCQl9CgkJYWN0dWFsLCBlcnIgOj0gZmlsdGVyLlJlbmRlcihnZW4sIGBmb29gLCBmKQoJCWFzc2VydC5OaWwoZXJyKQoJCWFzc2VydC5FcXVhbChgU0VMRUNUICogRlJPTSBmb28gYCtgV0hFUkUgKGArcXVvdGVjaGFyK2BhZ2VgK3F1b3RlY2hhcitgID0gPykgYCtgQU5EIChgK3F1b3RlY2hhcitgbmFtZWArcXVvdGVjaGFyK2AgPSA/KSBgK2BBTkQgKGArcXVvdGVjaGFyK2BtdWx0aSBmaWVsZGArcXVvdGVjaGFyK2AgPSA/KWAsIHN0cmluZyhhY3R1YWxbOl0pKQoJCWdlbiA9IE5ld1NxbEdlbmVyYXRvcigpCgkJaWYgZm9ybWF0ICE9IGBgIHsKCQkJZ2VuLlR5cGVNYXBwaW5nLkZpZWxkTmFtZUZvcm1hdCA9IGZvcm1hdAoJCX0KCQlnZW4uVHlwZSA9IFNxbEluc2VydFN0YXRlbWVudAoJCWdlbi5JbnB1dERhdGEgPSBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BhZ2VgOiA3LCBgbmFtZWA6IGB0ZWRgLCBgbXVsdGkgZmllbGRgOiB0cnVlfQoJCWFjdHVhbCwgZXJyID0gZmlsdGVyLlJlbmRlcihnZW4sIGBmb29gLCBmKQoJCWFzc2VydC5OaWwoZXJyKQoJCWFzc2VydC5FcXVhbChgSU5TRVJUIElOVE8gZm9vIChgK3F1b3RlY2hhcitgYWdlYCtxdW90ZWNoYXIrYCwgYCtxdW90ZWNoYXIrYG11bHRpIGZpZWxkYCtxdW90ZWNoYXIrYCwgYCtxdW90ZWNoYXIrYG5hbWVgK3F1b3RlY2hhcitgKSBWQUxVRVMgKD8sID8sID8pYCwgc3RyaW5nKGFjdHVhbFs6XSkpCgkJZ2VuID0gTmV3U3FsR2VuZXJhdG9yKCkKCQlpZiBmb3JtYXQgIT0gYGAgewoJCQlnZW4uVHlwZU1hcHBpbmcuRmllbGROYW1lRm9ybWF0ID0gZm9ybWF0CgkJfQoJCWdlbi5UeXBlID0gU3FsVXBkYXRlU3RhdGVtZW50CgkJZ2VuLklucHV0RGF0YSA9IG1hcFtzdHJpbmddaW50ZXJmYWNle317YGFnZWA6IDcsIGBuYW1lYDogYHRlZGAsIGBtdWx0aSBmaWVsZGA6IHRydWV9CgkJYWN0dWFsLCBlcnIgPSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCgkJYXNzZXJ0Lk5pbChlcnIpCgkJYXNzZXJ0LkVxdWFsKGBVUERBVEUgZm9vIFNFVCBgK3F1b3RlY2hhcitgYWdlYCtxdW90ZWNoYXIrYCA9ID8sIGArcXVvdGVjaGFyK2BtdWx0aSBmaWVsZGArcXVvdGVjaGFyK2AgPSA/LCBgK3F1b3RlY2hhcitgbmFtZWArcXVvdGVjaGFyK2AgPSA/IGArYFdIRVJFIChgK3F1b3RlY2hhcitgYWdlYCtxdW90ZWNoYXIrYCA9ID8pIGArYEFORCAoYCtxdW90ZWNoYXIrYG5hbWVgK3F1b3RlY2hhcitgID0gPykgYCtgQU5EIChgK3F1b3RlY2hhcitgbXVsdGkgZmllbGRgK3F1b3RlY2hhcitgID0gPylgLCBzdHJpbmcoYWN0dWFsWzpdKSkKCX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlInserts",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlInserts(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl0ZXN0cyA6PSBbXXF2e3txdWVyeTogYElOU0VSVCBJTlRPIGZvbyAoaWQpIFZBTFVFUyAoPylgLCB2YWx1ZXM6IG5pbCwgaW5wdXQ6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YGlkYDogMX0sIG1hcHBpbmc6IERlZmF1bHRTcWxUeXBlTWFwcGluZ30sIHtxdWVyeTogYElOU0VSVCBJTlRPIGZvbyAobmFtZSkgVkFMVUVTICg/KWAsIHZhbHVlczogbmlsLCBpbnB1dDogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgbmFtZWA6IGBCb2IgSm9obnNvbmB9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCB7cXVlcnk6IGBJTlNFUlQgSU5UTyBmb28gKGFnZSkgVkFMVUVTICg/KWAsIHZhbHVlczogbmlsLCBpbnB1dDogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgYWdlYDogMjF9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCB7cXVlcnk6IGBJTlNFUlQgSU5UTyBmb28gKGVuYWJsZWQpIFZBTFVFUyAoPylgLCB2YWx1ZXM6IG5pbCwgaW5wdXQ6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YGVuYWJsZWRgOiB0cnVlfSwgbWFwcGluZzogRGVmYXVsdFNxbFR5cGVNYXBwaW5nfSwge3F1ZXJ5OiBgSU5TRVJUIElOVE8gZm9vIChlbmFibGVkKSBWQUxVRVMgKD8pYCwgdmFsdWVzOiBuaWwsIGlucHV0OiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BlbmFibGVkYDogZmFsc2V9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCB7cXVlcnk6IGBJTlNFUlQgSU5UTyBmb28gKGVuYWJsZWQpIFZBTFVFUyAoPylgLCB2YWx1ZXM6IG5pbCwgaW5wdXQ6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YGVuYWJsZWRgOiBuaWx9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCB7cXVlcnk6IGBJTlNFUlQgSU5UTyBmb28gKGFnZSwgbmFtZSkgVkFMVUVTICg/LCA/KWAsIHZhbHVlczogbmlsLCBpbnB1dDogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgbmFtZWA6IGB0ZWRgLCBgYWdlYDogN30sIG1hcHBpbmc6IERlZmF1bHRTcWxUeXBlTWFwcGluZ319Cglmb3Igc3BlYywgZXhwZWN0ZWQgOj0gcmFuZ2UgdGVzdHMgewoJCWYgOj0gZmlsdGVyLk5ldygpCgkJZ2VuIDo9IE5ld1NxbEdlbmVyYXRvcigpCgkJZ2VuLlR5cGUgPSBTcWxJbnNlcnRTdGF0ZW1lbnQKCQlnZW4uSW5wdXREYXRhID0gZXhwZWN0ZWQuaW5wdXQKCQlhY3R1YWwsIGVyciA6PSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCgkJYXNzZXJ0Lk5pbChlcnIpCgkJYXNzZXJ0LkVxdWFsKGV4cGVjdGVkLnF1ZXJ5LCBzdHJpbmcoYWN0dWFsWzpdKSkKCQlrZXlzIDo9IG1hcHV0aWwuU3RyaW5nS2V5cyhleHBlY3RlZC5pbnB1dCkKCQlzb3J0LlN0cmluZ3Moa2V5cykKCQl2diA6PSBtYWtlKFtdaW50ZXJmYWNle30sIDApCgkJZm9yIF8sIGtleSA6PSByYW5nZSBrZXlzIHsKCQkJdiwgXyA6PSBleHBlY3RlZC5pbnB1dFtrZXldCgkJCXZ2ID0gYXBwZW5kKHZ2LCB2KQoJCX0KCQlhc3NlcnQuRXF1YWxWYWx1ZXModnYsIGdlbi5HZXRWYWx1ZXMoKSwgc3BlYykKCX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlLimitOffset",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlLimitOffset(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmIDo9IGZpbHRlci5BbGwoKQoJZi5MaW1pdCA9IDQKCWdlbiA6PSBOZXdTcWxHZW5lcmF0b3IoKQoJc3FsLCBlcnIgOj0gZmlsdGVyLlJlbmRlcihnZW4sIGBmb29gLCBmKQoJYXNzZXJ0Lk5pbChlcnIpCglhc3NlcnQuRXF1YWwoYFNFTEVDVCAqIEZST00gZm9vIExJTUlUIDRgLCBzdHJpbmcoc3FsWzpdKSkKCWYgPSBmaWx0ZXIuQWxsKCkKCWYuTGltaXQgPSA0CglmLk9mZnNldCA9IDEyCglnZW4gPSBOZXdTcWxHZW5lcmF0b3IoKQoJc3FsLCBlcnIgPSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCglhc3NlcnQuTmlsKGVycikKCWFzc2VydC5FcXVhbChgU0VMRUNUICogRlJPTSBmb28gTElNSVQgNCBPRkZTRVQgMTJgLCBzdHJpbmcoc3FsWzpdKSkKfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlMultipleValues",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlMultipleValues(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmbiA6PSBmdW5jKHRlc3RzIG1hcFtzdHJpbmddcXYsIHdpdGhJbiBib29sKSB7CgkJZm9yIHNwZWMsIGV4cGVjdGVkIDo9IHJhbmdlIHRlc3RzIHsKCQkJZiwgZXJyIDo9IGZpbHRlci5QYXJzZShzcGVjKQoJCQlhc3NlcnQuTmlsKGVycikKCQkJZ2VuIDo9IE5ld1NxbEdlbmVyYXRvcigpCgkJCWdlbi5Vc2VJblN0YXRlbWVudCA9IHdpdGhJbgoJCQlhY3R1YWwsIGVyciA6PSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCgkJCWFzc2VydC5OaWwoZXJyKQoJCQlhc3NlcnQuRXF1YWwoZXhwZWN0ZWQucXVlcnksIHN0cmluZyhhY3R1YWxbOl0pKQoJCQlhc3NlcnQuRXF1YWwoZXhwZWN0ZWQudmFsdWVzLCBnZW4uR2V0VmFsdWVzKCkpCgkJfQoJfQoJZm4obWFwW3N0cmluZ11xdntgaWQvMWA6IHtxdWVyeTogYFNFTEVDVCAqIEZST00gZm9vIFdIRVJFIChpZCA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpfX0sIGBpZC8xfDJgOiB7cXVlcnk6IGBTRUxFQ1QgKiBGUk9NIGZvbyBXSEVSRSAoaWQgSU4oPywgPykpYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpLCBpbnQ2NCgyKX19LCBgaWQvMXwyfDNgOiB7cXVlcnk6IGBTRUxFQ1QgKiBGUk9NIGZvbyBXSEVSRSAoaWQgSU4oPywgPywgPykpYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpLCBpbnQ2NCgyKSwgaW50NjQoMyl9fSwgYGlkLzF8MnwzL2FnZS83YDoge3F1ZXJ5OiBgU0VMRUNUICogRlJPTSBmb28gV0hFUkUgKGlkIElOKD8sID8sID8pKSBBTkQgKGFnZSA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpLCBpbnQ2NCgyKSwgaW50NjQoMyksIGludDY0KDcpfX19LCB0cnVlKQoJZm4obWFwW3N0cmluZ11xdntgaWQvMWA6IHtxdWVyeTogYFNFTEVDVCAqIEZST00gZm9vIFdIRVJFIChpZCA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpfX0sIGBpZC8xfDJgOiB7cXVlcnk6IGBTRUxFQ1QgKiBGUk9NIGZvbyBXSEVSRSAoaWQgPSA/IE9SIGlkID0gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoMSksIGludDY0KDIpfX0sIGBpZC8xfDJ8M2A6IHtxdWVyeTogYFNFTEVDVCAqIEZST00gZm9vIFdIRVJFIChpZCA9ID8gT1IgaWQgPSA/IE9SIGlkID0gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoMSksIGludDY0KDIpLCBpbnQ2NCgzKX19LCBgaWQvMXwyfDMvYWdlLzdgOiB7cXVlcnk6IGBTRUxFQ1QgKiBGUk9NIGZvbyBXSEVSRSAoaWQgPSA/IE9SIGlkID0gPyBPUiBpZCA9ID8pIEFORCAoYWdlID0gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoMSksIGludDY0KDIpLCBpbnQ2NCgzKSwgaW50NjQoNyl9fX0sIGZhbHNlKQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlMultipleValuesWithNormalizer",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlMultipleValuesWithNormalizer(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmbiA6PSBmdW5jKHRlc3RzIG1hcFtzdHJpbmddcXYsIHdpdGhJbiBib29sKSB7CgkJZm9yIHNwZWMsIGV4cGVjdGVkIDo9IHJhbmdlIHRlc3RzIHsKCQkJZiwgZXJyIDo9IGZpbHRlci5QYXJzZShzcGVjKQoJCQlhc3NlcnQuTmlsKGVycikKCQkJZ2VuIDo9IE5ld1NxbEdlbmVyYXRvcigpCgkJCWdlbi5Vc2VJblN0YXRlbWVudCA9IHdpdGhJbgoJCQlnZW4uTm9ybWFsaXplRmllbGRzID0gW11zdHJpbmd7YGlkYH0KCQkJZ2VuLk5vcm1hbGl6ZXJGb3JtYXQgPSBgTE9XRVIoJXYpYAoJCQlhY3R1YWwsIGVyciA6PSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCgkJCWFzc2VydC5OaWwoZXJyKQoJCQlhc3NlcnQuRXF1YWwoZXhwZWN0ZWQucXVlcnksIHN0cmluZyhhY3R1YWxbOl0pKQoJCQlhc3NlcnQuRXF1YWwoZXhwZWN0ZWQudmFsdWVzLCBnZW4uR2V0VmFsdWVzKCkpCgkJfQoJfQoJZm4obWFwW3N0cmluZ11xdntgaWQvMWA6IHtxdWVyeTogYFNFTEVDVCAqIEZST00gZm9vIFdIRVJFIChpZCA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpfX0sIGBpZC8xfDJgOiB7cXVlcnk6IGBTRUxFQ1QgKiBGUk9NIGZvbyBXSEVSRSAoaWQgSU4oPywgPykpYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpLCBpbnQ2NCgyKX19LCBgaWQvMXwyfDNgOiB7cXVlcnk6IGBTRUxFQ1QgKiBGUk9NIGZvbyBXSEVSRSAoaWQgSU4oPywgPywgPykpYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpLCBpbnQ2NCgyKSwgaW50NjQoMyl9fSwgYGlkLzF8MnwzL2FnZS83YDoge3F1ZXJ5OiBgU0VMRUNUICogRlJPTSBmb28gV0hFUkUgKGlkIElOKD8sID8sID8pKSBBTkQgKGFnZSA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpLCBpbnQ2NCgyKSwgaW50NjQoMyksIGludDY0KDcpfX19LCB0cnVlKQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlPlaceholderStyles",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlPlaceholderStyles(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmLCBlcnIgOj0gZmlsdGVyLlBhcnNlKGBhZ2UvNy9uYW1lL3RlZC9lbmFibGVkL3RydWVgKQoJYXNzZXJ0Lk5pbChlcnIpCglnZW4gOj0gTmV3U3FsR2VuZXJhdG9yKCkKCWFjdHVhbCwgZXJyIDo9IGZpbHRlci5SZW5kZXIoZ2VuLCBgZm9vYCwgZikKCWFzc2VydC5OaWwoZXJyKQoJYXNzZXJ0LkVxdWFsKGBTRUxFQ1QgKiBGUk9NIGZvbyBXSEVSRSAoYWdlID0gPykgQU5EIChuYW1lID0gPykgQU5EIChlbmFibGVkID0gPylgLCBzdHJpbmcoYWN0dWFsWzpdKSkKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2ludDY0KDcpLCBgdGVkYCwgdHJ1ZX0sIGdlbi5HZXRWYWx1ZXMoKSkKCWdlbiA9IE5ld1NxbEdlbmVyYXRvcigpCglnZW4uVHlwZU1hcHBpbmcgPSBQb3N0Z3Jlc1R5cGVNYXBwaW5nCglhY3R1YWwsIGVyciA9IGZpbHRlci5SZW5kZXIoZ2VuLCBgZm9vYCwgZikKCWFzc2VydC5OaWwoZXJyKQoJYXNzZXJ0LkVxdWFsKGBTRUxFQ1QgKiBGUk9NICJmb28iIFdIRVJFICgiYWdlIiA9ICQxKSBBTkQgKCJuYW1lIiA9ICQyKSBBTkQgKCJlbmFibGVkIiA9ICQzKWAsIHN0cmluZyhhY3R1YWxbOl0pKQoJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317aW50NjQoNyksIGB0ZWRgLCB0cnVlfSwgZ2VuLkdldFZhbHVlcygpKQoJcGdnZW4gOj0gTmV3U3FsR2VuZXJhdG9yKCkKCXBnZ2VuLlR5cGVNYXBwaW5nID0gUG9zdGdyZXNUeXBlTWFwcGluZwoJcGdnZW4uVHlwZSA9IFNxbFVwZGF0ZVN0YXRlbWVudAoJcGdnZW4uSW5wdXREYXRhID0gbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgY3JlYXRlZF9hdGA6IHRpbWUuRGF0ZSgyMDA2LCAxLCAyLCAwLCAwLCAwLCAwLCB0aW1lLlVUQyksIGBuYW1lYDogYFRlc3RlcmB9CglwZ2ZpbHRlciA6PSBmaWx0ZXIuTXVzdFBhcnNlKGBpZC8xMjNgKQoJYWN0dWFsLCBlcnIgPSBmaWx0ZXIuUmVuZGVyKHBnZ2VuLCBgZm9vYCwgcGdmaWx0ZXIpCglhc3NlcnQuTmlsKGVycikKCWFzc2VydC5FcXVhbChgVVBEQVRFICJmb28iIFNFVCAiY3JlYXRlZF9hdCIgPSAkMSwgIm5hbWUiID0gJDIgV0hFUkUgKCJpZCIgPSAkMylgLCBzdHJpbmcoYWN0dWFsWzpdKSkKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e3RpbWUuRGF0ZSgyMDA2LCAxLCAyLCAwLCAwLCAwLCAwLCB0aW1lLlVUQyksIGBUZXN0ZXJgLCBpbnQ2NCgxMjMpfSwgcGdnZW4uR2V0VmFsdWVzKCkpCglnZW4gPSBOZXdTcWxHZW5lcmF0b3IoKQoJZ2VuLlR5cGVNYXBwaW5nLlBsYWNlaG9sZGVyRm9ybWF0ID0gYDolc2AKCWdlbi5UeXBlTWFwcGluZy5QbGFjZWhvbGRlckFyZ3VtZW50ID0gYGZpZWxkYAoJYWN0dWFsLCBlcnIgPSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCglhc3NlcnQuTmlsKGVycikKCWFzc2VydC5FcXVhbChgU0VMRUNUICogRlJPTSBmb28gV0hFUkUgKGFnZSA9IDphZ2UpIEFORCAobmFtZSA9IDpuYW1lKSBBTkQgKGVuYWJsZWQgPSA6ZW5hYmxlZClgLCBzdHJpbmcoYWN0dWFsWzpdKSkKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2ludDY0KDcpLCBgdGVkYCwgdHJ1ZX0sIGdlbi5HZXRWYWx1ZXMoKSkKCWdlbiA9IE5ld1NxbEdlbmVyYXRvcigpCglnZW4uVHlwZU1hcHBpbmcuUGxhY2Vob2xkZXJGb3JtYXQgPSBgPGFyZyVkPmAKCWdlbi5UeXBlTWFwcGluZy5QbGFjZWhvbGRlckFyZ3VtZW50ID0gYGluZGV4YAoJYWN0dWFsLCBlcnIgPSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCglhc3NlcnQuTmlsKGVycikKCWFzc2VydC5FcXVhbChgU0VMRUNUICogRlJPTSBmb28gV0hFUkUgKGFnZSA9IDxhcmcwPikgQU5EIChuYW1lID0gPGFyZzE+KSBBTkQgKGVuYWJsZWQgPSA8YXJnMj4pYCwgc3RyaW5nKGFjdHVhbFs6XSkpCglhc3NlcnQuRXF1YWwoW11pbnRlcmZhY2V7fXtpbnQ2NCg3KSwgYHRlZGAsIHRydWV9LCBnZW4uR2V0VmFsdWVzKCkpCn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlSelectAggregateFunctions",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlSelectAggregateFunctions(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmLCBlcnIgOj0gZmlsdGVyLlBhcnNlKGArbmFtZS9wcmVmaXg6dGVkL2NpdHkvc3VmZml4OmJlcmcvc3RhdGUvY29udGFpbnM6bmV3YCkKCWFzc2VydC5OaWwoZXJyKQoJZi5MaW1pdCA9IDQKCWYuT2Zmc2V0ID0gMTIKCWYuRmllbGRzID0gW11zdHJpbmd7YGFnZWB9CglnZW4gOj0gTmV3U3FsR2VuZXJhdG9yKCkKCWdlbi5GaWVsZFdyYXBwZXJzID0gbWFwW3N0cmluZ11zdHJpbmd7YGFnZWA6ICJTVU0oJXMpIn0KCXNxbCwgZXJyIDo9IGZpbHRlci5SZW5kZXIoZ2VuLCBgZm9vYCwgZikKCWFzc2VydC5OaWwoZXJyKQoJYXNzZXJ0LkVxdWFsKGBTRUxFQ1QgU1VNKGFnZSkgRlJPTSBmb28gYCtgV0hFUkUgKG5hbWUgTElLRSA/KSBgK2BBTkQgKGNpdHkgTElLRSA/KSBgK2BBTkQgKHN0YXRlIExJS0UgPykgYCtgT1JERVIgQlkgbmFtZSBBU0MgYCtgTElNSVQgNCBPRkZTRVQgMTJgLCBzdHJpbmcoc3FsWzpdKSkKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2B0ZWQlJWAsIGAlJWJlcmdgLCBgJSVuZXclJWB9LCBnZW4uR2V0VmFsdWVzKCkpCn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlSelectFull",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlSelectFull(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmLCBlcnIgOj0gZmlsdGVyLlBhcnNlKGArbmFtZS9wcmVmaXg6dGVkLy1hZ2UvZ3Q6Ny9jaXR5L3N1ZmZpeDpiZXJnL3N0YXRlL2NvbnRhaW5zOm5ld2ApCglhc3NlcnQuTmlsKGVycikKCWYuTGltaXQgPSA0CglmLk9mZnNldCA9IDEyCglmLkZpZWxkcyA9IFtdc3RyaW5ne2BpZGAsIGBhZ2VgfQoJZ2VuIDo9IE5ld1NxbEdlbmVyYXRvcigpCglzcWwsIGVyciA6PSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCglhc3NlcnQuTmlsKGVycikKCWFzc2VydC5FcXVhbChgU0VMRUNUIGlkLCBhZ2UgRlJPTSBmb28gYCtgV0hFUkUgKG5hbWUgTElLRSA/KSBgK2BBTkQgKGFnZSA+ID8pIGArYEFORCAoY2l0eSBMSUtFID8pIGArYEFORCAoc3RhdGUgTElLRSA/KSBgK2BPUkRFUiBCWSBuYW1lIEFTQywgYWdlIERFU0MgYCtgTElNSVQgNCBPRkZTRVQgMTJgLCBzdHJpbmcoc3FsWzpdKSkKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2B0ZWQlJWAsIGludDY0KDcpLCBgJSViZXJnYCwgYCUlbmV3JSVgfSwgZ2VuLkdldFZhbHVlcygpKQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlSelectGroupBy",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlSelectGroupBy(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmLCBlcnIgOj0gZmlsdGVyLlBhcnNlKGBhbGxgKQoJYXNzZXJ0Lk5pbChlcnIpCglmLkZpZWxkcyA9IFtdc3RyaW5ne2BzdGF0ZWAsIGBjaXR5YH0KCWdlbiA6PSBOZXdTcWxHZW5lcmF0b3IoKQoJZ2VuLkdyb3VwQnlGaWVsZChgc3RhdGVgKQoJZ2VuLkdyb3VwQnlGaWVsZChgY2l0eWApCglnZW4uQWdncmVnYXRlQnlGaWVsZChmaWx0ZXIuQXZlcmFnZSwgYGFnZWApCglzcWwsIGVyciA6PSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCglhc3NlcnQuTmlsKGVycikKCWFzc2VydC5FcXVhbChgU0VMRUNUIHN0YXRlLCBjaXR5LCBBVkcoYWdlKSBBUyBhZ2UgRlJPTSBmb28gR1JPVVAgQlkgc3RhdGUsIGNpdHlgLCBzdHJpbmcoc3FsWzpdKSkKfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlSelectWithNormalizerAndPlaceholders",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlSelectWithNormalizerAndPlaceholders(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmLCBlcnIgOj0gZmlsdGVyLlBhcnNlKGArbmFtZS9wcmVmaXg6dGVkLy1hZ2UvZ3Q6Ny9jaXR5L3N1ZmZpeDpiZXJnL3N0YXRlL2NvbnRhaW5zOm5ld2ApCglhc3NlcnQuTmlsKGVycikKCWYuTGltaXQgPSA0CglmLk9mZnNldCA9IDEyCglmLkZpZWxkcyA9IFtdc3RyaW5ne2BpZGAsIGBhZ2VgfQoJZ2VuIDo9IE5ld1NxbEdlbmVyYXRvcigpCglnZW4uTm9ybWFsaXplRmllbGRzID0gW11zdHJpbmd7YG5hbWVgLCBgY2l0eWB9CglnZW4uTm9ybWFsaXplckZvcm1hdCA9IGBMT1dFUiglcylgCglzcWwsIGVyciA6PSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCglhc3NlcnQuTmlsKGVycikKCWFzc2VydC5FcXVhbChgU0VMRUNUIGlkLCBhZ2UgRlJPTSBmb28gYCtgV0hFUkUgKExPV0VSKG5hbWUpIExJS0UgTE9XRVIoPykpIGArYEFORCAoYWdlID4gPykgYCtgQU5EIChMT1dFUihjaXR5KSBMSUtFIExPV0VSKD8pKSBgK2BBTkQgKHN0YXRlIExJS0UgPykgYCtgT1JERVIgQlkgbmFtZSBBU0MsIGFnZSBERVNDIGArYExJTUlUIDQgT0ZGU0VUIDEyYCwgc3RyaW5nKHNxbFs6XSkpCglhc3NlcnQuRXF1YWwoW11pbnRlcmZhY2V7fXtgdGVkJSVgLCBpbnQ2NCg3KSwgYCUlYmVyZ2AsIGAlJW5ldyUlYH0sIGdlbi5HZXRWYWx1ZXMoKSkKfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlSelects",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlSelects(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmaWVsZHNldHMgOj0gW11zdHJpbmd7YCpgLCBgaWRgLCBgaWQsbmFtZWB9Cglmb3IgXywgZmllbGQgOj0gcmFuZ2UgZmllbGRzZXRzIHsKCQl0ZXN0cyA6PSBtYXBbc3RyaW5nXXF2e2BhbGxgOiB7cXVlcnk6IGBTRUxFQ1QgYCArIGZpZWxkICsgYCBGUk9NIGZvb2AsIHZhbHVlczogW11pbnRlcmZhY2V7fXt9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCBgaWQvMWA6IHtxdWVyeTogYFNFTEVDVCBgICsgZmllbGQgKyBgIEZST00gZm9vIFdIRVJFIChpZCA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpfSwgbWFwcGluZzogRGVmYXVsdFNxbFR5cGVNYXBwaW5nfSwgYGlkL25vdDoxYDoge3F1ZXJ5OiBgU0VMRUNUIGAgKyBmaWVsZCArIGAgRlJPTSBmb28gV0hFUkUgKGlkIDw+ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDEpfSwgbWFwcGluZzogRGVmYXVsdFNxbFR5cGVNYXBwaW5nfSwgYG5hbWUvQm9iIEpvaG5zb25gOiB7cXVlcnk6IGBTRUxFQ1QgYCArIGZpZWxkICsgYCBGUk9NIGZvbyBXSEVSRSAobmFtZSA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2BCb2IgSm9obnNvbmB9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCBgYWdlLzIxYDoge3F1ZXJ5OiBgU0VMRUNUIGAgKyBmaWVsZCArIGAgRlJPTSBmb28gV0hFUkUgKGFnZSA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDIxKX0sIG1hcHBpbmc6IERlZmF1bHRTcWxUeXBlTWFwcGluZ30sIGBlbmFibGVkL3RydWVgOiB7cXVlcnk6IGBTRUxFQ1QgYCArIGZpZWxkICsgYCBGUk9NIGZvbyBXSEVSRSAoZW5hYmxlZCA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e3RydWV9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCBgZW5hYmxlZC9mYWxzZWA6IHtxdWVyeTogYFNFTEVDVCBgICsgZmllbGQgKyBgIEZST00gZm9vIFdIRVJFIChlbmFibGVkID0gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317ZmFsc2V9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCBgZW5hYmxlZC9udWxsYDoge3F1ZXJ5OiBgU0VMRUNUIGAgKyBmaWVsZCArIGAgRlJPTSBmb28gV0hFUkUgKGVuYWJsZWQgSVMgTlVMTClgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317fSwgbWFwcGluZzogRGVmYXVsdFNxbFR5cGVNYXBwaW5nfSwgYGVuYWJsZWQvbm90Om51bGxgOiB7cXVlcnk6IGBTRUxFQ1QgYCArIGZpZWxkICsgYCBGUk9NIGZvbyBXSEVSRSAoZW5hYmxlZCBJUyBOT1QgTlVMTClgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317fSwgbWFwcGluZzogRGVmYXVsdFNxbFR5cGVNYXBwaW5nfSwgYGFnZS9sdDoyMWA6IHtxdWVyeTogYFNFTEVDVCBgICsgZmllbGQgKyBgIEZST00gZm9vIFdIRVJFIChhZ2UgPCA/KWAsIHZhbHVlczogW11pbnRlcmZhY2V7fXtpbnQ2NCgyMSl9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCBgYWdlL2x0ZToyMWA6IHtxdWVyeTogYFNFTEVDVCBgICsgZmllbGQgKyBgIEZST00gZm9vIFdIRVJFIChhZ2UgPD0gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoMjEpfSwgbWFwcGluZzogRGVmYXVsdFNxbFR5cGVNYXBwaW5nfSwgYGFnZS9ndDoyMWA6IHtxdWVyeTogYFNFTEVDVCBgICsgZmllbGQgKyBgIEZST00gZm9vIFdIRVJFIChhZ2UgPiA/KWAsIHZhbHVlczogW11pbnRlcmZhY2V7fXtpbnQ2NCgyMSl9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCBgYWdlL2d0ZToyMWA6IHtxdWVyeTogYFNFTEVDVCBgICsgZmllbGQgKyBgIEZST00gZm9vIFdIRVJFIChhZ2UgPj0gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoMjEpfSwgbWFwcGluZzogRGVmYXVsdFNxbFR5cGVNYXBwaW5nfSwgYGZhY3Rvci9sdDozLjE0MTU5N2A6IHtxdWVyeTogYFNFTEVDVCBgICsgZmllbGQgKyBgIEZST00gZm9vIFdIRVJFIChmYWN0b3IgPCA/KWAsIHZhbHVlczogW11pbnRlcmZhY2V7fXtmbG9hdDY0KDMuMTQxNTk3KX0sIG1hcHBpbmc6IERlZmF1bHRTcWxUeXBlTWFwcGluZ30sIGBmYWN0b3IvbHRlOjMuMTQxNTk3YDoge3F1ZXJ5OiBgU0VMRUNUIGAgKyBmaWVsZCArIGAgRlJPTSBmb28gV0hFUkUgKGZhY3RvciA8PSA/KWAsIHZhbHVlczogW11pbnRlcmZhY2V7fXtmbG9hdDY0KDMuMTQxNTk3KX0sIG1hcHBpbmc6IERlZmF1bHRTcWxUeXBlTWFwcGluZ30sIGBmYWN0b3IvZ3Q6My4xNDE1OTdgOiB7cXVlcnk6IGBTRUxFQ1QgYCArIGZpZWxkICsgYCBGUk9NIGZvbyBXSEVSRSAoZmFjdG9yID4gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317ZmxvYXQ2NCgzLjE0MTU5Nyl9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCBgZmFjdG9yL2d0ZTozLjE0MTU5N2A6IHtxdWVyeTogYFNFTEVDVCBgICsgZmllbGQgKyBgIEZST00gZm9vIFdIRVJFIChmYWN0b3IgPj0gPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317ZmxvYXQ2NCgzLjE0MTU5Nyl9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCBgbmFtZS9jb250YWluczpvYmA6IHtxdWVyeTogYFNFTEVDVCBgICsgZmllbGQgKyBgIEZST00gZm9vIFdIRVJFIChuYW1lIExJS0UgPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317YCUlb2IlJWB9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCBgbmFtZS9wcmVmaXg6b2JgOiB7cXVlcnk6IGBTRUxFQ1QgYCArIGZpZWxkICsgYCBGUk9NIGZvbyBXSEVSRSAobmFtZSBMSUtFID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2BvYiUlYH0sIG1hcHBpbmc6IERlZmF1bHRTcWxUeXBlTWFwcGluZ30sIGBuYW1lL3N1ZmZpeDpvYmA6IHtxdWVyeTogYFNFTEVDVCBgICsgZmllbGQgKyBgIEZST00gZm9vIFdIRVJFIChuYW1lIExJS0UgPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317YCUlb2JgfSwgbWFwcGluZzogRGVmYXVsdFNxbFR5cGVNYXBwaW5nfSwgYGFnZS83L25hbWUvdGVkYDoge3F1ZXJ5OiBgU0VMRUNUIGAgKyBmaWVsZCArIGAgRlJPTSBmb28gV0hFUkUgKGFnZSA9ID8pIEFORCAobmFtZSA9ID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e2ludDY0KDcpLCBgdGVkYH0sIG1hcHBpbmc6IERlZmF1bHRTcWxUeXBlTWFwcGluZ30sIGBmYWN0b3IvcmFuZ2U6NDJ8NTVgOiB7cXVlcnk6IGBTRUxFQ1QgYCArIGZpZWxkICsgYCBGUk9NIGZvbyBXSEVSRSAoZmFjdG9yIEJFVFdFRU4gPyBBTkQgPylgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317aW50NjQoNDIpLCBpbnQ2NCg1NSl9LCBtYXBwaW5nOiBEZWZhdWx0U3FsVHlwZU1hcHBpbmd9LCBgZmFjdG9yL3JhbmdlOjIwMDYtMDEtMDJUMDA6MDA6MDBafDIwMDYtMDEtMTNUMDA6MDA6MDBaYDoge3F1ZXJ5OiBgU0VMRUNUIGAgKyBmaWVsZCArIGAgRlJPTSBmb28gV0hFUkUgKGZhY3RvciBCRVRXRUVOID8gQU5EID8pYCwgdmFsdWVzOiBbXWludGVyZmFjZXt9e3RpbWUuRGF0ZSgyMDA2LCAxLCAyLCAwLCAwLCAwLCAwLCB0aW1lLlVUQyksIHRpbWUuRGF0ZSgyMDA2LCAxLCAxMywgMCwgMCwgMCwgMCwgdGltZS5VVEMpfSwgbWFwcGluZzogRGVmYXVsdFNxbFR5cGVNYXBwaW5nfSwgYG5hbWUvYm9ifGFsaWNlfG1hcnlgOiB7cXVlcnk6IGBTRUxFQ1QgYCArIGZpZWxkICsgYCBGUk9NIGZvbyBXSEVSRSAobmFtZSBJTig/LCA/LCA/KSlgLCB2YWx1ZXM6IFtdaW50ZXJmYWNle317YGJvYmAsIGBhbGljZWAsIGBtYXJ5YH0sIG1hcHBpbmc6IERlZmF1bHRTcWxUeXBlTWFwcGluZ319CgkJZm9yIHNwZWMsIGV4cGVjdGVkIDo9IHJhbmdlIHRlc3RzIHsKCQkJZiwgZXJyIDo9IGZpbHRlci5QYXJzZShzcGVjKQoJCQlhc3NlcnQuTmlsKGVycikKCQkJaWYgZmllbGQgIT0gYCpgIHsKCQkJCWYuRmllbGRzID0gc3RyaW5ncy5TcGxpdChmaWVsZCwgYCwgYCkKCQkJfQoJCQlnZW4gOj0gTmV3U3FsR2VuZXJhdG9yKCkKCQkJZ2VuLlR5cGVNYXBwaW5nID0gZXhwZWN0ZWQubWFwcGluZwoJCQlhY3R1YWwsIGVyciA6PSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCgkJCWFzc2VydC5OaWwoZXJyKQoJCQlhc3NlcnQuRXF1YWwoZXhwZWN0ZWQucXVlcnksIHN0cmluZyhhY3R1YWxbOl0pLCBzcGVjKQoJCQlhc3NlcnQuRXF1YWxWYWx1ZXMoZXhwZWN0ZWQudmFsdWVzLCBnZW4uR2V0VmFsdWVzKCksIHNwZWMpCgkJfQoJfQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlSorting",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlSorting(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmIDo9IGZpbHRlci5BbGwoKQoJZi5Tb3J0ID0gW11zdHJpbmd7YCtuYW1lYCwgYC1hZ2VgfQoJZ2VuIDo9IE5ld1NxbEdlbmVyYXRvcigpCglzcWwsIGVyciA6PSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCglhc3NlcnQuTmlsKGVycikKCWFzc2VydC5FcXVhbChgU0VMRUNUICogRlJPTSBmb28gT1JERVIgQlkgbmFtZSBBU0MsIGFnZSBERVNDYCwgc3RyaW5nKHNxbFs6XSkpCn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlSplitTypeLength",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlSplitTypeLength(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglnZW4gOj0gTmV3U3FsR2VuZXJhdG9yKCkKCXR5cGVOYW1lLCBsZW5ndGgsIHByZWNpc2lvbiA6PSBnZW4uU3BsaXRUeXBlTGVuZ3RoKGBpbnRlZ2VyYCkKCWFzc2VydC5FcXVhbChgSU5URUdFUmAsIHR5cGVOYW1lKQoJYXNzZXJ0LkVxdWFsKDAsIGxlbmd0aCkKCWFzc2VydC5FcXVhbCgwLCBwcmVjaXNpb24pCgl0eXBlTmFtZSwgbGVuZ3RoLCBwcmVjaXNpb24gPSBnZW4uU3BsaXRUeXBlTGVuZ3RoKGBpbnRlZ2VyKDEpYCkKCWFzc2VydC5FcXVhbChgSU5URUdFUmAsIHR5cGVOYW1lKQoJYXNzZXJ0LkVxdWFsKDEsIGxlbmd0aCkKCWFzc2VydC5FcXVhbCgwLCBwcmVjaXNpb24pCgl0eXBlTmFtZSwgbGVuZ3RoLCBwcmVjaXNpb24gPSBnZW4uU3BsaXRUeXBlTGVuZ3RoKGBmbG9hdCgyNTUsMTIpYCkKCWFzc2VydC5FcXVhbChgRkxPQVRgLCB0eXBlTmFtZSkKCWFzc2VydC5FcXVhbCgyNTUsIGxlbmd0aCkKCWFzc2VydC5FcXVhbCgxMiwgcHJlY2lzaW9uKQoJdHlwZU5hbWUsIGxlbmd0aCwgcHJlY2lzaW9uID0gZ2VuLlNwbGl0VHlwZUxlbmd0aChgSU5URUdFUmApCglhc3NlcnQuRXF1YWwoYElOVEVHRVJgLCB0eXBlTmFtZSkKCWFzc2VydC5FcXVhbCgwLCBsZW5ndGgpCglhc3NlcnQuRXF1YWwoMCwgcHJlY2lzaW9uKQoJdHlwZU5hbWUsIGxlbmd0aCwgcHJlY2lzaW9uID0gZ2VuLlNwbGl0VHlwZUxlbmd0aChgSU5URUdFUigxKWApCglhc3NlcnQuRXF1YWwoYElOVEVHRVJgLCB0eXBlTmFtZSkKCWFzc2VydC5FcXVhbCgxLCBsZW5ndGgpCglhc3NlcnQuRXF1YWwoMCwgcHJlY2lzaW9uKQoJdHlwZU5hbWUsIGxlbmd0aCwgcHJlY2lzaW9uID0gZ2VuLlNwbGl0VHlwZUxlbmd0aChgRkxPQVQoMjU1LDEyKWApCglhc3NlcnQuRXF1YWwoYEZMT0FUYCwgdHlwZU5hbWUpCglhc3NlcnQuRXF1YWwoMjU1LCBsZW5ndGgpCglhc3NlcnQuRXF1YWwoMTIsIHByZWNpc2lvbikKfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlToNativeType",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlToNativeType(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl0eXBlIHRlc3RzIHN0cnVjdCB7CgkJTWFwcGluZyAgU3FsVHlwZU1hcHBpbmcKCQlUeXBlICAgICBkYWwuVHlwZQoJCVN1YnR5cGVzIFtdZGFsLlR5cGUKCQlMZW5ndGggICBpbnQKCQlFeHBlY3RlZCBzdHJpbmcKCX0KCWZvciBpLCB0Y2FzZSA6PSByYW5nZSBbXXRlc3Rze3tTcWxpdGVUeXBlTWFwcGluZywgZGFsLlN0cmluZ1R5cGUsIG5pbCwgMCwgYFRFWFRgfSwge1NxbGl0ZVR5cGVNYXBwaW5nLCBkYWwuU3RyaW5nVHlwZSwgbmlsLCA0MiwgYFRFWFQoNDIpYH0sIHtTcWxpdGVUeXBlTWFwcGluZywgZGFsLkludFR5cGUsIG5pbCwgMCwgYElOVEVHRVJgfSwge1NxbGl0ZVR5cGVNYXBwaW5nLCBkYWwuSW50VHlwZSwgbmlsLCAxNCwgYElOVEVHRVIoMTQpYH0sIHtTcWxpdGVUeXBlTWFwcGluZywgZGFsLkZsb2F0VHlwZSwgbmlsLCAwLCBgUkVBTGB9LCB7U3FsaXRlVHlwZU1hcHBpbmcsIGRhbC5GbG9hdFR5cGUsIG5pbCwgNSwgYFJFQUwoNSlgfSwge1NxbGl0ZVR5cGVNYXBwaW5nLCBkYWwuQm9vbGVhblR5cGUsIG5pbCwgMCwgYElOVEVHRVIoMSlgfSwge1NxbGl0ZVR5cGVNYXBwaW5nLCBkYWwuQm9vbGVhblR5cGUsIG5pbCwgNCwgYElOVEVHRVIoMSlgfSwge1NxbGl0ZVR5cGVNYXBwaW5nLCBkYWwuVGltZVR5cGUsIG5pbCwgMCwgYElOVEVHRVJgfSwge1NxbGl0ZVR5cGVNYXBwaW5nLCBkYWwuT2JqZWN0VHlwZSwgW11kYWwuVHlwZXtkYWwuU3RyaW5nVHlwZSwgZGFsLkF1dG9UeXBlfSwgMCwgYEJMT0JgfSwge1NxbGl0ZVR5cGVNYXBwaW5nLCBkYWwuT2JqZWN0VHlwZSwgW11kYWwuVHlwZXtkYWwuU3RyaW5nVHlwZSwgZGFsLkF1dG9UeXBlfSwgMTIzNDU2LCBgQkxPQigxMjM0NTYpYH0sIHtTcWxpdGVUeXBlTWFwcGluZywgZGFsLkFycmF5VHlwZSwgW11kYWwuVHlwZXtkYWwuSW50VHlwZX0sIDAsIGBCTE9CYH0sIHtTcWxpdGVUeXBlTWFwcGluZywgZGFsLkFycmF5VHlwZSwgW11kYWwuVHlwZXtkYWwuSW50VHlwZX0sIDQzMjEsIGBCTE9CKDQzMjEpYH0sIHtTcWxpdGVUeXBlTWFwcGluZywgZGFsLlJhd1R5cGUsIG5pbCwgMCwgYEJMT0JgfSwge1NxbGl0ZVR5cGVNYXBwaW5nLCBkYWwuUmF3VHlwZSwgbmlsLCAyNTYsIGBCTE9CKDI1NilgfSwge015c3FsVHlwZU1hcHBpbmcsIGRhbC5TdHJpbmdUeXBlLCBuaWwsIDAsIGBWQVJDSEFSKDI1NSlgfSwge015c3FsVHlwZU1hcHBpbmcsIGRhbC5TdHJpbmdUeXBlLCBuaWwsIDQyLCBgVkFSQ0hBUig0MilgfSwge015c3FsVHlwZU1hcHBpbmcsIGRhbC5JbnRUeXBlLCBuaWwsIDAsIGBCSUdJTlRgfSwge015c3FsVHlwZU1hcHBpbmcsIGRhbC5JbnRUeXBlLCBuaWwsIDE0LCBgQklHSU5UKDE0KWB9LCB7TXlzcWxUeXBlTWFwcGluZywgZGFsLkZsb2F0VHlwZSwgbmlsLCAwLCBgREVDSU1BTCgxMCw4KWB9LCB7TXlzcWxUeXBlTWFwcGluZywgZGFsLkZsb2F0VHlwZSwgbmlsLCA1LCBgREVDSU1BTCg1LDgpYH0sIHtNeXNxbFR5cGVNYXBwaW5nLCBkYWwuQm9vbGVhblR5cGUsIG5pbCwgMCwgYEJPT0xgfSwge015c3FsVHlwZU1hcHBpbmcsIGRhbC5UaW1lVHlwZSwgbmlsLCAwLCBgREFURVRJTUVgfSwge015c3FsVHlwZU1hcHBpbmcsIGRhbC5PYmplY3RUeXBlLCBbXWRhbC5UeXBle2RhbC5TdHJpbmdUeXBlLCBkYWwuQXV0b1R5cGV9LCAwLCBgTUVESVVNQkxPQmB9LCB7TXlzcWxUeXBlTWFwcGluZywgZGFsLk9iamVjdFR5cGUsIFtdZGFsLlR5cGV7ZGFsLlN0cmluZ1R5cGUsIGRhbC5BdXRvVHlwZX0sIDEyMzQ1NiwgYE1FRElVTUJMT0IoMTIzNDU2KWB9LCB7TXlzcWxUeXBlTWFwcGluZywgZGFsLkFycmF5VHlwZSwgW11kYWwuVHlwZXtkYWwuSW50VHlwZX0sIDAsIGBNRURJVU1CTE9CYH0sIHtNeXNxbFR5cGVNYXBwaW5nLCBkYWwuQXJyYXlUeXBlLCBbXWRhbC5UeXBle2RhbC5JbnRUeXBlfSwgNDMyMSwgYE1FRElVTUJMT0IoNDMyMSlgfSwge015c3FsVHlwZU1hcHBpbmcsIGRhbC5SYXdUeXBlLCBuaWwsIDAsIGBNRURJVU1CTE9CYH0sIHtNeXNxbFR5cGVNYXBwaW5nLCBkYWwuUmF3VHlwZSwgbmlsLCAyNTYsIGBNRURJVU1CTE9CKDI1NilgfSwge1Bvc3RncmVzVHlwZU1hcHBpbmcsIGRhbC5TdHJpbmdUeXBlLCBuaWwsIDAsIGBURVhUYH0sIHtQb3N0Z3Jlc1R5cGVNYXBwaW5nLCBkYWwuU3RyaW5nVHlwZSwgbmlsLCA0MiwgYFRFWFQoNDIpYH0sIHtQb3N0Z3Jlc1R5cGVNYXBwaW5nLCBkYWwuSW50VHlwZSwgbmlsLCAwLCBgQklHSU5UYH0sIHtQb3N0Z3Jlc1R5cGVNYXBwaW5nLCBkYWwuSW50VHlwZSwgbmlsLCAxNCwgYEJJR0lOVCgxNClgfSwge1Bvc3RncmVzVHlwZU1hcHBpbmcsIGRhbC5GbG9hdFR5cGUsIG5pbCwgMCwgYE5VTUVSSUNgfSwge1Bvc3RncmVzVHlwZU1hcHBpbmcsIGRhbC5GbG9hdFR5cGUsIG5pbCwgNSwgYE5VTUVSSUMoNSlgfSwge1Bvc3RncmVzVHlwZU1hcHBpbmcsIGRhbC5Cb29sZWFuVHlwZSwgbmlsLCAwLCBgQk9PTEVBTmB9LCB7UG9zdGdyZXNUeXBlTWFwcGluZywgZGFsLlRpbWVUeXBlLCBuaWwsIDAsIGBUSU1FU1RBTVBgfSwge1Bvc3RncmVzVHlwZU1hcHBpbmcsIGRhbC5PYmplY3RUeXBlLCBbXWRhbC5UeXBle2RhbC5TdHJpbmdUeXBlLCBkYWwuQXV0b1R5cGV9LCAwLCBgVkFSQ0hBUmB9LCB7UG9zdGdyZXNUeXBlTWFwcGluZywgZGFsLk9iamVjdFR5cGUsIFtdZGFsLlR5cGV7ZGFsLlN0cmluZ1R5cGUsIGRhbC5BdXRvVHlwZX0sIDEyMzQ1NiwgYFZBUkNIQVIoMTIzNDU2KWB9LCB7UG9zdGdyZXNUeXBlTWFwcGluZywgZGFsLkFycmF5VHlwZSwgW11kYWwuVHlwZXtkYWwuSW50VHlwZX0sIDAsIGBWQVJDSEFSYH0sIHtQb3N0Z3Jlc1R5cGVNYXBwaW5nLCBkYWwuQXJyYXlUeXBlLCBbXWRhbC5UeXBle2RhbC5JbnRUeXBlfSwgNDMyMSwgYFZBUkNIQVIoNDMyMSlgfSwge1Bvc3RncmVzVHlwZU1hcHBpbmcsIGRhbC5SYXdUeXBlLCBuaWwsIDAsIGBCWVRFQWB9LCB7UG9zdGdyZXNUeXBlTWFwcGluZywgZGFsLlJhd1R5cGUsIG5pbCwgMjU2LCBgQllURUEoMjU2KWB9LCB7Q2Fzc2FuZHJhVHlwZU1hcHBpbmcsIGRhbC5TdHJpbmdUeXBlLCBuaWwsIDAsIGBWQVJDSEFSYH0sIHtDYXNzYW5kcmFUeXBlTWFwcGluZywgZGFsLlN0cmluZ1R5cGUsIG5pbCwgNDIsIGBWQVJDSEFSKDQyKWB9LCB7Q2Fzc2FuZHJhVHlwZU1hcHBpbmcsIGRhbC5JbnRUeXBlLCBuaWwsIDAsIGBJTlRgfSwge0Nhc3NhbmRyYVR5cGVNYXBwaW5nLCBkYWwuSW50VHlwZSwgbmlsLCAxNCwgYElOVCgxNClgfSwge0Nhc3NhbmRyYVR5cGVNYXBwaW5nLCBkYWwuRmxvYXRUeXBlLCBuaWwsIDAsIGBGTE9BVGB9LCB7Q2Fzc2FuZHJhVHlwZU1hcHBpbmcsIGRhbC5GbG9hdFR5cGUsIG5pbCwgNSwgYEZMT0FUKDUpYH0sIHtDYXNzYW5kcmFUeXBlTWFwcGluZywgZGFsLkJvb2xlYW5UeXBlLCBuaWwsIDAsIGBUSU5ZSU5UKDEpYH0sIHtDYXNzYW5kcmFUeXBlTWFwcGluZywgZGFsLlRpbWVUeXBlLCBuaWwsIDAsIGBEQVRFVElNRWB9LCB7Q2Fzc2FuZHJhVHlwZU1hcHBpbmcsIGRhbC5PYmplY3RUeXBlLCBbXWRhbC5UeXBle2RhbC5TdHJpbmdUeXBlLCBkYWwuSW50VHlwZX0sIDAsIGBNQVA8VkFSQ0hBUixJTlQ+YH0sIHtDYXNzYW5kcmFUeXBlTWFwcGluZywgZGFsLk9iamVjdFR5cGUsIFtdZGFsLlR5cGV7ZGFsLlN0cmluZ1R5cGUsIGRhbC5Cb29sZWFuVHlwZX0sIDAsIGBNQVA8VkFSQ0hBUixUSU5ZSU5UKDEpPmB9LCB7Q2Fzc2FuZHJhVHlwZU1hcHBpbmcsIGRhbC5BcnJheVR5cGUsIFtdZGFsLlR5cGV7ZGFsLkludFR5cGV9LCAwLCBgTElTVDxJTlQ+YH0sIHtDYXNzYW5kcmFUeXBlTWFwcGluZywgZGFsLlJhd1R5cGUsIG5pbCwgMCwgYEJMT0JgfSwge0Nhc3NhbmRyYVR5cGVNYXBwaW5nLCBkYWwuUmF3VHlwZSwgbmlsLCAyNTYsIGBCTE9CKDI1NilgfX0gewoJCWhlbHAgOj0gZm10LlNwcmludGYoIkNhc2UgJWQ6ICV2ICV2KCV2KSIsIGksIHRjYXNlLk1hcHBpbmcsIHRjYXNlLlR5cGUsIHRjYXNlLlN1YnR5cGVzKQoJCWdlbiA6PSBOZXdTcWxHZW5lcmF0b3IoKQoJCWdlbi5UeXBlTWFwcGluZyA9IHRjYXNlLk1hcHBpbmcKCQl0eXAsIGVyciA6PSBnZW4uVG9OYXRpdmVUeXBlKHRjYXNlLlR5cGUsIHRjYXNlLlN1YnR5cGVzLCB0Y2FzZS5MZW5ndGgpCgkJYXNzZXJ0Lk5vRXJyb3IoZXJyLCBoZWxwKQoJCWFzc2VydC5FcXVhbCh0Y2FzZS5FeHBlY3RlZCwgdHlwLCBoZWxwKQoJfQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlTypeMapping",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlTypeMapping(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmLCBlcnIgOj0gZmlsdGVyLlBhcnNlKGBpbnQ6YWdlLzcvc3RyOm5hbWUvdGVkL2Jvb2w6ZW5hYmxlZC90cnVlL2Zsb2F0OnJhdGluZy80LjUvZGF0ZTpjcmVhdGVkX2F0L2x0Om5vd2ApCglhc3NlcnQuTmlsKGVycikKCWdlbiA6PSBOZXdTcWxHZW5lcmF0b3IoKQoJYWN0dWFsLCBlcnIgOj0gZmlsdGVyLlJlbmRlcihnZW4sIGBmb29gLCBmKQoJYXNzZXJ0Lk5pbChlcnIpCglhc3NlcnQuRXF1YWwoYFNFTEVDVCAqIEZST00gZm9vIGArYFdIRVJFIChhZ2UgPSA/KSBgK2BBTkQgKG5hbWUgPSA/KSBgK2BBTkQgKGVuYWJsZWQgPSA/KSBgK2BBTkQgKHJhdGluZyA9ID8pIGArYEFORCAoY3JlYXRlZF9hdCA8ID8pYCwgc3RyaW5nKGFjdHVhbFs6XSkpCglnZW4gPSBOZXdTcWxHZW5lcmF0b3IoKQoJZ2VuLlR5cGVNYXBwaW5nID0gRGVmYXVsdFNxbFR5cGVNYXBwaW5nCglhY3R1YWwsIGVyciA9IGZpbHRlci5SZW5kZXIoZ2VuLCBgZm9vYCwgZikKCWFzc2VydC5OaWwoZXJyKQoJYXNzZXJ0LkVxdWFsKGBTRUxFQ1QgKiBGUk9NIGZvbyBgK2BXSEVSRSAoYWdlID0gPykgYCtgQU5EIChuYW1lID0gPykgYCtgQU5EIChlbmFibGVkID0gPykgYCtgQU5EIChyYXRpbmcgPSA/KSBgK2BBTkQgKGNyZWF0ZWRfYXQgPCA/KWAsIHN0cmluZyhhY3R1YWxbOl0pKQoJZ2VuID0gTmV3U3FsR2VuZXJhdG9yKCkKCWdlbi5UeXBlTWFwcGluZyA9IFBvc3RncmVzVHlwZU1hcHBpbmcKCWFjdHVhbCwgZXJyID0gZmlsdGVyLlJlbmRlcihnZW4sIGBmb29gLCBmKQoJYXNzZXJ0Lk5pbChlcnIpCglhc3NlcnQuRXF1YWwoYFNFTEVDVCAqIEZST00gImZvbyIgYCtgV0hFUkUgKCJhZ2UiID0gJDEpIGArYEFORCAoIm5hbWUiID0gJDIpIGArYEFORCAoImVuYWJsZWQiID0gJDMpIGArYEFORCAoInJhdGluZyIgPSAkNCkgYCtgQU5EICgiY3JlYXRlZF9hdCIgPCAkNSlgLCBzdHJpbmcoYWN0dWFsWzpdKSkKCWdlbiA9IE5ld1NxbEdlbmVyYXRvcigpCglnZW4uVHlwZU1hcHBpbmcgPSBTcWxpdGVUeXBlTWFwcGluZwoJYWN0dWFsLCBlcnIgPSBmaWx0ZXIuUmVuZGVyKGdlbiwgYGZvb2AsIGYpCglhc3NlcnQuTmlsKGVycikKCWFzc2VydC5FcXVhbChgU0VMRUNUICogRlJPTSAiZm9vIiBgK2BXSEVSRSAoImFnZSIgPSA/KSBgK2BBTkQgKCJuYW1lIiA9ID8pIGArYEFORCAoImVuYWJsZWQiID0gPykgYCtgQU5EICgicmF0aW5nIiA9ID8pIGArYEFORCAoImNyZWF0ZWRfYXQiIDwgPylgLCBzdHJpbmcoYWN0dWFsWzpdKSkKfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestSqlUpdates",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestSqlUpdates(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl0ZXN0cyA6PSBtYXBbc3RyaW5nXXVwZGF0ZVRlc3REYXRhe2BVUERBVEUgZm9vIFNFVCBpZCA9ID9gOiB1cGRhdGVUZXN0RGF0YXtJbnB1dDogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgaWRgOiAxfX0sIGBVUERBVEUgZm9vIFNFVCBuYW1lID0gPyBXSEVSRSAoaWQgPSA/KWA6IHVwZGF0ZVRlc3REYXRhe0lucHV0OiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BuYW1lYDogYEJvYiBKb2huc29uYH0sIEZpbHRlcjogYGlkLzFgfSwgYFVQREFURSBmb28gU0VUIGFnZSA9ID8gV0hFUkUgKGFnZSA8ID8pYDogdXBkYXRlVGVzdERhdGF7SW5wdXQ6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YGFnZWA6IDIxfSwgRmlsdGVyOiBgYWdlL2x0OjIxYH0sIGBVUERBVEUgZm9vIFNFVCBlbmFibGVkID0gPyBXSEVSRSAoZW5hYmxlZCBJUyBOVUxMKWA6IHVwZGF0ZVRlc3REYXRhe0lucHV0OiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BlbmFibGVkYDogdHJ1ZX0sIEZpbHRlcjogYGVuYWJsZWQvbnVsbGB9LCBgVVBEQVRFIGZvbyBTRVQgZW5hYmxlZCA9ID9gOiB1cGRhdGVUZXN0RGF0YXtJbnB1dDogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgZW5hYmxlZGA6IG5pbH19LCBgVVBEQVRFIGZvbyBTRVQgYWdlID0gPywgbmFtZSA9ID8gV0hFUkUgKGlkID0gPylgOiB1cGRhdGVUZXN0RGF0YXtJbnB1dDogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgbmFtZWA6IGB0ZWRgLCBgYWdlYDogN30sIEZpbHRlcjogYGlkLzQyYH0sIGBVUERBVEUgZm9vIFNFVCBhZ2UgPSA/LCBuYW1lID0gPyBXSEVSRSAoYWdlIDwgPykgQU5EIChuYW1lIDw+ID8pYDogdXBkYXRlVGVzdERhdGF7SW5wdXQ6IG1hcFtzdHJpbmddaW50ZXJmYWNle317YG5hbWVgOiBgdGVkYCwgYGFnZWA6IDd9LCBGaWx0ZXI6IGBhZ2UvbHQ6Ny9uYW1lL25vdDp0ZWRgfX0KCWZvciBleHBlY3RlZCwgdGVzdERhdGEgOj0gcmFuZ2UgdGVzdHMgewoJCWYsIGVyciA6PSBmaWx0ZXIuUGFyc2UodGVzdERhdGEuRmlsdGVyKQoJCWFzc2VydC5OaWwoZXJyKQoJCWdlbiA6PSBOZXdTcWxHZW5lcmF0b3IoKQoJCWdlbi5UeXBlID0gU3FsVXBkYXRlU3RhdGVtZW50CgkJZ2VuLklucHV0RGF0YSA9IHRlc3REYXRhLklucHV0CgkJYWN0dWFsLCBlcnIgOj0gZmlsdGVyLlJlbmRlcihnZW4sIGBmb29gLCBmKQoJCWFzc2VydC5OaWwoZXJyKQoJCWFzc2VydC5FcXVhbChleHBlY3RlZCwgc3RyaW5nKGFjdHVhbFs6XSksIGV4cGVjdGVkKQoJfQp9",
+                    "IsPackageLevel": true
+                }
+            ],
+            "Types": {
+                "Elasticsearch": {
+                    "Name": "Elasticsearch",
+                    "MetaType": "struct",
+                    "Methods": [
+                        {
+                            "Name": "AggregateByField",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "agg",
+                                    "Type": "filter.Aggregation"
+                                },
+                                {
+                                    "Name": "field",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "AggregateByField(agg filter.Aggregation, field string) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "Finalize",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "flt",
+                                    "Type": "*filter.Filter"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "Finalize(flt *filter.Filter) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "GetValues",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Returns": [
+                                {
+                                    "Type": "[]interface{}"
+                                }
+                            ],
+                            "Signature": "GetValues() []interface{}",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "GroupByField",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "field",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "GroupByField(field string) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "Initialize",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "collectionName",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "Initialize(collectionName string) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "NewElasticsearchGenerator",
+                            "Returns": [
+                                {
+                                    "Type": "*Elasticsearch"
+                                }
+                            ],
+                            "Signature": "NewElasticsearchGenerator() *Elasticsearch",
+                            "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoe0dlbmVyYXRvcjogZmlsdGVyLkdlbmVyYXRvcnt9LCBjb21wYXQ6IERlZmF1bHRNaW5WZXJzaW9uQ29tcGF0fQp9",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "SetMinimumVersion",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "v",
+                                    "Type": "float64"
+                                }
+                            ],
+                            "Signature": "SetMinimumVersion(v float64)",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "SetOption",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "key",
+                                    "Type": "string"
+                                },
+                                {
+                                    "Name": "value",
+                                    "Type": "interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "SetOption(key string, value interface{}) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "WithCriterion",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "criterion",
+                                    "Type": "filter.Criterion"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "WithCriterion(criterion filter.Criterion) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "WithField",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "field",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "WithField(field string) error",
+                            "IsPackageLevel": false
+                        }
+                    ],
+                    "Source": "dHlwZSBFbGFzdGljc2VhcmNoIHN0cnVjdCB7CglmaWx0ZXIuR2VuZXJhdG9yCgp9Cg==",
+                    "HasUnexportedFields": true
+                },
+                "MongoDB": {
+                    "Name": "MongoDB",
+                    "MetaType": "struct",
+                    "Methods": [
+                        {
+                            "Name": "AggregateByField",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "agg",
+                                    "Type": "filter.Aggregation"
+                                },
+                                {
+                                    "Name": "field",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "AggregateByField(agg filter.Aggregation, field string) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "Finalize",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "f",
+                                    "Type": "*filter.Filter"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "Finalize(f *filter.Filter) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "GetValues",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Returns": [
+                                {
+                                    "Type": "[]interface{}"
+                                }
+                            ],
+                            "Signature": "GetValues() []interface{}",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "GroupByField",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "field",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "GroupByField(field string) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "Initialize",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "collectionName",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "Initialize(collectionName string) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "NewMongoDBGenerator",
+                            "Returns": [
+                                {
+                                    "Type": "*MongoDB"
+                                }
+                            ],
+                            "Signature": "NewMongoDBGenerator() *MongoDB",
+                            "Source": "ewoJcmV0dXJuICZNb25nb0RCe0dlbmVyYXRvcjogZmlsdGVyLkdlbmVyYXRvcnt9fQp9",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "SetOption",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "key",
+                                    "Type": "string"
+                                },
+                                {
+                                    "Name": "value",
+                                    "Type": "interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "SetOption(key string, value interface{}) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "WithCriterion",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "criterion",
+                                    "Type": "filter.Criterion"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "WithCriterion(criterion filter.Criterion) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "WithField",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "field",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "WithField(field string) error",
+                            "IsPackageLevel": false
+                        }
+                    ],
+                    "Source": "dHlwZSBNb25nb0RCIHN0cnVjdCB7CglmaWx0ZXIuR2VuZXJhdG9yCgp9Cg==",
+                    "HasUnexportedFields": true
+                },
+                "Sql": {
+                    "Name": "Sql",
+                    "MetaType": "struct",
+                    "Methods": [
+                        {
+                            "Name": "AggregateByField",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "agg",
+                                    "Type": "filter.Aggregation"
+                                },
+                                {
+                                    "Name": "field",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "AggregateByField(agg filter.Aggregation, field string) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "ApplyNormalizer",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "fieldName",
+                                    "Type": "string"
+                                },
+                                {
+                                    "Name": "in",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "string"
+                                }
+                            ],
+                            "Signature": "ApplyNormalizer(fieldName string, in string) string",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "ArrayTypeDecode",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "in",
+                                    "Type": "[]byte"
+                                },
+                                {
+                                    "Name": "out",
+                                    "Type": "interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "ArrayTypeDecode(in []byte, out interface{}) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "ArrayTypeEncode",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "in",
+                                    "Type": "interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "[]byte"
+                                },
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "ArrayTypeEncode(in interface{}) ([]byte, error)",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "Finalize",
+                            "Comment": "Takes all the information collected so far and generates a SQL statement from it",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "f",
+                                    "Type": "*filter.Filter"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "Finalize(f *filter.Filter) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "GetPlaceholder",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "fieldName",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "string"
+                                }
+                            ],
+                            "Signature": "GetPlaceholder(fieldName string) string",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "GetValues",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Returns": [
+                                {
+                                    "Type": "[]interface{}"
+                                }
+                            ],
+                            "Signature": "GetValues() []interface{}",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "GroupByField",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "field",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "GroupByField(field string) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "Initialize",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "collectionName",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "Initialize(collectionName string) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "NewSqlGenerator",
+                            "Returns": [
+                                {
+                                    "Type": "*Sql"
+                                }
+                            ],
+                            "Signature": "NewSqlGenerator() *Sql",
+                            "Source": "ewoJcmV0dXJuICZTcWx7R2VuZXJhdG9yOiBmaWx0ZXIuR2VuZXJhdG9ye30sIE5vcm1hbGl6ZUZpZWxkczogbWFrZShbXXN0cmluZywgMCksIE5vcm1hbGl6ZXJGb3JtYXQ6ICIlcyIsIEZpZWxkV3JhcHBlcnM6IG1ha2UobWFwW3N0cmluZ11zdHJpbmcpLCBVc2VJblN0YXRlbWVudDogdHJ1ZSwgVHlwZU1hcHBpbmc6IERlZmF1bHRTcWxUeXBlTWFwcGluZywgVHlwZTogU3FsU2VsZWN0U3RhdGVtZW50LCBJbnB1dERhdGE6IG1ha2UobWFwW3N0cmluZ11pbnRlcmZhY2V7fSl9Cn0=",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "ObjectTypeDecode",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "in",
+                                    "Type": "[]byte"
+                                },
+                                {
+                                    "Name": "out",
+                                    "Type": "interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "ObjectTypeDecode(in []byte, out interface{}) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "ObjectTypeEncode",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "in",
+                                    "Type": "interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "[]byte"
+                                },
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "ObjectTypeEncode(in interface{}) ([]byte, error)",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "PrepareInputValue",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "f",
+                                    "Type": "string"
+                                },
+                                {
+                                    "Name": "value",
+                                    "Type": "interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "interface{}"
+                                },
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "PrepareInputValue(f string, value interface{}) (interface{}, error)",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "SetOption",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "_",
+                                    "Type": "string"
+                                },
+                                {
+                                    "Name": "_",
+                                    "Type": "interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "SetOption(_ string, _ interface{}) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "SplitTypeLength",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "in",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "string"
+                                },
+                                {
+                                    "Type": "int"
+                                },
+                                {
+                                    "Type": "int"
+                                }
+                            ],
+                            "Signature": "SplitTypeLength(in string) (string, int, int)",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "ToAggregatedFieldName",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "agg",
+                                    "Type": "filter.Aggregation"
+                                },
+                                {
+                                    "Name": "field",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "string"
+                                }
+                            ],
+                            "Signature": "ToAggregatedFieldName(agg filter.Aggregation, field string) string",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "ToFieldName",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "field",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "string"
+                                }
+                            ],
+                            "Signature": "ToFieldName(field string) string",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "ToNativeType",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "in",
+                                    "Type": "dal.Type"
+                                },
+                                {
+                                    "Name": "subtypes",
+                                    "Type": "[]dal.Type"
+                                },
+                                {
+                                    "Name": "length",
+                                    "Type": "int"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "string"
+                                },
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "ToNativeType(in dal.Type, subtypes []dal.Type, length int) (string, error)",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "ToNativeValue",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "t",
+                                    "Type": "dal.Type"
+                                },
+                                {
+                                    "Name": "subtypes",
+                                    "Type": "[]dal.Type"
+                                },
+                                {
+                                    "Name": "in",
+                                    "Type": "interface{}"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "string"
+                                }
+                            ],
+                            "Signature": "ToNativeValue(t dal.Type, subtypes []dal.Type, in interface{}) string",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "ToTableName",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "table",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "string"
+                                }
+                            ],
+                            "Signature": "ToTableName(table string) string",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "WithCriterion",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "criterion",
+                                    "Type": "filter.Criterion"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "WithCriterion(criterion filter.Criterion) error",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "WithField",
+                            "PointerReceiver": true,
+                            "ReceiverName": "self",
+                            "Arguments": [
+                                {
+                                    "Name": "field",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "WithField(field string) error",
+                            "IsPackageLevel": false
+                        }
+                    ],
+                    "Fields": [
+                        {
+                            "Name": "FieldWrappers",
+                            "Type": "map[string]string"
+                        },
+                        {
+                            "Name": "NormalizeFields",
+                            "Type": "[]string"
+                        },
+                        {
+                            "Name": "NormalizerFormat",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "UseInStatement",
+                            "Type": "bool"
+                        },
+                        {
+                            "Name": "Distinct",
+                            "Type": "bool"
+                        },
+                        {
+                            "Name": "Count",
+                            "Type": "bool"
+                        },
+                        {
+                            "Name": "TypeMapping",
+                            "Type": "SqlTypeMapping"
+                        },
+                        {
+                            "Name": "Type",
+                            "Type": "SqlStatementType"
+                        },
+                        {
+                            "Name": "InputData",
+                            "Type": "map[string]interface{}"
+                        }
+                    ],
+                    "Source": "dHlwZSBTcWwgc3RydWN0IHsKCWZpbHRlci5HZW5lcmF0b3IKCUZpZWxkV3JhcHBlcnMgICBtYXBbc3RyaW5nXXN0cmluZwoJTm9ybWFsaXplRmllbGRzIFsgLy8gbWFwIG9mIGZpZWxkIG5hbWUtZm9ybWF0IHN0cmluZ3MgdG8gd3JhcCBzcGVjaWZpYyBmaWVsZHMgaW4gYWZ0ZXIgRmllbGROYW1lRm9ybWF0IGlzIGFwcGxpZWQKCV1zdHJpbmcKCU5vcm1hbGl6ZXJGb3JtYXQgc3RyaW5nCglVc2VJblN0YXRlbWVudCAgIGJvb2wKCURpc3RpbmN0ICAgICAgICAgYm9vbAoJQ291bnQgICAgICAgICAgICBib29sCglUeXBlTWFwcGluZyAgICAgIFNxbFR5cGVNYXBwaW5nCglUeXBlICAgICAgICAgICAgIFNxbFN0YXRlbWVudFR5cGUKCUlucHV0RGF0YSAgICAgICAgbWFwIC8vIGEgbGlzdCBvZiBmaWVsZCBuYW1lcyB0aGF0IHNob3VsZCBoYXZlIHRoZSBOb3JtYWxpemVyRm9ybWF0IGFwcGxpZWQgdG8gdGhlbSBhbmQgdGhlaXIgY29ycmVzcG9uZGluZyB2YWx1ZXMKCS8vIHdoYXQgdHlwZSBvZiBTUUwgc3RhdGVtZW50IGlzIGJlaW5nIGdlbmVyYXRlZAoJW3N0cmluZ11pbnRlcmZhY2V7fQoKfS8vIGtleS12YWx1ZSBkYXRhIGZvciBzdGF0ZW1lbnQgdHlwZXMgdGhhdCByZXF1aXJlIGlucHV0IGRhdGEgKGUuZy46IGluc2VydHMsIHVwZGF0ZXMpCgo=",
+                    "HasUnexportedFields": true
+                },
+                "SqlArrayTypeDecodeFunc": {
+                    "Name": "SqlArrayTypeDecodeFunc",
+                    "Source": "dHlwZSBTcWxBcnJheVR5cGVEZWNvZGVGdW5jIGZ1bmMoaW4gW11ieXRlLCBvdXQgaW50ZXJmYWNle30pIGVycm9y"
+                },
+                "SqlArrayTypeEncodeFunc": {
+                    "Name": "SqlArrayTypeEncodeFunc",
+                    "Source": "dHlwZSBTcWxBcnJheVR5cGVFbmNvZGVGdW5jIGZ1bmMoaW4gaW50ZXJmYWNle30pIChbXWJ5dGUsIGVycm9yKQ=="
+                },
+                "SqlObjectTypeDecodeFunc": {
+                    "Name": "SqlObjectTypeDecodeFunc",
+                    "Source": "dHlwZSBTcWxPYmplY3RUeXBlRGVjb2RlRnVuYyBmdW5jKGluIFtdYnl0ZSwgb3V0IGludGVyZmFjZXt9KSBlcnJvcg=="
+                },
+                "SqlObjectTypeEncodeFunc": {
+                    "Name": "SqlObjectTypeEncodeFunc",
+                    "Source": "dHlwZSBTcWxPYmplY3RUeXBlRW5jb2RlRnVuYyBmdW5jKGluIGludGVyZmFjZXt9KSAoW11ieXRlLCBlcnJvcik="
+                },
+                "SqlStatementType": {
+                    "Name": "SqlStatementType",
+                    "MetaType": "int",
+                    "Source": "dHlwZSBTcWxTdGF0ZW1lbnRUeXBlIGludA=="
+                },
+                "SqlTypeMapping": {
+                    "Name": "SqlTypeMapping",
+                    "MetaType": "struct",
+                    "Methods": [
+                        {
+                            "Name": "String",
+                            "ReceiverName": "self",
+                            "Returns": [
+                                {
+                                    "Type": "string"
+                                }
+                            ],
+                            "Signature": "String() string",
+                            "IsPackageLevel": false
+                        },
+                        {
+                            "Name": "GetSqlTypeMapping",
+                            "Arguments": [
+                                {
+                                    "Name": "name",
+                                    "Type": "string"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "SqlTypeMapping"
+                                },
+                                {
+                                    "Type": "error"
+                                }
+                            ],
+                            "Signature": "GetSqlTypeMapping(name string) (SqlTypeMapping, error)",
+                            "Source": "ewoJc3dpdGNoIG5hbWUgewoJY2FzZSBgcG9zdGdyZXNxbGAsIGBwZ3NxbGA6CgkJcmV0dXJuIFBvc3RncmVzVHlwZU1hcHBpbmcsIG5pbAoJY2FzZSBgcG9zdGdyZXNxbC1qc29uYCwgYHBnc3FsLWpzb25gOgoJCXJldHVybiBQb3N0Z3Jlc0pzb25UeXBlTWFwcGluZywgbmlsCgljYXNlIGBzcWxpdGVgOgoJCXJldHVybiBTcWxpdGVUeXBlTWFwcGluZywgbmlsCgljYXNlIGBteXNxbGA6CgkJcmV0dXJuIE15c3FsVHlwZU1hcHBpbmcsIG5pbAoJY2FzZSBgY2Fzc2FuZHJhYDoKCQlyZXR1cm4gQ2Fzc2FuZHJhVHlwZU1hcHBpbmcsIG5pbAoJY2FzZSBgYDoKCQlyZXR1cm4gRGVmYXVsdFNxbFR5cGVNYXBwaW5nLCBuaWwKCWRlZmF1bHQ6CgkJcmV0dXJuIFNxbFR5cGVNYXBwaW5ne30sIGZtdC5FcnJvcmYoInVucmVjb2duaXplZCBTUUwgbWFwcGluZyB0eXBlICVxIiwgbmFtZSkKCX0KfQ==",
+                            "IsPackageLevel": true
+                        }
+                    ],
+                    "Fields": [
+                        {
+                            "Name": "Name",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "StringType",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "StringTypeLength",
+                            "Type": "int"
+                        },
+                        {
+                            "Name": "IntegerType",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "FloatType",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "FloatTypeLength",
+                            "Type": "int"
+                        },
+                        {
+                            "Name": "FloatTypePrecision",
+                            "Type": "int"
+                        },
+                        {
+                            "Name": "BooleanType",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "BooleanTypeLength",
+                            "Type": "int"
+                        },
+                        {
+                            "Name": "DateTimeType",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "ObjectType",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "ArrayType",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "RawType",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "SubtypeFormat",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "MultiSubtypeFormat",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "PlaceholderFormat",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "PlaceholderArgument",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "TableNameFormat",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "FieldNameFormat",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "NestedFieldNameFormat",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "NestedFieldSeparator",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "NestedFieldJoiner",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "ObjectTypeEncodeFunc",
+                            "Type": "SqlObjectTypeEncodeFunc"
+                        },
+                        {
+                            "Name": "ObjectTypeDecodeFunc",
+                            "Type": "SqlObjectTypeDecodeFunc"
+                        },
+                        {
+                            "Name": "ArrayTypeEncodeFunc",
+                            "Type": "SqlArrayTypeEncodeFunc"
+                        },
+                        {
+                            "Name": "ArrayTypeDecodeFunc",
+                            "Type": "SqlArrayTypeDecodeFunc"
+                        }
+                    ],
+                    "Source": "dHlwZSBTcWxUeXBlTWFwcGluZyBzdHJ1Y3QgewoJTmFtZSAgICAgICAgICAgICAgICAgIHN0cmluZwoJU3RyaW5nVHlwZSAgICAgICAgICAgIHN0cmluZwoJU3RyaW5nVHlwZUxlbmd0aCAgICAgIGludAoJSW50ZWdlclR5cGUgICAgICAgICAgIHN0cmluZwoJRmxvYXRUeXBlICAgICAgICAgICAgIHN0cmluZwoJRmxvYXRUeXBlTGVuZ3RoICAgICAgIGludAoJRmxvYXRUeXBlUHJlY2lzaW9uICAgIGludAoJQm9vbGVhblR5cGUgICAgICAgICAgIHN0cmluZwoJQm9vbGVhblR5cGVMZW5ndGggICAgIGludAoJRGF0ZVRpbWVUeXBlICAgICAgICAgIHN0cmluZwoJT2JqZWN0VHlwZSAgICAgICAgICAgIHN0cmluZwoJQXJyYXlUeXBlICAgICAgICAgICAgIHN0cmluZwoJUmF3VHlwZSAgICAgICAgICAgICAgIHN0cmluZwoJU3VidHlwZUZvcm1hdCAgICAgICAgIHN0cmluZwoJTXVsdGlTdWJ0eXBlRm9ybWF0ICAgIHN0cmluZwoJUGxhY2Vob2xkZXJGb3JtYXQgICAgIHN0cmluZwoJUGxhY2Vob2xkZXJBcmd1bWVudCAgIHN0cmluZwoJVGFibGVOYW1lRm9ybWF0ICAgICAgIHN0cmluZwoJRmllbGROYW1lRm9ybWF0ICAgICAgIHN0cmluZwoJTmVzdGVkRmllbGROYW1lRm9ybWF0IHN0cmluZwoJTmVzdGVkRmllbGRTZXBhcmF0b3IgIHN0cmluZwoJTmVzdGVkRmllbGRKb2luZXIgICAgIHN0cmluZwoJT2JqZWN0VHlwZUVuY29kZUZ1bmMgIFNxbE9iamVjdFR5cGVFbmNvZGVGdW5jCglPYmplY3RUeXBlRGVjb2RlRnVuYyAgU3FsT2JqZWN0VHlwZURlY29kZUZ1bmMKCUFycmF5VHlwZUVuY29kZUZ1bmMgICBTcWxBcnJheVR5cGVFbmNvZGVGdW5jCglBcnJheVR5cGVEZWNvZGVGdW5jICAgU3FsQXJyYXlUeXBlRGVjb2RlRnVuYwp9Ly8gaWYgdXNpbmcgcGxhY2Vob2xkZXJzLCB0aGUgZm9ybWF0IHN0cmluZyB1c2VkIHRvIGluc2VydCB0aGVtCi8vIGZ1bmN0aW9uIHVzZWQgZm9yIGRlY29kaW5nIGFycmF5cyBmcm9tIG5hdGl2ZSBpbnRvIGEgZGVzdGluYXRpb24gbWFwCg=="
+                }
+            }
+        }
+    ]
+}

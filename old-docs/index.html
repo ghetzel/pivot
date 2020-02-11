@@ -1,0 +1,94 @@
+<html lang="en">
+<head>
+    <title>Pivot</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" type="text/css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="/pivot/style.css" type="text/css">
+</head>
+<body>
+    <nav class="navbar bg-pivot justify-content-center justify-content-sm-start navbar-expand-lg">
+        <a class="navbar-brand" href="/">
+            PIVOT
+        </a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://github.com/ghetzel/pivot">
+                        <img src="https://img.shields.io/github/tag/ghetzel/pivot.svg?colorB=111111&label=GitHub&style=flat">
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://godoc.org/github.com/ghetzel/pivot">
+                        <img src="https://godoc.org/github.com/ghetzel/pivot?status.svg">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="d-flex justify-content-stretch align-items-stretch">
+        <div class="col-md-3 col-lg-2 col-xl-2 bg-pivot sticky-top d-none d-sm-block p-0">
+            <nav
+                id="sidebar"
+                class="navbar navbar-light align-items-start"
+            >
+                <nav class="nav nav-pills flex-column">
+                    <a class="nav-link" href="#introduction">Introduction</a>
+                    <a class="nav-link" href="#benefits-and-useful-features">Benefits and Useful Features</a>
+                    <a class="nav-link" href="#installation">Installation</a>
+                    <a class="nav-link" href="#getting-started">Getting Started</a>
+                    <a class="nav-link" href="#connection-strings">Connection Strings</a>
+                    <a class="nav-link" href="#collections">Collections</a>
+                    <a class="nav-link" href="#backends">Backends</a>
+                    <a class="nav-link" href="#indexers">Indexers</a>
+                    <a class="nav-link" href="#configuration">Configuration</a>
+                    <a class="nav-link" href="#api-reference">API Reference</a>
+                    <details>
+                        <summary class="nav-link">
+                            <a href="#appendix">Appendix</a>
+                        </summary>
+                    </details>
+                </nav>
+            </nav>
+        </div>
+        <div class="col-md-9 col-xl-8 p-4" id="content">
+<html><head></head><body><div id="logo" class="text-center w-100 mb-4 d-none d-sm-block">
+</div>
+<h2 id="introduction">Introduction</h2>
+<p>Pivot is a standalone web server that facilitates access to multiple database systems through a simple, easy to use RESTful web API.  It is intended as “write once, run anywhere” type framework for the creation, modification, and management of databases by web applications.  The idea is to write the application database code once (using Pivot’s API), instead of writing database-specific code that would require lengthy and time-consuming rewrites should the database technology need to change.</p>
+<h2 id="benefits-and-useful-features">Benefits and Useful Features</h2>
+<p>Pivot is intended as a “good enough” solution to many of the common data access and modification tasks needed by web applications to do real work.  Pivot does not aim to be a complete solution for any one database, but rather encourages architectural changes that make switching between disparate database technologies possible and simple to achieve.  This approach has a variety of benefits, including providing much better flexibility in how web applications are deployed and managed.</p>
+<p>To take an example, imagine the lifecycle of developing a mid-sized web application.  Developers may require the database fit on their development devices, and require relatively little up-front setup and ongoing maintenance.  Similar requirements may exist for testing/continuous integration environments that often run with constrained resources or on heavily oversubscribed hardware.  However, in a production deployment, real-world usage will dictate largely the opposite: fast, consistent, highly-available, and/or distributed databases (possibly running on third-party infrastructure) that are specialized for performance at the cost of ease of setup.</p>
+<p>In this scenario, small local databases (like SQLite, for example) are suitable for development and testing.  However, large and scalable databases (like PostgreSQL, Amazon DynamoDB, or Cassandra) are preferable in a production environment.  Pivot provides the ability to work with either, using the same API and interfaces from the application’s perspective, by changing a connection string.  This reduces the overall friction in moving through the development lifecycle, as well as providing the flexibility to implement alternative/replacement options at each stage without requiring additional development work.</p>
+<h2 id="installation">Installation</h2>
+<p>TODO: make this section much more detailed.</p>
+<pre><code>go get github.com/ghetzel/pivot/v3/pivot
+</code></pre>
+<h2 id="getting-started">Getting Started</h2>
+<p>Connecting to a database using Pivot is easy.  Start Pivot in <code>web</code> mode and provide a <a href="#connection-strings" rel="nofollow">Connection String</a> that describes all of the details Pivot needs to connect to the database and interact with it.</p>
+<pre><code>
+</code></pre>
+<h2 id="connection-strings">Connection Strings</h2>
+<p>TODO:</p>
+<h2 id="collections">Collections</h2>
+<h3 id="formatters">Formatters</h3>
+<h3 id="validators">Validators</h3>
+<h2 id="backends">Backends</h2>
+<p>TODO:</p>
+<h2 id="indexers">Indexers</h2>
+<p>TODO:</p>
+<h2 id="configuration">Configuration</h2>
+<p>TODO:</p>
+<h2 id="api-reference">API Reference</h2>
+<p>TODO:</p>
+</body></html>
+<h2 class="mb-4" id="appendix">Appendix</h2>
+<html><head></head><body></body></html>
+        </div>
+    </div>
+</body>
+</html>

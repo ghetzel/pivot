@@ -1,0 +1,4705 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="/_/bootstrap.min.css" rel="stylesheet" />
+        <link href="/_/site.css" rel="stylesheet" />
+        <title>pivot :: owndoc</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">
+                        <strong>go-owndoc</strong>
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class=""><a href="/">Home</a></li>
+
+                        <li class="dropdown active">
+                            <a
+                                href="#"
+                                class="dropdown-toggle"
+                                data-toggle="dropdown"
+                                role="button"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                            >
+                                Packages
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                
+<li>
+    <a href="/pkg/pivot.html">pivot</a>
+</li>
+
+
+<li>
+    <a href="/pkg/backends.html">backends</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/client.html">client</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/dal.html">dal</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/filter.html">filter</a>
+</li>
+
+
+<li>
+    <a href="/pkg/filter/generators.html">filter/generators</a>
+</li>
+
+
+
+
+<li>
+    <a href="/pkg/mapper.html">mapper</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/util.html">util</a>
+</li>
+
+
+                            </ul>
+                        </li>
+
+                        <li class="">
+                            <a href="/_/about">About</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            
+<br>
+<div class="clearfix" id="x-projnav">
+	<a href="URL"><strong>pivot:</strong></a>
+	
+	<a href="/pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">dal</span>
+	
+
+	<span class="pull-right">
+		<a href="#pkg-index">Index</a>
+		<span class="text-muted">|</span>
+		<a href="#pkg-files">Files</a>
+	</span>
+</div>
+
+<span class="pull-right">Doc Coverage: 46%</span>
+<h2 id="pkg-overview">package dal</h2>
+
+<p>
+	<code>import "github.com/ghetzel/pivot/dal"</code>
+</p>
+
+
+
+<h3 id="pkg-index" class="section-header">
+	Index <a class="permalink" href="#pkg-index">&#182;</a>
+</h3>
+
+<ul class="list-unstyled">
+	
+	
+    <li><a href="#pkg-constants">Constants</a></li>
+	
+
+	
+	
+    <li><a href="#pkg-variables">Variables</a></li>
+	
+
+	
+	
+
+	
+	
+    <li>
+		
+		<a href="#AddConnectionSchemeAlias">func AddConnectionSchemeAlias(from string, to string)</a>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#CurrentTime">func CurrentTime(value interface{}, op FieldOperation) (interface{}, error)</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#CurrentTimeIfUnset">func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error)</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#GenerateUUID">func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error)</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#IsCollectionNotFoundErr">func IsCollectionNotFoundErr(err error) bool</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#IsExistError">func IsExistError(err error) bool</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#IsFieldNotFoundErr">func IsFieldNotFoundErr(err error) bool</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#IsNotExistError">func IsNotExistError(err error) bool</a>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#ShouldCreateCollection">func ShouldCreateCollection(collection *Collection, errs ...error) bool</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#TrimSpace">func TrimSpace(value interface{}, _ FieldOperation) (interface{}, error)</a>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#ValidateIsURL">func ValidateIsURL(value interface{}) error</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#ValidateNonZero">func ValidateNonZero(value interface{}) error</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#ValidateNotEmpty">func ValidateNotEmpty(value interface{}) error</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#ValidatePositiveInteger">func ValidatePositiveInteger(value interface{}) error</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#ValidatePositiveOrZeroInteger">func ValidatePositiveOrZeroInteger(value interface{}) error</a>
+		</strong>
+		
+	</li>
+	
+
+	
+	
+    <li>
+		<a href="#Backend">type Backend</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Collection">type Collection</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Collection.NewCollection">
+					func NewCollection(name string, fields ...Field) *Collection
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Collection.AddFields">
+					func
+					(self *Collection)
+					AddFields(fields ...Field) *Collection
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.ApplyDefinition">
+					func
+					(self *Collection)
+					ApplyDefinition(definition *Collection) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.Check">
+					func
+					(self *Collection)
+					Check() error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.ConvertValue">
+					func
+					(self *Collection)
+					ConvertValue(name string, value interface{}) interface{}
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.Diff">
+					func
+					(self *Collection)
+					Diff(actual *Collection) []*SchemaDelta
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.EmptyRecord">
+					func
+					(self *Collection)
+					EmptyRecord() *Record
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.FillDefaults">
+					func
+					(self *Collection)
+					FillDefaults(record *Record)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.GetAggregatorName">
+					func
+					(self *Collection)
+					GetAggregatorName() string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.GetAllConstraints">
+					func
+					(self *Collection)
+					GetAllConstraints() constraints []Constraint
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.GetField">
+					func
+					(self *Collection)
+					GetField(name string) (Field, bool)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.GetFieldByIndex">
+					func
+					(self *Collection)
+					GetFieldByIndex(index int) (Field, bool)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.GetFirstNonIdentityKeyField">
+					func
+					(self *Collection)
+					GetFirstNonIdentityKeyField() (Field, bool)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.GetIdentityFieldName">
+					func
+					(self *Collection)
+					GetIdentityFieldName() string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.GetIndexName">
+					func
+					(self *Collection)
+					GetIndexName() string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.GetRelatedCollection">
+					func
+					(self *Collection)
+					GetRelatedCollection(name string) (*Collection, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.HasRecordType">
+					func
+					(self *Collection)
+					HasRecordType() bool
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.IsExpired">
+					func
+					(self *Collection)
+					IsExpired(record *Record) bool
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.IsIdentityField">
+					func
+					(self *Collection)
+					IsIdentityField(name string) bool
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.IsKeyField">
+					func
+					(self *Collection)
+					IsKeyField(name string) bool
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.KeyCount">
+					func
+					(self *Collection)
+					KeyCount() int
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.KeyFieldNames">
+					func
+					(self *Collection)
+					KeyFieldNames() names []string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.KeyFields">
+					func
+					(self *Collection)
+					KeyFields() []Field
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.MakeRecord">
+					func
+					(self *Collection)
+					MakeRecord(in interface{}, ops ...FieldOperation) (*Record, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.MapFromRecord">
+					func
+					(self *Collection)
+					MapFromRecord(record *Record, fields ...string) (map[string]interface{}, error)
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Collection.SetBackend">
+					func
+					(self *Collection)
+					SetBackend(backend Backend)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.SetIdentity">
+					func
+					(self *Collection)
+					SetIdentity(name string, idtype Type, formatter FieldFormatterFunc, validator FieldValidatorFunc) *Collection
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.SetRecordType">
+					func
+					(self *Collection)
+					SetRecordType(in interface{}) *Collection
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.StructToRecord">
+					func
+					(self *Collection)
+					StructToRecord(in interface{}) (*Record, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.TTL">
+					func
+					(self *Collection)
+					TTL(record *Record) time.Duration
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.ValidateRecord">
+					func
+					(self *Collection)
+					ValidateRecord(record *Record, op FieldOperation) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Collection.ValueForField">
+					func
+					(self *Collection)
+					ValueForField(name string, value interface{}, op FieldOperation) (interface{}, error)
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#CollectionAction">type CollectionAction</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#CollectionValidatorFunc">type CollectionValidatorFunc</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#ConnectionString">type ConnectionString</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.ParseConnectionString">
+					func ParseConnectionString(conn string) (ConnectionString, error)
+				</a>
+			</li>
+			
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.MustParseConnectionString">
+					func MustParseConnectionString(conn string) ConnectionString
+				</a>
+			</li>
+			
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.MakeConnectionString">
+					func MakeConnectionString(scheme string, host string, dataset string, options map[string]interface{}) (ConnectionString, error)
+				</a>
+			</li>
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.Backend">
+					func
+					(self *ConnectionString)
+					Backend() string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.ClearOpt">
+					func
+					(self *ConnectionString)
+					ClearOpt(key string)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.Credentials">
+					func
+					(self *ConnectionString)
+					Credentials() (string, string, bool)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.Dataset">
+					func
+					(self *ConnectionString)
+					Dataset() string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.HasOpt">
+					func
+					(self *ConnectionString)
+					HasOpt(key string) bool
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.Host">
+					func
+					(self *ConnectionString)
+					Host(defaults ...string) string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.LoadCredentialsFromNetrc">
+					func
+					(self *ConnectionString)
+					LoadCredentialsFromNetrc(filename string) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.Opt">
+					func
+					(self *ConnectionString)
+					Opt(key string) typeutil.Variant
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.OptBool">
+					func
+					(self *ConnectionString)
+					OptBool(key string, fallback bool) bool
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.OptDuration">
+					func
+					(self *ConnectionString)
+					OptDuration(key string, fallback time.Duration) time.Duration
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.OptFloat">
+					func
+					(self *ConnectionString)
+					OptFloat(key string, fallback float64) float64
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.OptInt">
+					func
+					(self *ConnectionString)
+					OptInt(key string, fallback int64) int64
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.OptString">
+					func
+					(self *ConnectionString)
+					OptString(key string, fallback string) string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.OptTime">
+					func
+					(self *ConnectionString)
+					OptTime(key string, fallback time.Time) time.Time
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.Protocol">
+					func
+					(self *ConnectionString)
+					Protocol(defaults ...string) string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.Scheme">
+					func
+					(self *ConnectionString)
+					Scheme() (string, string)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.SetCredentials">
+					func
+					(self *ConnectionString)
+					SetCredentials(username string, password string)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#ConnectionString.String">
+					func
+					(self *ConnectionString)
+					String() string
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#Constraint">type Constraint</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Constraint.Equal">
+					func
+					(self Constraint)
+					Equal(other *Constraint) bool
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Constraint.Validate">
+					func
+					(self Constraint)
+					Validate() error
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#DeltaIssue">type DeltaIssue</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#DeltaType">type DeltaType</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#EncoderFunc">type EncoderFunc</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Field">type Field</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Field.BelongsToConstraint">
+					func
+					(self *Field)
+					BelongsToConstraint() *Constraint
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Field.ConvertValue">
+					func
+					(self *Field)
+					ConvertValue(in interface{}) (interface{}, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Field.Diff">
+					func
+					(self *Field)
+					Diff(other *Field) []*SchemaDelta
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Field.Format">
+					func
+					(self *Field)
+					Format(value interface{}, op FieldOperation) (interface{}, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Field.GetDefaultValue">
+					func
+					(self *Field)
+					GetDefaultValue() interface{}
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Field.GetTypeInstance">
+					func
+					(self *Field)
+					GetTypeInstance() interface{}
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Field.MarshalJSON">
+					func
+					(self *Field)
+					MarshalJSON() ([]byte, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Field.UnmarshalJSON">
+					func
+					(self *Field)
+					UnmarshalJSON(b []byte) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Field.Validate">
+					func
+					(self *Field)
+					Validate(value interface{}) error
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#FieldFormatterFunc">type FieldFormatterFunc</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#FieldOperation">type FieldOperation</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#FieldValidatorFunc">type FieldValidatorFunc</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Migratable">type Migratable</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Model">type Model</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Record">type Record</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Record.NewRecord">
+					func NewRecord(id interface{}, data ...map[string]interface{}) *Record
+				</a>
+			</li>
+			
+			
+			
+			
+			<li>
+				<a href="#Record.NewRecordErr">
+					func NewRecordErr(id interface{}, err error) *Record
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Record.Append">
+					func
+					(self *Record)
+					Append(key string, value ...interface{}) *Record
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.AppendNested">
+					func
+					(self *Record)
+					AppendNested(key string, value ...interface{}) *Record
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.Copy">
+					func
+					(self *Record)
+					Copy(other *Record, schema ...*Collection) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.Get">
+					func
+					(self *Record)
+					Get(key string, fallback ...interface{}) interface{}
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.GetNested">
+					func
+					(self *Record)
+					GetNested(key string, fallback ...interface{}) interface{}
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.GetString">
+					func
+					(self *Record)
+					GetString(key string, fallback ...string) string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.Keys">
+					func
+					(self *Record)
+					Keys(collection *Collection) []interface{}
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.Map">
+					func
+					(self *Record)
+					Map(fields ...string) map[string]interface{}
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Record.OnlyFields">
+					func
+					(self *Record)
+					OnlyFields(fields []string) *Record
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.Populate">
+					func
+					(self *Record)
+					Populate(into interface{}, collection *Collection) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.Set">
+					func
+					(self *Record)
+					Set(key string, value interface{}) *Record
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.SetData">
+					func
+					(self *Record)
+					SetData(data []byte) *Record
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.SetFields">
+					func
+					(self *Record)
+					SetFields(values map[string]interface{}) *Record
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.SetKeys">
+					func
+					(self *Record)
+					SetKeys(collection *Collection, op FieldOperation, keys ...interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.SetNested">
+					func
+					(self *Record)
+					SetNested(key string, value interface{}) *Record
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Record.String">
+					func
+					(self *Record)
+					String() string
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#RecordSet">type RecordSet</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#RecordSet.NewRecordSet">
+					func NewRecordSet(records ...*Record) *RecordSet
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#RecordSet.Append">
+					func
+					(self *RecordSet)
+					Append(other *RecordSet) *RecordSet
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#RecordSet.GetRecord">
+					func
+					(self *RecordSet)
+					GetRecord(index int) (*Record, bool)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#RecordSet.GetRecordByID">
+					func
+					(self *RecordSet)
+					GetRecordByID(id interface{}) (*Record, bool)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#RecordSet.IsEmpty">
+					func
+					(self *RecordSet)
+					IsEmpty() bool
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#RecordSet.Pluck">
+					func
+					(self *RecordSet)
+					Pluck(field string, fallback ...interface{}) []interface{}
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#RecordSet.PopulateFromRecords">
+					func
+					(self *RecordSet)
+					PopulateFromRecords(into interface{}, schema *Collection) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#RecordSet.Push">
+					func
+					(self *RecordSet)
+					Push(record *Record) *RecordSet
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#Relationship">type Relationship</a>
+
+		
+		
+		<ul>
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Relationship.RelatedCollectionName">
+					func
+					(self *Relationship)
+					RelatedCollectionName() string
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#SchemaDelta">type SchemaDelta</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#SchemaDelta.DesiredField">
+					func
+					(self SchemaDelta)
+					DesiredField(from Field) *Field
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#SchemaDelta.String">
+					func
+					(self SchemaDelta)
+					String() string
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#TestRecord">type TestRecord</a>
+
+		
+		
+		<ul>
+			
+
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#TestRecordThree">type TestRecordThree</a>
+
+		
+		
+		<ul>
+			
+
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#TestRecordTwo">type TestRecordTwo</a>
+
+		
+		
+		<ul>
+			
+
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#Type">type Type</a>
+
+		
+		
+	</li>
+	
+</ul>
+
+
+
+
+<h4 id="pkg-files">
+	<a href="https://github.com/ghetzel/pivot">Package Files</a>
+	<a class="permalink" href="#pkg-files">&#182;</a>
+</h4>
+
+<table class="table table-compact table-hover">
+<thead>
+	<tr>
+		<th class="text-left">Filename</th>
+		<th class="text-right">Size</th>
+		<th class="text-right"><abbr title="Source Lines Of Code">SLOC</abbr></th>
+		<th class="text-right"><code>func</code></th>
+		<th class="text-right"><code>type</code></th>
+		<th class="text-right"><code>const</code></th>
+		<th class="text-right"><code>var</code></th>
+	</tr>
+</thead>
+<tbody>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="collection.go">collection.go</a>
+			
+		</td>
+		<td class="text-right">25KB</td>
+		<td class="text-right">589 lines</td>
+		<td class="text-right">33</td>
+		<td class="text-right">3</td>
+		<td class="text-right">5</td>
+		<td class="text-right">2</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="collection_test.go">collection_test.go</a>
+			
+		</td>
+		<td class="text-right">7KB</td>
+		<td class="text-right">240 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="connection.go">connection.go</a>
+			
+		</td>
+		<td class="text-right">7KB</td>
+		<td class="text-right">239 lines</td>
+		<td class="text-right">22</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="constraint.go">constraint.go</a>
+			
+		</td>
+		<td class="text-right">1KB</td>
+		<td class="text-right">35 lines</td>
+		<td class="text-right">2</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="errors.go">errors.go</a>
+			
+		</td>
+		<td class="text-right">587B</td>
+		<td class="text-right">25 lines</td>
+		<td class="text-right">4</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right">2</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="field.go">field.go</a>
+			
+		</td>
+		<td class="text-right">13KB</td>
+		<td class="text-right">360 lines</td>
+		<td class="text-right">9</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right">2</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="field_test.go">field_test.go</a>
+			
+		</td>
+		<td class="text-right">12KB</td>
+		<td class="text-right">406 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="formatters.go">formatters.go</a>
+			
+		</td>
+		<td class="text-right">7KB</td>
+		<td class="text-right">225 lines</td>
+		<td class="text-right">13</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right">4</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="record.go">record.go</a>
+			
+		</td>
+		<td class="text-right">12KB</td>
+		<td class="text-right">378 lines</td>
+		<td class="text-right">18</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right">1</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="record_loader.go">record_loader.go</a>
+			
+		</td>
+		<td class="text-right">5KB</td>
+		<td class="text-right">147 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right">2</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="record_loader_test.go">record_loader_test.go</a>
+			
+		</td>
+		<td class="text-right">1KB</td>
+		<td class="text-right">43 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right">3</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="record_test.go">record_test.go</a>
+			
+		</td>
+		<td class="text-right">10KB</td>
+		<td class="text-right">332 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="recordset.go">recordset.go</a>
+			
+		</td>
+		<td class="text-right">3KB</td>
+		<td class="text-right">96 lines</td>
+		<td class="text-right">8</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="recordset_test.go">recordset_test.go</a>
+			
+		</td>
+		<td class="text-right">2KB</td>
+		<td class="text-right">69 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="relationship.go">relationship.go</a>
+			
+		</td>
+		<td class="text-right">450B</td>
+		<td class="text-right">15 lines</td>
+		<td class="text-right">1</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="types.go">types.go</a>
+			
+		</td>
+		<td class="text-right">2KB</td>
+		<td class="text-right">102 lines</td>
+		<td class="text-right">4</td>
+		<td class="text-right">9</td>
+		<td class="text-right">22</td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="validators.go">validators.go</a>
+			
+		</td>
+		<td class="text-right">5KB</td>
+		<td class="text-right">144 lines</td>
+		<td class="text-right">11</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+</tbody>
+</table>
+
+
+
+
+<h3 id="pkg-constants">
+	Constants
+	<a class="permalink" href="#pkg-constants">&#182;</a>
+</h3>
+<div class="decl" data-kind="v">
+	<a title="View Source" href="">&#10070;</a>
+
+	<pre>
+const <span id="ArrayType">ArrayType             </span> = `array`
+const <span id="AutoType">AutoType              </span> = `auto`
+const <span id="BooleanType">BooleanType           </span> = `bool`
+const <span id="CollectionDelta">CollectionDelta       </span> = `collection`
+const <span id="CollectionKeyNameIssue">CollectionKeyNameIssue</span> = 
+const <span id="CollectionKeyTypeIssue">CollectionKeyTypeIssue</span> = 
+const <span id="CollectionNameIssue">CollectionNameIssue   </span> = 
+const <span id="FieldDelta">FieldDelta            </span> = `field`
+const <span id="FieldLengthIssue">FieldLengthIssue      </span> = 
+const <span id="FieldMissingIssue">FieldMissingIssue     </span> = 
+const <span id="FieldNameIssue">FieldNameIssue        </span> = 
+const <span id="FieldPropertyIssue">FieldPropertyIssue    </span> = 
+const <span id="FieldTypeIssue">FieldTypeIssue        </span> = 
+const <span id="FloatType">FloatType             </span> = `float`
+const <span id="IntType">IntType               </span> = `int`
+const <span id="ObjectType">ObjectType            </span> = `object`
+const <span id="PersistOperation">PersistOperation      </span> = iota
+const <span id="RawType">RawType               </span> = `raw`
+const <span id="RetrieveOperation">RetrieveOperation     </span> = 
+const <span id="SchemaCreate">SchemaCreate          </span> = 
+const <span id="SchemaEnforce">SchemaEnforce         </span> = 
+const <span id="SchemaExpand">SchemaExpand          </span> = 
+const <span id="SchemaRemove">SchemaRemove          </span> = 
+const <span id="SchemaVerify">SchemaVerify          </span> = iota
+const <span id="StringType">StringType            </span> = `str`
+const <span id="TimeType">TimeType              </span> = `time`
+const <span id="UnknownIssue">UnknownIssue          </span> = iota
+</pre>
+</div>
+
+
+
+
+<h3 id="pkg-variables">
+	Variables
+	<a class="permalink" href="#pkg-variables">&#182;</a>
+</h3>
+<div class="decl" data-kind="v">
+	<a title="View Source" href="">&#10070;</a>
+
+	<pre>
+var <span id="Base32Encoder">Base32Encoder                 </span> = 
+var <span id="Base58Encoder">Base58Encoder                 </span> = 
+var <span id="Base64Encoder">Base64Encoder                 </span> = 
+var <span id="CollectionNotFound">CollectionNotFound            </span> = errors.New(`Collection not found`)
+var <span id="DefaultFieldCodec">DefaultFieldCodec             </span> = `json`
+var <span id="DefaultIdentityField">DefaultIdentityField          </span> = `id`
+var <span id="DefaultIdentityFieldType">DefaultIdentityFieldType      </span> = IntType
+var <span id="DefaultStructIdentityFieldName">DefaultStructIdentityFieldName</span> = `ID`
+var <span id="FieldNestingSeparator">FieldNestingSeparator         </span> = `.`
+var <span id="FieldNotFound">FieldNotFound                 </span> = errors.New(`Field not found`)
+var <span id="HexEncoder">HexEncoder                    </span> = 
+var <span id="IntIsProbablyUnixEpochSeconds">IntIsProbablyUnixEpochSeconds </span> = 4294967296
+var <span id="RecordStructTag">RecordStructTag               </span> = util.RecordStructTag
+</pre>
+</div>
+
+
+
+
+
+<h3 id="AddConnectionSchemeAlias" data-kind="f">
+	func <a title="View Source" href="">AddConnectionSchemeAlias</a>
+	<a class="permalink" href="#AddConnectionSchemeAlias">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func AddConnectionSchemeAlias(from string, to string)</pre>
+</div>
+
+
+
+<h3 id="CurrentTime" data-kind="f">
+	func <a title="View Source" href="">CurrentTime</a>
+	<a class="permalink" href="#CurrentTime">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func CurrentTime(value interface{}, op FieldOperation) (interface{}, error)</pre>
+</div>
+
+
+<p><p>Returns the current time every time the field is persisted.</p>
+</p>
+
+
+<h3 id="CurrentTimeIfUnset" data-kind="f">
+	func <a title="View Source" href="">CurrentTimeIfUnset</a>
+	<a class="permalink" href="#CurrentTimeIfUnset">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error)</pre>
+</div>
+
+
+<p><p>Returns the current time when the field is persisted if the current value is empty.</p>
+</p>
+
+
+<h3 id="GenerateUUID" data-kind="f">
+	func <a title="View Source" href="">GenerateUUID</a>
+	<a class="permalink" href="#GenerateUUID">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error)</pre>
+</div>
+
+
+<p><p>Generates a V4 UUID value if the existing value is empty.</p>
+</p>
+
+
+<h3 id="IsCollectionNotFoundErr" data-kind="f">
+	func <a title="View Source" href="">IsCollectionNotFoundErr</a>
+	<a class="permalink" href="#IsCollectionNotFoundErr">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func IsCollectionNotFoundErr(err error) bool</pre>
+</div>
+
+
+
+<h3 id="IsExistError" data-kind="f">
+	func <a title="View Source" href="">IsExistError</a>
+	<a class="permalink" href="#IsExistError">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func IsExistError(err error) bool</pre>
+</div>
+
+
+
+<h3 id="IsFieldNotFoundErr" data-kind="f">
+	func <a title="View Source" href="">IsFieldNotFoundErr</a>
+	<a class="permalink" href="#IsFieldNotFoundErr">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func IsFieldNotFoundErr(err error) bool</pre>
+</div>
+
+
+
+<h3 id="IsNotExistError" data-kind="f">
+	func <a title="View Source" href="">IsNotExistError</a>
+	<a class="permalink" href="#IsNotExistError">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func IsNotExistError(err error) bool</pre>
+</div>
+
+
+
+<h3 id="ShouldCreateCollection" data-kind="f">
+	func <a title="View Source" href="">ShouldCreateCollection</a>
+	<a class="permalink" href="#ShouldCreateCollection">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ShouldCreateCollection(collection *Collection, errs ...error) bool</pre>
+</div>
+
+
+<p><p>Takes a collection definition and any errors encountered while retrieving it, and determines<br>whether a CreateCollection() call should be made.</p>
+</p>
+
+
+<h3 id="TrimSpace" data-kind="f">
+	func <a title="View Source" href="">TrimSpace</a>
+	<a class="permalink" href="#TrimSpace">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func TrimSpace(value interface{}, _ FieldOperation) (interface{}, error)</pre>
+</div>
+
+
+
+<h3 id="ValidateIsURL" data-kind="f">
+	func <a title="View Source" href="">ValidateIsURL</a>
+	<a class="permalink" href="#ValidateIsURL">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateIsURL(value interface{}) error</pre>
+</div>
+
+
+<p><p>Validate that the value is a URL with a non-empty scheme and host component.</p>
+</p>
+
+
+<h3 id="ValidateNonZero" data-kind="f">
+	func <a title="View Source" href="">ValidateNonZero</a>
+	<a class="permalink" href="#ValidateNonZero">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateNonZero(value interface{}) error</pre>
+</div>
+
+
+<p><p>Validate that the given value is not a zero value (false, 0, 0.0, “”, null).</p>
+</p>
+
+
+<h3 id="ValidateNotEmpty" data-kind="f">
+	func <a title="View Source" href="">ValidateNotEmpty</a>
+	<a class="permalink" href="#ValidateNotEmpty">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateNotEmpty(value interface{}) error</pre>
+</div>
+
+
+<p><p>Validate that the given value is not a zero value, and if it’s a string, that the string<br>does not contain only whitespace.</p>
+</p>
+
+
+<h3 id="ValidatePositiveInteger" data-kind="f">
+	func <a title="View Source" href="">ValidatePositiveInteger</a>
+	<a class="permalink" href="#ValidatePositiveInteger">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidatePositiveInteger(value interface{}) error</pre>
+</div>
+
+
+<p><p>Validate that the given value is an integer &gt; 0.</p>
+</p>
+
+
+<h3 id="ValidatePositiveOrZeroInteger" data-kind="f">
+	func <a title="View Source" href="">ValidatePositiveOrZeroInteger</a>
+	<a class="permalink" href="#ValidatePositiveOrZeroInteger">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidatePositiveOrZeroInteger(value interface{}) error</pre>
+</div>
+
+
+<p><p>Validate that the given value is an integer &gt;= 0.</p>
+</p>
+
+
+
+
+
+<h3 id="Backend" data-kind="t">
+	type
+	<a title="View Source" href="">Backend</a>
+	<a class="permalink" href="#Backend">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Backend interface {
+	GetCollection(collection string) (*Collection, error)
+}</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Collection" data-kind="t">
+	type
+	<a title="View Source" href="">Collection</a>
+	<a class="permalink" href="#Collection">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	
+	
+	<pre>type Collection struct {
+	Name                string `json:&#34;name&#34;`
+	IndexName           string `json:&#34;index_name,omitempty&#34;`
+	IndexCompoundFields [ // The name of the collection
+	// Lists the field names that make up a composite key on this Collection that should be joined
+	// together when determining index record IDs.  Often it is the case that external indices do
+	// not support composite keys the way databases do, so this allows Collections with composite
+	// keys to be indexed in those systems by joining several values together to form a unique key.
+	]string `json:&#34;index_compound_fields,omitempty&#34;`
+	IndexCompoundFieldJoiner string `json:&#34;index_compound_field_joiner,omitempty&#34;`
+	SkipIndexPersistence     bool   `json:&#34;skip_index_persistence,omitempty&#34;`
+	Fields                   [ // The string used to join and split ID values that go into / come out of external indices.
+	// The fields that belong to this collection (all except the primary key/identity field/first
+	// field in a composite key)
+	]Field `json:&#34;fields&#34;`
+	IdentityField       string `json:&#34;identity_field,omitempty&#34;`
+	IdentityFieldType   Type   `json:&#34;identity_field_type,omitempty&#34;`
+	IdentityFieldIndex  int    `json:&#34;identity_field_index&#34;`
+	EmbeddedCollections [ // The name of the identity field for this Collection.  Defaults to &#34;id&#34;.
+	// Specifies how fields in this Collection relate to records from other collections.  This is
+	// a partial implementation of a relational model, specifically capturing one-to-one or
+	// one-to-many relationships.  The definitions here will retrieve the associated records from
+	// another, and those values will replace the value that is actually in this Collection&#39;s field.
+	]Relationship `json:&#34;embed,omitempty&#34;`
+	Constraints [ // Allows for constraints to be applied to a collection.  In addition to informing Pivot about the
+	// relationships between collections, this data is also used to enforce referential integrity for
+	// backends that support such guarantees (e.g.: ACID-compliant RDBMS&#39;).
+	]Constraint `json:&#34;constraints,omitempty&#34;`
+	ExportedFields [ // Specifies which fields can be seen when records are from relationships defined on other
+	// Collections.  This can be used to restrict the exposure) of sensitive data in this Collection
+	// be being an embedded field in another Collection.
+	]string `json:&#34;export,omitempty&#34;`
+	AllowMissingEmbeddedRecords bool                    `json:&#34;allow_missing_embedded_records&#34;`
+	TotalRecords                int64                   `json:&#34;total_records,omitempty&#34;`
+	TotalRecordsExact           bool                    `json:&#34;total_records_exact,omitempty&#34;`
+	TimeToLiveField             string                  `json:&#34;time_to_live_field&#34;`
+	IdentityFieldFormatter      FieldFormatterFunc      `json:&#34;-&#34;`
+	AutoIdentity                string                  `json:&#34;autoidentity&#34;`
+	IdentityFieldValidator      FieldValidatorFunc      `json:&#34;-&#34;`
+	SourceURI                   string                  `json:&#34;-&#34;`
+	PreSaveValidator            CollectionValidatorFunc `json:&#34;-&#34;`
+	View                        bool                    `json:&#34;view,omitempty&#34;`
+	ViewKeywords                string                  `json:&#34;view_keywords,omitempty&#34;`
+	ViewQuery                   interface{}             `json:&#34;view_query,omitempty&#34;`
+	AlwaysCreate                bool                    `json:&#34;create,omitempty&#34;`
+
+}// Specify whether missing related fields generate an error when retrieving a record.
+
+</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="NewCollection" data-kind="f">
+	func <a title="View Source" href="">NewCollection</a>
+	<a class="permalink" href="#NewCollection">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewCollection(name string, fields ...Field) *Collection</pre>
+</div>
+
+<p><p>Create a new colllection definition with no fields.</p>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="Collection.AddFields" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">AddFields</a>
+	<a class="permalink" href="#AddFields">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) AddFields(fields ...Field) *Collection</pre>
+</div>
+
+<p><p>Append a field definition to this collection.</p>
+</p>
+
+
+
+
+<h4 id="Collection.ApplyDefinition" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">ApplyDefinition</a>
+	<a class="permalink" href="#ApplyDefinition">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) ApplyDefinition(definition *Collection) error</pre>
+</div>
+
+<p><p>Copies certain collection and field properties from the definition object into this collection<br>instance.  This is useful for collections that are created by parsing the schema as it exists on<br>the remote datastore, which will have some but not all of the information we need to work with the<br>data.  Definition collections are the authoritative source for things like what the default value<br>should be, and which validators and formatters apply to a given field.<br><br>This function converts this instance into a Collection definition by copying the relevant values<br>from given definition.</p>
+</p>
+
+
+
+
+<h4 id="Collection.Check" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">Check</a>
+	<a class="permalink" href="#Check">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) Check() error</pre>
+</div>
+
+<p><p>Verifies that the schema passes some basic sanity checks.</p>
+</p>
+
+
+
+
+<h4 id="Collection.ConvertValue" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">ConvertValue</a>
+	<a class="permalink" href="#ConvertValue">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) ConvertValue(name string, value interface{}) interface{}</pre>
+</div>
+
+<p><p>Convert a given value according to the data type of a specific named field.</p>
+</p>
+
+
+
+
+<h4 id="Collection.Diff" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">Diff</a>
+	<a class="permalink" href="#Diff">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) Diff(actual *Collection) []*SchemaDelta</pre>
+</div>
+
+<p><p>Determine the differences (if any) between this Collection definition and another.</p>
+</p>
+
+
+
+
+<h4 id="Collection.EmptyRecord" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">EmptyRecord</a>
+	<a class="permalink" href="#EmptyRecord">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) EmptyRecord() *Record</pre>
+</div>
+
+
+
+
+<h4 id="Collection.FillDefaults" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">FillDefaults</a>
+	<a class="permalink" href="#FillDefaults">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) FillDefaults(record *Record)</pre>
+</div>
+
+<p><p>Populate a given Record with the default values (if any) of all fields in the Collection.</p>
+</p>
+
+
+
+
+<h4 id="Collection.GetAggregatorName" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">GetAggregatorName</a>
+	<a class="permalink" href="#GetAggregatorName">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) GetAggregatorName() string</pre>
+</div>
+
+<p><p>Get the canonical name of the dataset in an external aggregator service.</p>
+</p>
+
+
+
+
+<h4 id="Collection.GetAllConstraints" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">GetAllConstraints</a>
+	<a class="permalink" href="#GetAllConstraints">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) GetAllConstraints() constraints []Constraint</pre>
+</div>
+
+<p><p>Retrieve the set of all Constraints on this collection, both explicitly provided<br>via the Constraints field, as well as constraints specified using the “BelongsTo”<br>shorthand on Fields.</p>
+</p>
+
+
+
+
+<h4 id="Collection.GetField" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">GetField</a>
+	<a class="permalink" href="#GetField">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) GetField(name string) (Field, bool)</pre>
+</div>
+
+<p><p>Retrieve a single field by name.  The second return value will be false if the field does not<br>exist.</p>
+</p>
+
+
+
+
+<h4 id="Collection.GetFieldByIndex" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">GetFieldByIndex</a>
+	<a class="permalink" href="#GetFieldByIndex">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) GetFieldByIndex(index int) (Field, bool)</pre>
+</div>
+
+<p><p>Retrieve a single field by its index value. The second return value will be false if a field<br>at that index does not exist.</p>
+</p>
+
+
+
+
+<h4 id="Collection.GetFirstNonIdentityKeyField" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">GetFirstNonIdentityKeyField</a>
+	<a class="permalink" href="#GetFirstNonIdentityKeyField">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) GetFirstNonIdentityKeyField() (Field, bool)</pre>
+</div>
+
+<p><p>Retrieve the first non-indentity key field, sometimes referred to as the “range”, “sort”, or “cluster” key.</p>
+</p>
+
+
+
+
+<h4 id="Collection.GetIdentityFieldName" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">GetIdentityFieldName</a>
+	<a class="permalink" href="#GetIdentityFieldName">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) GetIdentityFieldName() string</pre>
+</div>
+
+<p><p>Get the canonical name of the primary identity field.</p>
+</p>
+
+
+
+
+<h4 id="Collection.GetIndexName" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">GetIndexName</a>
+	<a class="permalink" href="#GetIndexName">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) GetIndexName() string</pre>
+</div>
+
+<p><p>Get the canonical name of the external index name.</p>
+</p>
+
+
+
+
+<h4 id="Collection.GetRelatedCollection" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">GetRelatedCollection</a>
+	<a class="permalink" href="#GetRelatedCollection">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) GetRelatedCollection(name string) (*Collection, error)</pre>
+</div>
+
+<p><p>Retrieves a Collection by name from the backend this Collection is registered to.</p>
+</p>
+
+
+
+
+<h4 id="Collection.HasRecordType" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">HasRecordType</a>
+	<a class="permalink" href="#HasRecordType">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) HasRecordType() bool</pre>
+</div>
+
+
+
+
+<h4 id="Collection.IsExpired" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">IsExpired</a>
+	<a class="permalink" href="#IsExpired">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) IsExpired(record *Record) bool</pre>
+</div>
+
+<p><p>Expired records are those whose TTL duration is non-zero and negative.</p>
+</p>
+
+
+
+
+<h4 id="Collection.IsIdentityField" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">IsIdentityField</a>
+	<a class="permalink" href="#IsIdentityField">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) IsIdentityField(name string) bool</pre>
+</div>
+
+<p><p>TODO: what is this?</p>
+</p>
+
+
+
+
+<h4 id="Collection.IsKeyField" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">IsKeyField</a>
+	<a class="permalink" href="#IsKeyField">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) IsKeyField(name string) bool</pre>
+</div>
+
+<p><p>Return whether a given field name is a key on this Collection.</p>
+</p>
+
+
+
+
+<h4 id="Collection.KeyCount" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">KeyCount</a>
+	<a class="permalink" href="#KeyCount">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) KeyCount() int</pre>
+</div>
+
+<p><p>Return the number of keys on that uniquely identify a single record in this Collection.</p>
+</p>
+
+
+
+
+<h4 id="Collection.KeyFieldNames" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">KeyFieldNames</a>
+	<a class="permalink" href="#KeyFieldNames">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) KeyFieldNames() names []string</pre>
+</div>
+
+<p><p>Same as KeyFields, but returns only the field names</p>
+</p>
+
+
+
+
+<h4 id="Collection.KeyFields" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">KeyFields</a>
+	<a class="permalink" href="#KeyFields">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) KeyFields() []Field</pre>
+</div>
+
+<p><p>Retrieve all of the fields that comprise the primary key for this Collection.  This will always include the identity<br>field at a minimum.</p>
+</p>
+
+
+
+
+<h4 id="Collection.MakeRecord" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">MakeRecord</a>
+	<a class="permalink" href="#MakeRecord">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) MakeRecord(in interface{}, ops ...FieldOperation) (*Record, error)</pre>
+</div>
+
+<p><p>Deprecated: use StructToRecord instead</p>
+</p>
+
+
+
+
+<h4 id="Collection.MapFromRecord" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">MapFromRecord</a>
+	<a class="permalink" href="#MapFromRecord">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) MapFromRecord(record *Record, fields ...string) (map[string]interface{}, error)</pre>
+</div>
+
+<p><p>Convert the given record into a map.</p>
+</p>
+
+
+
+
+
+
+<h4 id="Collection.SetBackend" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">SetBackend</a>
+	<a class="permalink" href="#SetBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) SetBackend(backend Backend)</pre>
+</div>
+
+<p><p>Set the backend for this collection.  The Backend interface in this package is a limited subset<br>of the backends.Backend interface that avoids a circular dependency between the two packages.<br>The intent is to allow Collections to retrieve details about other collections registered on the<br>same backend.</p>
+</p>
+
+
+
+
+<h4 id="Collection.SetIdentity" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">SetIdentity</a>
+	<a class="permalink" href="#SetIdentity">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) SetIdentity(name string, idtype Type, formatter FieldFormatterFunc, validator FieldValidatorFunc) *Collection</pre>
+</div>
+
+<p><p>Configure the identity field of a collection in a single function call.</p>
+</p>
+
+
+
+
+<h4 id="Collection.SetRecordType" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">SetRecordType</a>
+	<a class="permalink" href="#SetRecordType">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) SetRecordType(in interface{}) *Collection</pre>
+</div>
+
+<p><p>Deprecated: this functionality has been removed.</p>
+</p>
+
+
+
+
+<h4 id="Collection.StructToRecord" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">StructToRecord</a>
+	<a class="permalink" href="#StructToRecord">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) StructToRecord(in interface{}) (*Record, error)</pre>
+</div>
+
+<p><p>Generates a Record suitable for persistence in a backend from the given struct.</p>
+</p>
+
+
+
+
+<h4 id="Collection.TTL" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">TTL</a>
+	<a class="permalink" href="#TTL">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) TTL(record *Record) time.Duration</pre>
+</div>
+
+<p><p>Return the duration until the TimeToLiveField in given record expires within the current collection.<br>Collections with an empty TimeToLiveField, or records with a missing or zero-valued TimeToLiveField<br>will return 0.  If the record has already expired, the returned duration will be a negative number.</p>
+</p>
+
+
+
+
+<h4 id="Collection.ValidateRecord" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">ValidateRecord</a>
+	<a class="permalink" href="#ValidateRecord">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) ValidateRecord(record *Record, op FieldOperation) error</pre>
+</div>
+
+<p><p>Validate the given record against all Field and Collection validators.</p>
+</p>
+
+
+
+
+<h4 id="Collection.ValueForField" data-kind="f">
+	func
+	(self *Collection)
+	<a title="View Source" href="">ValueForField</a>
+	<a class="permalink" href="#ValueForField">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Collection) ValueForField(name string, value interface{}, op FieldOperation) (interface{}, error)</pre>
+</div>
+
+<p><p>Convert a given value into one that that can go into the backend database (for create/update operations), or that<br>should be returned to the user (for retrieval operations) in accordance with the named field’s data type and<br>formatters.  Invalid values (determined by Validators and the Required option in the Field) will return an error.</p>
+</p>
+
+
+
+
+<h3 id="CollectionAction" data-kind="t">
+	type
+	<a title="View Source" href="">CollectionAction</a>
+	<a class="permalink" href="#CollectionAction">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type CollectionAction int</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="CollectionValidatorFunc" data-kind="t">
+	type
+	<a title="View Source" href="">CollectionValidatorFunc</a>
+	<a class="permalink" href="#CollectionValidatorFunc">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type CollectionValidatorFunc func(*Record) error</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="ConnectionString" data-kind="t">
+	type
+	<a title="View Source" href="">ConnectionString</a>
+	<a class="permalink" href="#ConnectionString">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type ConnectionString struct {
+	URI     *url.URL
+	Options map[string]interface{}
+}</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="ParseConnectionString" data-kind="f">
+	func <a title="View Source" href="">ParseConnectionString</a>
+	<a class="permalink" href="#ParseConnectionString">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ParseConnectionString(conn string) (ConnectionString, error)</pre>
+</div>
+
+
+
+
+<h4 id="MustParseConnectionString" data-kind="f">
+	func <a title="View Source" href="">MustParseConnectionString</a>
+	<a class="permalink" href="#MustParseConnectionString">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func MustParseConnectionString(conn string) ConnectionString</pre>
+</div>
+
+
+
+
+<h4 id="MakeConnectionString" data-kind="f">
+	func <a title="View Source" href="">MakeConnectionString</a>
+	<a class="permalink" href="#MakeConnectionString">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func MakeConnectionString(scheme string, host string, dataset string, options map[string]interface{}) (ConnectionString, error)</pre>
+</div>
+
+
+
+
+
+
+
+<h4 id="ConnectionString.Backend" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">Backend</a>
+	<a class="permalink" href="#Backend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) Backend() string</pre>
+</div>
+
+<p><p>Returns the backend component of the string.</p>
+</p>
+
+
+
+
+<h4 id="ConnectionString.ClearOpt" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">ClearOpt</a>
+	<a class="permalink" href="#ClearOpt">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) ClearOpt(key string)</pre>
+</div>
+
+
+
+
+<h4 id="ConnectionString.Credentials" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">Credentials</a>
+	<a class="permalink" href="#Credentials">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) Credentials() (string, string, bool)</pre>
+</div>
+
+<p><p>Return the credentials (if any) associated with this string, and whether they<br>were present or not.</p>
+</p>
+
+
+
+
+<h4 id="ConnectionString.Dataset" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">Dataset</a>
+	<a class="permalink" href="#Dataset">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) Dataset() string</pre>
+</div>
+
+<p><p>Returns the dataset component of the string.</p>
+</p>
+
+
+
+
+<h4 id="ConnectionString.HasOpt" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">HasOpt</a>
+	<a class="permalink" href="#HasOpt">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) HasOpt(key string) bool</pre>
+</div>
+
+
+
+
+<h4 id="ConnectionString.Host" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">Host</a>
+	<a class="permalink" href="#Host">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) Host(defaults ...string) string</pre>
+</div>
+
+<p><p>Returns the host component of the string.</p>
+</p>
+
+
+
+
+<h4 id="ConnectionString.LoadCredentialsFromNetrc" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">LoadCredentialsFromNetrc</a>
+	<a class="permalink" href="#LoadCredentialsFromNetrc">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) LoadCredentialsFromNetrc(filename string) error</pre>
+</div>
+
+<p><p>Reads a .netrc-style file and loads the appropriate credentials.  The host component of<br>this connection string is matched with the netrc “machine” field.</p>
+</p>
+
+
+
+
+<h4 id="ConnectionString.Opt" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">Opt</a>
+	<a class="permalink" href="#Opt">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) Opt(key string) typeutil.Variant</pre>
+</div>
+
+
+
+
+<h4 id="ConnectionString.OptBool" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">OptBool</a>
+	<a class="permalink" href="#OptBool">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) OptBool(key string, fallback bool) bool</pre>
+</div>
+
+
+
+
+<h4 id="ConnectionString.OptDuration" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">OptDuration</a>
+	<a class="permalink" href="#OptDuration">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) OptDuration(key string, fallback time.Duration) time.Duration</pre>
+</div>
+
+
+
+
+<h4 id="ConnectionString.OptFloat" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">OptFloat</a>
+	<a class="permalink" href="#OptFloat">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) OptFloat(key string, fallback float64) float64</pre>
+</div>
+
+
+
+
+<h4 id="ConnectionString.OptInt" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">OptInt</a>
+	<a class="permalink" href="#OptInt">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) OptInt(key string, fallback int64) int64</pre>
+</div>
+
+
+
+
+<h4 id="ConnectionString.OptString" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">OptString</a>
+	<a class="permalink" href="#OptString">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) OptString(key string, fallback string) string</pre>
+</div>
+
+
+
+
+<h4 id="ConnectionString.OptTime" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">OptTime</a>
+	<a class="permalink" href="#OptTime">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) OptTime(key string, fallback time.Time) time.Time</pre>
+</div>
+
+
+
+
+<h4 id="ConnectionString.Protocol" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">Protocol</a>
+	<a class="permalink" href="#Protocol">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) Protocol(defaults ...string) string</pre>
+</div>
+
+<p><p>Returns the protocol component of the string.</p>
+</p>
+
+
+
+
+<h4 id="ConnectionString.Scheme" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">Scheme</a>
+	<a class="permalink" href="#Scheme">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) Scheme() (string, string)</pre>
+</div>
+
+<p><p>Returns the backend and protocol components of the string.</p>
+</p>
+
+
+
+
+<h4 id="ConnectionString.SetCredentials" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">SetCredentials</a>
+	<a class="permalink" href="#SetCredentials">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) SetCredentials(username string, password string)</pre>
+</div>
+
+<p><p>Explicitly set username and password on this connection string</p>
+</p>
+
+
+
+
+<h4 id="ConnectionString.String" data-kind="f">
+	func
+	(self *ConnectionString)
+	<a title="View Source" href="">String</a>
+	<a class="permalink" href="#String">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ConnectionString) String() string</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+<h3 id="Constraint" data-kind="t">
+	type
+	<a title="View Source" href="">Constraint</a>
+	<a class="permalink" href="#Constraint">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Constraint struct {
+	On         interface{} `json:&#34;on&#34;`
+	Collection string      `json:&#34;collection&#34;`
+	Field      interface{} `json:&#34;field&#34;`
+	Options    string      `json:&#34;options,omitempty&#34;`
+	Into       string      `json:&#34;into,omitempty&#34;`
+	NoEmbed    bool        `json:&#34;noembed,omitempty&#34;`
+}// Represents the name (or array of names) of the local field the constraint is being applied to.
+// Whether to omit this constraint when determining embedded collections.
+</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="Constraint.Equal" data-kind="f">
+	func
+	(self Constraint)
+	<a title="View Source" href="">Equal</a>
+	<a class="permalink" href="#Equal">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self Constraint) Equal(other *Constraint) bool</pre>
+</div>
+
+
+
+
+<h4 id="Constraint.Validate" data-kind="f">
+	func
+	(self Constraint)
+	<a title="View Source" href="">Validate</a>
+	<a class="permalink" href="#Validate">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self Constraint) Validate() error</pre>
+</div>
+
+
+
+
+<h3 id="DeltaIssue" data-kind="t">
+	type
+	<a title="View Source" href="">DeltaIssue</a>
+	<a class="permalink" href="#DeltaIssue">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type DeltaIssue int</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="DeltaType" data-kind="t">
+	type
+	<a title="View Source" href="">DeltaType</a>
+	<a class="permalink" href="#DeltaType">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type DeltaType string</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="EncoderFunc" data-kind="t">
+	type
+	<a title="View Source" href="">EncoderFunc</a>
+	<a class="permalink" href="#EncoderFunc">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type EncoderFunc func([]byte) (string, error) //{}
+</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Field" data-kind="t">
+	type
+	<a title="View Source" href="">Field</a>
+	<a class="permalink" href="#Field">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Field struct {
+	Name               string             `json:&#34;name&#34;`
+	Description        string             `json:&#34;description,omitempty&#34;`
+	Type               Type               `json:&#34;type&#34;`
+	KeyType            Type               `json:&#34;keytype,omitempty&#34;`
+	Subtype            Type               `json:&#34;subtype,omitempty&#34;`
+	Length             int                `json:&#34;length,omitempty&#34;`
+	Precision          int                `json:&#34;precision,omitempty&#34;`
+	Identity           bool               `json:&#34;identity,omitempty&#34;`
+	Key                bool               `json:&#34;key,omitempty&#34;`
+	Required           bool               `json:&#34;required,omitempty&#34;`
+	Unique             bool               `json:&#34;unique,omitempty&#34;`
+	UniqueGroup        string             `json:&#34;unique_group,omitempty&#34;`
+	DefaultValue       interface{}        `json:&#34;default,omitempty&#34;`
+	NativeType         string             `json:&#34;native_type,omitempty&#34;`
+	NotUserEditable    bool               `json:&#34;not_user_editable&#34;`
+	ValidateOnPopulate bool               `json:&#34;validate_on_populate,omitempty&#34;`
+	Validator          FieldValidatorFunc `json:&#34;-&#34;`
+	Formatter          FieldFormatterFunc `json:&#34;-&#34;`
+	ValidatorConfig    map // The name of the field
+	// A declarative form of the Validator configuration that uses pre-defined validators. Primarily
+	// used when storing schema declarations in external JSON files.
+	[string]interface{} `json:&#34;validators,omitempty&#34;`
+	FormatterConfig map // A declarative form of the Formatter configuration that uses pre-defined validators. Primarily
+	// used when storing schema declarations in external JSON files.
+	[string]interface{} `json:&#34;formatters,omitempty&#34;`
+	Index     int         `json:&#34;index,omitempty&#34;`
+	BelongsTo interface{} `json:&#34;belongs_to,omitempty&#34;`
+	ReadOnly  bool        `json:&#34;readonly,omitempty&#34;`
+}// Used to store the order this field appears in the source database.
+// Specifies that the field may not be updated, only read.  Attempts to update the field will be silently discarded.
+</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="Field.BelongsToConstraint" data-kind="f">
+	func
+	(self *Field)
+	<a title="View Source" href="">BelongsToConstraint</a>
+	<a class="permalink" href="#BelongsToConstraint">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Field) BelongsToConstraint() *Constraint</pre>
+</div>
+
+<p><p>Parses the value of BelongsTo into a valid Constraint</p>
+</p>
+
+
+
+
+<h4 id="Field.ConvertValue" data-kind="f">
+	func
+	(self *Field)
+	<a title="View Source" href="">ConvertValue</a>
+	<a class="permalink" href="#ConvertValue">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Field) ConvertValue(in interface{}) (interface{}, error)</pre>
+</div>
+
+
+
+
+<h4 id="Field.Diff" data-kind="f">
+	func
+	(self *Field)
+	<a title="View Source" href="">Diff</a>
+	<a class="permalink" href="#Diff">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Field) Diff(other *Field) []*SchemaDelta</pre>
+</div>
+
+
+
+
+<h4 id="Field.Format" data-kind="f">
+	func
+	(self *Field)
+	<a title="View Source" href="">Format</a>
+	<a class="permalink" href="#Format">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Field) Format(value interface{}, op FieldOperation) (interface{}, error)</pre>
+</div>
+
+
+
+
+<h4 id="Field.GetDefaultValue" data-kind="f">
+	func
+	(self *Field)
+	<a title="View Source" href="">GetDefaultValue</a>
+	<a class="permalink" href="#GetDefaultValue">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Field) GetDefaultValue() interface{}</pre>
+</div>
+
+
+
+
+<h4 id="Field.GetTypeInstance" data-kind="f">
+	func
+	(self *Field)
+	<a title="View Source" href="">GetTypeInstance</a>
+	<a class="permalink" href="#GetTypeInstance">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Field) GetTypeInstance() interface{}</pre>
+</div>
+
+
+
+
+<h4 id="Field.MarshalJSON" data-kind="f">
+	func
+	(self *Field)
+	<a title="View Source" href="">MarshalJSON</a>
+	<a class="permalink" href="#MarshalJSON">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Field) MarshalJSON() ([]byte, error)</pre>
+</div>
+
+
+
+
+<h4 id="Field.UnmarshalJSON" data-kind="f">
+	func
+	(self *Field)
+	<a title="View Source" href="">UnmarshalJSON</a>
+	<a class="permalink" href="#UnmarshalJSON">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Field) UnmarshalJSON(b []byte) error</pre>
+</div>
+
+
+
+
+<h4 id="Field.Validate" data-kind="f">
+	func
+	(self *Field)
+	<a title="View Source" href="">Validate</a>
+	<a class="permalink" href="#Validate">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Field) Validate(value interface{}) error</pre>
+</div>
+
+
+
+
+<h3 id="FieldFormatterFunc" data-kind="t">
+	type
+	<a title="View Source" href="">FieldFormatterFunc</a>
+	<a class="permalink" href="#FieldFormatterFunc">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type FieldFormatterFunc func(interface{}, FieldOperation) (interface{}, error)</pre>
+</div>
+
+
+
+
+<h4 id="FormatterFromMap" data-kind="f">
+	func <a title="View Source" href="">FormatterFromMap</a>
+	<a class="permalink" href="#FormatterFromMap">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)</pre>
+</div>
+
+
+
+
+<h4 id="GetFormatter" data-kind="f">
+	func <a title="View Source" href="">GetFormatter</a>
+	<a class="permalink" href="#GetFormatter">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)</pre>
+</div>
+
+
+
+
+<h4 id="FormatAll" data-kind="f">
+	func <a title="View Source" href="">FormatAll</a>
+	<a class="permalink" href="#FormatAll">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc</pre>
+</div>
+
+
+
+
+<h4 id="ChangeCase" data-kind="f">
+	func <a title="View Source" href="">ChangeCase</a>
+	<a class="permalink" href="#ChangeCase">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ChangeCase(cases ...string) FieldFormatterFunc</pre>
+</div>
+
+
+
+
+<h4 id="Replace" data-kind="f">
+	func <a title="View Source" href="">Replace</a>
+	<a class="permalink" href="#Replace">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func Replace(pairs []interface{}) FieldFormatterFunc</pre>
+</div>
+
+
+
+
+<h4 id="GenerateEncodedUUID" data-kind="f">
+	func <a title="View Source" href="">GenerateEncodedUUID</a>
+	<a class="permalink" href="#GenerateEncodedUUID">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Same as GenerateUUID, but allows for a custom representation of the underlying bytes.</p>
+</p>
+
+
+
+
+<h4 id="IfUnset" data-kind="f">
+	func <a title="View Source" href="">IfUnset</a>
+	<a class="permalink" href="#IfUnset">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Only evaluates the given formatter if the current value of the field is empty.</p>
+</p>
+
+
+
+
+<h4 id="DeriveFromFields" data-kind="f">
+	func <a title="View Source" href="">DeriveFromFields</a>
+	<a class="permalink" href="#DeriveFromFields">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func DeriveFromFields(format string, fields ...string) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Extracts values from the given Record and generates a deterministic output based on those values.</p>
+</p>
+
+
+
+
+<h4 id="NowPlusDuration" data-kind="f">
+	func <a title="View Source" href="">NowPlusDuration</a>
+	<a class="permalink" href="#NowPlusDuration">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NowPlusDuration(duration time.Duration) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Returns the current time with an added offset when the field is persisted.</p>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h3 id="FieldOperation" data-kind="t">
+	type
+	<a title="View Source" href="">FieldOperation</a>
+	<a class="permalink" href="#FieldOperation">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type FieldOperation int</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="FieldValidatorFunc" data-kind="t">
+	type
+	<a title="View Source" href="">FieldValidatorFunc</a>
+	<a class="permalink" href="#FieldValidatorFunc">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type FieldValidatorFunc func(interface{}) error</pre>
+</div>
+
+
+
+
+<h4 id="ValidatorFromMap" data-kind="f">
+	func <a title="View Source" href="">ValidatorFromMap</a>
+	<a class="permalink" href="#ValidatorFromMap">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)</pre>
+</div>
+
+<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
+</p>
+
+
+
+
+<h4 id="GetValidator" data-kind="f">
+	func <a title="View Source" href="">GetValidator</a>
+	<a class="permalink" href="#GetValidator">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GetValidator(name string, args interface{}) (FieldValidatorFunc, error)</pre>
+</div>
+
+<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
+</p>
+
+
+
+
+<h4 id="ValidateMatchAll" data-kind="f">
+	func <a title="View Source" href="">ValidateMatchAll</a>
+	<a class="permalink" href="#ValidateMatchAll">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateMatchAll(patterns ...string) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that the given value matches all of the given regular expressions.</p>
+</p>
+
+
+
+
+<h4 id="ValidateMatchAny" data-kind="f">
+	func <a title="View Source" href="">ValidateMatchAny</a>
+	<a class="permalink" href="#ValidateMatchAny">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateMatchAny(patterns ...string) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that the given value matches at least one of the given regular expressions.</p>
+</p>
+
+
+
+
+<h4 id="ValidateAll" data-kind="f">
+	func <a title="View Source" href="">ValidateAll</a>
+	<a class="permalink" href="#ValidateAll">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that all of the given validator functions pass.</p>
+</p>
+
+
+
+
+<h4 id="ValidateIsOneOf" data-kind="f">
+	func <a title="View Source" href="">ValidateIsOneOf</a>
+	<a class="permalink" href="#ValidateIsOneOf">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc</pre>
+</div>
+
+<p><p>Validate that the given value is among the given choices.</p>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h3 id="Migratable" data-kind="t">
+	type
+	<a title="View Source" href="">Migratable</a>
+	<a class="permalink" href="#Migratable">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Migratable interface{ Migrate() error }</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Model" data-kind="t">
+	type
+	<a title="View Source" href="">Model</a>
+	<a class="permalink" href="#Model">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Model interface{}</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Record" data-kind="t">
+	type
+	<a title="View Source" href="">Record</a>
+	<a class="permalink" href="#Record">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Record struct {
+	ID             interface{}            `json:&#34;id&#34;`
+	Fields         map[string]interface{} `json:&#34;fields,omitempty&#34;`
+	Data           []byte                 `json:&#34;data,omitempty&#34;`
+	Error          error                  `json:&#34;error,omitempty&#34;`
+	CollectionName string                 `json:&#34;collection,omitempty&#34;`
+	Operation      string                 `json:&#34;operation,omitempty&#34;`
+}</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="NewRecord" data-kind="f">
+	func <a title="View Source" href="">NewRecord</a>
+	<a class="permalink" href="#NewRecord">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewRecord(id interface{}, data ...map[string]interface{}) *Record</pre>
+</div>
+
+
+
+
+<h4 id="NewRecordErr" data-kind="f">
+	func <a title="View Source" href="">NewRecordErr</a>
+	<a class="permalink" href="#NewRecordErr">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewRecordErr(id interface{}, err error) *Record</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="Record.Append" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">Append</a>
+	<a class="permalink" href="#Append">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) Append(key string, value ...interface{}) *Record</pre>
+</div>
+
+
+
+
+<h4 id="Record.AppendNested" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">AppendNested</a>
+	<a class="permalink" href="#AppendNested">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) AppendNested(key string, value ...interface{}) *Record</pre>
+</div>
+
+
+
+
+<h4 id="Record.Copy" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">Copy</a>
+	<a class="permalink" href="#Copy">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) Copy(other *Record, schema ...*Collection) error</pre>
+</div>
+
+
+
+
+<h4 id="Record.Get" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">Get</a>
+	<a class="permalink" href="#Get">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) Get(key string, fallback ...interface{}) interface{}</pre>
+</div>
+
+
+
+
+<h4 id="Record.GetNested" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">GetNested</a>
+	<a class="permalink" href="#GetNested">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) GetNested(key string, fallback ...interface{}) interface{}</pre>
+</div>
+
+
+
+
+<h4 id="Record.GetString" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">GetString</a>
+	<a class="permalink" href="#GetString">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) GetString(key string, fallback ...string) string</pre>
+</div>
+
+
+
+
+<h4 id="Record.Keys" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">Keys</a>
+	<a class="permalink" href="#Keys">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) Keys(collection *Collection) []interface{}</pre>
+</div>
+
+
+
+
+<h4 id="Record.Map" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">Map</a>
+	<a class="permalink" href="#Map">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) Map(fields ...string) map[string]interface{}</pre>
+</div>
+
+
+
+
+
+
+
+
+<h4 id="Record.OnlyFields" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">OnlyFields</a>
+	<a class="permalink" href="#OnlyFields">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) OnlyFields(fields []string) *Record</pre>
+</div>
+
+
+
+
+<h4 id="Record.Populate" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">Populate</a>
+	<a class="permalink" href="#Populate">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) Populate(into interface{}, collection *Collection) error</pre>
+</div>
+
+<p><p>Populates a given struct with with the values in this record.</p>
+</p>
+
+
+
+
+<h4 id="Record.Set" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">Set</a>
+	<a class="permalink" href="#Set">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) Set(key string, value interface{}) *Record</pre>
+</div>
+
+
+
+
+<h4 id="Record.SetData" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">SetData</a>
+	<a class="permalink" href="#SetData">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) SetData(data []byte) *Record</pre>
+</div>
+
+
+
+
+<h4 id="Record.SetFields" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">SetFields</a>
+	<a class="permalink" href="#SetFields">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) SetFields(values map[string]interface{}) *Record</pre>
+</div>
+
+
+
+
+<h4 id="Record.SetKeys" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">SetKeys</a>
+	<a class="permalink" href="#SetKeys">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) SetKeys(collection *Collection, op FieldOperation, keys ...interface{}) error</pre>
+</div>
+
+
+
+
+<h4 id="Record.SetNested" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">SetNested</a>
+	<a class="permalink" href="#SetNested">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) SetNested(key string, value interface{}) *Record</pre>
+</div>
+
+
+
+
+<h4 id="Record.String" data-kind="f">
+	func
+	(self *Record)
+	<a title="View Source" href="">String</a>
+	<a class="permalink" href="#String">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Record) String() string</pre>
+</div>
+
+
+
+
+<h3 id="RecordSet" data-kind="t">
+	type
+	<a title="View Source" href="">RecordSet</a>
+	<a class="permalink" href="#RecordSet">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type RecordSet struct {
+	ResultCount    int64                  `json:&#34;result_count&#34;`
+	Page           int                    `json:&#34;page,omitempty&#34;`
+	TotalPages     int                    `json:&#34;total_pages,omitempty&#34;`
+	RecordsPerPage int                    `json:&#34;records_per_page,omitempty&#34;`
+	Records        []*Record              `json:&#34;records&#34;`
+	Options        map[string]interface{} `json:&#34;options&#34;`
+	KnownSize      bool                   `json:&#34;known_size&#34;`
+}</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="NewRecordSet" data-kind="f">
+	func <a title="View Source" href="">NewRecordSet</a>
+	<a class="permalink" href="#NewRecordSet">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewRecordSet(records ...*Record) *RecordSet</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="RecordSet.Append" data-kind="f">
+	func
+	(self *RecordSet)
+	<a title="View Source" href="">Append</a>
+	<a class="permalink" href="#Append">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *RecordSet) Append(other *RecordSet) *RecordSet</pre>
+</div>
+
+
+
+
+<h4 id="RecordSet.GetRecord" data-kind="f">
+	func
+	(self *RecordSet)
+	<a title="View Source" href="">GetRecord</a>
+	<a class="permalink" href="#GetRecord">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *RecordSet) GetRecord(index int) (*Record, bool)</pre>
+</div>
+
+
+
+
+<h4 id="RecordSet.GetRecordByID" data-kind="f">
+	func
+	(self *RecordSet)
+	<a title="View Source" href="">GetRecordByID</a>
+	<a class="permalink" href="#GetRecordByID">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *RecordSet) GetRecordByID(id interface{}) (*Record, bool)</pre>
+</div>
+
+
+
+
+<h4 id="RecordSet.IsEmpty" data-kind="f">
+	func
+	(self *RecordSet)
+	<a title="View Source" href="">IsEmpty</a>
+	<a class="permalink" href="#IsEmpty">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *RecordSet) IsEmpty() bool</pre>
+</div>
+
+
+
+
+
+
+<h4 id="RecordSet.Pluck" data-kind="f">
+	func
+	(self *RecordSet)
+	<a title="View Source" href="">Pluck</a>
+	<a class="permalink" href="#Pluck">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *RecordSet) Pluck(field string, fallback ...interface{}) []interface{}</pre>
+</div>
+
+
+
+
+<h4 id="RecordSet.PopulateFromRecords" data-kind="f">
+	func
+	(self *RecordSet)
+	<a title="View Source" href="">PopulateFromRecords</a>
+	<a class="permalink" href="#PopulateFromRecords">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *RecordSet) PopulateFromRecords(into interface{}, schema *Collection) error</pre>
+</div>
+
+<p><p>Takes a slice of structs or maps and fills it with instances populated by the records in this RecordSet<br>in accordance with the types specified in the given collection definition, as well as which<br>fields are available in the given struct.</p>
+</p>
+
+
+
+
+<h4 id="RecordSet.Push" data-kind="f">
+	func
+	(self *RecordSet)
+	<a title="View Source" href="">Push</a>
+	<a class="permalink" href="#Push">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *RecordSet) Push(record *Record) *RecordSet</pre>
+</div>
+
+
+
+
+<h3 id="Relationship" data-kind="t">
+	type
+	<a title="View Source" href="">Relationship</a>
+	<a class="permalink" href="#Relationship">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Relationship struct {
+	Keys           interface{} `json:&#34;key&#34;`
+	Collection     *Collection `json:&#34;-&#34;`
+	CollectionName string      `json:&#34;collection,omitempty&#34;`
+	Fields         []string    `json:&#34;fields,omitempty&#34;`
+	Force          bool        `json:&#34;force,omitempty&#34;`
+}</pre>
+</div>
+
+
+
+
+
+
+
+
+
+<h4 id="Relationship.RelatedCollectionName" data-kind="f">
+	func
+	(self *Relationship)
+	<a title="View Source" href="">RelatedCollectionName</a>
+	<a class="permalink" href="#RelatedCollectionName">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Relationship) RelatedCollectionName() string</pre>
+</div>
+
+
+
+
+<h3 id="SchemaDelta" data-kind="t">
+	type
+	<a title="View Source" href="">SchemaDelta</a>
+	<a class="permalink" href="#SchemaDelta">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type SchemaDelta struct {
+	Type           DeltaType
+	Issue          DeltaIssue
+	Message        string
+	Collection     string
+	Name           string
+	Parameter      string
+	Desired        interface{}
+	Actual         interface{}
+	ReferenceField *Field
+}</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="SchemaDelta.DesiredField" data-kind="f">
+	func
+	(self SchemaDelta)
+	<a title="View Source" href="">DesiredField</a>
+	<a class="permalink" href="#DesiredField">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self SchemaDelta) DesiredField(from Field) *Field</pre>
+</div>
+
+
+
+
+<h4 id="SchemaDelta.String" data-kind="f">
+	func
+	(self SchemaDelta)
+	<a title="View Source" href="">String</a>
+	<a class="permalink" href="#String">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self SchemaDelta) String() string</pre>
+</div>
+
+
+
+
+<h3 id="TestRecord" data-kind="t">
+	type
+	<a title="View Source" href="">TestRecord</a>
+	<a class="permalink" href="#TestRecord">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type TestRecord struct {
+	Model `pivot:&#34;test_records&#34;`
+	ID    int
+	Name  string `pivot:&#34;name,omitempty&#34;`
+	Size  int    `pivot:&#34;size&#34;`
+}</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="TestRecordThree" data-kind="t">
+	type
+	<a title="View Source" href="">TestRecordThree</a>
+	<a class="permalink" href="#TestRecordThree">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type TestRecordThree struct{ UUID string }</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="TestRecordTwo" data-kind="t">
+	type
+	<a title="View Source" href="">TestRecordTwo</a>
+	<a class="permalink" href="#TestRecordTwo">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type TestRecordTwo struct {
+	UUID string `pivot:&#34;uuid,identity&#34;`
+}</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Type" data-kind="t">
+	type
+	<a title="View Source" href="">Type</a>
+	<a class="permalink" href="#Type">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Type string</pre>
+</div>
+
+
+
+
+
+
+<h4 id="ParseFieldType" data-kind="f">
+	func <a title="View Source" href="">ParseFieldType</a>
+	<a class="permalink" href="#ParseFieldType">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ParseFieldType(in string) Type</pre>
+</div>
+
+
+
+
+
+
+
+<h4 id="Type.String" data-kind="f">
+	func
+	(self Type)
+	<a title="View Source" href="">String</a>
+	<a class="permalink" href="#String">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self Type) String() string</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+        </div>
+        <div id="x-footer" class="clearfix">
+            <div class="container">
+                
+
+                <span class="pull-right">
+                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/pivot">go-owndoc</a></a></i> v0.0.3
+                    <span class="text-muted">|</span>
+                    <a href="#">Back to top</a>
+                </span>
+            </div>
+        </div>
+
+        <script src="/_/jquery-2.0.3.min.js"></script>
+        <script src="/_/bootstrap.min.js"></script>
+        <script src="/_/site.js"></script>
+    </body>
+</html>

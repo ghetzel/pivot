@@ -19,7 +19,7 @@ fmt:
 	-go mod tidy
 
 docs:
-	cd docs && make
+	owndoc render
 
 test:
 	go test -count=1 --tags json1 ./...

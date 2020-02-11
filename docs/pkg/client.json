@@ -1,0 +1,376 @@
+{
+    "Name": "client",
+    "CanonicalImportPath": "github.com/ghetzel/pivot/client",
+    "ImportPath": "client",
+    "ParentPackage": "pivot",
+    "URL": "https://github.com/ghetzel/pivot",
+    "Synopsis": "",
+    "MainFunction": false,
+    "CommentWordCount": 0,
+    "LineCount": 205,
+    "SourceLineCount": 166,
+    "FunctionCount": 12,
+    "TypeCount": 3,
+    "ConstantCount": 1,
+    "VariableCount": 0,
+    "Statistics": {
+        "Mean": 0,
+        "StdDev": 0,
+        "GeometricMean": 0,
+        "HarmonicMean": 0,
+        "Median": 0,
+        "Minimum": 0,
+        "Maximum": 0
+    },
+    "Files": [
+        {
+            "Name": "client.go",
+            "Imports": [
+                {
+                    "PackageName": "fmt",
+                    "Alias": "fmt"
+                },
+                {
+                    "PackageName": "net/http",
+                    "Alias": "http"
+                },
+                {
+                    "PackageName": "strings",
+                    "Alias": "strings"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/httputil",
+                    "Alias": "httputil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
+                    "Alias": "sliceutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
+                    "Alias": "typeutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/dal",
+                    "Alias": "dal"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/util",
+                    "Alias": "util"
+                }
+            ],
+            "Size": 4939,
+            "LineCount": 205,
+            "SourceLineCount": 166,
+            "FunctionCount": 12,
+            "TypeCount": 3,
+            "ConstantCount": 1,
+            "VariableCount": 0
+        }
+    ],
+    "Constants": [
+        {
+            "Name": "DefaultPivotUrl",
+            "Immutable": true,
+            "Expression": "`http://localhost:29029`"
+        }
+    ],
+    "Types": {
+        "Pivot": {
+            "Name": "Pivot",
+            "MetaType": "struct",
+            "Methods": [
+                {
+                    "Name": "Aggregate",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "collection",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "query",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*dal.RecordSet"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Aggregate(collection string, query interface{}) (*dal.RecordSet, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Collection",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "name",
+                            "Type": "string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*dal.Collection"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Collection(name string) (*dal.Collection, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Collections",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "[]string"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Collections() ([]string, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "CreateCollection",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "def",
+                            "Type": "*dal.Collection"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "CreateCollection(def *dal.Collection) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "CreateRecord",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "collection",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "records",
+                            "Type": "...*dal.Record"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*dal.RecordSet"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "CreateRecord(collection string, records ...*dal.Record) (*dal.RecordSet, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "DeleteCollection",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "name",
+                            "Type": "string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "DeleteCollection(name string) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "DeleteRecords",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "collection",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "ids",
+                            "Type": "...interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "DeleteRecords(collection string, ids ...interface{}) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "GetRecord",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "collection",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "id",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*dal.Record"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "GetRecord(collection string, id interface{}) (*dal.Record, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "New",
+                    "Arguments": [
+                        {
+                            "Name": "url",
+                            "Type": "string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Pivot"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "New(url string) (*Pivot, error)",
+                    "Source": "ewoJaWYgdXJsID09IGBgIHsKCQl1cmwgPSBEZWZhdWx0UGl2b3RVcmwKCX0KCWlmIGNsaWVudCwgZXJyIDo9IGh0dHB1dGlsLk5ld0NsaWVudCh1cmwpOyBlcnIgPT0gbmlsIHsKCQlyZXR1cm4gJlBpdm90e0NsaWVudDogY2xpZW50fSwgbmlsCgl9IGVsc2UgewoJCXJldHVybiBuaWwsIGVycgoJfQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "Query",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "collection",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "query",
+                            "Type": "interface{}"
+                        },
+                        {
+                            "Name": "options",
+                            "Type": "*QueryOptions"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*dal.RecordSet"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Query(collection string, query interface{}, options *QueryOptions) (*dal.RecordSet, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Status",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "*Status"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Status() (*Status, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "UpdateRecord",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "collection",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "records",
+                            "Type": "...*dal.Record"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*dal.RecordSet"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "UpdateRecord(collection string, records ...*dal.Record) (*dal.RecordSet, error)",
+                    "IsPackageLevel": false
+                }
+            ],
+            "Source": "dHlwZSBQaXZvdCBzdHJ1Y3R7ICpodHRwdXRpbC5DbGllbnQgfQ=="
+        },
+        "QueryOptions": {
+            "Name": "QueryOptions",
+            "MetaType": "struct",
+            "Fields": [
+                {
+                    "Name": "Limit",
+                    "Type": "int"
+                },
+                {
+                    "Name": "Offset",
+                    "Type": "int"
+                },
+                {
+                    "Name": "Sort",
+                    "Type": "[]string"
+                },
+                {
+                    "Name": "Fields",
+                    "Type": "[]string"
+                },
+                {
+                    "Name": "Conjunction",
+                    "Type": "string"
+                }
+            ],
+            "Source": "dHlwZSBRdWVyeU9wdGlvbnMgc3RydWN0IHsKCUxpbWl0ICAgICAgIGludCAgICAgIGBqc29uOiJsaW1pdCJgCglPZmZzZXQgICAgICBpbnQgICAgICBganNvbjoib2Zmc2V0ImAKCVNvcnQgICAgICAgIFtdc3RyaW5nIGBqc29uOiJzb3J0LG9taXRlbXB0eSJgCglGaWVsZHMgICAgICBbXXN0cmluZyBganNvbjoiZmllbGRzLG9taXRlbXB0eSJgCglDb25qdW5jdGlvbiBzdHJpbmcgICBganNvbjoiY29uanVuY3Rpb24sb21pdGVtcHR5ImAKfQ=="
+        },
+        "Status": {
+            "Name": "Status",
+            "Source": "dHlwZSBTdGF0dXMgPSB1dGlsLlN0YXR1cw=="
+        }
+    }
+}

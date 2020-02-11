@@ -1,0 +1,1193 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="/_/bootstrap.min.css" rel="stylesheet" />
+        <link href="/_/site.css" rel="stylesheet" />
+        <title>pivot :: owndoc</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">
+                        <strong>go-owndoc</strong>
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class=""><a href="/">Home</a></li>
+
+                        <li class="dropdown active">
+                            <a
+                                href="#"
+                                class="dropdown-toggle"
+                                data-toggle="dropdown"
+                                role="button"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                            >
+                                Packages
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                
+<li>
+    <a href="/pkg/pivot.html">pivot</a>
+</li>
+
+
+<li>
+    <a href="/pkg/backends.html">backends</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/client.html">client</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/dal.html">dal</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/filter.html">filter</a>
+</li>
+
+
+<li>
+    <a href="/pkg/filter/generators.html">filter/generators</a>
+</li>
+
+
+
+
+<li>
+    <a href="/pkg/mapper.html">mapper</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/util.html">util</a>
+</li>
+
+
+                            </ul>
+                        </li>
+
+                        <li class="">
+                            <a href="/_/about">About</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            
+<br>
+<div class="clearfix" id="x-projnav">
+	<a href="URL"><strong>pivot:</strong></a>
+	
+	<span class="text-muted">https://github.com/ghetzel/pivot</span>
+	
+
+	<span class="pull-right">
+		<a href="#pkg-index">Index</a>
+		<span class="text-muted">|</span>
+		<a href="#pkg-files">Files</a>
+	</span>
+</div>
+
+<span class="pull-right">Doc Coverage: 33%</span>
+<h2 id="pkg-overview">package pivot</h2>
+
+<p>
+	<code>import "github.com/ghetzel/pivot"</code>
+</p>
+
+
+
+<h3 id="pkg-index" class="section-header">
+	Index <a class="permalink" href="#pkg-index">&#182;</a>
+</h3>
+
+<ul class="list-unstyled">
+	
+	
+    <li><a href="#pkg-constants">Constants</a></li>
+	
+
+	
+	
+    <li><a href="#pkg-variables">Variables</a></li>
+	
+
+	
+	
+    <li><a href="#pkg-packages">Packages</a></li>
+	
+
+	
+	
+    <li>
+		
+		<strong>
+			<a href="#ApplySchemata">func ApplySchemata(fileOrDirPath string, db Backend) error</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#Dir">func Dir(useLocal bool, name string) http.FileSystem</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#FS">func FS(useLocal bool) http.FileSystem</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#FSByte">func FSByte(useLocal bool, name string) ([]byte, error)</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#FSMustByte">func FSMustByte(useLocal bool, name string) []byte</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#FSMustString">func FSMustString(useLocal bool, name string) string</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#FSString">func FSString(useLocal bool, name string) (string, error)</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#LoadFixtures">func LoadFixtures(fileOrDirPath string, db Backend) error</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#LoadFixturesFromFile">func LoadFixturesFromFile(filename string, db Backend) error</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#LoadSchemata">func LoadSchemata(fileOrDirPaths ...string) ([]*dal.Collection, error)</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#LoadSchemataFromFile">func LoadSchemataFromFile(filename string) ([]*dal.Collection, error)</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#MustGetCollection">func MustGetCollection(db Backend, name string) *dal.Collection</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#NewDatabase">func NewDatabase(connection string) (DB, error)</a>
+		</strong>
+		
+	</li>
+	
+    <li>
+		
+		<strong>
+			<a href="#NewDatabaseWithOptions">func NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)</a>
+		</strong>
+		
+	</li>
+	
+
+	
+	
+    <li>
+		<a href="#Backend">type Backend</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Collection">type Collection</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Configuration">type Configuration</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Configuration.LoadConfigFile">
+					func LoadConfigFile(path string) (Configuration, error)
+				</a>
+			</li>
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Configuration.ForEnv">
+					func
+					(self *Configuration)
+					ForEnv(env string) Configuration
+				</a>
+			</li>
+			
+			
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#ConnectOptions">type ConnectOptions</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#DB">type DB</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Filter">type Filter</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Model">type Model</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Record">type Record</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#RecordSet">type RecordSet</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Server">type Server</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Server.NewServer">
+					func NewServer(connectionString ...string) *Server
+				</a>
+			</li>
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Server.AddFixturePath">
+					func
+					(self *Server)
+					AddFixturePath(fileOrDirPath string)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Server.AddSchemaDefinition">
+					func
+					(self *Server)
+					AddSchemaDefinition(fileOrDirPath string)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Server.ListenAndServe">
+					func
+					(self *Server)
+					ListenAndServe() error
+				</a>
+			</li>
+			
+			
+			
+			
+		</ul>
+		
+	</li>
+	
+</ul>
+
+
+
+
+<h4 id="pkg-files">
+	<a href="https://github.com/ghetzel/pivot">Package Files</a>
+	<a class="permalink" href="#pkg-files">&#182;</a>
+</h4>
+
+<table class="table table-compact table-hover">
+<thead>
+	<tr>
+		<th class="text-left">Filename</th>
+		<th class="text-right">Size</th>
+		<th class="text-right"><abbr title="Source Lines Of Code">SLOC</abbr></th>
+		<th class="text-right"><code>func</code></th>
+		<th class="text-right"><code>type</code></th>
+		<th class="text-right"><code>const</code></th>
+		<th class="text-right"><code>var</code></th>
+	</tr>
+</thead>
+<tbody>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="config.go">config.go</a>
+			
+		</td>
+		<td class="text-right">1KB</td>
+		<td class="text-right">46 lines</td>
+		<td class="text-right">2</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="database.go">database.go</a>
+			
+		</td>
+		<td class="text-right">2KB</td>
+		<td class="text-right">88 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="db_test.go">db_test.go</a>
+			
+		</td>
+		<td class="text-right">38KB</td>
+		<td class="text-right">1180 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right">3</td>
+		<td class="text-right">1</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="pivot.go">pivot.go</a>
+			
+		</td>
+		<td class="text-right">8KB</td>
+		<td class="text-right">231 lines</td>
+		<td class="text-right">8</td>
+		<td class="text-right">7</td>
+		<td class="text-right"></td>
+		<td class="text-right">2</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="server.go">server.go</a>
+			
+		</td>
+		<td class="text-right">22KB</td>
+		<td class="text-right">641 lines</td>
+		<td class="text-right">4</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right">4</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="static.go">static.go</a>
+			
+		</td>
+		<td class="text-right">1MB</td>
+		<td class="text-right">18095 lines</td>
+		<td class="text-right">6</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="version.go">version.go</a>
+			
+		</td>
+		<td class="text-right">154B</td>
+		<td class="text-right">4 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right">3</td>
+		<td class="text-right"></td>
+	</tr>
+	
+</tbody>
+</table>
+
+
+
+
+<h3 id="pkg-constants">
+	Constants
+	<a class="permalink" href="#pkg-constants">&#182;</a>
+</h3>
+<div class="decl" data-kind="v">
+	<a title="View Source" href="">&#10070;</a>
+
+	<pre>
+const <span id="ApplicationName">ApplicationName   </span> = `pivot`
+const <span id="ApplicationSummary">ApplicationSummary</span> = `an extensible database abstraction service`
+const <span id="ApplicationVersion">ApplicationVersion</span> = `3.3.6`
+const <span id="TestFirst">TestFirst         </span> = iota
+const <span id="TestSecond">TestSecond        </span> = 
+const <span id="TestThird">TestThird         </span> = 
+</pre>
+</div>
+
+
+
+
+<h3 id="pkg-variables">
+	Variables
+	<a class="permalink" href="#pkg-variables">&#182;</a>
+</h3>
+<div class="decl" data-kind="v">
+	<a title="View Source" href="">&#10070;</a>
+
+	<pre>
+var <span id="DefaultAddress">DefaultAddress      </span> = `127.0.0.1`
+var <span id="DefaultPort">DefaultPort         </span> = 29029
+var <span id="DefaultResultLimit">DefaultResultLimit  </span> = 25
+var <span id="DefaultUiDirectory">DefaultUiDirectory  </span> = `embedded`
+var <span id="MonitorCheckInterval">MonitorCheckInterval</span> = time.Duration(10) * time.Second
+var <span id="NetrcFile">NetrcFile           </span> = ``
+var <span id="TestData">TestData            </span> = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
+</pre>
+</div>
+
+
+
+
+
+<h3 id="ApplySchemata" data-kind="f">
+	func <a title="View Source" href="">ApplySchemata</a>
+	<a class="permalink" href="#ApplySchemata">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ApplySchemata(fileOrDirPath string, db Backend) error</pre>
+</div>
+
+
+<p><p>Creates all non-existent schemata in the given directory.</p>
+</p>
+
+
+<h3 id="Dir" data-kind="f">
+	func <a title="View Source" href="">Dir</a>
+	<a class="permalink" href="#Dir">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func Dir(useLocal bool, name string) http.FileSystem</pre>
+</div>
+
+
+<p><p>Dir returns a http.Filesystem for the embedded assets on a given prefix dir.<br>If useLocal is true, the filesystem’s contents are instead used.</p>
+</p>
+
+
+<h3 id="FS" data-kind="f">
+	func <a title="View Source" href="">FS</a>
+	<a class="permalink" href="#FS">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FS(useLocal bool) http.FileSystem</pre>
+</div>
+
+
+<p><p>FS returns a http.Filesystem for the embedded assets. If useLocal is true,<br>the filesystem’s contents are instead used.</p>
+</p>
+
+
+<h3 id="FSByte" data-kind="f">
+	func <a title="View Source" href="">FSByte</a>
+	<a class="permalink" href="#FSByte">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FSByte(useLocal bool, name string) ([]byte, error)</pre>
+</div>
+
+
+<p><p>FSByte returns the named file from the embedded assets. If useLocal is<br>true, the filesystem’s contents are instead used.</p>
+</p>
+
+
+<h3 id="FSMustByte" data-kind="f">
+	func <a title="View Source" href="">FSMustByte</a>
+	<a class="permalink" href="#FSMustByte">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FSMustByte(useLocal bool, name string) []byte</pre>
+</div>
+
+
+<p><p>FSMustByte is the same as FSByte, but panics if name is not present.</p>
+</p>
+
+
+<h3 id="FSMustString" data-kind="f">
+	func <a title="View Source" href="">FSMustString</a>
+	<a class="permalink" href="#FSMustString">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FSMustString(useLocal bool, name string) string</pre>
+</div>
+
+
+<p><p>FSMustString is the string version of FSMustByte.</p>
+</p>
+
+
+<h3 id="FSString" data-kind="f">
+	func <a title="View Source" href="">FSString</a>
+	<a class="permalink" href="#FSString">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FSString(useLocal bool, name string) (string, error)</pre>
+</div>
+
+
+<p><p>FSString is the string version of FSByte.</p>
+</p>
+
+
+<h3 id="LoadFixtures" data-kind="f">
+	func <a title="View Source" href="">LoadFixtures</a>
+	<a class="permalink" href="#LoadFixtures">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func LoadFixtures(fileOrDirPath string, db Backend) error</pre>
+</div>
+
+
+<p><p>Calls LoadFixturesFromFile from all *.json files in the given directory.</p>
+</p>
+
+
+<h3 id="LoadFixturesFromFile" data-kind="f">
+	func <a title="View Source" href="">LoadFixturesFromFile</a>
+	<a class="permalink" href="#LoadFixturesFromFile">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func LoadFixturesFromFile(filename string, db Backend) error</pre>
+</div>
+
+
+<p><p>Loads a JSON-encoded array of dal.Record objects from a file into the given DB backend instance.</p>
+</p>
+
+
+<h3 id="LoadSchemata" data-kind="f">
+	func <a title="View Source" href="">LoadSchemata</a>
+	<a class="permalink" href="#LoadSchemata">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func LoadSchemata(fileOrDirPaths ...string) ([]*dal.Collection, error)</pre>
+</div>
+
+
+<p><p>Calls LoadSchemataFromFile from all *.json files in the given directory.</p>
+</p>
+
+
+<h3 id="LoadSchemataFromFile" data-kind="f">
+	func <a title="View Source" href="">LoadSchemataFromFile</a>
+	<a class="permalink" href="#LoadSchemataFromFile">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func LoadSchemataFromFile(filename string) ([]*dal.Collection, error)</pre>
+</div>
+
+
+<p><p>Loads and registers a JSON-encoded array of dal.Collection objects into the given DB backend instance.</p>
+</p>
+
+
+<h3 id="MustGetCollection" data-kind="f">
+	func <a title="View Source" href="">MustGetCollection</a>
+	<a class="permalink" href="#MustGetCollection">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func MustGetCollection(db Backend, name string) *dal.Collection</pre>
+</div>
+
+
+<p><p>A panicky version of backends.Backend.GetCollection</p>
+</p>
+
+
+<h3 id="NewDatabase" data-kind="f">
+	func <a title="View Source" href="">NewDatabase</a>
+	<a class="permalink" href="#NewDatabase">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewDatabase(connection string) (DB, error)</pre>
+</div>
+
+
+<p><p>Create a new database connection with the default options.</p>
+</p>
+
+
+<h3 id="NewDatabaseWithOptions" data-kind="f">
+	func <a title="View Source" href="">NewDatabaseWithOptions</a>
+	<a class="permalink" href="#NewDatabaseWithOptions">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)</pre>
+</div>
+
+
+<p><p>Create a new database connection with the given options.</p>
+</p>
+
+
+
+
+
+<h3 id="Backend" data-kind="t">
+	type
+	<a title="View Source" href="">Backend</a>
+	<a class="permalink" href="#Backend">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Backend = backends.Backend // create handy type aliases to avoid importing from all over the place
+</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Collection" data-kind="t">
+	type
+	<a title="View Source" href="">Collection</a>
+	<a class="permalink" href="#Collection">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Collection = dal.Collection</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Configuration" data-kind="t">
+	type
+	<a title="View Source" href="">Configuration</a>
+	<a class="permalink" href="#Configuration">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Configuration struct {
+	Backend               string                   `json:&#34;backend&#34;`
+	Indexer               string                   `json:&#34;indexer&#34;`
+	Autoexpand            bool                     `json:&#34;autoexpand&#34;`
+	AutocreateCollections bool                     `json:&#34;autocreate&#34;`
+	Environments          map[string]Configuration `json:&#34;environments&#34;`
+}</pre>
+</div>
+
+
+
+
+
+
+<h4 id="LoadConfigFile" data-kind="f">
+	func <a title="View Source" href="">LoadConfigFile</a>
+	<a class="permalink" href="#LoadConfigFile">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func LoadConfigFile(path string) (Configuration, error)</pre>
+</div>
+
+
+
+
+
+
+
+<h4 id="Configuration.ForEnv" data-kind="f">
+	func
+	(self *Configuration)
+	<a title="View Source" href="">ForEnv</a>
+	<a class="permalink" href="#ForEnv">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Configuration) ForEnv(env string) Configuration</pre>
+</div>
+
+
+
+
+
+
+<h3 id="ConnectOptions" data-kind="t">
+	type
+	<a title="View Source" href="">ConnectOptions</a>
+	<a class="permalink" href="#ConnectOptions">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type ConnectOptions = backends.ConnectOptions</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="DB" data-kind="t">
+	type
+	<a title="View Source" href="">DB</a>
+	<a class="permalink" href="#DB">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type DB interface {
+	backends.Backend
+	AttachCollection(*Collection) Model
+	C(string) *Collection
+	Migrate() error
+	Models() []Model
+	ApplySchemata(fileOrDirPath string) error
+	LoadFixtures(fileOrDirPath string) error
+	GetBackend() Backend
+	SetBackend(Backend)
+}</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Filter" data-kind="t">
+	type
+	<a title="View Source" href="">Filter</a>
+	<a class="permalink" href="#Filter">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Filter = filter.Filter</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Model" data-kind="t">
+	type
+	<a title="View Source" href="">Model</a>
+	<a class="permalink" href="#Model">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Model = backends.Mapper</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Record" data-kind="t">
+	type
+	<a title="View Source" href="">Record</a>
+	<a class="permalink" href="#Record">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Record = dal.Record</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="RecordSet" data-kind="t">
+	type
+	<a title="View Source" href="">RecordSet</a>
+	<a class="permalink" href="#RecordSet">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type RecordSet = dal.RecordSet</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Server" data-kind="t">
+	type
+	<a title="View Source" href="">Server</a>
+	<a class="permalink" href="#Server">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	
+	
+	<pre>type Server struct {
+	Address          string
+	ConnectionString string
+	ConnectOptions   backends.ConnectOptions
+	UiDirectory      string
+	Autoexpand       bool
+  // contains filtered or unexported fields
+}</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+<h4 id="NewServer" data-kind="f">
+	func <a title="View Source" href="">NewServer</a>
+	<a class="permalink" href="#NewServer">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewServer(connectionString ...string) *Server</pre>
+</div>
+
+
+
+
+
+
+
+<h4 id="Server.AddFixturePath" data-kind="f">
+	func
+	(self *Server)
+	<a title="View Source" href="">AddFixturePath</a>
+	<a class="permalink" href="#AddFixturePath">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Server) AddFixturePath(fileOrDirPath string)</pre>
+</div>
+
+
+
+
+<h4 id="Server.AddSchemaDefinition" data-kind="f">
+	func
+	(self *Server)
+	<a title="View Source" href="">AddSchemaDefinition</a>
+	<a class="permalink" href="#AddSchemaDefinition">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Server) AddSchemaDefinition(fileOrDirPath string)</pre>
+</div>
+
+
+
+
+<h4 id="Server.ListenAndServe" data-kind="f">
+	func
+	(self *Server)
+	<a title="View Source" href="">ListenAndServe</a>
+	<a class="permalink" href="#ListenAndServe">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Server) ListenAndServe() error</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<h3 id="pkg-packages">
+	Packages
+	<a class="permalink" href="#pkg-packages">&#182;</a>
+</h3>
+
+<table class="table table-compact table-hover">
+<thead>
+	<tr>
+		<th class="text-left">Package</th>
+		<th class="text-left">Synopsis</th>
+	</tr>
+</thead>
+<tbody>
+	
+	<tr>
+		<td class="text-left">
+			<a href="/pkg/backends.html">backends</a>
+		</td>
+		<td class="text-left">
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			<a href="/pkg/client.html">client</a>
+		</td>
+		<td class="text-left">
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			<a href="/pkg/dal.html">dal</a>
+		</td>
+		<td class="text-left">
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			<a href="/pkg/filter.html">filter</a>
+		</td>
+		<td class="text-left">
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			<a href="/pkg/mapper.html">mapper</a>
+		</td>
+		<td class="text-left">
+			
+		</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			<a href="/pkg/util.html">util</a>
+		</td>
+		<td class="text-left">
+			
+		</td>
+	</tr>
+	
+</tbody>
+</table>
+
+        </div>
+        <div id="x-footer" class="clearfix">
+            <div class="container">
+                
+
+                <span class="pull-right">
+                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/pivot">go-owndoc</a></a></i> v0.0.3
+                    <span class="text-muted">|</span>
+                    <a href="#">Back to top</a>
+                </span>
+            </div>
+        </div>
+
+        <script src="/_/jquery-2.0.3.min.js"></script>
+        <script src="/_/bootstrap.min.js"></script>
+        <script src="/_/site.js"></script>
+    </body>
+</html>

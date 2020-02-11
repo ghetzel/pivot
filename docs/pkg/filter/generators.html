@@ -1,0 +1,943 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="/_/bootstrap.min.css" rel="stylesheet" />
+        <link href="/_/site.css" rel="stylesheet" />
+        <title>pivot :: owndoc</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">
+                        <strong>go-owndoc</strong>
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class=""><a href="/">Home</a></li>
+
+                        <li class="dropdown active">
+                            <a
+                                href="#"
+                                class="dropdown-toggle"
+                                data-toggle="dropdown"
+                                role="button"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                            >
+                                Packages
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                
+<li>
+    <a href="/pkg/pivot.html">pivot</a>
+</li>
+
+
+<li>
+    <a href="/pkg/backends.html">backends</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/client.html">client</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/dal.html">dal</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/filter.html">filter</a>
+</li>
+
+
+<li>
+    <a href="/pkg/filter/generators.html">filter/generators</a>
+</li>
+
+
+
+
+<li>
+    <a href="/pkg/mapper.html">mapper</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/util.html">util</a>
+</li>
+
+
+                            </ul>
+                        </li>
+
+                        <li class="">
+                            <a href="/_/about">About</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            
+<br>
+<div class="clearfix" id="x-projnav">
+	<a href="URL"><strong>pivot:</strong></a>
+	
+	<a href="/pkg/filter.html">https://github.com/ghetzel/filter</a><span class="text-muted">/</span><span class="text-muted">generators</span>
+	
+
+	<span class="pull-right">
+		<a href="#pkg-index">Index</a>
+		<span class="text-muted">|</span>
+		<a href="#pkg-files">Files</a>
+	</span>
+</div>
+
+<span class="pull-right">Doc Coverage: 1%</span>
+<h2 id="pkg-overview">package generators</h2>
+
+<p>
+	<code>import "github.com/ghetzel/pivot/filter/generators"</code>
+</p>
+
+
+
+<h3 id="pkg-index" class="section-header">
+	Index <a class="permalink" href="#pkg-index">&#182;</a>
+</h3>
+
+<ul class="list-unstyled">
+	
+	
+    <li><a href="#pkg-constants">Constants</a></li>
+	
+
+	
+	
+    <li><a href="#pkg-variables">Variables</a></li>
+	
+
+	
+	
+
+	
+	
+
+	
+	
+    <li>
+		<a href="#Elasticsearch">type Elasticsearch</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Elasticsearch.NewElasticsearchGenerator">
+					func NewElasticsearchGenerator() *Elasticsearch
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Elasticsearch.AggregateByField">
+					func
+					(self *Elasticsearch)
+					AggregateByField(agg filter.Aggregation, field string) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Elasticsearch.Finalize">
+					func
+					(self *Elasticsearch)
+					Finalize(flt *filter.Filter) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Elasticsearch.GetValues">
+					func
+					(self *Elasticsearch)
+					GetValues() []interface{}
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Elasticsearch.GroupByField">
+					func
+					(self *Elasticsearch)
+					GroupByField(field string) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Elasticsearch.Initialize">
+					func
+					(self *Elasticsearch)
+					Initialize(collectionName string) error
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Elasticsearch.SetMinimumVersion">
+					func
+					(self *Elasticsearch)
+					SetMinimumVersion(v float64)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Elasticsearch.SetOption">
+					func
+					(self *Elasticsearch)
+					SetOption(key string, value interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Elasticsearch.WithCriterion">
+					func
+					(self *Elasticsearch)
+					WithCriterion(criterion filter.Criterion) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Elasticsearch.WithField">
+					func
+					(self *Elasticsearch)
+					WithField(field string) error
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#MongoDB">type MongoDB</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#MongoDB.NewMongoDBGenerator">
+					func NewMongoDBGenerator() *MongoDB
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#MongoDB.AggregateByField">
+					func
+					(self *MongoDB)
+					AggregateByField(agg filter.Aggregation, field string) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#MongoDB.Finalize">
+					func
+					(self *MongoDB)
+					Finalize(f *filter.Filter) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#MongoDB.GetValues">
+					func
+					(self *MongoDB)
+					GetValues() []interface{}
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#MongoDB.GroupByField">
+					func
+					(self *MongoDB)
+					GroupByField(field string) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#MongoDB.Initialize">
+					func
+					(self *MongoDB)
+					Initialize(collectionName string) error
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#MongoDB.SetOption">
+					func
+					(self *MongoDB)
+					SetOption(key string, value interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#MongoDB.WithCriterion">
+					func
+					(self *MongoDB)
+					WithCriterion(criterion filter.Criterion) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#MongoDB.WithField">
+					func
+					(self *MongoDB)
+					WithField(field string) error
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#Sql">type Sql</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Sql.NewSqlGenerator">
+					func NewSqlGenerator() *Sql
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Sql.AggregateByField">
+					func
+					(self *Sql)
+					AggregateByField(agg filter.Aggregation, field string) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.ApplyNormalizer">
+					func
+					(self *Sql)
+					ApplyNormalizer(fieldName string, in string) string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.ArrayTypeDecode">
+					func
+					(self *Sql)
+					ArrayTypeDecode(in []byte, out interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.ArrayTypeEncode">
+					func
+					(self *Sql)
+					ArrayTypeEncode(in interface{}) ([]byte, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.Finalize">
+					func
+					(self *Sql)
+					Finalize(f *filter.Filter) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.GetPlaceholder">
+					func
+					(self *Sql)
+					GetPlaceholder(fieldName string) string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.GetValues">
+					func
+					(self *Sql)
+					GetValues() []interface{}
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.GroupByField">
+					func
+					(self *Sql)
+					GroupByField(field string) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.Initialize">
+					func
+					(self *Sql)
+					Initialize(collectionName string) error
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Sql.ObjectTypeDecode">
+					func
+					(self *Sql)
+					ObjectTypeDecode(in []byte, out interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.ObjectTypeEncode">
+					func
+					(self *Sql)
+					ObjectTypeEncode(in interface{}) ([]byte, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.PrepareInputValue">
+					func
+					(self *Sql)
+					PrepareInputValue(f string, value interface{}) (interface{}, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.SetOption">
+					func
+					(self *Sql)
+					SetOption(_ string, _ interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.SplitTypeLength">
+					func
+					(self *Sql)
+					SplitTypeLength(in string) (string, int, int)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.ToAggregatedFieldName">
+					func
+					(self *Sql)
+					ToAggregatedFieldName(agg filter.Aggregation, field string) string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.ToFieldName">
+					func
+					(self *Sql)
+					ToFieldName(field string) string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.ToNativeType">
+					func
+					(self *Sql)
+					ToNativeType(in dal.Type, subtypes []dal.Type, length int) (string, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.ToNativeValue">
+					func
+					(self *Sql)
+					ToNativeValue(t dal.Type, subtypes []dal.Type, in interface{}) string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.ToTableName">
+					func
+					(self *Sql)
+					ToTableName(table string) string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.WithCriterion">
+					func
+					(self *Sql)
+					WithCriterion(criterion filter.Criterion) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Sql.WithField">
+					func
+					(self *Sql)
+					WithField(field string) error
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#SqlArrayTypeDecodeFunc">type SqlArrayTypeDecodeFunc</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#SqlArrayTypeEncodeFunc">type SqlArrayTypeEncodeFunc</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#SqlObjectTypeDecodeFunc">type SqlObjectTypeDecodeFunc</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#SqlObjectTypeEncodeFunc">type SqlObjectTypeEncodeFunc</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#SqlStatementType">type SqlStatementType</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#SqlTypeMapping">type SqlTypeMapping</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#SqlTypeMapping.GetSqlTypeMapping">
+					func GetSqlTypeMapping(name string) (SqlTypeMapping, error)
+				</a>
+			</li>
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#SqlTypeMapping.String">
+					func
+					(self SqlTypeMapping)
+					String() string
+				</a>
+			</li>
+			
+			
+			
+			
+		</ul>
+		
+	</li>
+	
+</ul>
+
+
+
+
+<h4 id="pkg-files">
+	<a href="https://github.com/ghetzel/pivot">Package Files</a>
+	<a class="permalink" href="#pkg-files">&#182;</a>
+</h4>
+
+<table class="table table-compact table-hover">
+<thead>
+	<tr>
+		<th class="text-left">Filename</th>
+		<th class="text-right">Size</th>
+		<th class="text-right"><abbr title="Source Lines Of Code">SLOC</abbr></th>
+		<th class="text-right"><code>func</code></th>
+		<th class="text-right"><code>type</code></th>
+		<th class="text-right"><code>const</code></th>
+		<th class="text-right"><code>var</code></th>
+	</tr>
+</thead>
+<tbody>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="elasticsearch-util.go">elasticsearch-util.go</a>
+			
+		</td>
+		<td class="text-right">5KB</td>
+		<td class="text-right">150 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right">1</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="elasticsearch.go">elasticsearch.go</a>
+			
+		</td>
+		<td class="text-right">3KB</td>
+		<td class="text-right">135 lines</td>
+		<td class="text-right">10</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right">1</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="mongodb-util.go">mongodb-util.go</a>
+			
+		</td>
+		<td class="text-right">5KB</td>
+		<td class="text-right">162 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="mongodb.go">mongodb.go</a>
+			
+		</td>
+		<td class="text-right">3KB</td>
+		<td class="text-right">115 lines</td>
+		<td class="text-right">9</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="mongodb_test.go">mongodb_test.go</a>
+			
+		</td>
+		<td class="text-right">4KB</td>
+		<td class="text-right">206 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="sql.go">sql.go</a>
+			
+		</td>
+		<td class="text-right">29KB</td>
+		<td class="text-right">857 lines</td>
+		<td class="text-right">24</td>
+		<td class="text-right">7</td>
+		<td class="text-right">4</td>
+		<td class="text-right">11</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="sql_test.go">sql_test.go</a>
+			
+		</td>
+		<td class="text-right">29KB</td>
+		<td class="text-right">988 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+</tbody>
+</table>
+
+
+
+
+<h3 id="pkg-constants">
+	Constants
+	<a class="permalink" href="#pkg-constants">&#182;</a>
+</h3>
+<div class="decl" data-kind="v">
+	<a title="View Source" href="">&#10070;</a>
+
+	<pre>
+const <span id="SqlDeleteStatement">SqlDeleteStatement</span> = 
+const <span id="SqlInsertStatement">SqlInsertStatement</span> = 
+const <span id="SqlSelectStatement">SqlSelectStatement</span> = iota
+const <span id="SqlUpdateStatement">SqlUpdateStatement</span> = 
+</pre>
+</div>
+
+
+
+
+<h3 id="pkg-variables">
+	Variables
+	<a class="permalink" href="#pkg-variables">&#182;</a>
+</h3>
+<div class="decl" data-kind="v">
+	<a title="View Source" href="">&#10070;</a>
+
+	<pre>
+var <span id="CassandraTypeMapping">CassandraTypeMapping            </span> = 
+var <span id="DefaultMinVersionCompat">DefaultMinVersionCompat         </span> = float64(6)
+var <span id="DefaultSqlTypeMapping">DefaultSqlTypeMapping           </span> = GenericTypeMapping
+var <span id="ElasticsearchExactMatchQueryType">ElasticsearchExactMatchQueryType</span> = `term`
+var <span id="GenericTypeMapping">GenericTypeMapping              </span> = 
+var <span id="MysqlTypeMapping">MysqlTypeMapping                </span> = 
+var <span id="NoTypeMapping">NoTypeMapping                   </span> = SqlTypeMapping{}
+var <span id="PostgresJsonTypeMapping">PostgresJsonTypeMapping         </span> = 
+var <span id="PostgresTypeMapping">PostgresTypeMapping             </span> = 
+var <span id="SqlJsonTypeDecoder">SqlJsonTypeDecoder              </span> = 
+var <span id="SqlJsonTypeEncoder">SqlJsonTypeEncoder              </span> = 
+var <span id="SqlMaxPlaceholders">SqlMaxPlaceholders              </span> = 16384
+var <span id="SqliteTypeMapping">SqliteTypeMapping               </span> = 
+</pre>
+</div>
+
+
+
+
+
+        </div>
+        <div id="x-footer" class="clearfix">
+            <div class="container">
+                
+
+                <span class="pull-right">
+                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/pivot">go-owndoc</a></a></i> v0.0.3
+                    <span class="text-muted">|</span>
+                    <a href="#">Back to top</a>
+                </span>
+            </div>
+        </div>
+
+        <script src="/_/jquery-2.0.3.min.js"></script>
+        <script src="/_/bootstrap.min.js"></script>
+        <script src="/_/site.js"></script>
+    </body>
+</html>

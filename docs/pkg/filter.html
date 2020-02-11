@@ -1,0 +1,1624 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="/_/bootstrap.min.css" rel="stylesheet" />
+        <link href="/_/site.css" rel="stylesheet" />
+        <title>pivot :: owndoc</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">
+                        <strong>go-owndoc</strong>
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class=""><a href="/">Home</a></li>
+
+                        <li class="dropdown active">
+                            <a
+                                href="#"
+                                class="dropdown-toggle"
+                                data-toggle="dropdown"
+                                role="button"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                            >
+                                Packages
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                
+<li>
+    <a href="/pkg/pivot.html">pivot</a>
+</li>
+
+
+<li>
+    <a href="/pkg/backends.html">backends</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/client.html">client</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/dal.html">dal</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/filter.html">filter</a>
+</li>
+
+
+<li>
+    <a href="/pkg/filter/generators.html">filter/generators</a>
+</li>
+
+
+
+
+<li>
+    <a href="/pkg/mapper.html">mapper</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/util.html">util</a>
+</li>
+
+
+                            </ul>
+                        </li>
+
+                        <li class="">
+                            <a href="/_/about">About</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            
+<br>
+<div class="clearfix" id="x-projnav">
+	<a href="URL"><strong>pivot:</strong></a>
+	
+	<a href="/pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">filter</span>
+	
+
+	<span class="pull-right">
+		<a href="#pkg-index">Index</a>
+		<span class="text-muted">|</span>
+		<a href="#pkg-files">Files</a>
+	</span>
+</div>
+
+<span class="pull-right">Doc Coverage: 0%</span>
+<h2 id="pkg-overview">package filter</h2>
+
+<p>
+	<code>import "github.com/ghetzel/pivot/filter"</code>
+</p>
+
+
+
+<h3 id="pkg-index" class="section-header">
+	Index <a class="permalink" href="#pkg-index">&#182;</a>
+</h3>
+
+<ul class="list-unstyled">
+	
+	
+    <li><a href="#pkg-constants">Constants</a></li>
+	
+
+	
+	
+    <li><a href="#pkg-variables">Variables</a></li>
+	
+
+	
+	
+    <li><a href="#pkg-packages">Packages</a></li>
+	
+
+	
+	
+    <li>
+		
+		<a href="#IsExactMatchOperator">func IsExactMatchOperator(operator string) bool</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#IsInvertingOperator">func IsInvertingOperator(operator string) bool</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#Render">func Render(generator IGenerator, collectionName string, filter *Filter) ([]byte, error)</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#SplitModifierToken">func SplitModifierToken(in string) (string, string)</a>
+		
+	</li>
+	
+
+	
+	
+    <li>
+		<a href="#Aggregate">type Aggregate</a>
+
+		
+		
+		<ul>
+			
+
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#Aggregation">type Aggregation</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#ConjunctionType">type ConjunctionType</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Criterion">type Criterion</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Criterion.IsExactMatch">
+					func
+					(self *Criterion)
+					IsExactMatch() bool
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Criterion.String">
+					func
+					(self *Criterion)
+					String() string
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#Filter">type Filter</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.All">
+					func All() *Filter
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.Copy">
+					func Copy(other *Filter) Filter
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.FromMap">
+					func FromMap(in map[string]interface{}) (*Filter, error)
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.MakeFilter">
+					func MakeFilter(specs ...string) Filter
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.MustParse">
+					func MustParse(in interface{}) *Filter
+				</a>
+			</li>
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.New">
+					func New() *Filter
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.Null">
+					func Null() *Filter
+				</a>
+			</li>
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.Parse">
+					func Parse(in interface{}) (*Filter, error)
+				</a>
+			</li>
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.ParseSpec">
+					func ParseSpec(spec string) (*Filter, error)
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Filter.AddCriteria">
+					func
+					(self *Filter)
+					AddCriteria(criteria ...Criterion) *Filter
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.ApplyOptions">
+					func
+					(self *Filter)
+					ApplyOptions(in interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Filter.BoundedBy">
+					func
+					(self *Filter)
+					BoundedBy(limit int, offset int) *Filter
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.CriteriaFields">
+					func
+					(self *Filter)
+					CriteriaFields() []string
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.GetFirstValue">
+					func
+					(self *Filter)
+					GetFirstValue() (interface{}, bool)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Filter.GetIdentityValue">
+					func
+					(self *Filter)
+					GetIdentityValue() (interface{}, bool)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Filter.GetSort">
+					func
+					(self *Filter)
+					GetSort() []SortBy
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Filter.GetValues">
+					func
+					(self *Filter)
+					GetValues(field string) ([]interface{}, bool)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Filter.IdOnly">
+					func
+					(self *Filter)
+					IdOnly() bool
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Filter.IsMatchAll">
+					func
+					(self *Filter)
+					IsMatchAll() bool
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.MatchesRecord">
+					func
+					(self *Filter)
+					MatchesRecord(record *dal.Record) bool
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.NewFromMap">
+					func
+					(self *Filter)
+					NewFromMap(in map[string]interface{}) (*Filter, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Filter.NewFromSpec">
+					func
+					(self *Filter)
+					NewFromSpec(specs ...string) (*Filter, error)
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Filter.SortBy">
+					func
+					(self *Filter)
+					SortBy(fields ...string) *Filter
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Filter.String">
+					func
+					(self *Filter)
+					String() string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Filter.WithFields">
+					func
+					(self *Filter)
+					WithFields(fields ...string) *Filter
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#Generator">type Generator</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Generator.Finalize">
+					func
+					(self *Generator)
+					Finalize(_ *Filter) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Generator.Payload">
+					func
+					(self *Generator)
+					Payload() []byte
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Generator.Push">
+					func
+					(self *Generator)
+					Push(data []byte)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Generator.Reset">
+					func
+					(self *Generator)
+					Reset()
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Generator.Set">
+					func
+					(self *Generator)
+					Set(data []byte)
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#IGenerator">type IGenerator</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#NormalizerFunc">type NormalizerFunc</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#SortBy">type SortBy</a>
+
+		
+		
+		<ul>
+			
+
+			
+			
+		</ul>
+		
+	</li>
+	
+</ul>
+
+
+
+
+<h4 id="pkg-files">
+	<a href="https://github.com/ghetzel/pivot">Package Files</a>
+	<a class="permalink" href="#pkg-files">&#182;</a>
+</h4>
+
+<table class="table table-compact table-hover">
+<thead>
+	<tr>
+		<th class="text-left">Filename</th>
+		<th class="text-right">Size</th>
+		<th class="text-right"><abbr title="Source Lines Of Code">SLOC</abbr></th>
+		<th class="text-right"><code>func</code></th>
+		<th class="text-right"><code>type</code></th>
+		<th class="text-right"><code>const</code></th>
+		<th class="text-right"><code>var</code></th>
+	</tr>
+</thead>
+<tbody>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="filter.go">filter.go</a>
+			
+		</td>
+		<td class="text-right">15KB</td>
+		<td class="text-right">565 lines</td>
+		<td class="text-right">30</td>
+		<td class="text-right">7</td>
+		<td class="text-right">9</td>
+		<td class="text-right">11</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="filter_matches_record_test.go">filter_matches_record_test.go</a>
+			
+		</td>
+		<td class="text-right">3KB</td>
+		<td class="text-right">49 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="filter_test.go">filter_test.go</a>
+			
+		</td>
+		<td class="text-right">6KB</td>
+		<td class="text-right">211 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="generator.go">generator.go</a>
+			
+		</td>
+		<td class="text-right">2KB</td>
+		<td class="text-right">68 lines</td>
+		<td class="text-right">6</td>
+		<td class="text-right">2</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+</tbody>
+</table>
+
+
+
+
+<h3 id="pkg-constants">
+	Constants
+	<a class="permalink" href="#pkg-constants">&#182;</a>
+</h3>
+<div class="decl" data-kind="v">
+	<a title="View Source" href="">&#10070;</a>
+
+	<pre>
+const <span id="AndConjunction">AndConjunction</span> = ``
+const <span id="Average">Average       </span> = 
+const <span id="Count">Count         </span> = 
+const <span id="First">First         </span> = iota
+const <span id="Last">Last          </span> = 
+const <span id="Maximum">Maximum       </span> = 
+const <span id="Minimum">Minimum       </span> = 
+const <span id="OrConjunction">OrConjunction </span> = `or`
+const <span id="Sum">Sum           </span> = 
+</pre>
+</div>
+
+
+
+
+<h3 id="pkg-variables">
+	Variables
+	<a class="permalink" href="#pkg-variables">&#182;</a>
+</h3>
+<div class="decl" data-kind="v">
+	<a title="View Source" href="">&#10070;</a>
+
+	<pre>
+var <span id="AllValue">AllValue             </span> = `all`
+var <span id="CriteriaSeparator">CriteriaSeparator    </span> = `/`
+var <span id="DefaultIdentityField">DefaultIdentityField </span> = `id`
+var <span id="DefaultNormalizerFunc">DefaultNormalizerFunc</span> = 
+var <span id="FieldLengthDelimiter">FieldLengthDelimiter </span> = `#`
+var <span id="FieldTermSeparator">FieldTermSeparator   </span> = `/`
+var <span id="ModifierDelimiter">ModifierDelimiter    </span> = `:`
+var <span id="QueryUnescapeValues">QueryUnescapeValues  </span> = false
+var <span id="SortAscending">SortAscending        </span> = `&#43;`
+var <span id="SortDescending">SortDescending       </span> = `-`
+var <span id="ValueSeparator">ValueSeparator       </span> = `|`
+</pre>
+</div>
+
+
+
+
+
+<h3 id="IsExactMatchOperator" data-kind="f">
+	func <a title="View Source" href="">IsExactMatchOperator</a>
+	<a class="permalink" href="#IsExactMatchOperator">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func IsExactMatchOperator(operator string) bool</pre>
+</div>
+
+
+
+<h3 id="IsInvertingOperator" data-kind="f">
+	func <a title="View Source" href="">IsInvertingOperator</a>
+	<a class="permalink" href="#IsInvertingOperator">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func IsInvertingOperator(operator string) bool</pre>
+</div>
+
+
+
+<h3 id="Render" data-kind="f">
+	func <a title="View Source" href="">Render</a>
+	<a class="permalink" href="#Render">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func Render(generator IGenerator, collectionName string, filter *Filter) ([]byte, error)</pre>
+</div>
+
+
+
+<h3 id="SplitModifierToken" data-kind="f">
+	func <a title="View Source" href="">SplitModifierToken</a>
+	<a class="permalink" href="#SplitModifierToken">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func SplitModifierToken(in string) (string, string)</pre>
+</div>
+
+
+
+
+
+
+<h3 id="Aggregate" data-kind="t">
+	type
+	<a title="View Source" href="">Aggregate</a>
+	<a class="permalink" href="#Aggregate">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Aggregate struct {
+	Aggregation Aggregation
+	Field       string
+}</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Aggregation" data-kind="t">
+	type
+	<a title="View Source" href="">Aggregation</a>
+	<a class="permalink" href="#Aggregation">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Aggregation int</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="ConjunctionType" data-kind="t">
+	type
+	<a title="View Source" href="">ConjunctionType</a>
+	<a class="permalink" href="#ConjunctionType">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type ConjunctionType string</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Criterion" data-kind="t">
+	type
+	<a title="View Source" href="">Criterion</a>
+	<a class="permalink" href="#Criterion">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Criterion struct {
+	Type        dal.Type      `json:&#34;type,omitempty&#34;`
+	Length      int           `json:&#34;length,omitempty&#34;`
+	Field       string        `json:&#34;field&#34;`
+	Operator    string        `json:&#34;operator,omitempty&#34;`
+	Values      []interface{} `json:&#34;values&#34;`
+	Aggregation Aggregation   `json:&#34;aggregation,omitempty&#34;`
+}</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="Criterion.IsExactMatch" data-kind="f">
+	func
+	(self *Criterion)
+	<a title="View Source" href="">IsExactMatch</a>
+	<a class="permalink" href="#IsExactMatch">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Criterion) IsExactMatch() bool</pre>
+</div>
+
+
+
+
+<h4 id="Criterion.String" data-kind="f">
+	func
+	(self *Criterion)
+	<a title="View Source" href="">String</a>
+	<a class="permalink" href="#String">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Criterion) String() string</pre>
+</div>
+
+
+
+
+<h3 id="Filter" data-kind="t">
+	type
+	<a title="View Source" href="">Filter</a>
+	<a class="permalink" href="#Filter">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Filter struct {
+	Spec          string
+	MatchAll      bool
+	Offset        int
+	Limit         int
+	Criteria      []Criterion
+	Sort          []string
+	Fields        []string
+	Options       map[string]interface{}
+	Paginate      bool
+	IdentityField string
+	Normalizer    NormalizerFunc `json:&#34;-&#34; bson:&#34;-&#34; pivot:&#34;-&#34;`
+	Conjunction   ConjunctionType
+}</pre>
+</div>
+
+
+
+
+
+
+<h4 id="All" data-kind="f">
+	func <a title="View Source" href="">All</a>
+	<a class="permalink" href="#All">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func All() *Filter</pre>
+</div>
+
+
+
+
+
+
+
+
+<h4 id="Copy" data-kind="f">
+	func <a title="View Source" href="">Copy</a>
+	<a class="permalink" href="#Copy">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func Copy(other *Filter) Filter</pre>
+</div>
+
+
+
+
+
+
+<h4 id="FromMap" data-kind="f">
+	func <a title="View Source" href="">FromMap</a>
+	<a class="permalink" href="#FromMap">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FromMap(in map[string]interface{}) (*Filter, error)</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="MakeFilter" data-kind="f">
+	func <a title="View Source" href="">MakeFilter</a>
+	<a class="permalink" href="#MakeFilter">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func MakeFilter(specs ...string) Filter</pre>
+</div>
+
+
+
+
+
+
+<h4 id="MustParse" data-kind="f">
+	func <a title="View Source" href="">MustParse</a>
+	<a class="permalink" href="#MustParse">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func MustParse(in interface{}) *Filter</pre>
+</div>
+
+
+
+
+<h4 id="New" data-kind="f">
+	func <a title="View Source" href="">New</a>
+	<a class="permalink" href="#New">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func New() *Filter</pre>
+</div>
+
+
+
+
+
+
+
+
+<h4 id="Null" data-kind="f">
+	func <a title="View Source" href="">Null</a>
+	<a class="permalink" href="#Null">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func Null() *Filter</pre>
+</div>
+
+
+
+
+<h4 id="Parse" data-kind="f">
+	func <a title="View Source" href="">Parse</a>
+	<a class="permalink" href="#Parse">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func Parse(in interface{}) (*Filter, error)</pre>
+</div>
+
+
+
+
+<h4 id="ParseSpec" data-kind="f">
+	func <a title="View Source" href="">ParseSpec</a>
+	<a class="permalink" href="#ParseSpec">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ParseSpec(spec string) (*Filter, error)</pre>
+</div>
+
+<p><p>Filter syntax definition</p>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="Filter.AddCriteria" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">AddCriteria</a>
+	<a class="permalink" href="#AddCriteria">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) AddCriteria(criteria ...Criterion) *Filter</pre>
+</div>
+
+
+
+
+
+
+<h4 id="Filter.ApplyOptions" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">ApplyOptions</a>
+	<a class="permalink" href="#ApplyOptions">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) ApplyOptions(in interface{}) error</pre>
+</div>
+
+
+
+
+<h4 id="Filter.BoundedBy" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">BoundedBy</a>
+	<a class="permalink" href="#BoundedBy">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) BoundedBy(limit int, offset int) *Filter</pre>
+</div>
+
+
+
+
+
+
+<h4 id="Filter.CriteriaFields" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">CriteriaFields</a>
+	<a class="permalink" href="#CriteriaFields">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) CriteriaFields() []string</pre>
+</div>
+
+
+
+
+
+
+<h4 id="Filter.GetFirstValue" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">GetFirstValue</a>
+	<a class="permalink" href="#GetFirstValue">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) GetFirstValue() (interface{}, bool)</pre>
+</div>
+
+
+
+
+<h4 id="Filter.GetIdentityValue" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">GetIdentityValue</a>
+	<a class="permalink" href="#GetIdentityValue">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) GetIdentityValue() (interface{}, bool)</pre>
+</div>
+
+
+
+
+<h4 id="Filter.GetSort" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">GetSort</a>
+	<a class="permalink" href="#GetSort">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) GetSort() []SortBy</pre>
+</div>
+
+
+
+
+<h4 id="Filter.GetValues" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">GetValues</a>
+	<a class="permalink" href="#GetValues">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) GetValues(field string) ([]interface{}, bool)</pre>
+</div>
+
+
+
+
+<h4 id="Filter.IdOnly" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">IdOnly</a>
+	<a class="permalink" href="#IdOnly">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) IdOnly() bool</pre>
+</div>
+
+
+
+
+<h4 id="Filter.IsMatchAll" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">IsMatchAll</a>
+	<a class="permalink" href="#IsMatchAll">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) IsMatchAll() bool</pre>
+</div>
+
+
+
+
+
+
+<h4 id="Filter.MatchesRecord" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">MatchesRecord</a>
+	<a class="permalink" href="#MatchesRecord">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) MatchesRecord(record *dal.Record) bool</pre>
+</div>
+
+
+
+
+
+
+
+
+<h4 id="Filter.NewFromMap" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">NewFromMap</a>
+	<a class="permalink" href="#NewFromMap">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) NewFromMap(in map[string]interface{}) (*Filter, error)</pre>
+</div>
+
+
+
+
+<h4 id="Filter.NewFromSpec" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">NewFromSpec</a>
+	<a class="permalink" href="#NewFromSpec">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) NewFromSpec(specs ...string) (*Filter, error)</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+<h4 id="Filter.SortBy" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">SortBy</a>
+	<a class="permalink" href="#SortBy">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) SortBy(fields ...string) *Filter</pre>
+</div>
+
+
+
+
+<h4 id="Filter.String" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">String</a>
+	<a class="permalink" href="#String">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) String() string</pre>
+</div>
+
+
+
+
+<h4 id="Filter.WithFields" data-kind="f">
+	func
+	(self *Filter)
+	<a title="View Source" href="">WithFields</a>
+	<a class="permalink" href="#WithFields">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Filter) WithFields(fields ...string) *Filter</pre>
+</div>
+
+
+
+
+<h3 id="Generator" data-kind="t">
+	type
+	<a title="View Source" href="">Generator</a>
+	<a class="permalink" href="#Generator">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	
+	
+	<pre>type Generator struct {
+	IGenerator
+  // contains filtered or unexported fields
+}</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="Generator.Finalize" data-kind="f">
+	func
+	(self *Generator)
+	<a title="View Source" href="">Finalize</a>
+	<a class="permalink" href="#Finalize">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Generator) Finalize(_ *Filter) error</pre>
+</div>
+
+
+
+
+<h4 id="Generator.Payload" data-kind="f">
+	func
+	(self *Generator)
+	<a title="View Source" href="">Payload</a>
+	<a class="permalink" href="#Payload">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Generator) Payload() []byte</pre>
+</div>
+
+
+
+
+<h4 id="Generator.Push" data-kind="f">
+	func
+	(self *Generator)
+	<a title="View Source" href="">Push</a>
+	<a class="permalink" href="#Push">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Generator) Push(data []byte)</pre>
+</div>
+
+
+
+
+<h4 id="Generator.Reset" data-kind="f">
+	func
+	(self *Generator)
+	<a title="View Source" href="">Reset</a>
+	<a class="permalink" href="#Reset">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Generator) Reset()</pre>
+</div>
+
+
+
+
+<h4 id="Generator.Set" data-kind="f">
+	func
+	(self *Generator)
+	<a title="View Source" href="">Set</a>
+	<a class="permalink" href="#Set">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *Generator) Set(data []byte)</pre>
+</div>
+
+
+
+
+<h3 id="IGenerator" data-kind="t">
+	type
+	<a title="View Source" href="">IGenerator</a>
+	<a class="permalink" href="#IGenerator">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type IGenerator interface {
+	Initialize(string) error
+	Finalize(*Filter) error
+	Push([]byte)
+	Set([]byte)
+	Payload() []byte
+	WithCriterion(Criterion) error
+	OrCriterion(Criterion) error
+	WithField(string) error
+	GroupByField(string) error
+	AggregateByField(Aggregation, string) error
+	SetOption(string, interface{}) error
+	GetValues() []interface{}
+	Reset()
+}</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="NormalizerFunc" data-kind="t">
+	type
+	<a title="View Source" href="">NormalizerFunc</a>
+	<a class="permalink" href="#NormalizerFunc">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type NormalizerFunc func(in string) string // {}
+</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="SortBy" data-kind="t">
+	type
+	<a title="View Source" href="">SortBy</a>
+	<a class="permalink" href="#SortBy">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type SortBy struct {
+	Field      string
+	Descending bool
+}</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<h3 id="pkg-packages">
+	Packages
+	<a class="permalink" href="#pkg-packages">&#182;</a>
+</h3>
+
+<table class="table table-compact table-hover">
+<thead>
+	<tr>
+		<th class="text-left">Package</th>
+		<th class="text-left">Synopsis</th>
+	</tr>
+</thead>
+<tbody>
+	
+	<tr>
+		<td class="text-left">
+			<a href="/pkg/filter/generators.html">generators</a>
+		</td>
+		<td class="text-left">
+			
+		</td>
+	</tr>
+	
+</tbody>
+</table>
+
+        </div>
+        <div id="x-footer" class="clearfix">
+            <div class="container">
+                
+
+                <span class="pull-right">
+                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/pivot">go-owndoc</a></a></i> v0.0.3
+                    <span class="text-muted">|</span>
+                    <a href="#">Back to top</a>
+                </span>
+            </div>
+        </div>
+
+        <script src="/_/jquery-2.0.3.min.js"></script>
+        <script src="/_/bootstrap.min.js"></script>
+        <script src="/_/site.js"></script>
+    </body>
+</html>

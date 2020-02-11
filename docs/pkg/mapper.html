@@ -1,0 +1,538 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="/_/bootstrap.min.css" rel="stylesheet" />
+        <link href="/_/site.css" rel="stylesheet" />
+        <title>pivot :: owndoc</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">
+                        <strong>go-owndoc</strong>
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class=""><a href="/">Home</a></li>
+
+                        <li class="dropdown active">
+                            <a
+                                href="#"
+                                class="dropdown-toggle"
+                                data-toggle="dropdown"
+                                role="button"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                            >
+                                Packages
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                
+<li>
+    <a href="/pkg/pivot.html">pivot</a>
+</li>
+
+
+<li>
+    <a href="/pkg/backends.html">backends</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/client.html">client</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/dal.html">dal</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/filter.html">filter</a>
+</li>
+
+
+<li>
+    <a href="/pkg/filter/generators.html">filter/generators</a>
+</li>
+
+
+
+
+<li>
+    <a href="/pkg/mapper.html">mapper</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/util.html">util</a>
+</li>
+
+
+                            </ul>
+                        </li>
+
+                        <li class="">
+                            <a href="/_/about">About</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            
+<br>
+<div class="clearfix" id="x-projnav">
+	<a href="URL"><strong>pivot:</strong></a>
+	
+	<a href="/pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">mapper</span>
+	
+
+	<span class="pull-right">
+		<a href="#pkg-index">Index</a>
+		<span class="text-muted">|</span>
+		<a href="#pkg-files">Files</a>
+	</span>
+</div>
+
+<span class="pull-right">Doc Coverage: 34%</span>
+<h2 id="pkg-overview">package mapper</h2>
+
+<p>
+	<code>import "github.com/ghetzel/pivot/mapper"</code>
+</p>
+
+
+
+<h3 id="pkg-index" class="section-header">
+	Index <a class="permalink" href="#pkg-index">&#182;</a>
+</h3>
+
+<ul class="list-unstyled">
+	
+	
+
+	
+	
+
+	
+	
+
+	
+	
+
+	
+	
+    <li>
+		<a href="#Mapper">type Mapper</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Model">type Model</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Model.NewModel">
+					func NewModel(db backends.Backend, collection *dal.Collection) *Model
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				<a href="#Model.All">
+					func
+					(self *Model)
+					All(into interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Average">
+					func
+					(self *Model)
+					Average(field string, flt interface{}) (float64, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Count">
+					func
+					(self *Model)
+					Count(flt interface{}) (uint64, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Create">
+					func
+					(self *Model)
+					Create(from interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.CreateOrUpdate">
+					func
+					(self *Model)
+					CreateOrUpdate(id interface{}, from interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Delete">
+					func
+					(self *Model)
+					Delete(ids ...interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.DeleteQuery">
+					func
+					(self *Model)
+					DeleteQuery(flt interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Drop">
+					func
+					(self *Model)
+					Drop() error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Each">
+					func
+					(self *Model)
+					Each(destZeroValue interface{}, resultFn ResultFunc) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Exists">
+					func
+					(self *Model)
+					Exists(id interface{}) bool
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Find">
+					func
+					(self *Model)
+					Find(flt interface{}, into interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.FindFunc">
+					func
+					(self *Model)
+					FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Get">
+					func
+					(self *Model)
+					Get(id interface{}, into interface{}) error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.GetBackend">
+					func
+					(self *Model)
+					GetBackend() backends.Backend
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.GetCollection">
+					func
+					(self *Model)
+					GetCollection() *dal.Collection
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.GroupBy">
+					func
+					(self *Model)
+					GroupBy(fields []string, aggregates []filter.Aggregate, flt interface{}) (*dal.RecordSet, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.List">
+					func
+					(self *Model)
+					List(fields []string) (map[string][]interface{}, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.ListWithFilter">
+					func
+					(self *Model)
+					ListWithFilter(fields []string, flt interface{}) (map[string][]interface{}, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Maximum">
+					func
+					(self *Model)
+					Maximum(field string, flt interface{}) (float64, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Migrate">
+					func
+					(self *Model)
+					Migrate() error
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Minimum">
+					func
+					(self *Model)
+					Minimum(field string, flt interface{}) (float64, error)
+				</a>
+			</li>
+			
+			
+			
+			
+			
+			<li>
+				<a href="#Model.String">
+					func
+					(self *Model)
+					String() string
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Sum">
+					func
+					(self *Model)
+					Sum(field string, flt interface{}) (float64, error)
+				</a>
+			</li>
+			
+			
+			
+			<li>
+				<a href="#Model.Update">
+					func
+					(self *Model)
+					Update(from interface{}) error
+				</a>
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#ResultFunc">type ResultFunc</a>
+
+		
+		
+	</li>
+	
+</ul>
+
+
+
+
+<h4 id="pkg-files">
+	<a href="https://github.com/ghetzel/pivot">Package Files</a>
+	<a class="permalink" href="#pkg-files">&#182;</a>
+</h4>
+
+<table class="table table-compact table-hover">
+<thead>
+	<tr>
+		<th class="text-left">Filename</th>
+		<th class="text-right">Size</th>
+		<th class="text-right"><abbr title="Source Lines Of Code">SLOC</abbr></th>
+		<th class="text-right"><code>func</code></th>
+		<th class="text-right"><code>type</code></th>
+		<th class="text-right"><code>const</code></th>
+		<th class="text-right"><code>var</code></th>
+	</tr>
+</thead>
+<tbody>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="model.go">model.go</a>
+			
+		</td>
+		<td class="text-right">11KB</td>
+		<td class="text-right">294 lines</td>
+		<td class="text-right">25</td>
+		<td class="text-right">3</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+        </div>
+        <div id="x-footer" class="clearfix">
+            <div class="container">
+                
+
+                <span class="pull-right">
+                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/pivot">go-owndoc</a></a></i> v0.0.3
+                    <span class="text-muted">|</span>
+                    <a href="#">Back to top</a>
+                </span>
+            </div>
+        </div>
+
+        <script src="/_/jquery-2.0.3.min.js"></script>
+        <script src="/_/bootstrap.min.js"></script>
+        <script src="/_/site.js"></script>
+    </body>
+</html>

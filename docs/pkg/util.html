@@ -1,0 +1,432 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="/_/bootstrap.min.css" rel="stylesheet" />
+        <link href="/_/site.css" rel="stylesheet" />
+        <title>pivot :: owndoc</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">
+                        <strong>go-owndoc</strong>
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class=""><a href="/">Home</a></li>
+
+                        <li class="dropdown active">
+                            <a
+                                href="#"
+                                class="dropdown-toggle"
+                                data-toggle="dropdown"
+                                role="button"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                            >
+                                Packages
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                
+<li>
+    <a href="/pkg/pivot.html">pivot</a>
+</li>
+
+
+<li>
+    <a href="/pkg/backends.html">backends</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/client.html">client</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/dal.html">dal</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/filter.html">filter</a>
+</li>
+
+
+<li>
+    <a href="/pkg/filter/generators.html">filter/generators</a>
+</li>
+
+
+
+
+<li>
+    <a href="/pkg/mapper.html">mapper</a>
+</li>
+
+
+
+<li>
+    <a href="/pkg/util.html">util</a>
+</li>
+
+
+                            </ul>
+                        </li>
+
+                        <li class="">
+                            <a href="/_/about">About</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            
+<br>
+<div class="clearfix" id="x-projnav">
+	<a href="URL"><strong>pivot:</strong></a>
+	
+	<a href="/pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">util</span>
+	
+
+	<span class="pull-right">
+		<a href="#pkg-index">Index</a>
+		<span class="text-muted">|</span>
+		<a href="#pkg-files">Files</a>
+	</span>
+</div>
+
+<span class="pull-right">Doc Coverage: 0%</span>
+<h2 id="pkg-overview">package util</h2>
+
+<p>
+	<code>import "github.com/ghetzel/pivot/util"</code>
+</p>
+
+
+
+<h3 id="pkg-index" class="section-header">
+	Index <a class="permalink" href="#pkg-index">&#182;</a>
+</h3>
+
+<ul class="list-unstyled">
+	
+	
+
+	
+	
+    <li><a href="#pkg-variables">Variables</a></li>
+	
+
+	
+	
+
+	
+	
+    <li>
+		
+		<a href="#AnyFeatures">func AnyFeatures(names ...string) bool</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#DisableFeature">func DisableFeature(name string)</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#EnableFeature">func EnableFeature(name string)</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#Features">func Features(names ...string) bool</a>
+		
+	</li>
+	
+
+	
+	
+    <li>
+		<a href="#Endpoint">type Endpoint</a>
+
+		
+		
+		<ul>
+			
+
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#EndpointResponseFunc">type EndpointResponseFunc</a>
+
+		
+		
+	</li>
+	
+    <li>
+		<a href="#Status">type Status</a>
+
+		
+		
+		<ul>
+			
+
+			
+			
+		</ul>
+		
+	</li>
+	
+</ul>
+
+
+
+
+<h4 id="pkg-files">
+	<a href="https://github.com/ghetzel/pivot">Package Files</a>
+	<a class="permalink" href="#pkg-files">&#182;</a>
+</h4>
+
+<table class="table table-compact table-hover">
+<thead>
+	<tr>
+		<th class="text-left">Filename</th>
+		<th class="text-right">Size</th>
+		<th class="text-right"><abbr title="Source Lines Of Code">SLOC</abbr></th>
+		<th class="text-right"><code>func</code></th>
+		<th class="text-right"><code>type</code></th>
+		<th class="text-right"><code>const</code></th>
+		<th class="text-right"><code>var</code></th>
+	</tr>
+</thead>
+<tbody>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="features.go">features.go</a>
+			
+		</td>
+		<td class="text-right">474B</td>
+		<td class="text-right">24 lines</td>
+		<td class="text-right">4</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="http.go">http.go</a>
+			
+		</td>
+		<td class="text-right">249B</td>
+		<td class="text-right">11 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right">2</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="types.go">types.go</a>
+			
+		</td>
+		<td class="text-right">272B</td>
+		<td class="text-right">9 lines</td>
+		<td class="text-right"></td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right">1</td>
+	</tr>
+	
+</tbody>
+</table>
+
+
+
+
+
+
+<h3 id="pkg-variables">
+	Variables
+	<a class="permalink" href="#pkg-variables">&#182;</a>
+</h3>
+<div class="decl" data-kind="v">
+	<a title="View Source" href="">&#10070;</a>
+
+	<pre>
+var <span id="RecordStructTag">RecordStructTag</span> = `pivot`
+</pre>
+</div>
+
+
+
+
+
+<h3 id="AnyFeatures" data-kind="f">
+	func <a title="View Source" href="">AnyFeatures</a>
+	<a class="permalink" href="#AnyFeatures">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func AnyFeatures(names ...string) bool</pre>
+</div>
+
+
+
+<h3 id="DisableFeature" data-kind="f">
+	func <a title="View Source" href="">DisableFeature</a>
+	<a class="permalink" href="#DisableFeature">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func DisableFeature(name string)</pre>
+</div>
+
+
+
+<h3 id="EnableFeature" data-kind="f">
+	func <a title="View Source" href="">EnableFeature</a>
+	<a class="permalink" href="#EnableFeature">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func EnableFeature(name string)</pre>
+</div>
+
+
+
+<h3 id="Features" data-kind="f">
+	func <a title="View Source" href="">Features</a>
+	<a class="permalink" href="#Features">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func Features(names ...string) bool</pre>
+</div>
+
+
+
+
+
+
+<h3 id="Endpoint" data-kind="t">
+	type
+	<a title="View Source" href="">Endpoint</a>
+	<a class="permalink" href="#Endpoint">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Endpoint struct {
+	BackendName string
+	Method      string
+	Path        string
+	Handler     EndpointResponseFunc
+}</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="EndpointResponseFunc" data-kind="t">
+	type
+	<a title="View Source" href="">EndpointResponseFunc</a>
+	<a class="permalink" href="#EndpointResponseFunc">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type EndpointResponseFunc func(*http.Request, map[string]string) (int, interface{}, error)</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="Status" data-kind="t">
+	type
+	<a title="View Source" href="">Status</a>
+	<a class="permalink" href="#Status">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type Status struct {
+	OK          bool   `json:&#34;ok&#34;`
+	Application string `json:&#34;application&#34;`
+	Version     string `json:&#34;version&#34;`
+	Backend     string `json:&#34;backend,omitempty&#34;`
+	Indexer     string `json:&#34;indexer,omitempty&#34;`
+}</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+        <div id="x-footer" class="clearfix">
+            <div class="container">
+                
+
+                <span class="pull-right">
+                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/pivot">go-owndoc</a></a></i> v0.0.3
+                    <span class="text-muted">|</span>
+                    <a href="#">Back to top</a>
+                </span>
+            </div>
+        </div>
+
+        <script src="/_/jquery-2.0.3.min.js"></script>
+        <script src="/_/bootstrap.min.js"></script>
+        <script src="/_/site.js"></script>
+    </body>
+</html>

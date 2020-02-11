@@ -1,0 +1,601 @@
+{
+    "Name": "mapper",
+    "CanonicalImportPath": "github.com/ghetzel/pivot/mapper",
+    "ImportPath": "mapper",
+    "ParentPackage": "pivot",
+    "URL": "https://github.com/ghetzel/pivot",
+    "Synopsis": "",
+    "MainFunction": false,
+    "CommentWordCount": 177,
+    "LineCount": 392,
+    "SourceLineCount": 294,
+    "FunctionCount": 25,
+    "TypeCount": 3,
+    "ConstantCount": 0,
+    "VariableCount": 0,
+    "Statistics": {
+        "Mean": 0.3385,
+        "StdDev": 0.4666,
+        "GeometricMean": 1,
+        "HarmonicMean": 0,
+        "Median": 0,
+        "Minimum": 0,
+        "Maximum": 1
+    },
+    "Files": [
+        {
+            "Name": "model.go",
+            "Imports": [
+                {
+                    "PackageName": "fmt",
+                    "Alias": "fmt"
+                },
+                {
+                    "PackageName": "reflect",
+                    "Alias": "reflect"
+                },
+                {
+                    "PackageName": "sort",
+                    "Alias": "sort"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/log",
+                    "Alias": "log"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
+                    "Alias": "sliceutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
+                    "Alias": "typeutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/backends",
+                    "Alias": "backends"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/dal",
+                    "Alias": "dal"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/filter",
+                    "Alias": "filter"
+                }
+            ],
+            "Size": 11124,
+            "LineCount": 392,
+            "SourceLineCount": 294,
+            "FunctionCount": 25,
+            "TypeCount": 3,
+            "ConstantCount": 0,
+            "VariableCount": 0
+        }
+    ],
+    "Types": {
+        "Mapper": {
+            "Name": "Mapper",
+            "Source": "dHlwZSBNYXBwZXIgPSBiYWNrZW5kcy5NYXBwZXI="
+        },
+        "Model": {
+            "Name": "Model",
+            "MetaType": "struct",
+            "Methods": [
+                {
+                    "Name": "All",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "into",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "All(into interface{}) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Average",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "field",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "flt",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "float64"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Average(field string, flt interface{}) (float64, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Count",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "flt",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "uint64"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Count(flt interface{}) (uint64, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Create",
+                    "Comment": "Creates and saves a new instance of the model from the given struct or dal.Record.",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "from",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Create(from interface{}) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "CreateOrUpdate",
+                    "Comment": "Creates or updates an instance of the model depending on whether it exists or not.",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "id",
+                            "Type": "interface{}"
+                        },
+                        {
+                            "Name": "from",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "CreateOrUpdate(id interface{}, from interface{}) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Delete",
+                    "Comment": "Delete instances of the model identified by the given IDs",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "ids",
+                            "Type": "...interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Delete(ids ...interface{}) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "DeleteQuery",
+                    "Comment": "Delete all records matching the given query.",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "flt",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "DeleteQuery(flt interface{}) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Drop",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Drop() error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Each",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "destZeroValue",
+                            "Type": "interface{}"
+                        },
+                        {
+                            "Name": "resultFn",
+                            "Type": "ResultFunc"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Each(destZeroValue interface{}, resultFn ResultFunc) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Exists",
+                    "Comment": "Tests whether a record exists for the given ID.",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "id",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "bool"
+                        }
+                    ],
+                    "Signature": "Exists(id interface{}) bool",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Find",
+                    "Comment": "Perform a query for instances of the model that match the given filter.Filter.\nResults will be returned in the slice or array pointed to by the into parameter, or\nif into points to a dal.RecordSet, the RecordSet resulting from the query will be returned\nas-is.",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "flt",
+                            "Type": "interface{}"
+                        },
+                        {
+                            "Name": "into",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Find(flt interface{}, into interface{}) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "FindFunc",
+                    "Comment": "Perform a query for instances of the model that match the given filter.Filter.\nThe given callback function will be called once per result.",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "flt",
+                            "Type": "interface{}"
+                        },
+                        {
+                            "Name": "destZeroValue",
+                            "Type": "interface{}"
+                        },
+                        {
+                            "Name": "resultFn",
+                            "Type": "ResultFunc"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Get",
+                    "Comment": "Retrieves an instance of the model identified by the given ID and populates the value pointed to\nby the into parameter.  Structs and dal.Record instances can be populated.",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "id",
+                            "Type": "interface{}"
+                        },
+                        {
+                            "Name": "into",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Get(id interface{}, into interface{}) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "GetBackend",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "backends.Backend"
+                        }
+                    ],
+                    "Signature": "GetBackend() backends.Backend",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "GetCollection",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "*dal.Collection"
+                        }
+                    ],
+                    "Signature": "GetCollection() *dal.Collection",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "GroupBy",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "fields",
+                            "Type": "[]string"
+                        },
+                        {
+                            "Name": "aggregates",
+                            "Type": "[]filter.Aggregate"
+                        },
+                        {
+                            "Name": "flt",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*dal.RecordSet"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "GroupBy(fields []string, aggregates []filter.Aggregate, flt interface{}) (*dal.RecordSet, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "List",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "fields",
+                            "Type": "[]string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "map[string][]interface{}"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "List(fields []string) (map[string][]interface{}, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "ListWithFilter",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "fields",
+                            "Type": "[]string"
+                        },
+                        {
+                            "Name": "flt",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "map[string][]interface{}"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "ListWithFilter(fields []string, flt interface{}) (map[string][]interface{}, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Maximum",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "field",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "flt",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "float64"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Maximum(field string, flt interface{}) (float64, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Migrate",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Migrate() error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Minimum",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "field",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "flt",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "float64"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Minimum(field string, flt interface{}) (float64, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "NewModel",
+                    "Arguments": [
+                        {
+                            "Name": "db",
+                            "Type": "backends.Backend"
+                        },
+                        {
+                            "Name": "collection",
+                            "Type": "*dal.Collection"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*Model"
+                        }
+                    ],
+                    "Signature": "NewModel(db backends.Backend, collection *dal.Collection) *Model",
+                    "Source": "ewoJbW9kZWwgOj0gbmV3KE1vZGVsKQoJbW9kZWwuZGIgPSBkYgoJbW9kZWwuY29sbGVjdGlvbiA9IGNvbGxlY3Rpb24KCWlmIG1vZGVsLmNvbGxlY3Rpb24uRmllbGRzID09IG5pbCB7CgkJbW9kZWwuY29sbGVjdGlvbi5GaWVsZHMgPSBtYWtlKFtdZGFsLkZpZWxkLCAwKQoJfQoJaWYgdiA6PSBjb2xsZWN0aW9uLklkZW50aXR5RmllbGQ7IHYgPT0gYGAgewoJCW1vZGVsLmNvbGxlY3Rpb24uSWRlbnRpdHlGaWVsZCA9IGRhbC5EZWZhdWx0SWRlbnRpdHlGaWVsZAoJfSBlbHNlIHsKCQltb2RlbC5jb2xsZWN0aW9uLklkZW50aXR5RmllbGQgPSB2Cgl9CglpZiB2IDo9IGNvbGxlY3Rpb24uSWRlbnRpdHlGaWVsZFR5cGU7IHYgPT0gYGAgewoJCW1vZGVsLmNvbGxlY3Rpb24uSWRlbnRpdHlGaWVsZFR5cGUgPSBkYWwuRGVmYXVsdElkZW50aXR5RmllbGRUeXBlCgl9IGVsc2UgewoJCW1vZGVsLmNvbGxlY3Rpb24uSWRlbnRpdHlGaWVsZFR5cGUgPSB2Cgl9CglkYi5SZWdpc3RlckNvbGxlY3Rpb24oY29sbGVjdGlvbikKCWNvbGxlY3Rpb24uU2V0QmFja2VuZChkYikKCXJldHVybiBtb2RlbAp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "String",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "string"
+                        }
+                    ],
+                    "Signature": "String() string",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Sum",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "field",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "flt",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "float64"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Sum(field string, flt interface{}) (float64, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Update",
+                    "Comment": "Updates and saves an existing instance of the model from the given struct or dal.Record.",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "from",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Update(from interface{}) error",
+                    "IsPackageLevel": false
+                }
+            ],
+            "Source": "dHlwZSBNb2RlbCBzdHJ1Y3QgewoJTWFwcGVyCgp9Cg==",
+            "HasUnexportedFields": true
+        },
+        "ResultFunc": {
+            "Name": "ResultFunc",
+            "Source": "dHlwZSBSZXN1bHRGdW5jID0gYmFja2VuZHMuUmVzdWx0RnVuYw=="
+        }
+    }
+}
