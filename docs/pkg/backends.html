@@ -5,7 +5,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link href="_/bootstrap.min.css" rel="stylesheet" integrity="sha384-8+rznmq/k0KZkJlZhnuPEVkbRD7tA0wcFEjY48dajGWn3Xc1MasJwS8/tJ7OEsKW" />
+        <link href="_/bootstrap.min.css" rel="stylesheet" />
         <link href="_/site.css" rel="stylesheet" />
         <title>pivot - Golang Package Documentation</title>
     </head>
@@ -5153,6 +5153,19 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 
 
+<h4 id="NewSqlBackend" data-kind="f">
+	func <a title="View Source" href="">NewSqlBackend</a>
+	<a class="permalink" href="#NewSqlBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
 <h4 id="NewFilesystemBackend" data-kind="f">
 	func <a title="View Source" href="">NewFilesystemBackend</a>
 	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
@@ -5179,14 +5192,14 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 
 
-<h4 id="NewDynamoBackend" data-kind="f">
-	func <a title="View Source" href="">NewDynamoBackend</a>
-	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
+<h4 id="NewRedisBackend" data-kind="f">
+	func <a title="View Source" href="">NewRedisBackend</a>
+	<a class="permalink" href="#NewRedisBackend">&#182;</a>
 </h4>
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
+	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -5205,27 +5218,14 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 
 
-<h4 id="NewRedisBackend" data-kind="f">
-	func <a title="View Source" href="">NewRedisBackend</a>
-	<a class="permalink" href="#NewRedisBackend">&#182;</a>
+<h4 id="NewDynamoBackend" data-kind="f">
+	func <a title="View Source" href="">NewDynamoBackend</a>
+	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
 </h4>
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-<h4 id="NewSqlBackend" data-kind="f">
-	func <a title="View Source" href="">NewSqlBackend</a>
-	<a class="permalink" href="#NewSqlBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
+	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -11490,8 +11490,8 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
             </div>
         </div>
 
-        <script src="/_/jquery-2.0.3.min.js" integrity="sha384-5BJxsRUsHmz1Kk/hmquvrNXoqth2fWO8TW4G5MbuwrD7g7eyanb4SJ9KV+VGChAT"></script>
-        <script src="/_/bootstrap.min.js" integrity="sha384-Nud2SriDt2fZ+u85IBC48Yn9p+l4AGlapnX1EGA2KrnZjYJx8sxKnw/CIxc1wU1B"></script>
+        <script src="/_/jquery-2.0.3.min.js"></script>
+        <script src="/_/bootstrap.min.js"></script>
         <script src="/_/site.js"></script>
     </body>
 </html>
