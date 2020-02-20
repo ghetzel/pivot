@@ -360,8 +360,8 @@ func (self *Record) toMap(collection *Collection, idFieldName string, into inter
 		if existing, ok := data[k]; ok {
 			if tm, ok := existing.(time.Time); ok && tm.IsZero() {
 				continue
-			} else if bv, ok := existing.(bool); ok {
-				data[k] = bv
+			} else if _, ok := existing.(bool); ok {
+				data[k] = v
 				continue
 			} else if !typeutil.IsZero(existing) && typeutil.IsZero(v) {
 				continue
