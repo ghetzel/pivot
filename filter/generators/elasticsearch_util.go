@@ -3,10 +3,12 @@ package generators
 import (
 	"fmt"
 
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/filter"
 )
 
 var ElasticsearchExactMatchQueryType = `term`
+var ElasticsearchFulltextDefaultConjunctionAnd = true
 
 func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[string]interface{}, error) {
 	c := make(map[string]interface{})
@@ -111,12 +113,12 @@ func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map
 }
 
 func esCriterionOperatorPattern(gen *Elasticsearch, opname string, criterion filter.Criterion) (map[string]interface{}, error) {
-	c := make(map[string]interface{})
+	var c = make(map[string]interface{})
 
 	if len(criterion.Values) == 0 {
 		return nil, fmt.Errorf("The not criterion must have at least one value")
 	} else {
-		or_regexp := make([]map[string]interface{}, 0)
+		var or_regexp = make([]map[string]interface{}, 0)
 
 		for _, value := range criterion.Values {
 			gen.values = append(gen.values, value)
@@ -165,7 +167,7 @@ func esCriterionOperatorPattern(gen *Elasticsearch, opname string, criterion fil
 }
 
 func esCriterionOperatorRange(gen *Elasticsearch, criterion filter.Criterion, operator string) (map[string]interface{}, error) {
-	c := make(map[string]interface{})
+	var c = make(map[string]interface{})
 
 	if l := len(criterion.Values); l == 1 {
 		gen.values = append(gen.values, criterion.Values[0])
@@ -177,6 +179,38 @@ func esCriterionOperatorRange(gen *Elasticsearch, criterion filter.Criterion, op
 		}
 	} else {
 		return c, fmt.Errorf("Ranging criteria can only accept one value, %d given", l)
+	}
+
+	return c, nil
+}
+
+func esCriterionOperatorFulltext(gen *Elasticsearch, criterion filter.Criterion) (map[string]interface{}, error) {
+	var c = make(map[string]interface{})
+
+	var or_queries = make([]map[string]interface{}, 0)
+	var defop string
+
+	if ElasticsearchFulltextDefaultConjunctionAnd {
+		defop = `AND`
+	} else {
+		defop = `OR`
+	}
+
+	for _, value := range criterion.Values {
+		gen.values = append(gen.values, value)
+
+		or_queries = append(or_queries, map[string]interface{}{
+			`query_string`: map[string]interface{}{
+				`query`:            typeutil.String(value),
+				`default_field`:    criterion.Field,
+				`default_operator`: defop,
+				`lenient`:          true,
+			},
+		})
+	}
+
+	c[`bool`] = map[string]interface{}{
+		`should`: or_queries,
 	}
 
 	return c, nil

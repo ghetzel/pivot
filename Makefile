@@ -28,5 +28,5 @@ $(EXAMPLES):
 	go build --tags json1 -o bin/example-$(notdir $(@)) $(@)/*.go
 
 build: $(EXAMPLES)
-	go build --tags json1 -i -o bin/pivot pivot/*.go
+	go build --tags json1 -i -o bin/pivot cmd/pivot/*.go
 	which pivot && cp -v bin/pivot `which pivot` || true

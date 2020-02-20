@@ -1,6 +1,0 @@
-root: src
-
-start:
-  command:          'bash -c "curl -o index.html ${DIECAST_ADDRESS}/ && curl -o style.css ${DIECAST_ADDRESS}/style.scss"'
-  delay:            '250ms'
-  exitOnCompletion: true

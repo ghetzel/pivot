@@ -151,6 +151,8 @@ func (self *Elasticsearch) WithCriterion(criterion filter.Criterion) error {
 		c, err = esCriterionOperatorPattern(self, criterion.Operator, criterion)
 	case `gt`, `gte`, `lt`, `lte`:
 		c, err = esCriterionOperatorRange(self, criterion, criterion.Operator)
+	case `fulltext`:
+		c, err = esCriterionOperatorFulltext(self, criterion)
 	default:
 		return fmt.Errorf("Unimplemented operator '%s'", criterion.Operator)
 	}
