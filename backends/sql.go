@@ -318,7 +318,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 
 				// render the query into the final SQL
 				if stmt, err := filter.Render(queryGen, collection.Name, filter.Null()); err == nil {
-					querylog.Debugf("[%v] %s %v", self, string(stmt[:]), queryGen.GetValues())
+					querylog.Debugf("[%v] %s", self, string(stmt[:]))
 
 					// execute the SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
@@ -364,7 +364,7 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 
 				if err := queryGen.Initialize(collection.Name); err == nil {
 					if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-						querylog.Debugf("[%v] %s %v", self, string(stmt[:]), queryGen.GetValues())
+						querylog.Debugf("[%v] %s", self, string(stmt[:]))
 
 						// perform query
 						if rows, err := tx.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
@@ -400,7 +400,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 
 			if err := queryGen.Initialize(collection.Name); err == nil {
 				if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-					querylog.Debugf("[%v] %s %v", self, string(stmt[:]), queryGen.GetValues())
+					querylog.Debugf("[%v] %s", self, string(stmt[:]))
 
 					// perform query
 					if rows, err := self.db.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
@@ -498,7 +498,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 
 				// generate SQL
 				if stmt, err := filter.Render(queryGen, collection.Name, recordUpdateFilter); err == nil {
-					querylog.Debugf("[%v] %s %v", self, string(stmt[:]), queryGen.GetValues())
+					querylog.Debugf("[%v] %s", self, string(stmt[:]))
 
 					// execute SQL
 					if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err != nil {
@@ -553,7 +553,7 @@ func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
 
 			// generate SQL
 			if stmt, err := filter.Render(queryGen, collection.Name, f); err == nil {
-				querylog.Debugf("[%v] %s %v", self, string(stmt[:]), queryGen.GetValues())
+				querylog.Debugf("[%v] %s", self, string(stmt[:]))
 
 				// execute SQL
 				if _, err := tx.Exec(string(stmt[:]), queryGen.GetValues()...); err == nil {
@@ -772,7 +772,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	}
 
 	if tx, err := self.db.Begin(); err == nil {
-		querylog.Debugf("[%v] %s %v", self, string(stmt[:]), values)
+		querylog.Debugf("[%v] %s", self, string(stmt[:]))
 
 		if _, err := tx.Exec(stmt, values...); err == nil {
 			defer func() {
@@ -1158,7 +1158,7 @@ func (self *SqlBackend) Migrate() error {
 			// populate statements
 			for _, delta := range diff {
 				if stmt, values, err := self.generateAlterStatement(delta); err == nil {
-					querylog.Debugf("[%v] %s %v", self, string(stmt[:]), values)
+					querylog.Debugf("[%v] %s", self, string(stmt[:]))
 
 					if _, err := tx.Exec(stmt, values...); err != nil {
 						defer tx.Rollback()
@@ -1230,22 +1230,20 @@ func (self *SqlBackend) refreshCollectionFromDatabase(name string, definition *d
 		self.conn.Dataset(),
 		name,
 	); err == nil {
-		if len(collection.Fields) > 0 {
-			self.detectedCollections[collection.Name] = collection
+		self.detectedCollections[collection.Name] = collection
 
-			if definition != nil {
-				// we've read the collection back from the database, but in the process we've lost
-				// some local values that only existed on the definition itself.  we need to copy those into
-				// the collection that just came back
-				collection.ApplyDefinition(definition)
-				self.RegisterCollection(definition)
+		if definition != nil {
+			// we've read the collection back from the database, but in the process we've lost
+			// some local values that only existed on the definition itself.  we need to copy those into
+			// the collection that just came back
+			collection.ApplyDefinition(definition)
+			self.RegisterCollection(definition)
 
-			} else if self.conn.OptBool(`autoregister`, DefaultAutoregister) {
-				self.RegisterCollection(collection)
-			}
-
-			self.knownCollections[name] = true
+		} else if self.conn.OptBool(`autoregister`, DefaultAutoregister) {
+			self.RegisterCollection(collection)
 		}
+
+		self.knownCollections[name] = true
 
 		return nil
 	} else {

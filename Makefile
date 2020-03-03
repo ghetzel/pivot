@@ -1,22 +1,18 @@
-
-LOCALS   := $(shell find . -type f -name '*.go')
-EXAMPLES := $(wildcard examples/*)
-
-.PHONY: test deps docs $(EXAMPLES) build
 .EXPORT_ALL_VARIABLES:
-GO111MODULE = on
+EXAMPLES    := $(wildcard examples/*)
+GO111MODULE ?= on
 
 all: deps fmt test build docs
 
 deps:
-	@go list github.com/mjibson/esc || go get github.com/mjibson/esc/...
-	go get ./...
+	@go list github.com/mjibson/esc > /dev/null || go get github.com/mjibson/esc/...
+	@go get ./...
 
 fmt:
-	go generate -x ./...
-	gofmt -w $(LOCALS)
-	go vet ./...
-	-go mod tidy
+	@go generate -x ./...
+	@gofmt -w $(shell find . -type f -name '*.go')
+	@go vet ./...
+	@go mod tidy
 
 docs:
 	owndoc render --property rootpath=/pivot/
@@ -30,3 +26,5 @@ $(EXAMPLES):
 build: $(EXAMPLES)
 	go build --tags json1 -i -o bin/pivot cmd/pivot/*.go
 	which pivot && cp -v bin/pivot `which pivot` || true
+
+.PHONY: test deps docs $(EXAMPLES) build

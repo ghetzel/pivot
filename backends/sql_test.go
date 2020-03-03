@@ -61,7 +61,7 @@ func TestSqlAlterStatements(t *testing.T) {
 		// TODO: this is the wrong order, need to work out whats going on
 		switch delta.Name {
 		case `age`:
-			assert.Equal(`ALTER TABLE "TestSqlAlterStatements" ADD "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP`, stmt)
+			assert.Equal(`ALTER TABLE "TestSqlAlterStatements" ADD "created_at" INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP`, stmt)
 		case `created_at`:
 			assert.Equal(`ALTER TABLE "TestSqlAlterStatements" ADD "age" BIGINT NOT NULL`, stmt)
 		default:

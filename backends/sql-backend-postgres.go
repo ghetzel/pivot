@@ -95,7 +95,7 @@ func initializePostgres(self *SqlBackend) (string, string, error) {
 			queryGen.TypeMapping.TableNameFormat = "%s"
 
 			if stmt, err := filter.Render(queryGen, `information_schema.COLUMNS`, f); err == nil {
-				querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
+				// querylog.Debugf("[%T] %s %v", self, string(stmt[:]), queryGen.GetValues())
 
 				if rows, err := self.db.Query(string(stmt[:]), queryGen.GetValues()...); err == nil {
 					defer rows.Close()
