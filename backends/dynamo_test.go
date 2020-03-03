@@ -50,6 +50,7 @@ func TestDynamoRecordFromItem(t *testing.T) {
 	assert := require.New(t)
 	record, err := dynamoRecordFromItem(
 		dynamoTestCollection,
+		123,
 		map[string]*dynamodb.AttributeValue{
 			`id`: {
 				N: aws.String(`123`),

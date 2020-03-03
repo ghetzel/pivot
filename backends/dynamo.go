@@ -17,6 +17,7 @@ import (
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
@@ -189,7 +190,7 @@ func (self *DynamoBackend) Retrieve(name string, id interface{}, fields ...strin
 				Key:            keys,
 			}); err == nil {
 				// return the record
-				return dynamoRecordFromItem(collection, out.Item)
+				return dynamoRecordFromItem(collection, id, out.Item)
 			} else if aerr, ok := err.(awserr.Error); ok {
 				switch aerr.Code() {
 				case dynamodb.ErrCodeResourceNotFoundException:
@@ -376,10 +377,10 @@ func (self *DynamoBackend) cacheTable(name string) (*dal.Collection, error) {
 	}
 }
 
-func dynamoRecordFromItem(collection *dal.Collection, item map[string]*dynamodb.AttributeValue) (*dal.Record, error) {
+func dynamoRecordFromItem(collection *dal.Collection, id interface{}, item map[string]*dynamodb.AttributeValue) (*dal.Record, error) {
 	// build the record we're returning
-	data := make(map[string]interface{})
-	record := dal.NewRecord(nil)
+	var data = make(map[string]interface{})
+	var record = dal.NewRecord(nil)
 
 	if err := dynamodbattribute.UnmarshalMap(item, &data); err == nil {
 		for k, v := range data {
@@ -397,6 +398,22 @@ func dynamoRecordFromItem(collection *dal.Collection, item map[string]*dynamodb.
 				}
 			} else {
 				record.Set(k, v)
+			}
+		}
+
+		if id != nil {
+			var idParts = sliceutil.Sliceify(id)
+			var recordKeys = record.Keys(collection)
+
+			// double check that the keys we requested line up with what we got back
+			if len(recordKeys) == len(idParts) {
+				for i, have := range recordKeys {
+					if ok, err := stringutil.RelaxedEqual(have, idParts[i]); err != nil || !ok {
+						return nil, fmt.Errorf("Record %v does not exist", id)
+					}
+				}
+			} else {
+				return nil, fmt.Errorf("Record %v does not exist", id)
 			}
 		}
 

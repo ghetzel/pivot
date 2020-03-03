@@ -211,7 +211,7 @@ func dynamoToNativeOp(criterion *filter.Criterion) string {
 func (self *DynamoBackend) iterResult(collection *dal.Collection, flt *filter.Filter, items []map[string]*dynamodb.AttributeValue, processed int, totalResults int64, pageNumber int, lastPage bool, resultFn IndexResultFunc) bool {
 	if len(items) > 0 {
 		for _, item := range items {
-			record, err := dynamoRecordFromItem(collection, item)
+			record, err := dynamoRecordFromItem(collection, nil, item)
 
 			// fire off the result handler
 			if err := resultFn(record, err, IndexPage{
