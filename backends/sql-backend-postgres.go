@@ -101,9 +101,12 @@ func initializePostgres(self *SqlBackend) (string, string, error) {
 					defer rows.Close()
 
 					collection := dal.NewCollection(collectionName)
+					var found int
 
 					// for each field in the schema description for this table...
 					for rows.Next() {
+						found += 1
+
 						var i int
 						var charMaxLength sql.NullInt64
 						var column, columnType, nullable string
@@ -191,7 +194,11 @@ func initializePostgres(self *SqlBackend) (string, string, error) {
 						}
 					}
 
-					return collection, rows.Err()
+					if found > 0 {
+						return collection, rows.Err()
+					} else {
+						return nil, dal.CollectionNotFound
+					}
 				} else {
 					return nil, err
 				}

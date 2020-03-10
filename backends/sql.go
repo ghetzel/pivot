@@ -1274,17 +1274,16 @@ func (self *SqlBackend) keyQuery(collection *dal.Collection, id interface{}) (*f
 		return nil, fmt.Errorf("Expected ID to be a slice of length %d, got %d value(s)", len(keyFields), len(ids))
 	}
 
-	idquery := map[string]interface{}{}
+	var f = new(filter.Filter)
 
 	for i, keyField := range keyFields {
-		idquery[keyField.Name] = ids[i]
+		f.AddCriteria(filter.Criterion{
+			Field:    keyField.Name,
+			Operator: `is`,
+			Values:   []interface{}{ids[i]},
+		})
 	}
 
-	if f, err := filter.FromMap(idquery); err == nil {
-		f.Limit = 1
-
-		return f, nil
-	} else {
-		return nil, err
-	}
+	f.Limit = 1
+	return f, nil
 }
