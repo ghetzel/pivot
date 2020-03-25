@@ -186,10 +186,12 @@ func LoadFixturesFromFile(filename string, db Backend) error {
 	filename = fileutil.MustExpandUser(filename)
 
 	if file, err := os.Open(filename); err == nil {
-		commentRemover := fileutil.NewReadManipulator(file, fileutil.RemoveLinesWithPrefix(`//`, true))
+		var commentRemover = fileutil.NewReadManipulator(file, fileutil.RemoveLinesWithPrefix(`//`, true))
+
 		defer commentRemover.Close()
 
 		var records []*dal.Record
+		var allOptional bool = true
 
 		if err := json.NewDecoder(commentRemover).Decode(&records); err == nil {
 			var collections []string
@@ -198,6 +200,10 @@ func LoadFixturesFromFile(filename string, db Backend) error {
 				// if no collection name was explicitly provided, infer it from the filename
 				if record.CollectionName == `` {
 					record.CollectionName = strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
+				}
+
+				if !record.Optional {
+					allOptional = false
 				}
 
 				collections = append(collections, record.CollectionName)
@@ -210,11 +216,12 @@ func LoadFixturesFromFile(filename string, db Backend) error {
 					var i int
 
 					for _, record := range records {
+						var err error
+						var op int
+
 						if record.CollectionName != name {
 							continue
 						}
-
-						var err error
 
 						if typeutil.IsArray(record.ID) {
 							if err := record.SetKeys(collection, dal.PersistOperation, sliceutil.Sliceify(record.ID)...); err != nil {
@@ -222,20 +229,48 @@ func LoadFixturesFromFile(filename string, db Backend) error {
 							}
 						}
 
-						if db.Exists(collection.Name, record) {
-							err = db.Update(collection.Name, dal.NewRecordSet(record))
-						} else {
+						// work out what we're supposed to do right now
+						switch strings.ToLower(record.Operation) {
+						case ``:
+							if db.Exists(collection.Name, record) {
+								op = 1
+							} else {
+								op = 0
+							}
+						case `create`:
+							op = 0
+						case `update`:
+							op = 1
+						case `delete`:
+							op = 2
+						default:
+							return fmt.Errorf("invalid operation %q; leave blank, or specify %q, %q, or %q", record.Operation, `create`, `update`, `delete`)
+						}
+
+						// do the do
+						switch op {
+						case 0:
 							err = db.Insert(collection.Name, dal.NewRecordSet(record))
+						case 1:
+							err = db.Update(collection.Name, dal.NewRecordSet(record))
+						case 2:
+							err = db.Delete(collection.Name, record.Keys(collection))
 						}
 
 						if err != nil {
-							return fmt.Errorf("Cannot load collection %q, record %v: %v", name, record.ID, err)
+							if record.Optional {
+								continue
+							} else {
+								return fmt.Errorf("Cannot load collection %q, record %v: %v", name, record.ID, err)
+							}
 						}
 
 						i += 1
 					}
 
 					log.Infof("Collection %q: loaded %d records", name, i)
+				} else if allOptional {
+					continue
 				} else {
 					return fmt.Errorf("Cannot load collection %q: %v", name, err)
 				}

@@ -22,6 +22,7 @@ type Record struct {
 	Error          error                  `json:"error,omitempty"`
 	CollectionName string                 `json:"collection,omitempty"`
 	Operation      string                 `json:"operation,omitempty"`
+	Optional       bool                   `json:"optional,omitempty"` // Specifies that the record is "optional", which is namely used in fixtures to indicate that a missing collection should not be considered fatal.
 }
 
 func NewRecord(id interface{}, data ...map[string]interface{}) *Record {
