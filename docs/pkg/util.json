@@ -63,7 +63,8 @@
     "Variables": [
         {
             "Name": "RecordStructTag",
-            "Expression": "`pivot`"
+            "Expression": "`pivot`",
+            "Value": "pivot"
         }
     ],
     "Functions": [

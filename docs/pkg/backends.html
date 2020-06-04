@@ -21,13 +21,15 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/pivot/">
+                    <a class="navbar-brand" href="/pivot/index.html">
                         <strong>go-owndoc</strong>
                     </a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class=""><a href="/pivot/">Home</a></li>
+                        <li class="">
+                            <a href="/pivot/index.html">Home</a>
+                        </li>
 
                         <li class="dropdown active">
                             <a
@@ -71,9 +73,15 @@
                         </li>
 
                         <li class="">
-                            <a href="/pivot/-/about">About</a>
+                            <a href="/pivot/-/module.html">Manifest</a>
+                        </li>
+
+                        <li class="">
+                            <a href="/pivot/-/about.html">About</a>
                         </li>
                     </ul>
+
+                    
                 </div>
             </div>
         </nav>
@@ -82,7 +90,7 @@
             
 <br>
 <div class="clearfix" id="x-projnav">
-	<a href="URL"><strong>pivot:</strong></a>
+	<a href="https://github.com/ghetzel/pivot"><strong>pivot:</strong></a>
 	
 	<a href="/pivot/pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">backends</span>
 	
@@ -131,30 +139,6 @@
 	
     <li>
 		
-		<a href="#NewDynamoBackend">func NewDynamoBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewFileBackend">func NewFileBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewFilesystemBackend">func NewFilesystemBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewMongoBackend">func NewMongoBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
 		<a href="#NewRedisBackend">func NewRedisBackend(connection dal.ConnectionString) Backend</a>
 		
 	</li>
@@ -172,11 +156,9 @@
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#RegisterBackend">func RegisterBackend(name string, fn BackendFunc)</a>
+		<a href="#RegisterBackend">func RegisterBackend(name string, fn BackendFunc)</a>
 		</strong>
-		
 	</li>
 	
     <li>
@@ -201,28 +183,28 @@
 	
 	
     <li>
-		<a href="#Aggregator">type Aggregator</a>
+		<a href="#Aggregator">type Aggregator </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#Backend">type Backend</a>
+		<a href="#Backend">type Backend </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#BackendFeature">type BackendFeature</a>
+		<a href="#BackendFeature">type BackendFeature int</a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#BackendFunc">type BackendFunc</a>
+		<a href="#BackendFunc">type BackendFunc </a>
 
 		
 		
@@ -258,9 +240,11 @@
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.NewBleveIndexer">
 					func NewBleveIndexer(connection dal.ConnectionString) *BleveIndexer
 				</a>
+				
 			</li>
 			
 			
@@ -273,101 +257,121 @@
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.DeleteQuery">
 					func
 					(self *BleveIndexer)
 					DeleteQuery(collection *dal.Collection, f *filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.FlushIndex">
 					func
 					(self *BleveIndexer)
 					FlushIndex() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.GetBackend">
 					func
 					(self *BleveIndexer)
 					GetBackend() Backend
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.Index">
 					func
 					(self *BleveIndexer)
 					Index(collection *dal.Collection, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.IndexConnectionString">
 					func
 					(self *BleveIndexer)
 					IndexConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.IndexExists">
 					func
 					(self *BleveIndexer)
 					IndexExists(collection *dal.Collection, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.IndexInitialize">
 					func
 					(self *BleveIndexer)
 					IndexInitialize(parent Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.IndexRemove">
 					func
 					(self *BleveIndexer)
 					IndexRemove(collection *dal.Collection, ids []interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.IndexRetrieve">
 					func
 					(self *BleveIndexer)
 					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.ListValues">
 					func
 					(self *BleveIndexer)
 					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
@@ -375,21 +379,25 @@
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.Query">
 					func
 					(self *BleveIndexer)
 					Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#BleveIndexer.QueryFunc">
 					func
 					(self *BleveIndexer)
 					QueryFunc(collection *dal.Collection, f *filter.Filter, resultFn IndexResultFunc) error
 				</a>
+				
 			</li>
 			
 			
@@ -427,9 +435,11 @@
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.NewCachingBackend">
 					func NewCachingBackend(parent Backend) *CachingBackend
 				</a>
+				
 			</li>
 			
 			
@@ -458,101 +468,121 @@
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.CreateCollection">
 					func
 					(self *CachingBackend)
 					CreateCollection(definition *dal.Collection) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.Delete">
 					func
 					(self *CachingBackend)
 					Delete(collection string, ids ...interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.DeleteCollection">
 					func
 					(self *CachingBackend)
 					DeleteCollection(collection string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#CachingBackend.Exists">
 					func
 					(self *CachingBackend)
 					Exists(collection string, id interface{}) bool
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.Flush">
 					func
 					(self *CachingBackend)
 					Flush() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.GetCollection">
 					func
 					(self *CachingBackend)
 					GetCollection(collection string) (*dal.Collection, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.GetConnectionString">
 					func
 					(self *CachingBackend)
 					GetConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.Initialize">
 					func
 					(self *CachingBackend)
 					Initialize() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.Insert">
 					func
 					(self *CachingBackend)
 					Insert(collection string, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.ListCollections">
 					func
 					(self *CachingBackend)
 					ListCollections() ([]string, error)
 				</a>
+				
 			</li>
 			
 			
@@ -560,101 +590,121 @@
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.Ping">
 					func
 					(self *CachingBackend)
 					Ping(d time.Duration) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.RegisterCollection">
 					func
 					(self *CachingBackend)
 					RegisterCollection(c *dal.Collection)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.ResetCache">
 					func
 					(self *CachingBackend)
 					ResetCache()
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.Retrieve">
 					func
 					(self *CachingBackend)
 					Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.SetIndexer">
 					func
 					(self *CachingBackend)
 					SetIndexer(cs dal.ConnectionString) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.String">
 					func
 					(self *CachingBackend)
 					String() string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.Supports">
 					func
 					(self *CachingBackend)
 					Supports(feature ...BackendFeature) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.Update">
 					func
 					(self *CachingBackend)
 					Update(collection string, records *dal.RecordSet, target ...string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.WithAggregator">
 					func
 					(self *CachingBackend)
 					WithAggregator(collection *dal.Collection) Aggregator
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#CachingBackend.WithSearch">
 					func
 					(self *CachingBackend)
 					WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
 				</a>
+				
 			</li>
 			
 			
@@ -692,21 +742,25 @@
 			
 			
 			<li>
+				
 				<a href="#DeferredRecord.GroupKey">
 					func
 					(self *DeferredRecord)
 					GroupKey(id ...interface{}) string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DeferredRecord.String">
 					func
 					(self *DeferredRecord)
 					String() string
 				</a>
+				
 			</li>
 			
 			
@@ -788,311 +842,373 @@
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.CreateCollection">
 					func
 					(self *DynamoBackend)
 					CreateCollection(definition *dal.Collection) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.Delete">
 					func
 					(self *DynamoBackend)
 					Delete(name string, ids ...interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.DeleteCollection">
 					func
 					(self *DynamoBackend)
 					DeleteCollection(name string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.DeleteQuery">
 					func
 					(self *DynamoBackend)
 					DeleteQuery(collection *dal.Collection, flt *filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.Exists">
 					func
 					(self *DynamoBackend)
 					Exists(name string, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.Flush">
 					func
 					(self *DynamoBackend)
 					Flush() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.FlushIndex">
 					func
 					(self *DynamoBackend)
 					FlushIndex() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.GetBackend">
 					func
 					(self *DynamoBackend)
 					GetBackend() Backend
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.GetCollection">
 					func
 					(self *DynamoBackend)
 					GetCollection(name string) (*dal.Collection, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.GetConnectionString">
 					func
 					(self *DynamoBackend)
 					GetConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.Index">
 					func
 					(self *DynamoBackend)
 					Index(collection *dal.Collection, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.IndexConnectionString">
 					func
 					(self *DynamoBackend)
 					IndexConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.IndexExists">
 					func
 					(self *DynamoBackend)
 					IndexExists(collection *dal.Collection, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.IndexInitialize">
 					func
 					(self *DynamoBackend)
 					IndexInitialize( Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.IndexRemove">
 					func
 					(self *DynamoBackend)
 					IndexRemove(collection *dal.Collection, ids []interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.IndexRetrieve">
 					func
 					(self *DynamoBackend)
 					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.Initialize">
 					func
 					(self *DynamoBackend)
 					Initialize() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.Insert">
 					func
 					(self *DynamoBackend)
 					Insert(name string, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.ListCollections">
 					func
 					(self *DynamoBackend)
 					ListCollections() ([]string, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.ListValues">
 					func
 					(self *DynamoBackend)
 					ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.Ping">
 					func
 					(self *DynamoBackend)
 					Ping(timeout time.Duration) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.Query">
 					func
 					(self *DynamoBackend)
 					Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.QueryFunc">
 					func
 					(self *DynamoBackend)
 					QueryFunc(collection *dal.Collection, flt *filter.Filter, resultFn IndexResultFunc) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.RegisterCollection">
 					func
 					(self *DynamoBackend)
 					RegisterCollection(definition *dal.Collection)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.Retrieve">
 					func
 					(self *DynamoBackend)
 					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.SetIndexer">
 					func
 					(self *DynamoBackend)
 					SetIndexer(indexConnString dal.ConnectionString) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.String">
 					func
 					(self *DynamoBackend)
 					String() string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.Supports">
 					func
 					(self *DynamoBackend)
 					Supports(features ...BackendFeature) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.Update">
 					func
 					(self *DynamoBackend)
 					Update(name string, records *dal.RecordSet, target ...string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.WithAggregator">
 					func
 					(self *DynamoBackend)
 					WithAggregator(collection *dal.Collection) Aggregator
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#DynamoBackend.WithSearch">
 					func
 					(self *DynamoBackend)
 					WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
 				</a>
+				
 			</li>
 			
 			
@@ -1144,9 +1260,11 @@
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.NewElasticsearchIndexer">
 					func NewElasticsearchIndexer(connection dal.ConnectionString) *ElasticsearchIndexer
 				</a>
+				
 			</li>
 			
 			
@@ -1161,171 +1279,205 @@
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.AggregatorConnectionString">
 					func
 					(self *ElasticsearchIndexer)
 					AggregatorConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.AggregatorInitialize">
 					func
 					(self *ElasticsearchIndexer)
 					AggregatorInitialize(parent Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.Average">
 					func
 					(self *ElasticsearchIndexer)
 					Average(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.Count">
 					func
 					(self *ElasticsearchIndexer)
 					Count(collection *dal.Collection, flt ...*filter.Filter) (uint64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.DeleteQuery">
 					func
 					(self *ElasticsearchIndexer)
 					DeleteQuery(collection *dal.Collection, f *filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.FlushIndex">
 					func
 					(self *ElasticsearchIndexer)
 					FlushIndex() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.GetBackend">
 					func
 					(self *ElasticsearchIndexer)
 					GetBackend() Backend
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.GroupBy">
 					func
 					(self *ElasticsearchIndexer)
 					GroupBy(collection *dal.Collection, groupBy []string, aggregates []filter.Aggregate, flt ...*filter.Filter) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.Index">
 					func
 					(self *ElasticsearchIndexer)
 					Index(collection *dal.Collection, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.IndexConnectionString">
 					func
 					(self *ElasticsearchIndexer)
 					IndexConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.IndexExists">
 					func
 					(self *ElasticsearchIndexer)
 					IndexExists(collection *dal.Collection, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.IndexInitialize">
 					func
 					(self *ElasticsearchIndexer)
 					IndexInitialize(parent Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.IndexRemove">
 					func
 					(self *ElasticsearchIndexer)
 					IndexRemove(collection *dal.Collection, ids []interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.IndexRetrieve">
 					func
 					(self *ElasticsearchIndexer)
 					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.ListValues">
 					func
 					(self *ElasticsearchIndexer)
 					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.Maximum">
 					func
 					(self *ElasticsearchIndexer)
 					Maximum(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.Minimum">
 					func
 					(self *ElasticsearchIndexer)
 					Minimum(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
@@ -1333,31 +1485,37 @@
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.Query">
 					func
 					(self *ElasticsearchIndexer)
 					Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.QueryFunc">
 					func
 					(self *ElasticsearchIndexer)
 					QueryFunc(collection *dal.Collection, f *filter.Filter, resultFn IndexResultFunc) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ElasticsearchIndexer.Sum">
 					func
 					(self *ElasticsearchIndexer)
 					Sum(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
@@ -1419,9 +1577,11 @@
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.NewEmbeddedRecordBackend">
 					func NewEmbeddedRecordBackend(parent Backend, skipKeys ...string) *EmbeddedRecordBackend
 				</a>
+				
 			</li>
 			
 			
@@ -1452,221 +1612,265 @@
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.CreateCollection">
 					func
 					(self *EmbeddedRecordBackend)
 					CreateCollection(definition *dal.Collection) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.Delete">
 					func
 					(self *EmbeddedRecordBackend)
 					Delete(collection string, ids ...interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.DeleteCollection">
 					func
 					(self *EmbeddedRecordBackend)
 					DeleteCollection(collection string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.DeleteQuery">
 					func
 					(self *EmbeddedRecordBackend)
 					DeleteQuery(collection *dal.Collection, f *filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.EmbedRelationships">
 					func
 					(self *EmbeddedRecordBackend)
 					EmbedRelationships(collection *dal.Collection, record *dal.Record, fields ...string) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#EmbeddedRecordBackend.Exists">
 					func
 					(self *EmbeddedRecordBackend)
 					Exists(collection string, id interface{}) bool
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.Flush">
 					func
 					(self *EmbeddedRecordBackend)
 					Flush() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.FlushIndex">
 					func
 					(self *EmbeddedRecordBackend)
 					FlushIndex() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#EmbeddedRecordBackend.GetBackend">
 					func
 					(self *EmbeddedRecordBackend)
 					GetBackend() Backend
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.GetCollection">
 					func
 					(self *EmbeddedRecordBackend)
 					GetCollection(collection string) (*dal.Collection, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.GetConnectionString">
 					func
 					(self *EmbeddedRecordBackend)
 					GetConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.Index">
 					func
 					(self *EmbeddedRecordBackend)
 					Index(collection *dal.Collection, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.IndexConnectionString">
 					func
 					(self *EmbeddedRecordBackend)
 					IndexConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.IndexExists">
 					func
 					(self *EmbeddedRecordBackend)
 					IndexExists(collection *dal.Collection, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.IndexInitialize">
 					func
 					(self *EmbeddedRecordBackend)
 					IndexInitialize(b Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.IndexRemove">
 					func
 					(self *EmbeddedRecordBackend)
 					IndexRemove(collection *dal.Collection, ids []interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.IndexRetrieve">
 					func
 					(self *EmbeddedRecordBackend)
 					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.Initialize">
 					func
 					(self *EmbeddedRecordBackend)
 					Initialize() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.Insert">
 					func
 					(self *EmbeddedRecordBackend)
 					Insert(collection string, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.ListCollections">
 					func
 					(self *EmbeddedRecordBackend)
 					ListCollections() ([]string, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.ListValues">
 					func
 					(self *EmbeddedRecordBackend)
 					ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.Migrate">
 					func
 					(self *EmbeddedRecordBackend)
 					Migrate() error
 				</a>
+				
 			</li>
 			
 			
@@ -1674,111 +1878,133 @@
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.Ping">
 					func
 					(self *EmbeddedRecordBackend)
 					Ping(d time.Duration) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.Query">
 					func
 					(self *EmbeddedRecordBackend)
 					Query(collection *dal.Collection, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.QueryFunc">
 					func
 					(self *EmbeddedRecordBackend)
 					QueryFunc(collection *dal.Collection, filter *filter.Filter, resultFn IndexResultFunc) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.RegisterCollection">
 					func
 					(self *EmbeddedRecordBackend)
 					RegisterCollection(c *dal.Collection)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.Retrieve">
 					func
 					(self *EmbeddedRecordBackend)
 					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.SetIndexer">
 					func
 					(self *EmbeddedRecordBackend)
 					SetIndexer(cs dal.ConnectionString) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.String">
 					func
 					(self *EmbeddedRecordBackend)
 					String() string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.Supports">
 					func
 					(self *EmbeddedRecordBackend)
 					Supports(feature ...BackendFeature) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.Update">
 					func
 					(self *EmbeddedRecordBackend)
 					Update(collection string, records *dal.RecordSet, target ...string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.WithAggregator">
 					func
 					(self *EmbeddedRecordBackend)
 					WithAggregator(collection *dal.Collection) Aggregator
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#EmbeddedRecordBackend.WithSearch">
 					func
 					(self *EmbeddedRecordBackend)
 					WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
 				</a>
+				
 			</li>
 			
 			
@@ -1836,191 +2062,229 @@
 			
 			
 			<li>
+				
 				<a href="#FileBackend.CreateCollection">
 					func
 					(self *FileBackend)
 					CreateCollection(definition *dal.Collection) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.Delete">
 					func
 					(self *FileBackend)
 					Delete(collection string, ids ...interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.DeleteCollection">
 					func
 					(self *FileBackend)
 					DeleteCollection(collection string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.Exists">
 					func
 					(self *FileBackend)
 					Exists(name string, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.Flush">
 					func
 					(self *FileBackend)
 					Flush() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.GetCollection">
 					func
 					(self *FileBackend)
 					GetCollection(collection string) (*dal.Collection, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.GetConnectionString">
 					func
 					(self *FileBackend)
 					GetConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.Initialize">
 					func
 					(self *FileBackend)
 					Initialize() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.Insert">
 					func
 					(self *FileBackend)
 					Insert(collection string, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.ListCollections">
 					func
 					(self *FileBackend)
 					ListCollections() ([]string, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.Ping">
 					func
 					(self *FileBackend)
 					Ping(_ time.Duration) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.RegisterCollection">
 					func
 					(self *FileBackend)
 					RegisterCollection(collection *dal.Collection)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.Retrieve">
 					func
 					(self *FileBackend)
 					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.SetIndexer">
 					func
 					(self *FileBackend)
 					SetIndexer( dal.ConnectionString) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.String">
 					func
 					(self *FileBackend)
 					String() string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.Supports">
 					func
 					(self *FileBackend)
 					Supports(features ...BackendFeature) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.Update">
 					func
 					(self *FileBackend)
 					Update(collection string, records *dal.RecordSet, target ...string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.WithAggregator">
 					func
 					(self *FileBackend)
 					WithAggregator(collection *dal.Collection) Aggregator
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FileBackend.WithSearch">
 					func
 					(self *FileBackend)
 					WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
 				</a>
+				
 			</li>
 			
 			
@@ -2102,311 +2366,373 @@
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.CreateCollection">
 					func
 					(self *FilesystemBackend)
 					CreateCollection(definition *dal.Collection) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.Delete">
 					func
 					(self *FilesystemBackend)
 					Delete(name string, ids ...interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.DeleteCollection">
 					func
 					(self *FilesystemBackend)
 					DeleteCollection(name string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.DeleteQuery">
 					func
 					(self *FilesystemBackend)
 					DeleteQuery(collection *dal.Collection, f *filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.Exists">
 					func
 					(self *FilesystemBackend)
 					Exists(name string, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.Flush">
 					func
 					(self *FilesystemBackend)
 					Flush() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.FlushIndex">
 					func
 					(self *FilesystemBackend)
 					FlushIndex() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.GetBackend">
 					func
 					(self *FilesystemBackend)
 					GetBackend() Backend
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.GetCollection">
 					func
 					(self *FilesystemBackend)
 					GetCollection(name string) (*dal.Collection, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.GetConnectionString">
 					func
 					(self *FilesystemBackend)
 					GetConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.Index">
 					func
 					(self *FilesystemBackend)
 					Index(collection *dal.Collection, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.IndexConnectionString">
 					func
 					(self *FilesystemBackend)
 					IndexConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.IndexExists">
 					func
 					(self *FilesystemBackend)
 					IndexExists(collection *dal.Collection, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.IndexInitialize">
 					func
 					(self *FilesystemBackend)
 					IndexInitialize(_ Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.IndexRemove">
 					func
 					(self *FilesystemBackend)
 					IndexRemove(collection *dal.Collection, ids []interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.IndexRetrieve">
 					func
 					(self *FilesystemBackend)
 					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.Initialize">
 					func
 					(self *FilesystemBackend)
 					Initialize() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.Insert">
 					func
 					(self *FilesystemBackend)
 					Insert(collectionName string, recordset *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.ListCollections">
 					func
 					(self *FilesystemBackend)
 					ListCollections() ([]string, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.ListValues">
 					func
 					(self *FilesystemBackend)
 					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.Ping">
 					func
 					(self *FilesystemBackend)
 					Ping(timeout time.Duration) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.Query">
 					func
 					(self *FilesystemBackend)
 					Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.QueryFunc">
 					func
 					(self *FilesystemBackend)
 					QueryFunc(collection *dal.Collection, filter *filter.Filter, resultFn IndexResultFunc) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.RegisterCollection">
 					func
 					(self *FilesystemBackend)
 					RegisterCollection(collection *dal.Collection)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.Retrieve">
 					func
 					(self *FilesystemBackend)
 					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.SetIndexer">
 					func
 					(self *FilesystemBackend)
 					SetIndexer(indexConnString dal.ConnectionString) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.String">
 					func
 					(self *FilesystemBackend)
 					String() string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.Supports">
 					func
 					(self *FilesystemBackend)
 					Supports(features ...BackendFeature) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.Update">
 					func
 					(self *FilesystemBackend)
 					Update(name string, recordset *dal.RecordSet, target ...string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.WithAggregator">
 					func
 					(self *FilesystemBackend)
 					WithAggregator(collection *dal.Collection) Aggregator
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#FilesystemBackend.WithSearch">
 					func
 					(self *FilesystemBackend)
 					WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
 				</a>
+				
 			</li>
 			
 			
@@ -2415,7 +2741,7 @@
 	</li>
 	
     <li>
-		<a href="#IndexOperation">type IndexOperation</a>
+		<a href="#IndexOperation">type IndexOperation int</a>
 
 		
 		
@@ -2436,21 +2762,21 @@
 	</li>
 	
     <li>
-		<a href="#IndexResultFunc">type IndexResultFunc</a>
+		<a href="#IndexResultFunc">type IndexResultFunc </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#IndexSelectionStrategy">type IndexSelectionStrategy</a>
+		<a href="#IndexSelectionStrategy">type IndexSelectionStrategy int</a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#Indexer">type Indexer</a>
+		<a href="#Indexer">type Indexer </a>
 
 		
 		
@@ -2471,14 +2797,14 @@
 	</li>
 	
     <li>
-		<a href="#IndexerResultFunc">type IndexerResultFunc</a>
+		<a href="#IndexerResultFunc">type IndexerResultFunc </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#Mapper">type Mapper</a>
+		<a href="#Mapper">type Mapper </a>
 
 		
 		
@@ -2514,9 +2840,11 @@
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.NewMetaIndex">
 					func NewMetaIndex(leftIndexer Indexer, leftCollection *dal.Collection, leftField string, rightIndexer Indexer, rightCollection *dal.Collection, rightField string) *MetaIndex
 				</a>
+				
 			</li>
 			
 			
@@ -2529,101 +2857,121 @@
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.DeleteQuery">
 					func
 					(self *MetaIndex)
 					DeleteQuery(collection *dal.Collection, f *filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.FlushIndex">
 					func
 					(self *MetaIndex)
 					FlushIndex() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.GetBackend">
 					func
 					(self *MetaIndex)
 					GetBackend() Backend
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.Index">
 					func
 					(self *MetaIndex)
 					Index(collection *dal.Collection, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.IndexConnectionString">
 					func
 					(self *MetaIndex)
 					IndexConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.IndexExists">
 					func
 					(self *MetaIndex)
 					IndexExists(collection *dal.Collection, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.IndexInitialize">
 					func
 					(self *MetaIndex)
 					IndexInitialize(_ Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.IndexRemove">
 					func
 					(self *MetaIndex)
 					IndexRemove(collection *dal.Collection, ids []interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.IndexRetrieve">
 					func
 					(self *MetaIndex)
 					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.ListValues">
 					func
 					(self *MetaIndex)
 					ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
@@ -2631,21 +2979,25 @@
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.Query">
 					func
 					(self *MetaIndex)
 					Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MetaIndex.QueryFunc">
 					func
 					(self *MetaIndex)
 					QueryFunc(collection *dal.Collection, f *filter.Filter, resultFn IndexResultFunc) error
 				</a>
+				
 			</li>
 			
 			
@@ -2743,391 +3095,469 @@
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.AggregatorConnectionString">
 					func
 					(self *MongoBackend)
 					AggregatorConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.AggregatorInitialize">
 					func
 					(self *MongoBackend)
 					AggregatorInitialize(parent Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Average">
 					func
 					(self *MongoBackend)
 					Average(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Count">
 					func
 					(self *MongoBackend)
 					Count(collection *dal.Collection, flt ...*filter.Filter) (uint64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.CreateCollection">
 					func
 					(self *MongoBackend)
 					CreateCollection(definition *dal.Collection) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Delete">
 					func
 					(self *MongoBackend)
 					Delete(name string, ids ...interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.DeleteCollection">
 					func
 					(self *MongoBackend)
 					DeleteCollection(name string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.DeleteQuery">
 					func
 					(self *MongoBackend)
 					DeleteQuery(collection *dal.Collection, flt *filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Exists">
 					func
 					(self *MongoBackend)
 					Exists(name string, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Flush">
 					func
 					(self *MongoBackend)
 					Flush() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.FlushIndex">
 					func
 					(self *MongoBackend)
 					FlushIndex() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.GetBackend">
 					func
 					(self *MongoBackend)
 					GetBackend() Backend
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.GetCollection">
 					func
 					(self *MongoBackend)
 					GetCollection(name string) (*dal.Collection, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.GetConnectionString">
 					func
 					(self *MongoBackend)
 					GetConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.GroupBy">
 					func
 					(self *MongoBackend)
 					GroupBy(collection *dal.Collection, groupBy []string, aggregates []filter.Aggregate, flt ...*filter.Filter) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Index">
 					func
 					(self *MongoBackend)
 					Index(collection *dal.Collection, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.IndexConnectionString">
 					func
 					(self *MongoBackend)
 					IndexConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.IndexExists">
 					func
 					(self *MongoBackend)
 					IndexExists(collection *dal.Collection, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.IndexInitialize">
 					func
 					(self *MongoBackend)
 					IndexInitialize( Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.IndexRemove">
 					func
 					(self *MongoBackend)
 					IndexRemove(collection *dal.Collection, ids []interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.IndexRetrieve">
 					func
 					(self *MongoBackend)
 					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Initialize">
 					func
 					(self *MongoBackend)
 					Initialize() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Insert">
 					func
 					(self *MongoBackend)
 					Insert(name string, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.ListCollections">
 					func
 					(self *MongoBackend)
 					ListCollections() ([]string, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.ListValues">
 					func
 					(self *MongoBackend)
 					ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Maximum">
 					func
 					(self *MongoBackend)
 					Maximum(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Minimum">
 					func
 					(self *MongoBackend)
 					Minimum(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Ping">
 					func
 					(self *MongoBackend)
 					Ping(timeout time.Duration) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Query">
 					func
 					(self *MongoBackend)
 					Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.QueryFunc">
 					func
 					(self *MongoBackend)
 					QueryFunc(collection *dal.Collection, flt *filter.Filter, resultFn IndexResultFunc) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.RegisterCollection">
 					func
 					(self *MongoBackend)
 					RegisterCollection(collection *dal.Collection)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Retrieve">
 					func
 					(self *MongoBackend)
 					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.SetIndexer">
 					func
 					(self *MongoBackend)
 					SetIndexer(indexConnString dal.ConnectionString) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.String">
 					func
 					(self *MongoBackend)
 					String() string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Sum">
 					func
 					(self *MongoBackend)
 					Sum(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Supports">
 					func
 					(self *MongoBackend)
 					Supports(features ...BackendFeature) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.Update">
 					func
 					(self *MongoBackend)
 					Update(name string, records *dal.RecordSet, target ...string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.WithAggregator">
 					func
 					(self *MongoBackend)
 					WithAggregator(collection *dal.Collection) Aggregator
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoBackend.WithSearch">
 					func
 					(self *MongoBackend)
 					WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
 				</a>
+				
 			</li>
 			
 			
@@ -3171,9 +3601,11 @@
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.NewMultiIndex">
 					func NewMultiIndex(connectionStrings ...string) *MultiIndex
 				</a>
+				
 			</li>
 			
 			
@@ -3188,131 +3620,157 @@
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.AddIndexer">
 					func
 					(self *MultiIndex)
 					AddIndexer(indexer Indexer) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.AddIndexerByConnectionString">
 					func
 					(self *MultiIndex)
 					AddIndexerByConnectionString(cs string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.DeleteQuery">
 					func
 					(self *MultiIndex)
 					DeleteQuery(collection *dal.Collection, f *filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.EachSelectedIndex">
 					func
 					(self *MultiIndex)
 					EachSelectedIndex(collection *dal.Collection, operation IndexOperation, resultFn IndexerResultFunc) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.FlushIndex">
 					func
 					(self *MultiIndex)
 					FlushIndex() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.GetBackend">
 					func
 					(self *MultiIndex)
 					GetBackend() Backend
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.Index">
 					func
 					(self *MultiIndex)
 					Index(collection *dal.Collection, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.IndexConnectionString">
 					func
 					(self *MultiIndex)
 					IndexConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.IndexExists">
 					func
 					(self *MultiIndex)
 					IndexExists(collection *dal.Collection, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.IndexInitialize">
 					func
 					(self *MultiIndex)
 					IndexInitialize(backend Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.IndexRemove">
 					func
 					(self *MultiIndex)
 					IndexRemove(collection *dal.Collection, ids []interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.IndexRetrieve">
 					func
 					(self *MultiIndex)
 					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.ListValues">
 					func
 					(self *MultiIndex)
 					ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
@@ -3320,31 +3778,37 @@
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.Query">
 					func
 					(self *MultiIndex)
 					Query(collection *dal.Collection, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.QueryFunc">
 					func
 					(self *MultiIndex)
 					QueryFunc(collection *dal.Collection, filter *filter.Filter, resultFn IndexResultFunc) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MultiIndex.SelectIndex">
 					func
 					(self *MultiIndex)
 					SelectIndex(collection *dal.Collection, operation IndexOperation, lastIndexer int) ([]IndexerResult, error)
 				</a>
+				
 			</li>
 			
 			
@@ -3388,121 +3852,145 @@
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.DeleteQuery">
 					func
 					(self *NullIndexer)
 					DeleteQuery(collection *dal.Collection, f filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.FlushIndex">
 					func
 					(self *NullIndexer)
 					FlushIndex() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.GetBackend">
 					func
 					(self *NullIndexer)
 					GetBackend() Backend
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.Index">
 					func
 					(self *NullIndexer)
 					Index(collection *dal.Collection, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.IndexConnectionString">
 					func
 					(self *NullIndexer)
 					IndexConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.IndexExists">
 					func
 					(self *NullIndexer)
 					IndexExists(collection *dal.Collection, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.IndexInitialize">
 					func
 					(self *NullIndexer)
 					IndexInitialize( Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.IndexRemove">
 					func
 					(self *NullIndexer)
 					IndexRemove(collection *dal.Collection, ids []interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.IndexRetrieve">
 					func
 					(self *NullIndexer)
 					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.ListValues">
 					func
 					(self *NullIndexer)
 					ListValues(collection *dal.Collection, fields []string, filter filter.Filter) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.Query">
 					func
 					(self *NullIndexer)
 					Query(collection *dal.Collection, filter filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#NullIndexer.QueryFunc">
 					func
 					(self *NullIndexer)
 					QueryFunc(collection *dal.Collection, filter filter.Filter, resultFn IndexResultFunc) error
 				</a>
+				
 			</li>
 			
 			
@@ -3584,311 +4072,373 @@
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.CreateCollection">
 					func
 					(self *RedisBackend)
 					CreateCollection(definition *dal.Collection) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.Delete">
 					func
 					(self *RedisBackend)
 					Delete(name string, ids ...interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.DeleteCollection">
 					func
 					(self *RedisBackend)
 					DeleteCollection(name string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.DeleteQuery">
 					func
 					(self *RedisBackend)
 					DeleteQuery(collection *dal.Collection, flt *filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.Exists">
 					func
 					(self *RedisBackend)
 					Exists(name string, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.Flush">
 					func
 					(self *RedisBackend)
 					Flush() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.FlushIndex">
 					func
 					(self *RedisBackend)
 					FlushIndex() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.GetBackend">
 					func
 					(self *RedisBackend)
 					GetBackend() Backend
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.GetCollection">
 					func
 					(self *RedisBackend)
 					GetCollection(name string) (*dal.Collection, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.GetConnectionString">
 					func
 					(self *RedisBackend)
 					GetConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.Index">
 					func
 					(self *RedisBackend)
 					Index(collection *dal.Collection, records *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.IndexConnectionString">
 					func
 					(self *RedisBackend)
 					IndexConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.IndexExists">
 					func
 					(self *RedisBackend)
 					IndexExists(collection *dal.Collection, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.IndexInitialize">
 					func
 					(self *RedisBackend)
 					IndexInitialize( Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.IndexRemove">
 					func
 					(self *RedisBackend)
 					IndexRemove(collection *dal.Collection, ids []interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.IndexRetrieve">
 					func
 					(self *RedisBackend)
 					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.Initialize">
 					func
 					(self *RedisBackend)
 					Initialize() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.Insert">
 					func
 					(self *RedisBackend)
 					Insert(name string, recordset *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.ListCollections">
 					func
 					(self *RedisBackend)
 					ListCollections() ([]string, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.ListValues">
 					func
 					(self *RedisBackend)
 					ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.Ping">
 					func
 					(self *RedisBackend)
 					Ping(timeout time.Duration) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.Query">
 					func
 					(self *RedisBackend)
 					Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.QueryFunc">
 					func
 					(self *RedisBackend)
 					QueryFunc(collection *dal.Collection, flt *filter.Filter, resultFn IndexResultFunc) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.RegisterCollection">
 					func
 					(self *RedisBackend)
 					RegisterCollection(collection *dal.Collection)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.Retrieve">
 					func
 					(self *RedisBackend)
 					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.SetIndexer">
 					func
 					(self *RedisBackend)
 					SetIndexer(indexConnString dal.ConnectionString) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.String">
 					func
 					(self *RedisBackend)
 					String() string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.Supports">
 					func
 					(self *RedisBackend)
 					Supports(features ...BackendFeature) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.Update">
 					func
 					(self *RedisBackend)
 					Update(name string, recordset *dal.RecordSet, target ...string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.WithAggregator">
 					func
 					(self *RedisBackend)
 					WithAggregator(collection *dal.Collection) Aggregator
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RedisBackend.WithSearch">
 					func
 					(self *RedisBackend)
 					WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
 				</a>
+				
 			</li>
 			
 			
@@ -3897,14 +4447,14 @@
 	</li>
 	
     <li>
-		<a href="#ResultFunc">type ResultFunc</a>
+		<a href="#ResultFunc">type ResultFunc </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#SerializationFormat">type SerializationFormat</a>
+		<a href="#SerializationFormat">type SerializationFormat string</a>
 
 		
 		
@@ -4002,401 +4552,481 @@
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.AggregatorConnectionString">
 					func
 					(self *SqlBackend)
 					AggregatorConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.AggregatorInitialize">
 					func
 					(self *SqlBackend)
 					AggregatorInitialize(parent Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Average">
 					func
 					(self *SqlBackend)
 					Average(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Count">
 					func
 					(self *SqlBackend)
 					Count(collection *dal.Collection, f ...*filter.Filter) (uint64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.CreateCollection">
 					func
 					(self *SqlBackend)
 					CreateCollection(definition *dal.Collection) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Delete">
 					func
 					(self *SqlBackend)
 					Delete(name string, ids ...interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.DeleteCollection">
 					func
 					(self *SqlBackend)
 					DeleteCollection(collectionName string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#SqlBackend.DeleteQuery">
 					func
 					(self *SqlBackend)
 					DeleteQuery(collection *dal.Collection, f *filter.Filter) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Exists">
 					func
 					(self *SqlBackend)
 					Exists(name string, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Flush">
 					func
 					(self *SqlBackend)
 					Flush() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.FlushIndex">
 					func
 					(self *SqlBackend)
 					FlushIndex() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.GetBackend">
 					func
 					(self *SqlBackend)
 					GetBackend() Backend
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.GetCollection">
 					func
 					(self *SqlBackend)
 					GetCollection(name string) (*dal.Collection, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.GetConnectionString">
 					func
 					(self *SqlBackend)
 					GetConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.GroupBy">
 					func
 					(self *SqlBackend)
 					GroupBy(collection *dal.Collection, groupBy []string, aggregates []filter.Aggregate, f ...*filter.Filter) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#SqlBackend.Index">
 					func
 					(self *SqlBackend)
 					Index(collection *dal.Collection, records *dal.RecordSet) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.IndexConnectionString">
 					func
 					(self *SqlBackend)
 					IndexConnectionString() *dal.ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.IndexExists">
 					func
 					(self *SqlBackend)
 					IndexExists(collection *dal.Collection, id interface{}) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.IndexInitialize">
 					func
 					(self *SqlBackend)
 					IndexInitialize(parent Backend) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#SqlBackend.IndexRemove">
 					func
 					(self *SqlBackend)
 					IndexRemove(collection *dal.Collection, ids []interface{}) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.IndexRetrieve">
 					func
 					(self *SqlBackend)
 					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Initialize">
 					func
 					(self *SqlBackend)
 					Initialize() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Insert">
 					func
 					(self *SqlBackend)
 					Insert(name string, recordset *dal.RecordSet) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.ListCollections">
 					func
 					(self *SqlBackend)
 					ListCollections() ([]string, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.ListValues">
 					func
 					(self *SqlBackend)
 					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Maximum">
 					func
 					(self *SqlBackend)
 					Maximum(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Migrate">
 					func
 					(self *SqlBackend)
 					Migrate() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Minimum">
 					func
 					(self *SqlBackend)
 					Minimum(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Ping">
 					func
 					(self *SqlBackend)
 					Ping(timeout time.Duration) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Query">
 					func
 					(self *SqlBackend)
 					Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.QueryFunc">
 					func
 					(self *SqlBackend)
 					QueryFunc(collection *dal.Collection, f *filter.Filter, resultFn IndexResultFunc) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.RegisterCollection">
 					func
 					(self *SqlBackend)
 					RegisterCollection(collection *dal.Collection)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Retrieve">
 					func
 					(self *SqlBackend)
 					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.SetIndexer">
 					func
 					(self *SqlBackend)
 					SetIndexer(indexConnString dal.ConnectionString) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.String">
 					func
 					(self *SqlBackend)
 					String() string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Sum">
 					func
 					(self *SqlBackend)
 					Sum(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Supports">
 					func
 					(self *SqlBackend)
 					Supports(features ...BackendFeature) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.Update">
 					func
 					(self *SqlBackend)
 					Update(name string, recordset *dal.RecordSet, target ...string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.WithAggregator">
 					func
 					(self *SqlBackend)
 					WithAggregator(collection *dal.Collection) Aggregator
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SqlBackend.WithSearch">
 					func
 					(self *SqlBackend)
 					WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
 				</a>
+				
 			</li>
 			
 			
@@ -4405,14 +5035,14 @@
 	</li>
 	
     <li>
-		<a href="#SqlInitFunc">type SqlInitFunc</a>
+		<a href="#SqlInitFunc">type SqlInitFunc </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#SqlPreInitFunc">type SqlPreInitFunc</a>
+		<a href="#SqlPreInitFunc">type SqlPreInitFunc </a>
 
 		
 		
@@ -4449,7 +5079,7 @@
 			
 		</td>
 		<td class="text-right">776B</td>
-		<td class="text-right">15 lines</td>
+		<td class="text-right">15</td>
 		<td class="text-right"></td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4463,7 +5093,7 @@
 			
 		</td>
 		<td class="text-right">3KB</td>
-		<td class="text-right">87 lines</td>
+		<td class="text-right">87</td>
 		<td class="text-right">2</td>
 		<td class="text-right">3</td>
 		<td class="text-right">3</td>
@@ -4477,7 +5107,7 @@
 			
 		</td>
 		<td class="text-right">15KB</td>
-		<td class="text-right">471 lines</td>
+		<td class="text-right">471</td>
 		<td class="text-right">13</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4491,7 +5121,7 @@
 			
 		</td>
 		<td class="text-right">3KB</td>
-		<td class="text-right">91 lines</td>
+		<td class="text-right">91</td>
 		<td class="text-right">21</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4505,7 +5135,7 @@
 			
 		</td>
 		<td class="text-right">6KB</td>
-		<td class="text-right">189 lines</td>
+		<td class="text-right">189</td>
 		<td class="text-right">12</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4518,8 +5148,8 @@
 			<a href="dynamo.go">dynamo.go</a>
 			
 		</td>
-		<td class="text-right">15KB</td>
-		<td class="text-right">495 lines</td>
+		<td class="text-right">16KB</td>
+		<td class="text-right">509</td>
 		<td class="text-right">20</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4533,7 +5163,7 @@
 			
 		</td>
 		<td class="text-right">1KB</td>
-		<td class="text-right">63 lines</td>
+		<td class="text-right">64</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4547,7 +5177,7 @@
 			
 		</td>
 		<td class="text-right">5KB</td>
-		<td class="text-right">136 lines</td>
+		<td class="text-right">136</td>
 		<td class="text-right">8</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4561,7 +5191,7 @@
 			
 		</td>
 		<td class="text-right">16KB</td>
-		<td class="text-right">479 lines</td>
+		<td class="text-right">479</td>
 		<td class="text-right">13</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4575,7 +5205,7 @@
 			
 		</td>
 		<td class="text-right">6KB</td>
-		<td class="text-right">170 lines</td>
+		<td class="text-right">170</td>
 		<td class="text-right">34</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4589,7 +5219,7 @@
 			
 		</td>
 		<td class="text-right">92B</td>
-		<td class="text-right">6 lines</td>
+		<td class="text-right">6</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4603,7 +5233,7 @@
 			
 		</td>
 		<td class="text-right">10KB</td>
-		<td class="text-right">341 lines</td>
+		<td class="text-right">341</td>
 		<td class="text-right">20</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4617,7 +5247,7 @@
 			
 		</td>
 		<td class="text-right">5KB</td>
-		<td class="text-right">151 lines</td>
+		<td class="text-right">151</td>
 		<td class="text-right">12</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4631,7 +5261,7 @@
 			
 		</td>
 		<td class="text-right">15KB</td>
-		<td class="text-right">488 lines</td>
+		<td class="text-right">488</td>
 		<td class="text-right">20</td>
 		<td class="text-right">2</td>
 		<td class="text-right">4</td>
@@ -4645,7 +5275,7 @@
 			
 		</td>
 		<td class="text-right">10KB</td>
-		<td class="text-right">353 lines</td>
+		<td class="text-right">353</td>
 		<td class="text-right">18</td>
 		<td class="text-right">5</td>
 		<td class="text-right">9</td>
@@ -4659,7 +5289,7 @@
 			
 		</td>
 		<td class="text-right">2KB</td>
-		<td class="text-right">43 lines</td>
+		<td class="text-right">43</td>
 		<td class="text-right">12</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4673,7 +5303,7 @@
 			
 		</td>
 		<td class="text-right">6KB</td>
-		<td class="text-right">150 lines</td>
+		<td class="text-right">150</td>
 		<td class="text-right">3</td>
 		<td class="text-right">3</td>
 		<td class="text-right"></td>
@@ -4687,7 +5317,7 @@
 			
 		</td>
 		<td class="text-right">1KB</td>
-		<td class="text-right">31 lines</td>
+		<td class="text-right">31</td>
 		<td class="text-right"></td>
 		<td class="text-right">2</td>
 		<td class="text-right"></td>
@@ -4701,7 +5331,7 @@
 			
 		</td>
 		<td class="text-right">6KB</td>
-		<td class="text-right">153 lines</td>
+		<td class="text-right">153</td>
 		<td class="text-right">13</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4715,7 +5345,7 @@
 			
 		</td>
 		<td class="text-right">4KB</td>
-		<td class="text-right">136 lines</td>
+		<td class="text-right">136</td>
 		<td class="text-right">8</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4729,7 +5359,7 @@
 			
 		</td>
 		<td class="text-right">5KB</td>
-		<td class="text-right">147 lines</td>
+		<td class="text-right">147</td>
 		<td class="text-right">12</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4743,7 +5373,7 @@
 			
 		</td>
 		<td class="text-right">10KB</td>
-		<td class="text-right">324 lines</td>
+		<td class="text-right">324</td>
 		<td class="text-right">20</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4757,7 +5387,7 @@
 			
 		</td>
 		<td class="text-right">280B</td>
-		<td class="text-right">7 lines</td>
+		<td class="text-right">7</td>
 		<td class="text-right"></td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4771,7 +5401,7 @@
 			
 		</td>
 		<td class="text-right">5KB</td>
-		<td class="text-right">117 lines</td>
+		<td class="text-right">117</td>
 		<td class="text-right">12</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4785,7 +5415,7 @@
 			
 		</td>
 		<td class="text-right">13KB</td>
-		<td class="text-right">428 lines</td>
+		<td class="text-right">428</td>
 		<td class="text-right">20</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4799,7 +5429,7 @@
 			
 		</td>
 		<td class="text-right">794B</td>
-		<td class="text-right">23 lines</td>
+		<td class="text-right">23</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4813,7 +5443,7 @@
 			
 		</td>
 		<td class="text-right">11KB</td>
-		<td class="text-right">280 lines</td>
+		<td class="text-right">280</td>
 		<td class="text-right">4</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -4827,7 +5457,7 @@
 			
 		</td>
 		<td class="text-right">4KB</td>
-		<td class="text-right">112 lines</td>
+		<td class="text-right">112</td>
 		<td class="text-right">8</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4841,7 +5471,7 @@
 			
 		</td>
 		<td class="text-right">5KB</td>
-		<td class="text-right">129 lines</td>
+		<td class="text-right">129</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4855,7 +5485,7 @@
 			
 		</td>
 		<td class="text-right">8KB</td>
-		<td class="text-right">183 lines</td>
+		<td class="text-right">188</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4869,7 +5499,7 @@
 			
 		</td>
 		<td class="text-right">6KB</td>
-		<td class="text-right">180 lines</td>
+		<td class="text-right">180</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4883,7 +5513,7 @@
 			
 		</td>
 		<td class="text-right">7KB</td>
-		<td class="text-right">198 lines</td>
+		<td class="text-right">198</td>
 		<td class="text-right">12</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -4897,7 +5527,7 @@
 			
 		</td>
 		<td class="text-right">34KB</td>
-		<td class="text-right">963 lines</td>
+		<td class="text-right">979</td>
 		<td class="text-right">23</td>
 		<td class="text-right">3</td>
 		<td class="text-right"></td>
@@ -4911,7 +5541,7 @@
 			
 		</td>
 		<td class="text-right">2KB</td>
-		<td class="text-right">62 lines</td>
+		<td class="text-right">1</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -5007,50 +5637,6 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)</pre>
-</div>
-
-
-
-<h3 id="NewDynamoBackend" data-kind="f">
-	func <a title="View Source" href="">NewDynamoBackend</a>
-	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewFileBackend" data-kind="f">
-	func <a title="View Source" href="">NewFileBackend</a>
-	<a class="permalink" href="#NewFileBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewFilesystemBackend" data-kind="f">
-	func <a title="View Source" href="">NewFilesystemBackend</a>
-	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewMongoBackend" data-kind="f">
-	func <a title="View Source" href="">NewMongoBackend</a>
-	<a class="permalink" href="#NewMongoBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -5227,6 +5813,66 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
 </div>
+
+
+
+
+<h4 id="NewFileBackend" data-kind="f">
+	func <a title="View Source" href="">NewFileBackend</a>
+	<a class="permalink" href="#NewFileBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewDynamoBackend" data-kind="f">
+	func <a title="View Source" href="">NewDynamoBackend</a>
+	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewFilesystemBackend" data-kind="f">
+	func <a title="View Source" href="">NewFilesystemBackend</a>
+	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewMongoBackend" data-kind="f">
+	func <a title="View Source" href="">NewMongoBackend</a>
+	<a class="permalink" href="#NewMongoBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+
+
+
+
 
 
 
@@ -11471,10 +12117,10 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
         <div id="x-footer" class="clearfix">
             <div class="container">
                 
+                Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></i> v0.0.3
+                
 
                 <span class="pull-right">
-                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></a></i> v0.0.3
-                    <span class="text-muted">|</span>
                     <a href="#">Back to top</a>
                 </span>
             </div>

@@ -782,7 +782,29 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 					querylog.Debugf("[%v] failed to refresh collection: %v", self, err)
 				}
 			}()
-			return tx.Commit()
+
+			for i := 0; i < 2; i++ {
+				if err := tx.Commit(); err == nil {
+					return nil
+				} else if log.ErrContains(err, `cannot change name of view column`) && definition.View {
+					var viewName = gen.ToTableName(definition.Name)
+					var dropView = fmt.Sprintf("DROP VIEW %v", viewName)
+
+					if vtx, err := self.db.Begin(); err == nil {
+						querylog.Debugf("[%v] %s [%v]", self, dropView, viewName)
+
+						if _, err := vtx.Exec(dropView, viewName); err == nil {
+							if err := vtx.Commit(); err == nil {
+								continue
+							}
+						}
+					}
+				} else {
+					return err
+				}
+			}
+
+			return fmt.Errorf("failed to create collection due to unknown error")
 		} else {
 			defer tx.Rollback()
 			return err

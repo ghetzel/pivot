@@ -72,7 +72,8 @@
         {
             "Name": "DefaultPivotUrl",
             "Immutable": true,
-            "Expression": "`http://localhost:29029`"
+            "Expression": "`http://localhost:29029`",
+            "Value": "http://localhost:29029"
         }
     ],
     "Types": {

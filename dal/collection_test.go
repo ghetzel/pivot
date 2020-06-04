@@ -20,6 +20,12 @@ type testUser struct {
 	Age   int        `pivot:"age"`
 }
 
+type testUserEmbed struct {
+	testUser
+	Username string `pivot:"username,identity"`
+	Active   bool   `pivot:"active"`
+}
+
 type nullBackend struct {
 	collections map[string]*Collection
 }

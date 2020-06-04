@@ -7,8 +7,8 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 189,
-    "LineCount": 20907,
-    "SourceLineCount": 20285,
+    "LineCount": 20942,
+    "SourceLineCount": 20315,
     "FunctionCount": 20,
     "TypeCount": 10,
     "ConstantCount": 6,
@@ -17,7 +17,7 @@
         "Mean": 0.3333,
         "StdDev": 0.4531,
         "GeometricMean": 0,
-        "HarmonicMean": 0,
+        "HarmonicMean": 0.9231,
         "Median": 0,
         "Minimum": 0,
         "Maximum": 1
@@ -151,7 +151,7 @@
                     "Alias": "require"
                 }
             ],
-            "Size": 38863,
+            "Size": 38871,
             "LineCount": 1469,
             "SourceLineCount": 1180,
             "FunctionCount": 0,
@@ -231,9 +231,9 @@
                     "Alias": "yaml"
                 }
             ],
-            "Size": 8210,
-            "LineCount": 294,
-            "SourceLineCount": 231,
+            "Size": 9000,
+            "LineCount": 329,
+            "SourceLineCount": 261,
             "FunctionCount": 8,
             "TypeCount": 7,
             "ConstantCount": 0,
@@ -389,7 +389,7 @@
         },
         {
             "Name": "version.go",
-            "Size": 154,
+            "Size": 155,
             "LineCount": 6,
             "SourceLineCount": 4,
             "FunctionCount": 0,
@@ -402,17 +402,20 @@
         {
             "Name": "ApplicationName",
             "Immutable": true,
-            "Expression": "`pivot`"
+            "Expression": "`pivot`",
+            "Value": "pivot"
         },
         {
             "Name": "ApplicationSummary",
             "Immutable": true,
-            "Expression": "`an extensible database abstraction service`"
+            "Expression": "`an extensible database abstraction service`",
+            "Value": "an extensible database abstraction service"
         },
         {
             "Name": "ApplicationVersion",
             "Immutable": true,
-            "Expression": "`3.3.6`"
+            "Expression": "`3.3.13`",
+            "Value": "3.3.13"
         },
         {
             "Name": "TestFirst",
@@ -432,7 +435,8 @@
     "Variables": [
         {
             "Name": "DefaultAddress",
-            "Expression": "`127.0.0.1`"
+            "Expression": "`127.0.0.1`",
+            "Value": "127.0.0.1"
         },
         {
             "Name": "DefaultPort",
@@ -444,7 +448,8 @@
         },
         {
             "Name": "DefaultUiDirectory",
-            "Expression": "`embedded`"
+            "Expression": "`embedded`",
+            "Value": "embedded"
         },
         {
             "Name": "MonitorCheckInterval",
@@ -657,7 +662,7 @@
                 }
             ],
             "Signature": "LoadFixturesFromFile(filename string, db Backend) error",
-            "Source": "ewoJZmlsZW5hbWUgPSBmaWxldXRpbC5NdXN0RXhwYW5kVXNlcihmaWxlbmFtZSkKCWlmIGZpbGUsIGVyciA6PSBvcy5PcGVuKGZpbGVuYW1lKTsgZXJyID09IG5pbCB7CgkJY29tbWVudFJlbW92ZXIgOj0gZmlsZXV0aWwuTmV3UmVhZE1hbmlwdWxhdG9yKGZpbGUsIGZpbGV1dGlsLlJlbW92ZUxpbmVzV2l0aFByZWZpeChgLy9gLCB0cnVlKSkKCQlkZWZlciBjb21tZW50UmVtb3Zlci5DbG9zZSgpCgkJdmFyIHJlY29yZHMgW10qZGFsLlJlY29yZAoJCWlmIGVyciA6PSBqc29uLk5ld0RlY29kZXIoY29tbWVudFJlbW92ZXIpLkRlY29kZSgmcmVjb3Jkcyk7IGVyciA9PSBuaWwgewoJCQl2YXIgY29sbGVjdGlvbnMgW11zdHJpbmcKCQkJZm9yIF8sIHJlY29yZCA6PSByYW5nZSByZWNvcmRzIHsKCQkJCWlmIHJlY29yZC5Db2xsZWN0aW9uTmFtZSA9PSBgYCB7CgkJCQkJcmVjb3JkLkNvbGxlY3Rpb25OYW1lID0gc3RyaW5ncy5UcmltU3VmZml4KGZpbGVwYXRoLkJhc2UoZmlsZW5hbWUpLCBmaWxlcGF0aC5FeHQoZmlsZW5hbWUpKQoJCQkJfQoJCQkJY29sbGVjdGlvbnMgPSBhcHBlbmQoY29sbGVjdGlvbnMsIHJlY29yZC5Db2xsZWN0aW9uTmFtZSkKCQkJfQoJCQljb2xsZWN0aW9ucyA9IHNsaWNldXRpbC5VbmlxdWVTdHJpbmdzKGNvbGxlY3Rpb25zKQoJCQlmb3IgXywgbmFtZSA6PSByYW5nZSBjb2xsZWN0aW9ucyB7CgkJCQlpZiBjb2xsZWN0aW9uLCBlcnIgOj0gZGIuR2V0Q29sbGVjdGlvbihuYW1lKTsgZXJyID09IG5pbCB7CgkJCQkJdmFyIGkgaW50CgkJCQkJZm9yIF8sIHJlY29yZCA6PSByYW5nZSByZWNvcmRzIHsKCQkJCQkJaWYgcmVjb3JkLkNvbGxlY3Rpb25OYW1lICE9IG5hbWUgewoJCQkJCQkJY29udGludWUKCQkJCQkJfQoJCQkJCQl2YXIgZXJyIGVycm9yCgkJCQkJCWlmIHR5cGV1dGlsLklzQXJyYXkocmVjb3JkLklEKSB7CgkJCQkJCQlpZiBlcnIgOj0gcmVjb3JkLlNldEtleXMoY29sbGVjdGlvbiwgZGFsLlBlcnNpc3RPcGVyYXRpb24sIHNsaWNldXRpbC5TbGljZWlmeShyZWNvcmQuSUQpLi4uKTsgZXJyICE9IG5pbCB7CgkJCQkJCQkJcmV0dXJuIGZtdC5FcnJvcmYoIiVzIGlkICV2OiAldiIsIG5hbWUsIHJlY29yZC5JRCwgZXJyKQoJCQkJCQkJfQoJCQkJCQl9CgkJCQkJCWlmIGRiLkV4aXN0cyhjb2xsZWN0aW9uLk5hbWUsIHJlY29yZCkgewoJCQkJCQkJZXJyID0gZGIuVXBkYXRlKGNvbGxlY3Rpb24uTmFtZSwgZGFsLk5ld1JlY29yZFNldChyZWNvcmQpKQoJCQkJCQl9IGVsc2UgewoJCQkJCQkJZXJyID0gZGIuSW5zZXJ0KGNvbGxlY3Rpb24uTmFtZSwgZGFsLk5ld1JlY29yZFNldChyZWNvcmQpKQoJCQkJCQl9CgkJCQkJCWlmIGVyciAhPSBuaWwgewoJCQkJCQkJcmV0dXJuIGZtdC5FcnJvcmYoIkNhbm5vdCBsb2FkIGNvbGxlY3Rpb24gJXEsIHJlY29yZCAldjogJXYiLCBuYW1lLCByZWNvcmQuSUQsIGVycikKCQkJCQkJfQoJCQkJCQlpICs9IDEKCQkJCQl9CgkJCQkJbG9nLkluZm9mKCJDb2xsZWN0aW9uICVxOiBsb2FkZWQgJWQgcmVjb3JkcyIsIG5hbWUsIGkpCgkJCQl9IGVsc2UgewoJCQkJCXJldHVybiBmbXQuRXJyb3JmKCJDYW5ub3QgbG9hZCBjb2xsZWN0aW9uICVxOiAldiIsIG5hbWUsIGVycikKCQkJCX0KCQkJfQoJCQlyZXR1cm4gbmlsCgkJfSBlbHNlIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoIkNhbm5vdCBkZWNvZGUgZml4dHVyZSBmaWxlICVxOiAldiIsIGZpbGVuYW1lLCBlcnIpCgkJfQoJfSBlbHNlIHsKCQlyZXR1cm4gZm10LkVycm9yZigiQ2Fubm90IGxvYWQgZml4dHVyZSBmaWxlICVxOiAldiIsIGZpbGVuYW1lLCBlcnIpCgl9Cn0=",
+            "Source": "ewoJZmlsZW5hbWUgPSBmaWxldXRpbC5NdXN0RXhwYW5kVXNlcihmaWxlbmFtZSkKCWlmIGZpbGUsIGVyciA6PSBvcy5PcGVuKGZpbGVuYW1lKTsgZXJyID09IG5pbCB7CgkJdmFyIGNvbW1lbnRSZW1vdmVyID0gZmlsZXV0aWwuTmV3UmVhZE1hbmlwdWxhdG9yKGZpbGUsIGZpbGV1dGlsLlJlbW92ZUxpbmVzV2l0aFByZWZpeChgLy9gLCB0cnVlKSkKCQlkZWZlciBjb21tZW50UmVtb3Zlci5DbG9zZSgpCgkJdmFyIHJlY29yZHMgW10qZGFsLlJlY29yZAoJCXZhciBhbGxPcHRpb25hbCBib29sID0gdHJ1ZQoJCWlmIGVyciA6PSBqc29uLk5ld0RlY29kZXIoY29tbWVudFJlbW92ZXIpLkRlY29kZSgmcmVjb3Jkcyk7IGVyciA9PSBuaWwgewoJCQl2YXIgY29sbGVjdGlvbnMgW11zdHJpbmcKCQkJZm9yIF8sIHJlY29yZCA6PSByYW5nZSByZWNvcmRzIHsKCQkJCWlmIHJlY29yZC5Db2xsZWN0aW9uTmFtZSA9PSBgYCB7CgkJCQkJcmVjb3JkLkNvbGxlY3Rpb25OYW1lID0gc3RyaW5ncy5UcmltU3VmZml4KGZpbGVwYXRoLkJhc2UoZmlsZW5hbWUpLCBmaWxlcGF0aC5FeHQoZmlsZW5hbWUpKQoJCQkJfQoJCQkJaWYgIXJlY29yZC5PcHRpb25hbCB7CgkJCQkJYWxsT3B0aW9uYWwgPSBmYWxzZQoJCQkJfQoJCQkJY29sbGVjdGlvbnMgPSBhcHBlbmQoY29sbGVjdGlvbnMsIHJlY29yZC5Db2xsZWN0aW9uTmFtZSkKCQkJfQoJCQljb2xsZWN0aW9ucyA9IHNsaWNldXRpbC5VbmlxdWVTdHJpbmdzKGNvbGxlY3Rpb25zKQoJCQlmb3IgXywgbmFtZSA6PSByYW5nZSBjb2xsZWN0aW9ucyB7CgkJCQlpZiBjb2xsZWN0aW9uLCBlcnIgOj0gZGIuR2V0Q29sbGVjdGlvbihuYW1lKTsgZXJyID09IG5pbCB7CgkJCQkJdmFyIGkgaW50CgkJCQkJZm9yIF8sIHJlY29yZCA6PSByYW5nZSByZWNvcmRzIHsKCQkJCQkJdmFyIGVyciBlcnJvcgoJCQkJCQl2YXIgb3AgaW50CgkJCQkJCWlmIHJlY29yZC5Db2xsZWN0aW9uTmFtZSAhPSBuYW1lIHsKCQkJCQkJCWNvbnRpbnVlCgkJCQkJCX0KCQkJCQkJaWYgdHlwZXV0aWwuSXNBcnJheShyZWNvcmQuSUQpIHsKCQkJCQkJCWlmIGVyciA6PSByZWNvcmQuU2V0S2V5cyhjb2xsZWN0aW9uLCBkYWwuUGVyc2lzdE9wZXJhdGlvbiwgc2xpY2V1dGlsLlNsaWNlaWZ5KHJlY29yZC5JRCkuLi4pOyBlcnIgIT0gbmlsIHsKCQkJCQkJCQlyZXR1cm4gZm10LkVycm9yZigiJXMgaWQgJXY6ICV2IiwgbmFtZSwgcmVjb3JkLklELCBlcnIpCgkJCQkJCQl9CgkJCQkJCX0KCQkJCQkJc3dpdGNoIHN0cmluZ3MuVG9Mb3dlcihyZWNvcmQuT3BlcmF0aW9uKSB7CgkJCQkJCWNhc2UgYGA6CgkJCQkJCQlpZiBkYi5FeGlzdHMoY29sbGVjdGlvbi5OYW1lLCByZWNvcmQpIHsKCQkJCQkJCQlvcCA9IDEKCQkJCQkJCX0gZWxzZSB7CgkJCQkJCQkJb3AgPSAwCgkJCQkJCQl9CgkJCQkJCWNhc2UgYGNyZWF0ZWA6CgkJCQkJCQlvcCA9IDAKCQkJCQkJY2FzZSBgdXBkYXRlYDoKCQkJCQkJCW9wID0gMQoJCQkJCQljYXNlIGBkZWxldGVgOgoJCQkJCQkJb3AgPSAyCgkJCQkJCWRlZmF1bHQ6CgkJCQkJCQlyZXR1cm4gZm10LkVycm9yZigiaW52YWxpZCBvcGVyYXRpb24gJXE7IGxlYXZlIGJsYW5rLCBvciBzcGVjaWZ5ICVxLCAlcSwgb3IgJXEiLCByZWNvcmQuT3BlcmF0aW9uLCBgY3JlYXRlYCwgYHVwZGF0ZWAsIGBkZWxldGVgKQoJCQkJCQl9CgkJCQkJCXN3aXRjaCBvcCB7CgkJCQkJCWNhc2UgMDoKCQkJCQkJCWVyciA9IGRiLkluc2VydChjb2xsZWN0aW9uLk5hbWUsIGRhbC5OZXdSZWNvcmRTZXQocmVjb3JkKSkKCQkJCQkJY2FzZSAxOgoJCQkJCQkJZXJyID0gZGIuVXBkYXRlKGNvbGxlY3Rpb24uTmFtZSwgZGFsLk5ld1JlY29yZFNldChyZWNvcmQpKQoJCQkJCQljYXNlIDI6CgkJCQkJCQllcnIgPSBkYi5EZWxldGUoY29sbGVjdGlvbi5OYW1lLCByZWNvcmQuS2V5cyhjb2xsZWN0aW9uKSkKCQkJCQkJfQoJCQkJCQlpZiBlcnIgIT0gbmlsIHsKCQkJCQkJCWlmIHJlY29yZC5PcHRpb25hbCB7CgkJCQkJCQkJY29udGludWUKCQkJCQkJCX0gZWxzZSB7CgkJCQkJCQkJcmV0dXJuIGZtdC5FcnJvcmYoIkNhbm5vdCBsb2FkIGNvbGxlY3Rpb24gJXEsIHJlY29yZCAldjogJXYiLCBuYW1lLCByZWNvcmQuSUQsIGVycikKCQkJCQkJCX0KCQkJCQkJfQoJCQkJCQlpICs9IDEKCQkJCQl9CgkJCQkJbG9nLkluZm9mKCJDb2xsZWN0aW9uICVxOiBsb2FkZWQgJWQgcmVjb3JkcyIsIG5hbWUsIGkpCgkJCQl9IGVsc2UgaWYgYWxsT3B0aW9uYWwgewoJCQkJCWNvbnRpbnVlCgkJCQl9IGVsc2UgewoJCQkJCXJldHVybiBmbXQuRXJyb3JmKCJDYW5ub3QgbG9hZCBjb2xsZWN0aW9uICVxOiAldiIsIG5hbWUsIGVycikKCQkJCX0KCQkJfQoJCQlyZXR1cm4gbmlsCgkJfSBlbHNlIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoIkNhbm5vdCBkZWNvZGUgZml4dHVyZSBmaWxlICVxOiAldiIsIGZpbGVuYW1lLCBlcnIpCgkJfQoJfSBlbHNlIHsKCQlyZXR1cm4gZm10LkVycm9yZigiQ2Fubm90IGxvYWQgZml4dHVyZSBmaWxlICVxOiAldiIsIGZpbGVuYW1lLCBlcnIpCgl9Cn0=",
             "IsPackageLevel": true
         },
         {
@@ -981,8 +986,8 @@
             "Synopsis": "",
             "MainFunction": false,
             "CommentWordCount": 250,
-            "LineCount": 9212,
-            "SourceLineCount": 7201,
+            "LineCount": 9248,
+            "SourceLineCount": 7176,
             "FunctionCount": 340,
             "TypeCount": 31,
             "ConstantCount": 16,
@@ -1205,7 +1210,7 @@
                             "Alias": "filter"
                         }
                     ],
-                    "Size": 6516,
+                    "Size": 6521,
                     "LineCount": 238,
                     "SourceLineCount": 189,
                     "FunctionCount": 12,
@@ -1277,6 +1282,10 @@
                             "Alias": "sliceutil"
                         },
                         {
+                            "PackageName": "github.com/ghetzel/go-stockutil/stringutil",
+                            "Alias": "stringutil"
+                        },
+                        {
                             "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
                             "Alias": "typeutil"
                         },
@@ -1289,9 +1298,9 @@
                             "Alias": "filter"
                         }
                     ],
-                    "Size": 15859,
-                    "LineCount": 601,
-                    "SourceLineCount": 495,
+                    "Size": 16424,
+                    "LineCount": 618,
+                    "SourceLineCount": 509,
                     "FunctionCount": 20,
                     "TypeCount": 1,
                     "ConstantCount": 0,
@@ -1321,9 +1330,9 @@
                             "Alias": "require"
                         }
                     ],
-                    "Size": 1319,
-                    "LineCount": 71,
-                    "SourceLineCount": 63,
+                    "Size": 1326,
+                    "LineCount": 72,
+                    "SourceLineCount": 64,
                     "FunctionCount": 0,
                     "TypeCount": 0,
                     "ConstantCount": 0,
@@ -2219,9 +2228,9 @@
                             "Alias": "_"
                         }
                     ],
-                    "Size": 7750,
-                    "LineCount": 246,
-                    "SourceLineCount": 183,
+                    "Size": 7873,
+                    "LineCount": 253,
+                    "SourceLineCount": 188,
                     "FunctionCount": 0,
                     "TypeCount": 0,
                     "ConstantCount": 0,
@@ -2387,9 +2396,9 @@
                             "Alias": "util"
                         }
                     ],
-                    "Size": 34759,
-                    "LineCount": 1293,
-                    "SourceLineCount": 963,
+                    "Size": 35200,
+                    "LineCount": 1312,
+                    "SourceLineCount": 979,
                     "FunctionCount": 23,
                     "TypeCount": 3,
                     "ConstantCount": 0,
@@ -2397,27 +2406,9 @@
                 },
                 {
                     "Name": "sql_test.go",
-                    "Imports": [
-                        {
-                            "PackageName": "fmt",
-                            "Alias": "fmt"
-                        },
-                        {
-                            "PackageName": "testing",
-                            "Alias": "testing"
-                        },
-                        {
-                            "PackageName": "github.com/ghetzel/pivot/v3/dal",
-                            "Alias": "dal"
-                        },
-                        {
-                            "PackageName": "github.com/stretchr/testify/require",
-                            "Alias": "require"
-                        }
-                    ],
-                    "Size": 1624,
-                    "LineCount": 72,
-                    "SourceLineCount": 62,
+                    "Size": 1685,
+                    "LineCount": 64,
+                    "SourceLineCount": 1,
                     "FunctionCount": 0,
                     "TypeCount": 0,
                     "ConstantCount": 0,
@@ -2444,7 +2435,8 @@
                 {
                     "Name": "DefaultFilesystemRecordSubdirectory",
                     "Immutable": true,
-                    "Expression": "`data`"
+                    "Expression": "`data`",
+                    "Value": "data"
                 },
                 {
                     "Name": "DeleteOperation",
@@ -2457,18 +2449,21 @@
                 {
                     "Name": "FormatCSV",
                     "Immutable": true,
-                    "Expression": "`csv`"
+                    "Expression": "`csv`",
+                    "Value": "csv"
                 },
                 {
                     "Name": "FormatJSON",
                     "Immutable": true,
-                    "Expression": "`json`"
+                    "Expression": "`json`",
+                    "Value": "json"
                 },
                 {
                     "Name": "FormatYAML",
                     "Type": "SerializationFormat",
                     "Immutable": true,
-                    "Expression": "`yaml`"
+                    "Expression": "`yaml`",
+                    "Value": "yaml"
                 },
                 {
                     "Name": "InspectionOperation",
@@ -2516,11 +2511,13 @@
                 },
                 {
                     "Name": "BleveIdentityField",
-                    "Expression": "`_id`"
+                    "Expression": "`_id`",
+                    "Value": "_id"
                 },
                 {
                     "Name": "DefaultAmazonRegion",
-                    "Expression": "`us-east-1`"
+                    "Expression": "`us-east-1`",
+                    "Value": "us-east-1"
                 },
                 {
                     "Name": "DefaultAutoregister",
@@ -2528,7 +2525,8 @@
                 },
                 {
                     "Name": "DefaultCompoundJoiner",
-                    "Expression": "`:`"
+                    "Expression": "`:`",
+                    "Value": ":"
                 },
                 {
                     "Name": "DefaultConnectTimeout",
@@ -2536,11 +2534,13 @@
                 },
                 {
                     "Name": "DefaultSharedCredentialsFile",
-                    "Expression": "`~/.aws/credentials`"
+                    "Expression": "`~/.aws/credentials`",
+                    "Value": "~/.aws/credentials"
                 },
                 {
                     "Name": "DefaultSharedCredentialsProfile",
-                    "Expression": "`default`"
+                    "Expression": "`default`",
+                    "Value": "default"
                 },
                 {
                     "Name": "ElasticsearchBatchFlushCount",
@@ -2556,11 +2556,13 @@
                 },
                 {
                     "Name": "ElasticsearchDocumentType",
-                    "Expression": "`document`"
+                    "Expression": "`document`",
+                    "Value": "document"
                 },
                 {
                     "Name": "ElasticsearchIdentityField",
-                    "Expression": "`_id`"
+                    "Expression": "`_id`",
+                    "Value": "_id"
                 },
                 {
                     "Name": "ElasticsearchRequestTimeout",
@@ -2598,7 +2600,8 @@
                 },
                 {
                     "Name": "MongoIdentityField",
-                    "Expression": "`_id`"
+                    "Expression": "`_id`",
+                    "Value": "_id"
                 },
                 {
                     "Name": "NotImplementedError",
@@ -2610,11 +2613,13 @@
                 },
                 {
                     "Name": "RedisDefaultAddress",
-                    "Expression": "`localhost:6379`"
+                    "Expression": "`localhost:6379`",
+                    "Value": "localhost:6379"
                 },
                 {
                     "Name": "RedisDefaultProtocol",
-                    "Expression": "`tcp`"
+                    "Expression": "`tcp`",
+                    "Value": "tcp"
                 },
                 {
                     "Name": "SqlArrayFieldHintLength",
@@ -2626,7 +2631,8 @@
                 },
                 {
                     "Name": "WriteLockFormat",
-                    "Expression": "`%s.lock`"
+                    "Expression": "`%s.lock`",
+                    "Value": "%s.lock"
                 }
             ],
             "Functions": [
@@ -2660,74 +2666,6 @@
                     ],
                     "Signature": "DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)",
                     "Source": "ewoJcmVjb3Jkc2V0IDo9IGRhbC5OZXdSZWNvcmRTZXQoKQoJaWYgZXJyIDo9IGluZGV4ZXIuUXVlcnlGdW5jKGNvbGxlY3Rpb24sIGYsIGZ1bmMoaW5kZXhSZWNvcmQgKmRhbC5SZWNvcmQsIGVyciBlcnJvciwgcGFnZSBJbmRleFBhZ2UpIGVycm9yIHsKCQlkZWZlciBQb3B1bGF0ZVJlY29yZFNldFBhZ2VEZXRhaWxzKHJlY29yZHNldCwgZiwgcGFnZSkKCQlwYXJlbnQgOj0gaW5kZXhlci5HZXRCYWNrZW5kKCkKCQl2YXIgZm9yY2VJbmRleFJlY29yZCBib29sCgkJaWYgZiAhPSBuaWwgewoJCQlpZiB2SSwgb2sgOj0gZi5PcHRpb25zW2BGb3JjZUluZGV4UmVjb3JkYF07IG9rIHsKCQkJCWlmIHYsIG9rIDo9IHZJLihib29sKTsgb2sgewoJCQkJCWZvcmNlSW5kZXhSZWNvcmQgPSB2CgkJCQl9CgkJCX0KCQl9CgkJaWYgcGFyZW50ICE9IG5pbCB7CgkJCWlmIGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpID4gMSB7CgkJCQlqb2luZXIgOj0gY29sbGVjdGlvbi5JbmRleENvbXBvdW5kRmllbGRKb2luZXIKCQkJCWlmIGpvaW5lciA9PSBgYCB7CgkJCQkJam9pbmVyID0gRGVmYXVsdENvbXBvdW5kSm9pbmVyCgkJCQl9CgkJCQl2YXIgdmFsdWVzIFtdaW50ZXJmYWNle30KCQkJCXZhbHVlcyA9IHNsaWNldXRpbC5TbGljZWlmeShzdHJpbmdzLlNwbGl0KGZtdC5TcHJpbnRmKCIldiIsIGluZGV4UmVjb3JkLklEKSwgam9pbmVyKSkKCQkJCWlmIGxlbih2YWx1ZXMpICE9IGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpIHsKCQkJCQlpZiBkaWZmIDo9IGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpIC0gbGVuKHZhbHVlcyk7IGRpZmYgPj0gMSB7CgkJCQkJCWZvciBfLCBjZiA6PSByYW5nZSBjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHNbZGlmZjpdIHsKCQkJCQkJCWlmIHYgOj0gaW5kZXhSZWNvcmQuR2V0KGNmKTsgdiAhPSBuaWwgewoJCQkJCQkJCXZhbHVlcyA9IGFwcGVuZCh2YWx1ZXMsIHYpCgkJCQkJCQl9CgkJCQkJCX0KCQkJCQl9CgkJCQkJaWYgbGVuKHZhbHVlcykgIT0gbGVuKGNvbGxlY3Rpb24uSW5kZXhDb21wb3VuZEZpZWxkcykgewoJCQkJCQlyZXR1cm4gZm10LkVycm9yZigiSW5kZXggaXRlbSAldjogZXhwZWN0ZWQgJWQgY29tcG91bmQgZmllbGQgY29tcG9uZW50cywgZ290ICVkIiwgaW5kZXhSZWNvcmQuSUQsIGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpLCBsZW4odmFsdWVzKSkKCQkJCQl9CgkJCQl9CgkJCQlmb3IgaSwgZmllbGQgOj0gcmFuZ2UgY29sbGVjdGlvbi5JbmRleENvbXBvdW5kRmllbGRzIHsKCQkJCQlpZiBpID09IDAgewoJCQkJCQlpbmRleFJlY29yZC5JRCA9IHZhbHVlcwoJCQkJCX0gZWxzZSB7CgkJCQkJCWluZGV4UmVjb3JkLlNldChmaWVsZCwgdmFsdWVzW2ldKQoJCQkJCX0KCQkJCX0KCQkJfQoJCX0KCQllbXB0eVJlY29yZCA6PSBkYWwuTmV3UmVjb3JkKGluZGV4UmVjb3JkLklEKQoJCWVtcHR5UmVjb3JkLkVycm9yID0gZXJyCgkJaWYgbGVuKHJlc3VsdEZucykgPiAwIHsKCQkJcmVzdWx0Rm4gOj0gcmVzdWx0Rm5zWzBdCgkJCWlmIGYuSWRPbmx5KCkgewoJCQkJcmV0dXJuIHJlc3VsdEZuKGVtcHR5UmVjb3JkLCBlcnIsIHBhZ2UpCgkJCX0gZWxzZSBpZiBwYXJlbnQgIT0gbmlsICYmICFmb3JjZUluZGV4UmVjb3JkIHsKCQkJCWlmIHJlY29yZCwgZXJyIDo9IHBhcmVudC5SZXRyaWV2ZShjb2xsZWN0aW9uLk5hbWUsIGluZGV4UmVjb3JkLklELCBmLkZpZWxkcy4uLik7IGVyciA9PSBuaWwgewoJCQkJCXJldHVybiByZXN1bHRGbihyZWNvcmQsIGVyciwgcGFnZSkKCQkJCX0gZWxzZSB7CgkJCQkJcmV0dXJuIHJlc3VsdEZuKGVtcHR5UmVjb3JkLCBlcnIsIHBhZ2UpCgkJCQl9CgkJCX0gZWxzZSB7CgkJCQlyZXR1cm4gcmVzdWx0Rm4oaW5kZXhSZWNvcmQsIGVyciwgcGFnZSkKCQkJfQoJCX0gZWxzZSB7CgkJCWlmIGYuSWRPbmx5KCkgewoJCQkJcmVjb3Jkc2V0LlJlY29yZHMgPSBhcHBlbmQocmVjb3Jkc2V0LlJlY29yZHMsIGRhbC5OZXdSZWNvcmQoaW5kZXhSZWNvcmQuSUQpKQoJCQl9IGVsc2UgaWYgcGFyZW50ICE9IG5pbCAmJiAhZm9yY2VJbmRleFJlY29yZCB7CgkJCQlpZiByZWNvcmQsIGVyciA6PSBwYXJlbnQuUmV0cmlldmUoY29sbGVjdGlvbi5OYW1lLCBpbmRleFJlY29yZC5JRCwgZi5GaWVsZHMuLi4pOyBlcnIgPT0gbmlsIHsKCQkJCQlyZWNvcmRzZXQuUmVjb3JkcyA9IGFwcGVuZChyZWNvcmRzZXQuUmVjb3JkcywgcmVjb3JkKQoJCQkJfSBlbHNlIHsKCQkJCQlyZWNvcmRzZXQuUmVjb3JkcyA9IGFwcGVuZChyZWNvcmRzZXQuUmVjb3JkcywgZGFsLk5ld1JlY29yZEVycihpbmRleFJlY29yZC5JRCwgZXJyKSkKCQkJCX0KCQkJfSBlbHNlIHsKCQkJCXJlY29yZHNldC5SZWNvcmRzID0gYXBwZW5kKHJlY29yZHNldC5SZWNvcmRzLCBpbmRleFJlY29yZCkKCQkJfQoJCQlyZXR1cm4gbmlsCgkJfQoJfSk7IGVyciAhPSBuaWwgewoJCXJldHVybiBuaWwsIGVycgoJfQoJcmV0dXJuIHJlY29yZHNldCwgbmlsCn0=",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewDynamoBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewFileBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewFilesystemBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewMongoBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
                     "IsPackageLevel": true
                 },
                 {
@@ -2881,7 +2819,7 @@
                         }
                     ],
                     "Signature": "TestDynamoRecordFromItem(t *testing.T)",
-                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQsIGVyciA6PSBkeW5hbW9SZWNvcmRGcm9tSXRlbShkeW5hbW9UZXN0Q29sbGVjdGlvbiwgbWFwW3N0cmluZ10qZHluYW1vZGIuQXR0cmlidXRlVmFsdWV7YGlkYDoge046IGF3cy5TdHJpbmcoYDEyM2ApfSwgYG5hbWVgOiB7UzogYXdzLlN0cmluZyhgdGVzdGVyYCl9LCBgYWdlYDoge046IGF3cy5TdHJpbmcoYDQyYCl9fSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbFZhbHVlcygxMjMsIHJlY29yZC5JRCkKCWFzc2VydC5FcXVhbFZhbHVlcyhgdGVzdGVyYCwgcmVjb3JkLkdldChgbmFtZWApKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKDQyLCByZWNvcmQuR2V0KGBhZ2VgKSkKfQ==",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQsIGVyciA6PSBkeW5hbW9SZWNvcmRGcm9tSXRlbShkeW5hbW9UZXN0Q29sbGVjdGlvbiwgMTIzLCBtYXBbc3RyaW5nXSpkeW5hbW9kYi5BdHRyaWJ1dGVWYWx1ZXtgaWRgOiB7TjogYXdzLlN0cmluZyhgMTIzYCl9LCBgbmFtZWA6IHtTOiBhd3MuU3RyaW5nKGB0ZXN0ZXJgKX0sIGBhZ2VgOiB7TjogYXdzLlN0cmluZyhgNDJgKX19KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKDEyMywgcmVjb3JkLklEKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKGB0ZXN0ZXJgLCByZWNvcmQuR2V0KGBuYW1lYCkpCglhc3NlcnQuRXF1YWxWYWx1ZXMoNDIsIHJlY29yZC5HZXQoYGFnZWApKQp9",
                     "IsPackageLevel": true
                 },
                 {
@@ -2918,18 +2856,6 @@
                     ],
                     "Signature": "TestRedisSplitKey(t *testing.T)",
                     "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uLCBrZXlzIDo9IHJlZGlzU3BsaXRLZXkoYGApCglhc3NlcnQuWmVybyhjb2xsZWN0aW9uKQoJYXNzZXJ0LkVtcHR5KGtleXMpCgljb2xsZWN0aW9uLCBrZXlzID0gcmVkaXNTcGxpdEtleShgdGVzdGluZzoxMjNgKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0aW5nYCwgY29sbGVjdGlvbikKCWFzc2VydC5FcXVhbChbXXN0cmluZ3tgMTIzYH0sIGtleXMpCgljb2xsZWN0aW9uLCBrZXlzID0gcmVkaXNTcGxpdEtleShgcGl2b3QudGVzdGluZzoxMjNgKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0aW5nYCwgY29sbGVjdGlvbikKCWFzc2VydC5FcXVhbChbXXN0cmluZ3tgMTIzYH0sIGtleXMpCgljb2xsZWN0aW9uLCBrZXlzID0gcmVkaXNTcGxpdEtleShgcGl2b3QudGVzdGluZzoxMjM6NDU2YCkKCWFzc2VydC5FcXVhbChgdGVzdGluZ2AsIGNvbGxlY3Rpb24pCglhc3NlcnQuRXF1YWwoW11zdHJpbmd7YDEyM2AsIGA0NTZgfSwga2V5cykKCWNvbGxlY3Rpb24sIGtleXMgPSByZWRpc1NwbGl0S2V5KGBwaXZvdC5kZWVwbHkubmVzdGVkLndoYXRzYXdoYXQudGVzdGluZzoxMjM6NDU2YCkKCWFzc2VydC5FcXVhbChgdGVzdGluZ2AsIGNvbGxlY3Rpb24pCglhc3NlcnQuRXF1YWwoW11zdHJpbmd7YDEyM2AsIGA0NTZgfSwga2V5cykKfQ==",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "TestSqlAlterStatements",
-                    "Arguments": [
-                        {
-                            "Name": "t",
-                            "Type": "*testing.T"
-                        }
-                    ],
-                    "Signature": "TestSqlAlterStatements(t *testing.T)",
-                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgliIDo9IE5ld1NxbEJhY2tlbmQoZGFsLk11c3RQYXJzZUNvbm5lY3Rpb25TdHJpbmcoYHNxbGl0ZTovL3RlbXBvcmFyeWApKS4oKlNxbEJhY2tlbmQpCglhc3NlcnQuTm9FcnJvcihiLkluaXRpYWxpemUoKSkKCWhhdmUgOj0gJmRhbC5Db2xsZWN0aW9ue05hbWU6IGBUZXN0U3FsQWx0ZXJTdGF0ZW1lbnRzYCwgSWRlbnRpdHlGaWVsZDogYGlkYCwgRmllbGRzOiBbXWRhbC5GaWVsZHt7TmFtZTogYG5hbWVgLCBUeXBlOiBkYWwuU3RyaW5nVHlwZSwgUmVxdWlyZWQ6IHRydWV9LCB7TmFtZTogYGNyZWF0ZWRfYXRgLCBUeXBlOiBkYWwuSW50VHlwZSwgUmVxdWlyZWQ6IHRydWV9fX0KCXdhbnQgOj0gJmRhbC5Db2xsZWN0aW9ue05hbWU6IGBUZXN0U3FsQWx0ZXJTdGF0ZW1lbnRzYCwgSWRlbnRpdHlGaWVsZDogYGlkYCwgRmllbGRzOiBbXWRhbC5GaWVsZHt7TmFtZTogYG5hbWVgLCBUeXBlOiBkYWwuU3RyaW5nVHlwZSwgUmVxdWlyZWQ6IHRydWV9LCB7TmFtZTogYGFnZWAsIFR5cGU6IGRhbC5JbnRUeXBlLCBSZXF1aXJlZDogdHJ1ZSwgRGVmYXVsdFZhbHVlOiAxfSwge05hbWU6IGBjcmVhdGVkX2F0YCwgVHlwZTogZGFsLlRpbWVUeXBlLCBSZXF1aXJlZDogdHJ1ZSwgRGVmYXVsdFZhbHVlOiBgbm93YH19fQoJYi5SZWdpc3RlckNvbGxlY3Rpb24oaGF2ZSkKCWFzc2VydC5Ob0Vycm9yKGIuTWlncmF0ZSgpKQoJZm9yIF8sIGRlbHRhIDo9IHJhbmdlIHdhbnQuRGlmZihoYXZlKSB7CgkJc3RtdCwgXywgZXJyIDo9IGIuZ2VuZXJhdGVBbHRlclN0YXRlbWVudChkZWx0YSkKCQlhc3NlcnQuTm9FcnJvcihlcnIpCgkJc3dpdGNoIGRlbHRhLk5hbWUgewoJCWNhc2UgYGFnZWA6CgkJCWFzc2VydC5FcXVhbChgQUxURVIgVEFCTEUgIlRlc3RTcWxBbHRlclN0YXRlbWVudHMiIEFERCAiY3JlYXRlZF9hdCIgVElNRVNUQU1QIE5PVCBOVUxMIERFRkFVTFQgQ1VSUkVOVF9USU1FU1RBTVBgLCBzdG10KQoJCWNhc2UgYGNyZWF0ZWRfYXRgOgoJCQlhc3NlcnQuRXF1YWwoYEFMVEVSIFRBQkxFICJUZXN0U3FsQWx0ZXJTdGF0ZW1lbnRzIiBBREQgImFnZSIgQklHSU5UIE5PVCBOVUxMYCwgc3RtdCkKCQlkZWZhdWx0OgoJCQlhc3NlcnQuTm9FcnJvcihmbXQuRXJyb3JmKCJleHRyYSBkaWZmOiAldiIsIGRlbHRhKSkKCQl9Cgl9Cn0=",
                     "IsPackageLevel": true
                 }
             ],
@@ -2977,6 +2903,74 @@
                             ],
                             "Signature": "NewSqlBackend(connection dal.ConnectionString) Backend",
                             "Source": "ewoJYmFja2VuZCA6PSAmU3FsQmFja2VuZHtjb25uOiAmY29ubmVjdGlvbiwgcXVlcnlHZW5UeXBlTWFwcGluZzogZ2VuZXJhdG9ycy5EZWZhdWx0U3FsVHlwZU1hcHBpbmcsIGRyb3BUYWJsZVF1ZXJ5OiBgRFJPUCBUQUJMRSAlc2AsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwga25vd25Db2xsZWN0aW9uczogbWFrZShtYXBbc3RyaW5nXWJvb2wpLCBkZXRlY3RlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKX0KCWlmIGZuLCBvayA6PSBzcWxQcmVJbml0RnVuY3NbY29ubmVjdGlvbi5CYWNrZW5kKCldOyBvayAmJiBmbiAhPSBuaWwgewoJCWZuKGJhY2tlbmQpCgl9CgliYWNrZW5kLmluZGV4ZXIgPSBiYWNrZW5kCglyZXR1cm4gYmFja2VuZAp9",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "NewFileBackend",
+                            "Arguments": [
+                                {
+                                    "Name": "connection",
+                                    "Type": "dal.ConnectionString"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "Backend"
+                                }
+                            ],
+                            "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
+                            "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "NewDynamoBackend",
+                            "Arguments": [
+                                {
+                                    "Name": "connection",
+                                    "Type": "dal.ConnectionString"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "Backend"
+                                }
+                            ],
+                            "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
+                            "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "NewFilesystemBackend",
+                            "Arguments": [
+                                {
+                                    "Name": "connection",
+                                    "Type": "dal.ConnectionString"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "Backend"
+                                }
+                            ],
+                            "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
+                            "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
+                            "IsPackageLevel": true
+                        },
+                        {
+                            "Name": "NewMongoBackend",
+                            "Arguments": [
+                                {
+                                    "Name": "connection",
+                                    "Type": "dal.ConnectionString"
+                                }
+                            ],
+                            "Returns": [
+                                {
+                                    "Type": "Backend"
+                                }
+                            ],
+                            "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
+                            "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
                             "IsPackageLevel": true
                         }
                     ],
@@ -9835,7 +9829,8 @@
                 {
                     "Name": "DefaultPivotUrl",
                     "Immutable": true,
-                    "Expression": "`http://localhost:29029`"
+                    "Expression": "`http://localhost:29029`",
+                    "Value": "http://localhost:29029"
                 }
             ],
             "Types": {
@@ -10146,15 +10141,15 @@
             "Synopsis": "",
             "MainFunction": false,
             "CommentWordCount": 2178,
-            "LineCount": 4579,
-            "SourceLineCount": 3445,
+            "LineCount": 4652,
+            "SourceLineCount": 3496,
             "FunctionCount": 125,
-            "TypeCount": 23,
+            "TypeCount": 24,
             "ConstantCount": 27,
             "VariableCount": 13,
             "Statistics": {
-                "Mean": 0.4612,
-                "StdDev": 0.4848,
+                "Mean": 0.4554,
+                "StdDev": 0.4845,
                 "GeometricMean": 0,
                 "HarmonicMean": 0,
                 "Median": 0,
@@ -10222,9 +10217,9 @@
                             "Alias": "require"
                         }
                     ],
-                    "Size": 6874,
-                    "LineCount": 296,
-                    "SourceLineCount": 240,
+                    "Size": 6994,
+                    "LineCount": 302,
+                    "SourceLineCount": 245,
                     "FunctionCount": 0,
                     "TypeCount": 0,
                     "ConstantCount": 0,
@@ -10494,9 +10489,9 @@
                             "Alias": "typeutil"
                         }
                     ],
-                    "Size": 12647,
-                    "LineCount": 494,
-                    "SourceLineCount": 378,
+                    "Size": 12859,
+                    "LineCount": 495,
+                    "SourceLineCount": 379,
                     "FunctionCount": 18,
                     "TypeCount": 1,
                     "ConstantCount": 0,
@@ -10516,10 +10511,6 @@
                         {
                             "PackageName": "strings",
                             "Alias": "strings"
-                        },
-                        {
-                            "PackageName": "github.com/fatih/structs",
-                            "Alias": "structs"
                         },
                         {
                             "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
@@ -10542,9 +10533,9 @@
                             "Alias": "util"
                         }
                     ],
-                    "Size": 4881,
-                    "LineCount": 186,
-                    "SourceLineCount": 147,
+                    "Size": 5460,
+                    "LineCount": 213,
+                    "SourceLineCount": 166,
                     "FunctionCount": 0,
                     "TypeCount": 1,
                     "ConstantCount": 0,
@@ -10562,11 +10553,11 @@
                             "Alias": "require"
                         }
                     ],
-                    "Size": 1118,
-                    "LineCount": 56,
-                    "SourceLineCount": 43,
+                    "Size": 1412,
+                    "LineCount": 73,
+                    "SourceLineCount": 57,
                     "FunctionCount": 0,
-                    "TypeCount": 3,
+                    "TypeCount": 4,
                     "ConstantCount": 0,
                     "VariableCount": 0
                 },
@@ -10590,9 +10581,9 @@
                             "Alias": "require"
                         }
                     ],
-                    "Size": 9906,
-                    "LineCount": 421,
-                    "SourceLineCount": 332,
+                    "Size": 10451,
+                    "LineCount": 443,
+                    "SourceLineCount": 344,
                     "FunctionCount": 0,
                     "TypeCount": 0,
                     "ConstantCount": 0,
@@ -10725,23 +10716,27 @@
                 {
                     "Name": "ArrayType",
                     "Immutable": true,
-                    "Expression": "`array`"
+                    "Expression": "`array`",
+                    "Value": "array"
                 },
                 {
                     "Name": "AutoType",
                     "Immutable": true,
-                    "Expression": "`auto`"
+                    "Expression": "`auto`",
+                    "Value": "auto"
                 },
                 {
                     "Name": "BooleanType",
                     "Immutable": true,
-                    "Expression": "`bool`"
+                    "Expression": "`bool`",
+                    "Value": "bool"
                 },
                 {
                     "Name": "CollectionDelta",
                     "Type": "DeltaType",
                     "Immutable": true,
-                    "Expression": "`collection`"
+                    "Expression": "`collection`",
+                    "Value": "collection"
                 },
                 {
                     "Name": "CollectionKeyNameIssue",
@@ -10758,7 +10753,8 @@
                 {
                     "Name": "FieldDelta",
                     "Immutable": true,
-                    "Expression": "`field`"
+                    "Expression": "`field`",
+                    "Value": "field"
                 },
                 {
                     "Name": "FieldLengthIssue",
@@ -10783,17 +10779,20 @@
                 {
                     "Name": "FloatType",
                     "Immutable": true,
-                    "Expression": "`float`"
+                    "Expression": "`float`",
+                    "Value": "float"
                 },
                 {
                     "Name": "IntType",
                     "Immutable": true,
-                    "Expression": "`int`"
+                    "Expression": "`int`",
+                    "Value": "int"
                 },
                 {
                     "Name": "ObjectType",
                     "Immutable": true,
-                    "Expression": "`object`"
+                    "Expression": "`object`",
+                    "Value": "object"
                 },
                 {
                     "Name": "PersistOperation",
@@ -10804,7 +10803,8 @@
                 {
                     "Name": "RawType",
                     "Immutable": true,
-                    "Expression": "`raw`"
+                    "Expression": "`raw`",
+                    "Value": "raw"
                 },
                 {
                     "Name": "RetrieveOperation",
@@ -10836,12 +10836,14 @@
                     "Name": "StringType",
                     "Type": "Type",
                     "Immutable": true,
-                    "Expression": "`str`"
+                    "Expression": "`str`",
+                    "Value": "str"
                 },
                 {
                     "Name": "TimeType",
                     "Immutable": true,
-                    "Expression": "`time`"
+                    "Expression": "`time`",
+                    "Value": "time"
                 },
                 {
                     "Name": "UnknownIssue",
@@ -10866,11 +10868,13 @@
                 },
                 {
                     "Name": "DefaultFieldCodec",
-                    "Expression": "`json`"
+                    "Expression": "`json`",
+                    "Value": "json"
                 },
                 {
                     "Name": "DefaultIdentityField",
-                    "Expression": "`id`"
+                    "Expression": "`id`",
+                    "Value": "id"
                 },
                 {
                     "Name": "DefaultIdentityFieldType",
@@ -10879,12 +10883,14 @@
                 },
                 {
                     "Name": "DefaultStructIdentityFieldName",
-                    "Expression": "`ID`"
+                    "Expression": "`ID`",
+                    "Value": "ID"
                 },
                 {
                     "Name": "FieldNestingSeparator",
                     "Type": "string",
-                    "Expression": "`.`"
+                    "Expression": "`.`",
+                    "Value": "."
                 },
                 {
                     "Name": "FieldNotFound",
@@ -10918,6 +10924,23 @@
                     ],
                     "Signature": "AddConnectionSchemeAlias(from string, to string)",
                     "Source": "ewoJc2NoZW1lQWxpYXNNYXBbZnJvbV0gPSB0bwp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "ChangeCase",
+                    "Arguments": [
+                        {
+                            "Name": "cases",
+                            "Type": "...string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldFormatterFunc"
+                        }
+                    ],
+                    "Signature": "ChangeCase(cases ...string) FieldFormatterFunc",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiByZWNvcmQsIG9rIDo9IHZhbHVlLigqUmVjb3JkKTsgb2sgewoJCQl2YWx1ZSA9IHJlY29yZC5JRAoJCX0KCQlpZiB2U3RyLCBlcnIgOj0gc3RyaW5ndXRpbC5Ub1N0cmluZyh2YWx1ZSk7IGVyciA9PSBuaWwgewoJCQlmb3IgXywgYyA6PSByYW5nZSBjYXNlcyB7CgkJCQlzd2l0Y2ggYyB7CgkJCQljYXNlIGB1cHBlcmA6CgkJCQkJdlN0ciA9IHN0cmluZ3MuVG9VcHBlcih2U3RyKQoJCQkJY2FzZSBgbG93ZXJgOgoJCQkJCXZTdHIgPSBzdHJpbmdzLlRvTG93ZXIodlN0cikKCQkJCWNhc2UgYGNhbWVsaXplYDoKCQkJCQl2U3RyID0gc3RyaW5ndXRpbC5DYW1lbGl6ZSh2U3RyKQoJCQkJY2FzZSBgaHlwaGVuYXRlYDoKCQkJCQl2U3RyID0gc3RyaW5ndXRpbC5IeXBoZW5hdGUodlN0cikKCQkJCWNhc2UgYHVuZGVyc2NvcmVgOgoJCQkJCXZTdHIgPSBzdHJpbmd1dGlsLlVuZGVyc2NvcmUodlN0cikKCQkJCWNhc2UgYHRpdGxlYDoKCQkJCQl2U3RyID0gc3RyaW5ncy5UaXRsZSh2U3RyKQoJCQkJZGVmYXVsdDoKCQkJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCJVbnN1cHBvcnRlZCBjYXNlICclcyciLCBjKQoJCQkJfQoJCQl9CgkJCXJldHVybiB2U3RyLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gdmFsdWUsIGVycgoJCX0KCX0KfQ==",
                     "IsPackageLevel": true
                 },
                 {
@@ -10971,6 +10994,83 @@
                     "IsPackageLevel": true
                 },
                 {
+                    "Name": "DeriveFromFields",
+                    "Comment": "Extracts values from the given Record and generates a deterministic output based on those values.",
+                    "Arguments": [
+                        {
+                            "Name": "format",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "fields",
+                            "Type": "...string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldFormatterFunc"
+                        }
+                    ],
+                    "Signature": "DeriveFromFields(format string, fields ...string) FieldFormatterFunc",
+                    "Source": "ewoJcmV0dXJuIGZ1bmMoaW5wdXQgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiByZWNvcmQsIG9rIDo9IGlucHV0LigqUmVjb3JkKTsgb2sgewoJCQl2YWx1ZXMgOj0gbWFrZShbXWludGVyZmFjZXt9LCBsZW4oZmllbGRzKSkKCQkJZm9yIGksIGZpZWxkIDo9IHJhbmdlIGZpZWxkcyB7CgkJCQl2YWx1ZXNbaV0gPSByZWNvcmQuR2V0KGZpZWxkKQoJCQl9CgkJCXJldHVybiBmbXQuU3ByaW50Zihmb3JtYXQsIHZhbHVlcy4uLiksIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkRlcml2ZUZyb21GaWVsZHMgZm9ybWF0dGVyIHJlcXVpcmVzIGEgKmRhbC5SZWNvcmQgYXJndW1lbnQsIGdvdCAlVCIsIGlucHV0KQoJCX0KCX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "FormatAll",
+                    "Arguments": [
+                        {
+                            "Name": "formatters",
+                            "Type": "...FieldFormatterFunc"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldFormatterFunc"
+                        }
+                    ],
+                    "Signature": "FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIG9wIEZpZWxkT3BlcmF0aW9uKSAoaW50ZXJmYWNle30sIGVycm9yKSB7CgkJZm9yIF8sIGZvcm1hdHRlciA6PSByYW5nZSBmb3JtYXR0ZXJzIHsKCQkJaWYgdiwgZXJyIDo9IGZvcm1hdHRlcih2YWx1ZSwgb3ApOyBlcnIgPT0gbmlsIHsKCQkJCXZhbHVlID0gdgoJCQl9IGVsc2UgewoJCQkJcmV0dXJuIG5pbCwgZXJyCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "FormatterFromMap",
+                    "Arguments": [
+                        {
+                            "Name": "in",
+                            "Type": "map[string]interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldFormatterFunc"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)",
+                    "Source": "ewoJZm9ybWF0dGVycyA6PSBtYWtlKFtdRmllbGRGb3JtYXR0ZXJGdW5jLCAwKQoJZm9yIG5hbWUsIGRlZm4gOj0gcmFuZ2UgaW4gewoJCWlmIGZvcm1hdHRlciwgZXJyIDo9IEdldEZvcm1hdHRlcihuYW1lLCBkZWZuKTsgZXJyID09IG5pbCB7CgkJCWZvcm1hdHRlcnMgPSBhcHBlbmQoZm9ybWF0dGVycywgZm9ybWF0dGVyKQoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkludmFsaWQgZm9ybWF0dGVyIGNvbmZpZ3VyYXRpb24gJXY6ICV2IiwgbmFtZSwgZXJyKQoJCX0KCX0KCXJldHVybiBGb3JtYXRBbGwoZm9ybWF0dGVycy4uLiksIG5pbAp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "GenerateEncodedUUID",
+                    "Comment": "Same as GenerateUUID, but allows for a custom representation of the underlying bytes.",
+                    "Arguments": [
+                        {
+                            "Name": "encoder",
+                            "Type": "EncoderFunc"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldFormatterFunc"
+                        }
+                    ],
+                    "Signature": "GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiByZWNvcmQsIG9rIDo9IHZhbHVlLigqUmVjb3JkKTsgb2sgewoJCQl2YWx1ZSA9IHJlY29yZC5JRAoJCX0KCQlpZiB0eXBldXRpbC5Jc1plcm8odmFsdWUpIHsKCQkJaWYgdiwgZXJyIDo9IGVuY29kZXIoc3RyaW5ndXRpbC5VVUlEKCkuQnl0ZXMoKSk7IGVyciA9PSBuaWwgewoJCQkJaWYgdHlwZXV0aWwuSXNaZXJvKHYpIHsKCQkJCQlyZXR1cm4gdmFsdWUsIGZtdC5FcnJvcmYoIlVVSUQgZW5jb2RlciBwcm9kdWNlZCBhIHplcm8tbGVuZ3RoIHJlc3VsdCIpCgkJCQl9CgkJCQl2YWx1ZSA9IHYKCQkJfSBlbHNlIHsKCQkJCXJldHVybiB2YWx1ZSwgZXJyCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
                     "Name": "GenerateUUID",
                     "Comment": "Generates a V4 UUID value if the existing value is empty.",
                     "Arguments": [
@@ -10993,6 +11093,73 @@
                     ],
                     "Signature": "GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error)",
                     "Source": "ewoJaWYgcmVjb3JkLCBvayA6PSB2YWx1ZS4oKlJlY29yZCk7IG9rIHsKCQl2YWx1ZSA9IHJlY29yZC5JRAoJfQoJaWYgdHlwZXV0aWwuSXNaZXJvKHZhbHVlKSB7CgkJdmFsdWUgPSBzdHJpbmd1dGlsLlVVSUQoKS5TdHJpbmcoKQoJfQoJcmV0dXJuIHZhbHVlLCBuaWwKfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "GetFormatter",
+                    "Arguments": [
+                        {
+                            "Name": "name",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "args",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldFormatterFunc"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)",
+                    "Source": "ewoJc3dpdGNoIG5hbWUgewoJY2FzZSBgdXVpZGA6CgkJcmV0dXJuIEdlbmVyYXRlVVVJRCwgbmlsCgljYXNlIGBlbmNvZGVkLXV1aWRgOgoJCXZhciBlbmNvZGVyIEVuY29kZXJGdW5jCgkJc3dpdGNoIGZtdC5TcHJpbnRmKCIldiIsIGFyZ3MpIHsKCQljYXNlIGBiYXNlMzJgOgoJCQllbmNvZGVyID0gQmFzZTMyRW5jb2RlcgoJCWNhc2UgYGJhc2U1OGA6CgkJCWVuY29kZXIgPSBCYXNlNThFbmNvZGVyCgkJY2FzZSBgYmFzZTY0YDoKCQkJZW5jb2RlciA9IEJhc2U2NEVuY29kZXIKCQlkZWZhdWx0OgoJCQllbmNvZGVyID0gSGV4RW5jb2RlcgoJCX0KCQlyZXR1cm4gR2VuZXJhdGVFbmNvZGVkVVVJRChlbmNvZGVyKSwgbmlsCgljYXNlIGB0cmltLXNwYWNlYDoKCQlyZXR1cm4gVHJpbVNwYWNlLCBuaWwKCWNhc2UgYGNoYW5nZS1jYXNlYDoKCQlyZXR1cm4gQ2hhbmdlQ2FzZShzbGljZXV0aWwuU3RyaW5naWZ5KGFyZ3MpLi4uKSwgbmlsCgljYXNlIGByZXBsYWNlYDoKCQlyZXR1cm4gUmVwbGFjZShzbGljZXV0aWwuU2xpY2VpZnkoYXJncykpLCBuaWwKCWNhc2UgYGN1cnJlbnQtdGltZWA6CgkJcmV0dXJuIEN1cnJlbnRUaW1lLCBuaWwKCWNhc2UgYGN1cnJlbnQtdGltZS1pZi11bnNldGA6CgkJcmV0dXJuIEN1cnJlbnRUaW1lSWZVbnNldCwgbmlsCgljYXNlIGBub3ctcGx1cy1kdXJhdGlvbmA6CgkJcmV0dXJuIE5vd1BsdXNEdXJhdGlvbih0eXBldXRpbC5WKGFyZ3MpLkR1cmF0aW9uKCkpLCBuaWwKCWRlZmF1bHQ6CgkJcmV0dXJuIG5pbCwgZm10LkVycm9yZigiVW5rbm93biBmb3JtYXR0ZXIgJXEiLCBuYW1lKQoJfQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "GetValidator",
+                    "Comment": "Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.",
+                    "Arguments": [
+                        {
+                            "Name": "name",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "args",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldValidatorFunc"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "GetValidator(name string, args interface{}) (FieldValidatorFunc, error)",
+                    "Source": "ewoJc3dpdGNoIG5hbWUgewoJY2FzZSBgb25lLW9mYDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJcmV0dXJuIFZhbGlkYXRlSXNPbmVPZihzbGljZXV0aWwuU2xpY2VpZnkoYXJncykuLi4pLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCJNdXN0IHNwZWNpZnkgYW4gYXJyYXkgb2YgdmFsdWVzIGZvciB2YWxpZGF0b3IgJ29uZS1vZiciKQoJCX0KCWNhc2UgYG5vdC16ZXJvYDoKCQlyZXR1cm4gVmFsaWRhdGVOb25aZXJvLCBuaWwKCWNhc2UgYG5vdC1lbXB0eWA6CgkJcmV0dXJuIFZhbGlkYXRlTm90RW1wdHksIG5pbAoJY2FzZSBgcG9zaXRpdmUtaW50ZWdlcmA6CgkJcmV0dXJuIFZhbGlkYXRlUG9zaXRpdmVJbnRlZ2VyLCBuaWwKCWNhc2UgYHBvc2l0aXZlLW9yLXplcm8taW50ZWdlcmA6CgkJcmV0dXJuIFZhbGlkYXRlUG9zaXRpdmVPclplcm9JbnRlZ2VyLCBuaWwKCWNhc2UgYHVybGA6CgkJcmV0dXJuIFZhbGlkYXRlSXNVUkwsIG5pbAoJY2FzZSBgbWF0Y2hgLCBgbWF0Y2gtYWxsYDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJcmV0dXJuIFZhbGlkYXRlTWF0Y2hBbGwoc2xpY2V1dGlsLlN0cmluZ2lmeShhcmdzKS4uLiksIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIk11c3Qgc3BlY2lmeSBhbiBhcnJheSBvZiB2YWx1ZXMgZm9yIHZhbGlkYXRvciAnbWF0Y2gnIikKCQl9CgljYXNlIGBtYXRjaC1hbnlgOgoJCWlmIHR5cGV1dGlsLklzQXJyYXkoYXJncykgewoJCQlyZXR1cm4gVmFsaWRhdGVNYXRjaEFueShzbGljZXV0aWwuU3RyaW5naWZ5KGFyZ3MpLi4uKSwgbmlsCgkJfSBlbHNlIHsKCQkJcmV0dXJuIG5pbCwgZm10LkVycm9yZigiTXVzdCBzcGVjaWZ5IGFuIGFycmF5IG9mIHZhbHVlcyBmb3IgdmFsaWRhdG9yICdtYXRjaC1hbnknIikKCQl9CglkZWZhdWx0OgoJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIlVua25vd24gdmFsaWRhdG9yICVxIiwgbmFtZSkKCX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "IfUnset",
+                    "Comment": "Only evaluates the given formatter if the current value of the field is empty.",
+                    "Arguments": [
+                        {
+                            "Name": "onlyIf",
+                            "Type": "FieldFormatterFunc"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldFormatterFunc"
+                        }
+                    ],
+                    "Signature": "IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIG9wIEZpZWxkT3BlcmF0aW9uKSAoaW50ZXJmYWNle30sIGVycm9yKSB7CgkJaWYgb25seUlmICE9IG5pbCB7CgkJCWlmIHR5cGV1dGlsLklzWmVybyh2YWx1ZSkgewoJCQkJcmV0dXJuIG9ubHlJZih2YWx1ZSwgb3ApCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
                     "IsPackageLevel": true
                 },
                 {
@@ -11064,6 +11231,41 @@
                     "IsPackageLevel": true
                 },
                 {
+                    "Name": "NowPlusDuration",
+                    "Comment": "Returns the current time with an added offset when the field is persisted.",
+                    "Arguments": [
+                        {
+                            "Name": "duration",
+                            "Type": "time.Duration"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldFormatterFunc"
+                        }
+                    ],
+                    "Signature": "NowPlusDuration(duration time.Duration) FieldFormatterFunc",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIG9wIEZpZWxkT3BlcmF0aW9uKSAoaW50ZXJmYWNle30sIGVycm9yKSB7CgkJaWYgb3AgPT0gUGVyc2lzdE9wZXJhdGlvbiB7CgkJCWlmIGR1cmF0aW9uICE9IDAgewoJCQkJcmV0dXJuIHRpbWUuTm93KCkuQWRkKGR1cmF0aW9uKSwgbmlsCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "Replace",
+                    "Arguments": [
+                        {
+                            "Name": "pairs",
+                            "Type": "[]interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldFormatterFunc"
+                        }
+                    ],
+                    "Signature": "Replace(pairs []interface{}) FieldFormatterFunc",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiB2U3RyLCBlcnIgOj0gc3RyaW5ndXRpbC5Ub1N0cmluZyh2YWx1ZSk7IGVyciA9PSBuaWwgewoJCQlmb3IgXywgcGFpciA6PSByYW5nZSBwYWlycyB7CgkJCQlwIDo9IHNsaWNldXRpbC5TdHJpbmdpZnkocGFpcikKCQkJCWlmIGxlbihwKSAhPSAyIHsKCQkJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCIncmVwbGFjZScgZm9ybWF0dGVyIHJlcXVpcmVzIGFuIGFyZ3VtZW50IG9mIFtbRklORFBBVFRFUk4sIFJFUExBQ0VXSVRIXSwgLi5dIikKCQkJCX0gZWxzZSB7CgkJCQkJZmluZCA6PSBwWzBdCgkJCQkJcmVwbGFjZSA6PSBwWzFdCgkJCQkJaWYgcmVjb3JkLCBvayA6PSB2YWx1ZS4oKlJlY29yZCk7IG9rIHsKCQkJCQkJdmFsdWUgPSByZWNvcmQuSUQKCQkJCQl9CgkJCQkJaWYgcngsIGVyciA6PSByZWdleHAuQ29tcGlsZShmaW5kKTsgZXJyID09IG5pbCB7CgkJCQkJCXZTdHIgPSByeC5SZXBsYWNlQWxsU3RyaW5nKHZTdHIsIHJlcGxhY2UpCgkJCQkJfSBlbHNlIHsKCQkJCQkJcmV0dXJuIHZhbHVlLCBmbXQuRXJyb3JmKCJpbnZhbGlkIGZpbmQgcGF0dGVybjogJXYiLCBlcnIpCgkJCQkJfQoJCQkJfQoJCQl9CgkJCXJldHVybiB2U3RyLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gdmFsdWUsIGVycgoJCX0KCX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
                     "Name": "ShouldCreateCollection",
                     "Comment": "Takes a collection definition and any errors encountered while retrieving it, and determines\nwhether a CreateCollection() call should be made.",
                     "Arguments": [
@@ -11110,6 +11312,42 @@
                     "IsPackageLevel": true
                 },
                 {
+                    "Name": "ValidateAll",
+                    "Comment": "Validate that all of the given validator functions pass.",
+                    "Arguments": [
+                        {
+                            "Name": "validators",
+                            "Type": "...FieldValidatorFunc"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldValidatorFunc"
+                        }
+                    ],
+                    "Signature": "ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30pIGVycm9yIHsKCQlmb3IgXywgdmFsaWRhdG9yIDo9IHJhbmdlIHZhbGlkYXRvcnMgewoJCQlpZiBlcnIgOj0gdmFsaWRhdG9yKHZhbHVlKTsgZXJyICE9IG5pbCB7CgkJCQlyZXR1cm4gZXJyCgkJCX0KCQl9CgkJcmV0dXJuIG5pbAoJfQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "ValidateIsOneOf",
+                    "Comment": "Validate that the given value is among the given choices.",
+                    "Arguments": [
+                        {
+                            "Name": "choices",
+                            "Type": "...interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldValidatorFunc"
+                        }
+                    ],
+                    "Signature": "ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30pIGVycm9yIHsKCQlmb3IgXywgY2hvaWNlIDo9IHJhbmdlIGNob2ljZXMgewoJCQlpZiBvaywgZXJyIDo9IHN0cmluZ3V0aWwuUmVsYXhlZEVxdWFsKGNob2ljZSwgdmFsdWUpOyBlcnIgPT0gbmlsICYmIG9rIHsKCQkJCXJldHVybiBuaWwKCQkJfQoJCX0KCQlyZXR1cm4gZm10LkVycm9yZigidmFsdWUgbXVzdCBiZSBvbmUgb2Y6ICUrdiIsIGNob2ljZXMpCgl9Cn0=",
+                    "IsPackageLevel": true
+                },
+                {
                     "Name": "ValidateIsURL",
                     "Comment": "Validate that the value is a URL with a non-empty scheme and host component.",
                     "Arguments": [
@@ -11125,6 +11363,42 @@
                     ],
                     "Signature": "ValidateIsURL(value interface{}) error",
                     "Source": "ewoJaWYgdSwgZXJyIDo9IHVybC5QYXJzZSh0eXBldXRpbC5TdHJpbmcodmFsdWUpKTsgZXJyID09IG5pbCB7CgkJaWYgdS5TY2hlbWUgPT0gYGAgfHwgdS5Ib3N0ID09IGBgIHx8IHUuUGF0aCA9PSBgYCB7CgkJCXJldHVybiBmbXQuRXJyb3JmKCJJbnZhbGlkIFVSTCIpCgkJfQoJfSBlbHNlIHsKCQlyZXR1cm4gZXJyCgl9CglyZXR1cm4gbmlsCn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "ValidateMatchAll",
+                    "Comment": "Validate that the given value matches all of the given regular expressions.",
+                    "Arguments": [
+                        {
+                            "Name": "patterns",
+                            "Type": "...string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldValidatorFunc"
+                        }
+                    ],
+                    "Signature": "ValidateMatchAll(patterns ...string) FieldValidatorFunc",
+                    "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBpbnRlcmZhY2V7fSkgZXJyb3IgewoJCWZvciBfLCByeCA6PSByYW5nZSBwcnggewoJCQlpZiAhcnguTWF0Y2hTdHJpbmcodHlwZXV0aWwuU3RyaW5nKHZhbHVlKSkgewoJCQkJcmV0dXJuIGZtdC5FcnJvcmYoIlZhbHVlIGRvZXMgbm90IG1hdGNoIHBhdHRlcm4gJXEiLCByeC5TdHJpbmcoKSkKCQkJfQoJCX0KCQlyZXR1cm4gbmlsCgl9Cn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "ValidateMatchAny",
+                    "Comment": "Validate that the given value matches at least one of the given regular expressions.",
+                    "Arguments": [
+                        {
+                            "Name": "patterns",
+                            "Type": "...string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldValidatorFunc"
+                        }
+                    ],
+                    "Signature": "ValidateMatchAny(patterns ...string) FieldValidatorFunc",
+                    "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBpbnRlcmZhY2V7fSkgZXJyb3IgewoJCWZvciBfLCByeCA6PSByYW5nZSBwcnggewoJCQlpZiByeC5NYXRjaFN0cmluZyh0eXBldXRpbC5TdHJpbmcodmFsdWUpKSB7CgkJCQlyZXR1cm4gbmlsCgkJCX0KCQl9CgkJcmV0dXJuIGZtdC5FcnJvcmYoIlZhbHVlIGRvZXMgbm90IG1hdGNoIGFueSB2YWxpZCBwYXR0ZXJuIikKCX0KfQ==",
                     "IsPackageLevel": true
                 },
                 {
@@ -11197,6 +11471,27 @@
                     ],
                     "Signature": "ValidatePositiveOrZeroInteger(value interface{}) error",
                     "Source": "ewoJaWYgdiwgZXJyIDo9IHN0cmluZ3V0aWwuQ29udmVydFRvSW50ZWdlcih2YWx1ZSk7IGVyciA9PSBuaWwgewoJCWlmIHYgPCAwIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoImV4cGVjdGVkIHZhbHVlID49IDAsIGdvdDogJXYiLCB2KQoJCX0KCX0gZWxzZSB7CgkJcmV0dXJuIGVycgoJfQoJcmV0dXJuIG5pbAp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "ValidatorFromMap",
+                    "Comment": "Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.",
+                    "Arguments": [
+                        {
+                            "Name": "in",
+                            "Type": "map[string]interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "FieldValidatorFunc"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)",
+                    "Source": "ewoJdmFsaWRhdG9ycyA6PSBtYWtlKFtdRmllbGRWYWxpZGF0b3JGdW5jLCAwKQoJZm9yIG5hbWUsIGRlZm4gOj0gcmFuZ2UgaW4gewoJCWlmIHZhbGlkYXRvciwgZXJyIDo9IEdldFZhbGlkYXRvcihuYW1lLCBkZWZuKTsgZXJyID09IG5pbCB7CgkJCXZhbGlkYXRvcnMgPSBhcHBlbmQodmFsaWRhdG9ycywgdmFsaWRhdG9yKQoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkludmFsaWQgdmFsaWRhdG9yIGNvbmZpZ3VyYXRpb24gJXY6ICV2IiwgbmFtZSwgZXJyKQoJCX0KCX0KCXJldHVybiBWYWxpZGF0ZUFsbCh2YWxpZGF0b3JzLi4uKSwgbmlsCn0=",
                     "IsPackageLevel": true
                 }
             ],
@@ -11390,7 +11685,7 @@
                         }
                     ],
                     "Signature": "TestGetIdentityFieldNameFromStruct(t *testing.T)",
-                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmIDo9IFRlc3RSZWNvcmR7SUQ6IDEyMzR9CglmaWVsZCwga2V5LCBlcnIgOj0gZ2V0SWRlbnRpdHlGaWVsZE5hbWVGcm9tU3RydWN0KCZmLCBgYCkKCWFzc2VydC5OaWwoZXJyKQoJYXNzZXJ0LkVxdWFsKGBJRGAsIGtleSkKCWFzc2VydC5FcXVhbChgSURgLCBrZXkpCglmID0gVGVzdFJlY29yZHt9CglmaWVsZCwga2V5LCBlcnIgPSBnZXRJZGVudGl0eUZpZWxkTmFtZUZyb21TdHJ1Y3QoJmYsIGBTaXplYCkKCWFzc2VydC5OaWwoZXJyKQoJYXNzZXJ0LkVxdWFsKGBTaXplYCwgZmllbGQpCglhc3NlcnQuRXF1YWwoYFNpemVgLCBrZXkpCglmMiA6PSBUZXN0UmVjb3JkVHdve2A0MmB9CglmaWVsZCwga2V5LCBlcnIgPSBnZXRJZGVudGl0eUZpZWxkTmFtZUZyb21TdHJ1Y3QoJmYyLCBgYCkKCWFzc2VydC5FcXVhbChgVVVJRGAsIGZpZWxkKQoJYXNzZXJ0LkVxdWFsKGB1dWlkYCwga2V5KQoJZjMgOj0gVGVzdFJlY29yZFRocmVle30KCWZpZWxkLCBrZXksIGVyciA9IGdldElkZW50aXR5RmllbGROYW1lRnJvbVN0cnVjdCgmZjMsIGBgKQoJYXNzZXJ0LkVycm9yKGVycikKCWY0IDo9IFRlc3RSZWNvcmRUaHJlZXt9CglmaWVsZCwga2V5LCBlcnIgPSBnZXRJZGVudGl0eUZpZWxkTmFtZUZyb21TdHJ1Y3QoJmY0LCBgVVVJRGApCglhc3NlcnQuRXF1YWwoYFVVSURgLCBmaWVsZCkKCWFzc2VydC5FcXVhbChgVVVJRGAsIGtleSkKfQ==",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmIDo9IFRlc3RSZWNvcmR7SUQ6IDEyMzR9CglmaWVsZCwga2V5LCBlcnIgOj0gZ2V0SWRlbnRpdHlGaWVsZE5hbWVGcm9tU3RydWN0KCZmLCBgYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChgSURgLCBrZXkpCglhc3NlcnQuRXF1YWwoYElEYCwga2V5KQoJZiA9IFRlc3RSZWNvcmR7fQoJZmllbGQsIGtleSwgZXJyID0gZ2V0SWRlbnRpdHlGaWVsZE5hbWVGcm9tU3RydWN0KCZmLCBgU2l6ZWApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoYFNpemVgLCBmaWVsZCkKCWFzc2VydC5FcXVhbChgU2l6ZWAsIGtleSkKCWYyIDo9IFRlc3RSZWNvcmRUd297YDQyYH0KCWZpZWxkLCBrZXksIGVyciA9IGdldElkZW50aXR5RmllbGROYW1lRnJvbVN0cnVjdCgmZjIsIGBgKQoJYXNzZXJ0LkVxdWFsKGBVVUlEYCwgZmllbGQpCglhc3NlcnQuRXF1YWwoYHV1aWRgLCBrZXkpCglmMyA6PSBUZXN0UmVjb3JkVGhyZWV7fQoJZmllbGQsIGtleSwgZXJyID0gZ2V0SWRlbnRpdHlGaWVsZE5hbWVGcm9tU3RydWN0KCZmMywgYGApCglhc3NlcnQuRXJyb3IoZXJyKQoJZjQgOj0gVGVzdFJlY29yZFRocmVle30KCWZpZWxkLCBrZXksIGVyciA9IGdldElkZW50aXR5RmllbGROYW1lRnJvbVN0cnVjdCgmZjQsIGBVVUlEYCkKCWFzc2VydC5FcXVhbChgVVVJRGAsIGZpZWxkKQoJYXNzZXJ0LkVxdWFsKGBVVUlEYCwga2V5KQoJZjUgOj0gVGVzdFJlY29yZEVtYmVkZGVke30KCWY1LlVVSUQgPSBgNDJgCglmNS5VVUlEID0gYDQyYAoJZjUuSUQgPSA0MgoJZjUuTmFtZSA9IGBGb3VydHkgVHdvYAoJZjUuU2l6ZSA9IDQyCglmNS5Mb2NhbCA9IHRydWUKCWZpZWxkLCBrZXksIGVyciA9IGdldElkZW50aXR5RmllbGROYW1lRnJvbVN0cnVjdCgmZjUsIGBgKQoJYXNzZXJ0LkVxdWFsKGBVVUlEYCwgZmllbGQpCglhc3NlcnQuRXF1YWwoYHV1aWRgLCBrZXkpCn0=",
                     "IsPackageLevel": true
                 },
                 {
@@ -11463,6 +11758,18 @@
                     ],
                     "Signature": "TestRecordPopulateStruct(t *testing.T)",
                     "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl0eXBlIHRlc3RUaGluZyBzdHJ1Y3QgewoJCUlEICAgIGludAoJCU5hbWUgIHN0cmluZyBgcGl2b3Q6Im5hbWUiYAoJCUdyb3VwIHN0cmluZyBgcGl2b3Q6Ikdyb3VwLG9taXRlbXB0eSJgCgkJU2l6ZSAgaW50Cgl9Cgl0aGluZyA6PSB0ZXN0VGhpbmd7fQoJcmVjb3JkIDo9IE5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgdGVzdC1uYW1lYCkuU2V0KGBTaXplYCwgNDIpCgllcnIgOj0gcmVjb3JkLlBvcHVsYXRlKCZ0aGluZywgbmlsKQoJYXNzZXJ0Lk5pbChlcnIpCglhc3NlcnQuRXF1YWwoYHRlc3QtbmFtZWAsIHRoaW5nLk5hbWUpCglhc3NlcnQuWmVybyh0aGluZy5Hcm91cCkKCWFzc2VydC5FcXVhbCg0MiwgdGhpbmcuU2l6ZSkKCXRoaW5nID0gdGVzdFRoaW5ne0dyb3VwOiBgdGVzdHNgfQoJcmVjb3JkID0gTmV3UmVjb3JkKDEpLlNldChgbmFtZWAsIGB0ZXN0LW5hbWVgKS5TZXQoYFNpemVgLCA0MikKCWVyciA9IHJlY29yZC5Qb3B1bGF0ZSgmdGhpbmcsIG5pbCkKCWFzc2VydC5OaWwoZXJyKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0LW5hbWVgLCB0aGluZy5OYW1lKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0c2AsIHRoaW5nLkdyb3VwKQoJYXNzZXJ0LkVxdWFsKDQyLCB0aGluZy5TaXplKQoJdHlwZSBLViBzdHJ1Y3QgewoJCUtleSAgIHN0cmluZyAgICAgIGBwaXZvdDoia2V5LGlkZW50aXR5ImAKCQlWYWx1ZSBpbnRlcmZhY2V7fSBgcGl2b3Q6InZhbHVlLG9taXRlbXB0eSJgCgl9CglyZWNvcmQgPSBOZXdSZWNvcmQoYHRoaXMuaXMuYW4uaWRgKS5TZXQoYHZhbHVlYCwgNDIpCglrdiA6PSBuZXcoS1YpCgllcnIgPSByZWNvcmQuUG9wdWxhdGUoa3YsIG5pbCkKCWFzc2VydC5OaWwoZXJyKQoJYXNzZXJ0LkVxdWFsKGB0aGlzLmlzLmFuLmlkYCwga3YuS2V5KQoJYXNzZXJ0LkVxdWFsKDQyLCBrdi5WYWx1ZSkKfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "TestRecordPopulateStructWithEmbeddedStruct",
+                    "Arguments": [
+                        {
+                            "Name": "t",
+                            "Type": "*testing.T"
+                        }
+                    ],
+                    "Signature": "TestRecordPopulateStructWithEmbeddedStruct(t *testing.T)",
+                    "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgYWN0dWFsIHRlc3RVc2VyRW1iZWQKCXZhciBlcnIgZXJyb3IKCXJlY29yZCA6PSBOZXdSZWNvcmQoYDU1NWApCglyZWNvcmQuU2V0KGBuYW1lYCwgYFRlc3QgRW1iZWRgKQoJcmVjb3JkLlNldChgYWdlYCwgNjkpCglyZWNvcmQuU2V0KGBhY3RpdmVgLCB0cnVlKQoJZXJyID0gcmVjb3JkLlBvcHVsYXRlKCZhY3R1YWwsIG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbCgwLCBhY3R1YWwuSUQpCn0=",
                     "IsPackageLevel": true
                 },
                 {
@@ -13056,179 +13363,6 @@
                 },
                 "FieldFormatterFunc": {
                     "Name": "FieldFormatterFunc",
-                    "Methods": [
-                        {
-                            "Name": "FormatterFromMap",
-                            "Arguments": [
-                                {
-                                    "Name": "in",
-                                    "Type": "map[string]interface{}"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldFormatterFunc"
-                                },
-                                {
-                                    "Type": "error"
-                                }
-                            ],
-                            "Signature": "FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)",
-                            "Source": "ewoJZm9ybWF0dGVycyA6PSBtYWtlKFtdRmllbGRGb3JtYXR0ZXJGdW5jLCAwKQoJZm9yIG5hbWUsIGRlZm4gOj0gcmFuZ2UgaW4gewoJCWlmIGZvcm1hdHRlciwgZXJyIDo9IEdldEZvcm1hdHRlcihuYW1lLCBkZWZuKTsgZXJyID09IG5pbCB7CgkJCWZvcm1hdHRlcnMgPSBhcHBlbmQoZm9ybWF0dGVycywgZm9ybWF0dGVyKQoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkludmFsaWQgZm9ybWF0dGVyIGNvbmZpZ3VyYXRpb24gJXY6ICV2IiwgbmFtZSwgZXJyKQoJCX0KCX0KCXJldHVybiBGb3JtYXRBbGwoZm9ybWF0dGVycy4uLiksIG5pbAp9",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "GetFormatter",
-                            "Arguments": [
-                                {
-                                    "Name": "name",
-                                    "Type": "string"
-                                },
-                                {
-                                    "Name": "args",
-                                    "Type": "interface{}"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldFormatterFunc"
-                                },
-                                {
-                                    "Type": "error"
-                                }
-                            ],
-                            "Signature": "GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)",
-                            "Source": "ewoJc3dpdGNoIG5hbWUgewoJY2FzZSBgdXVpZGA6CgkJcmV0dXJuIEdlbmVyYXRlVVVJRCwgbmlsCgljYXNlIGBlbmNvZGVkLXV1aWRgOgoJCXZhciBlbmNvZGVyIEVuY29kZXJGdW5jCgkJc3dpdGNoIGZtdC5TcHJpbnRmKCIldiIsIGFyZ3MpIHsKCQljYXNlIGBiYXNlMzJgOgoJCQllbmNvZGVyID0gQmFzZTMyRW5jb2RlcgoJCWNhc2UgYGJhc2U1OGA6CgkJCWVuY29kZXIgPSBCYXNlNThFbmNvZGVyCgkJY2FzZSBgYmFzZTY0YDoKCQkJZW5jb2RlciA9IEJhc2U2NEVuY29kZXIKCQlkZWZhdWx0OgoJCQllbmNvZGVyID0gSGV4RW5jb2RlcgoJCX0KCQlyZXR1cm4gR2VuZXJhdGVFbmNvZGVkVVVJRChlbmNvZGVyKSwgbmlsCgljYXNlIGB0cmltLXNwYWNlYDoKCQlyZXR1cm4gVHJpbVNwYWNlLCBuaWwKCWNhc2UgYGNoYW5nZS1jYXNlYDoKCQlyZXR1cm4gQ2hhbmdlQ2FzZShzbGljZXV0aWwuU3RyaW5naWZ5KGFyZ3MpLi4uKSwgbmlsCgljYXNlIGByZXBsYWNlYDoKCQlyZXR1cm4gUmVwbGFjZShzbGljZXV0aWwuU2xpY2VpZnkoYXJncykpLCBuaWwKCWNhc2UgYGN1cnJlbnQtdGltZWA6CgkJcmV0dXJuIEN1cnJlbnRUaW1lLCBuaWwKCWNhc2UgYGN1cnJlbnQtdGltZS1pZi11bnNldGA6CgkJcmV0dXJuIEN1cnJlbnRUaW1lSWZVbnNldCwgbmlsCgljYXNlIGBub3ctcGx1cy1kdXJhdGlvbmA6CgkJcmV0dXJuIE5vd1BsdXNEdXJhdGlvbih0eXBldXRpbC5WKGFyZ3MpLkR1cmF0aW9uKCkpLCBuaWwKCWRlZmF1bHQ6CgkJcmV0dXJuIG5pbCwgZm10LkVycm9yZigiVW5rbm93biBmb3JtYXR0ZXIgJXEiLCBuYW1lKQoJfQp9",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "FormatAll",
-                            "Arguments": [
-                                {
-                                    "Name": "formatters",
-                                    "Type": "...FieldFormatterFunc"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldFormatterFunc"
-                                }
-                            ],
-                            "Signature": "FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc",
-                            "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIG9wIEZpZWxkT3BlcmF0aW9uKSAoaW50ZXJmYWNle30sIGVycm9yKSB7CgkJZm9yIF8sIGZvcm1hdHRlciA6PSByYW5nZSBmb3JtYXR0ZXJzIHsKCQkJaWYgdiwgZXJyIDo9IGZvcm1hdHRlcih2YWx1ZSwgb3ApOyBlcnIgPT0gbmlsIHsKCQkJCXZhbHVlID0gdgoJCQl9IGVsc2UgewoJCQkJcmV0dXJuIG5pbCwgZXJyCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "ChangeCase",
-                            "Arguments": [
-                                {
-                                    "Name": "cases",
-                                    "Type": "...string"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldFormatterFunc"
-                                }
-                            ],
-                            "Signature": "ChangeCase(cases ...string) FieldFormatterFunc",
-                            "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiByZWNvcmQsIG9rIDo9IHZhbHVlLigqUmVjb3JkKTsgb2sgewoJCQl2YWx1ZSA9IHJlY29yZC5JRAoJCX0KCQlpZiB2U3RyLCBlcnIgOj0gc3RyaW5ndXRpbC5Ub1N0cmluZyh2YWx1ZSk7IGVyciA9PSBuaWwgewoJCQlmb3IgXywgYyA6PSByYW5nZSBjYXNlcyB7CgkJCQlzd2l0Y2ggYyB7CgkJCQljYXNlIGB1cHBlcmA6CgkJCQkJdlN0ciA9IHN0cmluZ3MuVG9VcHBlcih2U3RyKQoJCQkJY2FzZSBgbG93ZXJgOgoJCQkJCXZTdHIgPSBzdHJpbmdzLlRvTG93ZXIodlN0cikKCQkJCWNhc2UgYGNhbWVsaXplYDoKCQkJCQl2U3RyID0gc3RyaW5ndXRpbC5DYW1lbGl6ZSh2U3RyKQoJCQkJY2FzZSBgaHlwaGVuYXRlYDoKCQkJCQl2U3RyID0gc3RyaW5ndXRpbC5IeXBoZW5hdGUodlN0cikKCQkJCWNhc2UgYHVuZGVyc2NvcmVgOgoJCQkJCXZTdHIgPSBzdHJpbmd1dGlsLlVuZGVyc2NvcmUodlN0cikKCQkJCWNhc2UgYHRpdGxlYDoKCQkJCQl2U3RyID0gc3RyaW5ncy5UaXRsZSh2U3RyKQoJCQkJZGVmYXVsdDoKCQkJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCJVbnN1cHBvcnRlZCBjYXNlICclcyciLCBjKQoJCQkJfQoJCQl9CgkJCXJldHVybiB2U3RyLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gdmFsdWUsIGVycgoJCX0KCX0KfQ==",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "Replace",
-                            "Arguments": [
-                                {
-                                    "Name": "pairs",
-                                    "Type": "[]interface{}"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldFormatterFunc"
-                                }
-                            ],
-                            "Signature": "Replace(pairs []interface{}) FieldFormatterFunc",
-                            "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiB2U3RyLCBlcnIgOj0gc3RyaW5ndXRpbC5Ub1N0cmluZyh2YWx1ZSk7IGVyciA9PSBuaWwgewoJCQlmb3IgXywgcGFpciA6PSByYW5nZSBwYWlycyB7CgkJCQlwIDo9IHNsaWNldXRpbC5TdHJpbmdpZnkocGFpcikKCQkJCWlmIGxlbihwKSAhPSAyIHsKCQkJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCIncmVwbGFjZScgZm9ybWF0dGVyIHJlcXVpcmVzIGFuIGFyZ3VtZW50IG9mIFtbRklORFBBVFRFUk4sIFJFUExBQ0VXSVRIXSwgLi5dIikKCQkJCX0gZWxzZSB7CgkJCQkJZmluZCA6PSBwWzBdCgkJCQkJcmVwbGFjZSA6PSBwWzFdCgkJCQkJaWYgcmVjb3JkLCBvayA6PSB2YWx1ZS4oKlJlY29yZCk7IG9rIHsKCQkJCQkJdmFsdWUgPSByZWNvcmQuSUQKCQkJCQl9CgkJCQkJaWYgcngsIGVyciA6PSByZWdleHAuQ29tcGlsZShmaW5kKTsgZXJyID09IG5pbCB7CgkJCQkJCXZTdHIgPSByeC5SZXBsYWNlQWxsU3RyaW5nKHZTdHIsIHJlcGxhY2UpCgkJCQkJfSBlbHNlIHsKCQkJCQkJcmV0dXJuIHZhbHVlLCBmbXQuRXJyb3JmKCJpbnZhbGlkIGZpbmQgcGF0dGVybjogJXYiLCBlcnIpCgkJCQkJfQoJCQkJfQoJCQl9CgkJCXJldHVybiB2U3RyLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gdmFsdWUsIGVycgoJCX0KCX0KfQ==",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "GenerateEncodedUUID",
-                            "Comment": "Same as GenerateUUID, but allows for a custom representation of the underlying bytes.",
-                            "Arguments": [
-                                {
-                                    "Name": "encoder",
-                                    "Type": "EncoderFunc"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldFormatterFunc"
-                                }
-                            ],
-                            "Signature": "GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc",
-                            "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiByZWNvcmQsIG9rIDo9IHZhbHVlLigqUmVjb3JkKTsgb2sgewoJCQl2YWx1ZSA9IHJlY29yZC5JRAoJCX0KCQlpZiB0eXBldXRpbC5Jc1plcm8odmFsdWUpIHsKCQkJaWYgdiwgZXJyIDo9IGVuY29kZXIoc3RyaW5ndXRpbC5VVUlEKCkuQnl0ZXMoKSk7IGVyciA9PSBuaWwgewoJCQkJaWYgdHlwZXV0aWwuSXNaZXJvKHYpIHsKCQkJCQlyZXR1cm4gdmFsdWUsIGZtdC5FcnJvcmYoIlVVSUQgZW5jb2RlciBwcm9kdWNlZCBhIHplcm8tbGVuZ3RoIHJlc3VsdCIpCgkJCQl9CgkJCQl2YWx1ZSA9IHYKCQkJfSBlbHNlIHsKCQkJCXJldHVybiB2YWx1ZSwgZXJyCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "IfUnset",
-                            "Comment": "Only evaluates the given formatter if the current value of the field is empty.",
-                            "Arguments": [
-                                {
-                                    "Name": "onlyIf",
-                                    "Type": "FieldFormatterFunc"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldFormatterFunc"
-                                }
-                            ],
-                            "Signature": "IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc",
-                            "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIG9wIEZpZWxkT3BlcmF0aW9uKSAoaW50ZXJmYWNle30sIGVycm9yKSB7CgkJaWYgb25seUlmICE9IG5pbCB7CgkJCWlmIHR5cGV1dGlsLklzWmVybyh2YWx1ZSkgewoJCQkJcmV0dXJuIG9ubHlJZih2YWx1ZSwgb3ApCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "DeriveFromFields",
-                            "Comment": "Extracts values from the given Record and generates a deterministic output based on those values.",
-                            "Arguments": [
-                                {
-                                    "Name": "format",
-                                    "Type": "string"
-                                },
-                                {
-                                    "Name": "fields",
-                                    "Type": "...string"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldFormatterFunc"
-                                }
-                            ],
-                            "Signature": "DeriveFromFields(format string, fields ...string) FieldFormatterFunc",
-                            "Source": "ewoJcmV0dXJuIGZ1bmMoaW5wdXQgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiByZWNvcmQsIG9rIDo9IGlucHV0LigqUmVjb3JkKTsgb2sgewoJCQl2YWx1ZXMgOj0gbWFrZShbXWludGVyZmFjZXt9LCBsZW4oZmllbGRzKSkKCQkJZm9yIGksIGZpZWxkIDo9IHJhbmdlIGZpZWxkcyB7CgkJCQl2YWx1ZXNbaV0gPSByZWNvcmQuR2V0KGZpZWxkKQoJCQl9CgkJCXJldHVybiBmbXQuU3ByaW50Zihmb3JtYXQsIHZhbHVlcy4uLiksIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkRlcml2ZUZyb21GaWVsZHMgZm9ybWF0dGVyIHJlcXVpcmVzIGEgKmRhbC5SZWNvcmQgYXJndW1lbnQsIGdvdCAlVCIsIGlucHV0KQoJCX0KCX0KfQ==",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "NowPlusDuration",
-                            "Comment": "Returns the current time with an added offset when the field is persisted.",
-                            "Arguments": [
-                                {
-                                    "Name": "duration",
-                                    "Type": "time.Duration"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldFormatterFunc"
-                                }
-                            ],
-                            "Signature": "NowPlusDuration(duration time.Duration) FieldFormatterFunc",
-                            "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIG9wIEZpZWxkT3BlcmF0aW9uKSAoaW50ZXJmYWNle30sIGVycm9yKSB7CgkJaWYgb3AgPT0gUGVyc2lzdE9wZXJhdGlvbiB7CgkJCWlmIGR1cmF0aW9uICE9IDAgewoJCQkJcmV0dXJuIHRpbWUuTm93KCkuQWRkKGR1cmF0aW9uKSwgbmlsCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
-                            "IsPackageLevel": true
-                        }
-                    ],
                     "Source": "dHlwZSBGaWVsZEZvcm1hdHRlckZ1bmMgZnVuYyhpbnRlcmZhY2V7fSwgRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3Ip"
                 },
                 "FieldOperation": {
@@ -13238,126 +13372,6 @@
                 },
                 "FieldValidatorFunc": {
                     "Name": "FieldValidatorFunc",
-                    "Methods": [
-                        {
-                            "Name": "ValidatorFromMap",
-                            "Comment": "Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.",
-                            "Arguments": [
-                                {
-                                    "Name": "in",
-                                    "Type": "map[string]interface{}"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldValidatorFunc"
-                                },
-                                {
-                                    "Type": "error"
-                                }
-                            ],
-                            "Signature": "ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)",
-                            "Source": "ewoJdmFsaWRhdG9ycyA6PSBtYWtlKFtdRmllbGRWYWxpZGF0b3JGdW5jLCAwKQoJZm9yIG5hbWUsIGRlZm4gOj0gcmFuZ2UgaW4gewoJCWlmIHZhbGlkYXRvciwgZXJyIDo9IEdldFZhbGlkYXRvcihuYW1lLCBkZWZuKTsgZXJyID09IG5pbCB7CgkJCXZhbGlkYXRvcnMgPSBhcHBlbmQodmFsaWRhdG9ycywgdmFsaWRhdG9yKQoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkludmFsaWQgdmFsaWRhdG9yIGNvbmZpZ3VyYXRpb24gJXY6ICV2IiwgbmFtZSwgZXJyKQoJCX0KCX0KCXJldHVybiBWYWxpZGF0ZUFsbCh2YWxpZGF0b3JzLi4uKSwgbmlsCn0=",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "GetValidator",
-                            "Comment": "Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.",
-                            "Arguments": [
-                                {
-                                    "Name": "name",
-                                    "Type": "string"
-                                },
-                                {
-                                    "Name": "args",
-                                    "Type": "interface{}"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldValidatorFunc"
-                                },
-                                {
-                                    "Type": "error"
-                                }
-                            ],
-                            "Signature": "GetValidator(name string, args interface{}) (FieldValidatorFunc, error)",
-                            "Source": "ewoJc3dpdGNoIG5hbWUgewoJY2FzZSBgb25lLW9mYDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJcmV0dXJuIFZhbGlkYXRlSXNPbmVPZihzbGljZXV0aWwuU2xpY2VpZnkoYXJncykuLi4pLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCJNdXN0IHNwZWNpZnkgYW4gYXJyYXkgb2YgdmFsdWVzIGZvciB2YWxpZGF0b3IgJ29uZS1vZiciKQoJCX0KCWNhc2UgYG5vdC16ZXJvYDoKCQlyZXR1cm4gVmFsaWRhdGVOb25aZXJvLCBuaWwKCWNhc2UgYG5vdC1lbXB0eWA6CgkJcmV0dXJuIFZhbGlkYXRlTm90RW1wdHksIG5pbAoJY2FzZSBgcG9zaXRpdmUtaW50ZWdlcmA6CgkJcmV0dXJuIFZhbGlkYXRlUG9zaXRpdmVJbnRlZ2VyLCBuaWwKCWNhc2UgYHBvc2l0aXZlLW9yLXplcm8taW50ZWdlcmA6CgkJcmV0dXJuIFZhbGlkYXRlUG9zaXRpdmVPclplcm9JbnRlZ2VyLCBuaWwKCWNhc2UgYHVybGA6CgkJcmV0dXJuIFZhbGlkYXRlSXNVUkwsIG5pbAoJY2FzZSBgbWF0Y2hgLCBgbWF0Y2gtYWxsYDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJcmV0dXJuIFZhbGlkYXRlTWF0Y2hBbGwoc2xpY2V1dGlsLlN0cmluZ2lmeShhcmdzKS4uLiksIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIk11c3Qgc3BlY2lmeSBhbiBhcnJheSBvZiB2YWx1ZXMgZm9yIHZhbGlkYXRvciAnbWF0Y2gnIikKCQl9CgljYXNlIGBtYXRjaC1hbnlgOgoJCWlmIHR5cGV1dGlsLklzQXJyYXkoYXJncykgewoJCQlyZXR1cm4gVmFsaWRhdGVNYXRjaEFueShzbGljZXV0aWwuU3RyaW5naWZ5KGFyZ3MpLi4uKSwgbmlsCgkJfSBlbHNlIHsKCQkJcmV0dXJuIG5pbCwgZm10LkVycm9yZigiTXVzdCBzcGVjaWZ5IGFuIGFycmF5IG9mIHZhbHVlcyBmb3IgdmFsaWRhdG9yICdtYXRjaC1hbnknIikKCQl9CglkZWZhdWx0OgoJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIlVua25vd24gdmFsaWRhdG9yICVxIiwgbmFtZSkKCX0KfQ==",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "ValidateMatchAll",
-                            "Comment": "Validate that the given value matches all of the given regular expressions.",
-                            "Arguments": [
-                                {
-                                    "Name": "patterns",
-                                    "Type": "...string"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldValidatorFunc"
-                                }
-                            ],
-                            "Signature": "ValidateMatchAll(patterns ...string) FieldValidatorFunc",
-                            "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBpbnRlcmZhY2V7fSkgZXJyb3IgewoJCWZvciBfLCByeCA6PSByYW5nZSBwcnggewoJCQlpZiAhcnguTWF0Y2hTdHJpbmcodHlwZXV0aWwuU3RyaW5nKHZhbHVlKSkgewoJCQkJcmV0dXJuIGZtdC5FcnJvcmYoIlZhbHVlIGRvZXMgbm90IG1hdGNoIHBhdHRlcm4gJXEiLCByeC5TdHJpbmcoKSkKCQkJfQoJCX0KCQlyZXR1cm4gbmlsCgl9Cn0=",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "ValidateMatchAny",
-                            "Comment": "Validate that the given value matches at least one of the given regular expressions.",
-                            "Arguments": [
-                                {
-                                    "Name": "patterns",
-                                    "Type": "...string"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldValidatorFunc"
-                                }
-                            ],
-                            "Signature": "ValidateMatchAny(patterns ...string) FieldValidatorFunc",
-                            "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBpbnRlcmZhY2V7fSkgZXJyb3IgewoJCWZvciBfLCByeCA6PSByYW5nZSBwcnggewoJCQlpZiByeC5NYXRjaFN0cmluZyh0eXBldXRpbC5TdHJpbmcodmFsdWUpKSB7CgkJCQlyZXR1cm4gbmlsCgkJCX0KCQl9CgkJcmV0dXJuIGZtdC5FcnJvcmYoIlZhbHVlIGRvZXMgbm90IG1hdGNoIGFueSB2YWxpZCBwYXR0ZXJuIikKCX0KfQ==",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "ValidateAll",
-                            "Comment": "Validate that all of the given validator functions pass.",
-                            "Arguments": [
-                                {
-                                    "Name": "validators",
-                                    "Type": "...FieldValidatorFunc"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldValidatorFunc"
-                                }
-                            ],
-                            "Signature": "ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc",
-                            "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30pIGVycm9yIHsKCQlmb3IgXywgdmFsaWRhdG9yIDo9IHJhbmdlIHZhbGlkYXRvcnMgewoJCQlpZiBlcnIgOj0gdmFsaWRhdG9yKHZhbHVlKTsgZXJyICE9IG5pbCB7CgkJCQlyZXR1cm4gZXJyCgkJCX0KCQl9CgkJcmV0dXJuIG5pbAoJfQp9",
-                            "IsPackageLevel": true
-                        },
-                        {
-                            "Name": "ValidateIsOneOf",
-                            "Comment": "Validate that the given value is among the given choices.",
-                            "Arguments": [
-                                {
-                                    "Name": "choices",
-                                    "Type": "...interface{}"
-                                }
-                            ],
-                            "Returns": [
-                                {
-                                    "Type": "FieldValidatorFunc"
-                                }
-                            ],
-                            "Signature": "ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc",
-                            "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30pIGVycm9yIHsKCQlmb3IgXywgY2hvaWNlIDo9IHJhbmdlIGNob2ljZXMgewoJCQlpZiBvaywgZXJyIDo9IHN0cmluZ3V0aWwuUmVsYXhlZEVxdWFsKGNob2ljZSwgdmFsdWUpOyBlcnIgPT0gbmlsICYmIG9rIHsKCQkJCXJldHVybiBuaWwKCQkJfQoJCX0KCQlyZXR1cm4gZm10LkVycm9yZigidmFsdWUgbXVzdCBiZSBvbmUgb2Y6ICUrdiIsIGNob2ljZXMpCgl9Cn0=",
-                            "IsPackageLevel": true
-                        }
-                    ],
                     "Source": "dHlwZSBGaWVsZFZhbGlkYXRvckZ1bmMgZnVuYyhpbnRlcmZhY2V7fSkgZXJyb3I="
                 },
                 "Migratable": {
@@ -13766,9 +13780,13 @@
                         {
                             "Name": "Operation",
                             "Type": "string"
+                        },
+                        {
+                            "Name": "Optional",
+                            "Type": "bool"
                         }
                     ],
-                    "Source": "dHlwZSBSZWNvcmQgc3RydWN0IHsKCUlEICAgICAgICAgICAgIGludGVyZmFjZXt9ICAgICAgICAgICAgYGpzb246ImlkImAKCUZpZWxkcyAgICAgICAgIG1hcFtzdHJpbmddaW50ZXJmYWNle30gYGpzb246ImZpZWxkcyxvbWl0ZW1wdHkiYAoJRGF0YSAgICAgICAgICAgW11ieXRlICAgICAgICAgICAgICAgICBganNvbjoiZGF0YSxvbWl0ZW1wdHkiYAoJRXJyb3IgICAgICAgICAgZXJyb3IgICAgICAgICAgICAgICAgICBganNvbjoiZXJyb3Isb21pdGVtcHR5ImAKCUNvbGxlY3Rpb25OYW1lIHN0cmluZyAgICAgICAgICAgICAgICAgYGpzb246ImNvbGxlY3Rpb24sb21pdGVtcHR5ImAKCU9wZXJhdGlvbiAgICAgIHN0cmluZyAgICAgICAgICAgICAgICAgYGpzb246Im9wZXJhdGlvbixvbWl0ZW1wdHkiYAp9"
+                    "Source": "dHlwZSBSZWNvcmQgc3RydWN0IHsKCUlEICAgICAgICAgICAgIGludGVyZmFjZXt9ICAgICAgICAgICAgYGpzb246ImlkImAKCUZpZWxkcyAgICAgICAgIG1hcFtzdHJpbmddaW50ZXJmYWNle30gYGpzb246ImZpZWxkcyxvbWl0ZW1wdHkiYAoJRGF0YSAgICAgICAgICAgW11ieXRlICAgICAgICAgICAgICAgICBganNvbjoiZGF0YSxvbWl0ZW1wdHkiYAoJRXJyb3IgICAgICAgICAgZXJyb3IgICAgICAgICAgICAgICAgICBganNvbjoiZXJyb3Isb21pdGVtcHR5ImAKCUNvbGxlY3Rpb25OYW1lIHN0cmluZyAgICAgICAgICAgICAgICAgYGpzb246ImNvbGxlY3Rpb24sb21pdGVtcHR5ImAKCU9wZXJhdGlvbiAgICAgIHN0cmluZyAgICAgICAgICAgICAgICAgYGpzb246Im9wZXJhdGlvbixvbWl0ZW1wdHkiYAoJT3B0aW9uYWwgICAgICAgYm9vbCAgICAgICAgICAgICAgICAgICBganNvbjoib3B0aW9uYWwsb21pdGVtcHR5ImAKfS8vIFNwZWNpZmllcyB0aGF0IHRoZSByZWNvcmQgaXMgIm9wdGlvbmFsIiwgd2hpY2ggaXMgbmFtZWx5IHVzZWQgaW4gZml4dHVyZXMgdG8gaW5kaWNhdGUgdGhhdCBhIG1pc3NpbmcgY29sbGVjdGlvbiBzaG91bGQgbm90IGJlIGNvbnNpZGVyZWQgZmF0YWwuCg=="
                 },
                 "RecordSet": {
                     "Name": "RecordSet",
@@ -14090,7 +14108,18 @@
                             "Type": "int"
                         }
                     ],
-                    "Source": "dHlwZSBUZXN0UmVjb3JkIHN0cnVjdCB7CglNb2RlbCBgcGl2b3Q6InRlc3RfcmVjb3JkcyJgCglJRCAgICBpbnQKCU5hbWUgIHN0cmluZyBgcGl2b3Q6Im5hbWUsb21pdGVtcHR5ImAKCVNpemUgIGludCAgICBgcGl2b3Q6InNpemUiYAp9"
+                    "Source": "dHlwZSBUZXN0UmVjb3JkIHN0cnVjdCB7CglJRCAgIGludAoJTmFtZSBzdHJpbmcgYHBpdm90OiJuYW1lLG9taXRlbXB0eSJgCglTaXplIGludCAgICBgcGl2b3Q6InNpemUiYAp9"
+                },
+                "TestRecordEmbedded": {
+                    "Name": "TestRecordEmbedded",
+                    "MetaType": "struct",
+                    "Fields": [
+                        {
+                            "Name": "Local",
+                            "Type": "bool"
+                        }
+                    ],
+                    "Source": "dHlwZSBUZXN0UmVjb3JkRW1iZWRkZWQgc3RydWN0IHsKCVRlc3RSZWNvcmRUd28KCVRlc3RSZWNvcmQKCUxvY2FsIGJvb2wKfQ=="
                 },
                 "TestRecordThree": {
                     "Name": "TestRecordThree",
@@ -14339,7 +14368,8 @@
                 {
                     "Name": "OrConjunction",
                     "Immutable": true,
-                    "Expression": "`or`"
+                    "Expression": "`or`",
+                    "Value": "or"
                 },
                 {
                     "Name": "Sum",
@@ -14349,30 +14379,36 @@
             "Variables": [
                 {
                     "Name": "AllValue",
-                    "Expression": "`all`"
+                    "Expression": "`all`",
+                    "Value": "all"
                 },
                 {
                     "Name": "CriteriaSeparator",
-                    "Expression": "`/`"
+                    "Expression": "`/`",
+                    "Value": "/"
                 },
                 {
                     "Name": "DefaultIdentityField",
-                    "Expression": "`id`"
+                    "Expression": "`id`",
+                    "Value": "id"
                 },
                 {
                     "Name": "DefaultNormalizerFunc"
                 },
                 {
                     "Name": "FieldLengthDelimiter",
-                    "Expression": "`#`"
+                    "Expression": "`#`",
+                    "Value": "#"
                 },
                 {
                     "Name": "FieldTermSeparator",
-                    "Expression": "`/`"
+                    "Expression": "`/`",
+                    "Value": "/"
                 },
                 {
                     "Name": "ModifierDelimiter",
-                    "Expression": "`:`"
+                    "Expression": "`:`",
+                    "Value": ":"
                 },
                 {
                     "Name": "QueryUnescapeValues",
@@ -14380,15 +14416,18 @@
                 },
                 {
                     "Name": "SortAscending",
-                    "Expression": "`+`"
+                    "Expression": "`+`",
+                    "Value": "+"
                 },
                 {
                     "Name": "SortDescending",
-                    "Expression": "`-`"
+                    "Expression": "`-`",
+                    "Value": "-"
                 },
                 {
                     "Name": "ValueSeparator",
-                    "Expression": "`|`"
+                    "Expression": "`|`",
+                    "Value": "|"
                 }
             ],
             "Functions": [
@@ -15252,15 +15291,15 @@
                     "Synopsis": "",
                     "MainFunction": false,
                     "CommentWordCount": 16,
-                    "LineCount": 3101,
-                    "SourceLineCount": 2613,
+                    "LineCount": 3137,
+                    "SourceLineCount": 2642,
                     "FunctionCount": 43,
                     "TypeCount": 9,
                     "ConstantCount": 4,
-                    "VariableCount": 13,
+                    "VariableCount": 14,
                     "Statistics": {
-                        "Mean": 0.0132,
-                        "StdDev": 0.1049,
+                        "Mean": 0.013,
+                        "StdDev": 0.1044,
                         "GeometricMean": 0,
                         "HarmonicMean": 0,
                         "Median": 0,
@@ -15268,26 +15307,6 @@
                         "Maximum": 1
                     },
                     "Files": [
-                        {
-                            "Name": "elasticsearch-util.go",
-                            "Imports": [
-                                {
-                                    "PackageName": "fmt",
-                                    "Alias": "fmt"
-                                },
-                                {
-                                    "PackageName": "github.com/ghetzel/pivot/v3/filter",
-                                    "Alias": "filter"
-                                }
-                            ],
-                            "Size": 4609,
-                            "LineCount": 184,
-                            "SourceLineCount": 150,
-                            "FunctionCount": 0,
-                            "TypeCount": 0,
-                            "ConstantCount": 0,
-                            "VariableCount": 1
-                        },
                         {
                             "Name": "elasticsearch.go",
                             "Imports": [
@@ -15304,13 +15323,37 @@
                                     "Alias": "filter"
                                 }
                             ],
-                            "Size": 3551,
-                            "LineCount": 166,
-                            "SourceLineCount": 135,
+                            "Size": 3625,
+                            "LineCount": 168,
+                            "SourceLineCount": 137,
                             "FunctionCount": 10,
                             "TypeCount": 1,
                             "ConstantCount": 0,
                             "VariableCount": 1
+                        },
+                        {
+                            "Name": "elasticsearch_util.go",
+                            "Imports": [
+                                {
+                                    "PackageName": "fmt",
+                                    "Alias": "fmt"
+                                },
+                                {
+                                    "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
+                                    "Alias": "typeutil"
+                                },
+                                {
+                                    "PackageName": "github.com/ghetzel/pivot/v3/filter",
+                                    "Alias": "filter"
+                                }
+                            ],
+                            "Size": 5468,
+                            "LineCount": 218,
+                            "SourceLineCount": 177,
+                            "FunctionCount": 0,
+                            "TypeCount": 0,
+                            "ConstantCount": 0,
+                            "VariableCount": 2
                         },
                         {
                             "Name": "mongodb-util.go",
@@ -15548,7 +15591,12 @@
                         },
                         {
                             "Name": "ElasticsearchExactMatchQueryType",
-                            "Expression": "`term`"
+                            "Expression": "`term`",
+                            "Value": "term"
+                        },
+                        {
+                            "Name": "ElasticsearchFulltextDefaultConjunctionAnd",
+                            "Expression": "true"
                         },
                         {
                             "Name": "GenericTypeMapping"
@@ -17493,7 +17541,8 @@
             "Variables": [
                 {
                     "Name": "RecordStructTag",
-                    "Expression": "`pivot`"
+                    "Expression": "`pivot`",
+                    "Value": "pivot"
                 }
             ],
             "Functions": [

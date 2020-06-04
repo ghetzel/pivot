@@ -7,15 +7,15 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 16,
-    "LineCount": 3101,
-    "SourceLineCount": 2613,
+    "LineCount": 3137,
+    "SourceLineCount": 2642,
     "FunctionCount": 43,
     "TypeCount": 9,
     "ConstantCount": 4,
-    "VariableCount": 13,
+    "VariableCount": 14,
     "Statistics": {
-        "Mean": 0.0132,
-        "StdDev": 0.1049,
+        "Mean": 0.013,
+        "StdDev": 0.1044,
         "GeometricMean": 0,
         "HarmonicMean": 0,
         "Median": 0,
@@ -23,26 +23,6 @@
         "Maximum": 1
     },
     "Files": [
-        {
-            "Name": "elasticsearch-util.go",
-            "Imports": [
-                {
-                    "PackageName": "fmt",
-                    "Alias": "fmt"
-                },
-                {
-                    "PackageName": "github.com/ghetzel/pivot/v3/filter",
-                    "Alias": "filter"
-                }
-            ],
-            "Size": 4609,
-            "LineCount": 184,
-            "SourceLineCount": 150,
-            "FunctionCount": 0,
-            "TypeCount": 0,
-            "ConstantCount": 0,
-            "VariableCount": 1
-        },
         {
             "Name": "elasticsearch.go",
             "Imports": [
@@ -59,13 +39,37 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 3551,
-            "LineCount": 166,
-            "SourceLineCount": 135,
+            "Size": 3625,
+            "LineCount": 168,
+            "SourceLineCount": 137,
             "FunctionCount": 10,
             "TypeCount": 1,
             "ConstantCount": 0,
             "VariableCount": 1
+        },
+        {
+            "Name": "elasticsearch_util.go",
+            "Imports": [
+                {
+                    "PackageName": "fmt",
+                    "Alias": "fmt"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
+                    "Alias": "typeutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/filter",
+                    "Alias": "filter"
+                }
+            ],
+            "Size": 5468,
+            "LineCount": 218,
+            "SourceLineCount": 177,
+            "FunctionCount": 0,
+            "TypeCount": 0,
+            "ConstantCount": 0,
+            "VariableCount": 2
         },
         {
             "Name": "mongodb-util.go",
@@ -303,7 +307,12 @@
         },
         {
             "Name": "ElasticsearchExactMatchQueryType",
-            "Expression": "`term`"
+            "Expression": "`term`",
+            "Value": "term"
+        },
+        {
+            "Name": "ElasticsearchFulltextDefaultConjunctionAnd",
+            "Expression": "true"
         },
         {
             "Name": "GenericTypeMapping"

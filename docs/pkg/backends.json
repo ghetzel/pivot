@@ -7,8 +7,8 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 250,
-    "LineCount": 9212,
-    "SourceLineCount": 7201,
+    "LineCount": 9248,
+    "SourceLineCount": 7176,
     "FunctionCount": 340,
     "TypeCount": 31,
     "ConstantCount": 16,
@@ -231,7 +231,7 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 6516,
+            "Size": 6521,
             "LineCount": 238,
             "SourceLineCount": 189,
             "FunctionCount": 12,
@@ -303,6 +303,10 @@
                     "Alias": "sliceutil"
                 },
                 {
+                    "PackageName": "github.com/ghetzel/go-stockutil/stringutil",
+                    "Alias": "stringutil"
+                },
+                {
                     "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
                     "Alias": "typeutil"
                 },
@@ -315,9 +319,9 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 15859,
-            "LineCount": 601,
-            "SourceLineCount": 495,
+            "Size": 16424,
+            "LineCount": 618,
+            "SourceLineCount": 509,
             "FunctionCount": 20,
             "TypeCount": 1,
             "ConstantCount": 0,
@@ -347,9 +351,9 @@
                     "Alias": "require"
                 }
             ],
-            "Size": 1319,
-            "LineCount": 71,
-            "SourceLineCount": 63,
+            "Size": 1326,
+            "LineCount": 72,
+            "SourceLineCount": 64,
             "FunctionCount": 0,
             "TypeCount": 0,
             "ConstantCount": 0,
@@ -1245,9 +1249,9 @@
                     "Alias": "_"
                 }
             ],
-            "Size": 7750,
-            "LineCount": 246,
-            "SourceLineCount": 183,
+            "Size": 7873,
+            "LineCount": 253,
+            "SourceLineCount": 188,
             "FunctionCount": 0,
             "TypeCount": 0,
             "ConstantCount": 0,
@@ -1413,9 +1417,9 @@
                     "Alias": "util"
                 }
             ],
-            "Size": 34759,
-            "LineCount": 1293,
-            "SourceLineCount": 963,
+            "Size": 35200,
+            "LineCount": 1312,
+            "SourceLineCount": 979,
             "FunctionCount": 23,
             "TypeCount": 3,
             "ConstantCount": 0,
@@ -1423,27 +1427,9 @@
         },
         {
             "Name": "sql_test.go",
-            "Imports": [
-                {
-                    "PackageName": "fmt",
-                    "Alias": "fmt"
-                },
-                {
-                    "PackageName": "testing",
-                    "Alias": "testing"
-                },
-                {
-                    "PackageName": "github.com/ghetzel/pivot/v3/dal",
-                    "Alias": "dal"
-                },
-                {
-                    "PackageName": "github.com/stretchr/testify/require",
-                    "Alias": "require"
-                }
-            ],
-            "Size": 1624,
-            "LineCount": 72,
-            "SourceLineCount": 62,
+            "Size": 1685,
+            "LineCount": 64,
+            "SourceLineCount": 1,
             "FunctionCount": 0,
             "TypeCount": 0,
             "ConstantCount": 0,
@@ -1470,7 +1456,8 @@
         {
             "Name": "DefaultFilesystemRecordSubdirectory",
             "Immutable": true,
-            "Expression": "`data`"
+            "Expression": "`data`",
+            "Value": "data"
         },
         {
             "Name": "DeleteOperation",
@@ -1483,18 +1470,21 @@
         {
             "Name": "FormatCSV",
             "Immutable": true,
-            "Expression": "`csv`"
+            "Expression": "`csv`",
+            "Value": "csv"
         },
         {
             "Name": "FormatJSON",
             "Immutable": true,
-            "Expression": "`json`"
+            "Expression": "`json`",
+            "Value": "json"
         },
         {
             "Name": "FormatYAML",
             "Type": "SerializationFormat",
             "Immutable": true,
-            "Expression": "`yaml`"
+            "Expression": "`yaml`",
+            "Value": "yaml"
         },
         {
             "Name": "InspectionOperation",
@@ -1542,11 +1532,13 @@
         },
         {
             "Name": "BleveIdentityField",
-            "Expression": "`_id`"
+            "Expression": "`_id`",
+            "Value": "_id"
         },
         {
             "Name": "DefaultAmazonRegion",
-            "Expression": "`us-east-1`"
+            "Expression": "`us-east-1`",
+            "Value": "us-east-1"
         },
         {
             "Name": "DefaultAutoregister",
@@ -1554,7 +1546,8 @@
         },
         {
             "Name": "DefaultCompoundJoiner",
-            "Expression": "`:`"
+            "Expression": "`:`",
+            "Value": ":"
         },
         {
             "Name": "DefaultConnectTimeout",
@@ -1562,11 +1555,13 @@
         },
         {
             "Name": "DefaultSharedCredentialsFile",
-            "Expression": "`~/.aws/credentials`"
+            "Expression": "`~/.aws/credentials`",
+            "Value": "~/.aws/credentials"
         },
         {
             "Name": "DefaultSharedCredentialsProfile",
-            "Expression": "`default`"
+            "Expression": "`default`",
+            "Value": "default"
         },
         {
             "Name": "ElasticsearchBatchFlushCount",
@@ -1582,11 +1577,13 @@
         },
         {
             "Name": "ElasticsearchDocumentType",
-            "Expression": "`document`"
+            "Expression": "`document`",
+            "Value": "document"
         },
         {
             "Name": "ElasticsearchIdentityField",
-            "Expression": "`_id`"
+            "Expression": "`_id`",
+            "Value": "_id"
         },
         {
             "Name": "ElasticsearchRequestTimeout",
@@ -1624,7 +1621,8 @@
         },
         {
             "Name": "MongoIdentityField",
-            "Expression": "`_id`"
+            "Expression": "`_id`",
+            "Value": "_id"
         },
         {
             "Name": "NotImplementedError",
@@ -1636,11 +1634,13 @@
         },
         {
             "Name": "RedisDefaultAddress",
-            "Expression": "`localhost:6379`"
+            "Expression": "`localhost:6379`",
+            "Value": "localhost:6379"
         },
         {
             "Name": "RedisDefaultProtocol",
-            "Expression": "`tcp`"
+            "Expression": "`tcp`",
+            "Value": "tcp"
         },
         {
             "Name": "SqlArrayFieldHintLength",
@@ -1652,7 +1652,8 @@
         },
         {
             "Name": "WriteLockFormat",
-            "Expression": "`%s.lock`"
+            "Expression": "`%s.lock`",
+            "Value": "%s.lock"
         }
     ],
     "Functions": [
@@ -1686,74 +1687,6 @@
             ],
             "Signature": "DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)",
             "Source": "ewoJcmVjb3Jkc2V0IDo9IGRhbC5OZXdSZWNvcmRTZXQoKQoJaWYgZXJyIDo9IGluZGV4ZXIuUXVlcnlGdW5jKGNvbGxlY3Rpb24sIGYsIGZ1bmMoaW5kZXhSZWNvcmQgKmRhbC5SZWNvcmQsIGVyciBlcnJvciwgcGFnZSBJbmRleFBhZ2UpIGVycm9yIHsKCQlkZWZlciBQb3B1bGF0ZVJlY29yZFNldFBhZ2VEZXRhaWxzKHJlY29yZHNldCwgZiwgcGFnZSkKCQlwYXJlbnQgOj0gaW5kZXhlci5HZXRCYWNrZW5kKCkKCQl2YXIgZm9yY2VJbmRleFJlY29yZCBib29sCgkJaWYgZiAhPSBuaWwgewoJCQlpZiB2SSwgb2sgOj0gZi5PcHRpb25zW2BGb3JjZUluZGV4UmVjb3JkYF07IG9rIHsKCQkJCWlmIHYsIG9rIDo9IHZJLihib29sKTsgb2sgewoJCQkJCWZvcmNlSW5kZXhSZWNvcmQgPSB2CgkJCQl9CgkJCX0KCQl9CgkJaWYgcGFyZW50ICE9IG5pbCB7CgkJCWlmIGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpID4gMSB7CgkJCQlqb2luZXIgOj0gY29sbGVjdGlvbi5JbmRleENvbXBvdW5kRmllbGRKb2luZXIKCQkJCWlmIGpvaW5lciA9PSBgYCB7CgkJCQkJam9pbmVyID0gRGVmYXVsdENvbXBvdW5kSm9pbmVyCgkJCQl9CgkJCQl2YXIgdmFsdWVzIFtdaW50ZXJmYWNle30KCQkJCXZhbHVlcyA9IHNsaWNldXRpbC5TbGljZWlmeShzdHJpbmdzLlNwbGl0KGZtdC5TcHJpbnRmKCIldiIsIGluZGV4UmVjb3JkLklEKSwgam9pbmVyKSkKCQkJCWlmIGxlbih2YWx1ZXMpICE9IGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpIHsKCQkJCQlpZiBkaWZmIDo9IGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpIC0gbGVuKHZhbHVlcyk7IGRpZmYgPj0gMSB7CgkJCQkJCWZvciBfLCBjZiA6PSByYW5nZSBjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHNbZGlmZjpdIHsKCQkJCQkJCWlmIHYgOj0gaW5kZXhSZWNvcmQuR2V0KGNmKTsgdiAhPSBuaWwgewoJCQkJCQkJCXZhbHVlcyA9IGFwcGVuZCh2YWx1ZXMsIHYpCgkJCQkJCQl9CgkJCQkJCX0KCQkJCQl9CgkJCQkJaWYgbGVuKHZhbHVlcykgIT0gbGVuKGNvbGxlY3Rpb24uSW5kZXhDb21wb3VuZEZpZWxkcykgewoJCQkJCQlyZXR1cm4gZm10LkVycm9yZigiSW5kZXggaXRlbSAldjogZXhwZWN0ZWQgJWQgY29tcG91bmQgZmllbGQgY29tcG9uZW50cywgZ290ICVkIiwgaW5kZXhSZWNvcmQuSUQsIGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpLCBsZW4odmFsdWVzKSkKCQkJCQl9CgkJCQl9CgkJCQlmb3IgaSwgZmllbGQgOj0gcmFuZ2UgY29sbGVjdGlvbi5JbmRleENvbXBvdW5kRmllbGRzIHsKCQkJCQlpZiBpID09IDAgewoJCQkJCQlpbmRleFJlY29yZC5JRCA9IHZhbHVlcwoJCQkJCX0gZWxzZSB7CgkJCQkJCWluZGV4UmVjb3JkLlNldChmaWVsZCwgdmFsdWVzW2ldKQoJCQkJCX0KCQkJCX0KCQkJfQoJCX0KCQllbXB0eVJlY29yZCA6PSBkYWwuTmV3UmVjb3JkKGluZGV4UmVjb3JkLklEKQoJCWVtcHR5UmVjb3JkLkVycm9yID0gZXJyCgkJaWYgbGVuKHJlc3VsdEZucykgPiAwIHsKCQkJcmVzdWx0Rm4gOj0gcmVzdWx0Rm5zWzBdCgkJCWlmIGYuSWRPbmx5KCkgewoJCQkJcmV0dXJuIHJlc3VsdEZuKGVtcHR5UmVjb3JkLCBlcnIsIHBhZ2UpCgkJCX0gZWxzZSBpZiBwYXJlbnQgIT0gbmlsICYmICFmb3JjZUluZGV4UmVjb3JkIHsKCQkJCWlmIHJlY29yZCwgZXJyIDo9IHBhcmVudC5SZXRyaWV2ZShjb2xsZWN0aW9uLk5hbWUsIGluZGV4UmVjb3JkLklELCBmLkZpZWxkcy4uLik7IGVyciA9PSBuaWwgewoJCQkJCXJldHVybiByZXN1bHRGbihyZWNvcmQsIGVyciwgcGFnZSkKCQkJCX0gZWxzZSB7CgkJCQkJcmV0dXJuIHJlc3VsdEZuKGVtcHR5UmVjb3JkLCBlcnIsIHBhZ2UpCgkJCQl9CgkJCX0gZWxzZSB7CgkJCQlyZXR1cm4gcmVzdWx0Rm4oaW5kZXhSZWNvcmQsIGVyciwgcGFnZSkKCQkJfQoJCX0gZWxzZSB7CgkJCWlmIGYuSWRPbmx5KCkgewoJCQkJcmVjb3Jkc2V0LlJlY29yZHMgPSBhcHBlbmQocmVjb3Jkc2V0LlJlY29yZHMsIGRhbC5OZXdSZWNvcmQoaW5kZXhSZWNvcmQuSUQpKQoJCQl9IGVsc2UgaWYgcGFyZW50ICE9IG5pbCAmJiAhZm9yY2VJbmRleFJlY29yZCB7CgkJCQlpZiByZWNvcmQsIGVyciA6PSBwYXJlbnQuUmV0cmlldmUoY29sbGVjdGlvbi5OYW1lLCBpbmRleFJlY29yZC5JRCwgZi5GaWVsZHMuLi4pOyBlcnIgPT0gbmlsIHsKCQkJCQlyZWNvcmRzZXQuUmVjb3JkcyA9IGFwcGVuZChyZWNvcmRzZXQuUmVjb3JkcywgcmVjb3JkKQoJCQkJfSBlbHNlIHsKCQkJCQlyZWNvcmRzZXQuUmVjb3JkcyA9IGFwcGVuZChyZWNvcmRzZXQuUmVjb3JkcywgZGFsLk5ld1JlY29yZEVycihpbmRleFJlY29yZC5JRCwgZXJyKSkKCQkJCX0KCQkJfSBlbHNlIHsKCQkJCXJlY29yZHNldC5SZWNvcmRzID0gYXBwZW5kKHJlY29yZHNldC5SZWNvcmRzLCBpbmRleFJlY29yZCkKCQkJfQoJCQlyZXR1cm4gbmlsCgkJfQoJfSk7IGVyciAhPSBuaWwgewoJCXJldHVybiBuaWwsIGVycgoJfQoJcmV0dXJuIHJlY29yZHNldCwgbmlsCn0=",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewDynamoBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewFileBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewFilesystemBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewMongoBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
             "IsPackageLevel": true
         },
         {
@@ -1907,7 +1840,7 @@
                 }
             ],
             "Signature": "TestDynamoRecordFromItem(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQsIGVyciA6PSBkeW5hbW9SZWNvcmRGcm9tSXRlbShkeW5hbW9UZXN0Q29sbGVjdGlvbiwgbWFwW3N0cmluZ10qZHluYW1vZGIuQXR0cmlidXRlVmFsdWV7YGlkYDoge046IGF3cy5TdHJpbmcoYDEyM2ApfSwgYG5hbWVgOiB7UzogYXdzLlN0cmluZyhgdGVzdGVyYCl9LCBgYWdlYDoge046IGF3cy5TdHJpbmcoYDQyYCl9fSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbFZhbHVlcygxMjMsIHJlY29yZC5JRCkKCWFzc2VydC5FcXVhbFZhbHVlcyhgdGVzdGVyYCwgcmVjb3JkLkdldChgbmFtZWApKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKDQyLCByZWNvcmQuR2V0KGBhZ2VgKSkKfQ==",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQsIGVyciA6PSBkeW5hbW9SZWNvcmRGcm9tSXRlbShkeW5hbW9UZXN0Q29sbGVjdGlvbiwgMTIzLCBtYXBbc3RyaW5nXSpkeW5hbW9kYi5BdHRyaWJ1dGVWYWx1ZXtgaWRgOiB7TjogYXdzLlN0cmluZyhgMTIzYCl9LCBgbmFtZWA6IHtTOiBhd3MuU3RyaW5nKGB0ZXN0ZXJgKX0sIGBhZ2VgOiB7TjogYXdzLlN0cmluZyhgNDJgKX19KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKDEyMywgcmVjb3JkLklEKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKGB0ZXN0ZXJgLCByZWNvcmQuR2V0KGBuYW1lYCkpCglhc3NlcnQuRXF1YWxWYWx1ZXMoNDIsIHJlY29yZC5HZXQoYGFnZWApKQp9",
             "IsPackageLevel": true
         },
         {
@@ -1944,18 +1877,6 @@
             ],
             "Signature": "TestRedisSplitKey(t *testing.T)",
             "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uLCBrZXlzIDo9IHJlZGlzU3BsaXRLZXkoYGApCglhc3NlcnQuWmVybyhjb2xsZWN0aW9uKQoJYXNzZXJ0LkVtcHR5KGtleXMpCgljb2xsZWN0aW9uLCBrZXlzID0gcmVkaXNTcGxpdEtleShgdGVzdGluZzoxMjNgKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0aW5nYCwgY29sbGVjdGlvbikKCWFzc2VydC5FcXVhbChbXXN0cmluZ3tgMTIzYH0sIGtleXMpCgljb2xsZWN0aW9uLCBrZXlzID0gcmVkaXNTcGxpdEtleShgcGl2b3QudGVzdGluZzoxMjNgKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0aW5nYCwgY29sbGVjdGlvbikKCWFzc2VydC5FcXVhbChbXXN0cmluZ3tgMTIzYH0sIGtleXMpCgljb2xsZWN0aW9uLCBrZXlzID0gcmVkaXNTcGxpdEtleShgcGl2b3QudGVzdGluZzoxMjM6NDU2YCkKCWFzc2VydC5FcXVhbChgdGVzdGluZ2AsIGNvbGxlY3Rpb24pCglhc3NlcnQuRXF1YWwoW11zdHJpbmd7YDEyM2AsIGA0NTZgfSwga2V5cykKCWNvbGxlY3Rpb24sIGtleXMgPSByZWRpc1NwbGl0S2V5KGBwaXZvdC5kZWVwbHkubmVzdGVkLndoYXRzYXdoYXQudGVzdGluZzoxMjM6NDU2YCkKCWFzc2VydC5FcXVhbChgdGVzdGluZ2AsIGNvbGxlY3Rpb24pCglhc3NlcnQuRXF1YWwoW11zdHJpbmd7YDEyM2AsIGA0NTZgfSwga2V5cykKfQ==",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "TestSqlAlterStatements",
-            "Arguments": [
-                {
-                    "Name": "t",
-                    "Type": "*testing.T"
-                }
-            ],
-            "Signature": "TestSqlAlterStatements(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgliIDo9IE5ld1NxbEJhY2tlbmQoZGFsLk11c3RQYXJzZUNvbm5lY3Rpb25TdHJpbmcoYHNxbGl0ZTovL3RlbXBvcmFyeWApKS4oKlNxbEJhY2tlbmQpCglhc3NlcnQuTm9FcnJvcihiLkluaXRpYWxpemUoKSkKCWhhdmUgOj0gJmRhbC5Db2xsZWN0aW9ue05hbWU6IGBUZXN0U3FsQWx0ZXJTdGF0ZW1lbnRzYCwgSWRlbnRpdHlGaWVsZDogYGlkYCwgRmllbGRzOiBbXWRhbC5GaWVsZHt7TmFtZTogYG5hbWVgLCBUeXBlOiBkYWwuU3RyaW5nVHlwZSwgUmVxdWlyZWQ6IHRydWV9LCB7TmFtZTogYGNyZWF0ZWRfYXRgLCBUeXBlOiBkYWwuSW50VHlwZSwgUmVxdWlyZWQ6IHRydWV9fX0KCXdhbnQgOj0gJmRhbC5Db2xsZWN0aW9ue05hbWU6IGBUZXN0U3FsQWx0ZXJTdGF0ZW1lbnRzYCwgSWRlbnRpdHlGaWVsZDogYGlkYCwgRmllbGRzOiBbXWRhbC5GaWVsZHt7TmFtZTogYG5hbWVgLCBUeXBlOiBkYWwuU3RyaW5nVHlwZSwgUmVxdWlyZWQ6IHRydWV9LCB7TmFtZTogYGFnZWAsIFR5cGU6IGRhbC5JbnRUeXBlLCBSZXF1aXJlZDogdHJ1ZSwgRGVmYXVsdFZhbHVlOiAxfSwge05hbWU6IGBjcmVhdGVkX2F0YCwgVHlwZTogZGFsLlRpbWVUeXBlLCBSZXF1aXJlZDogdHJ1ZSwgRGVmYXVsdFZhbHVlOiBgbm93YH19fQoJYi5SZWdpc3RlckNvbGxlY3Rpb24oaGF2ZSkKCWFzc2VydC5Ob0Vycm9yKGIuTWlncmF0ZSgpKQoJZm9yIF8sIGRlbHRhIDo9IHJhbmdlIHdhbnQuRGlmZihoYXZlKSB7CgkJc3RtdCwgXywgZXJyIDo9IGIuZ2VuZXJhdGVBbHRlclN0YXRlbWVudChkZWx0YSkKCQlhc3NlcnQuTm9FcnJvcihlcnIpCgkJc3dpdGNoIGRlbHRhLk5hbWUgewoJCWNhc2UgYGFnZWA6CgkJCWFzc2VydC5FcXVhbChgQUxURVIgVEFCTEUgIlRlc3RTcWxBbHRlclN0YXRlbWVudHMiIEFERCAiY3JlYXRlZF9hdCIgVElNRVNUQU1QIE5PVCBOVUxMIERFRkFVTFQgQ1VSUkVOVF9USU1FU1RBTVBgLCBzdG10KQoJCWNhc2UgYGNyZWF0ZWRfYXRgOgoJCQlhc3NlcnQuRXF1YWwoYEFMVEVSIFRBQkxFICJUZXN0U3FsQWx0ZXJTdGF0ZW1lbnRzIiBBREQgImFnZSIgQklHSU5UIE5PVCBOVUxMYCwgc3RtdCkKCQlkZWZhdWx0OgoJCQlhc3NlcnQuTm9FcnJvcihmbXQuRXJyb3JmKCJleHRyYSBkaWZmOiAldiIsIGRlbHRhKSkKCQl9Cgl9Cn0=",
             "IsPackageLevel": true
         }
     ],
@@ -2003,6 +1924,74 @@
                     ],
                     "Signature": "NewSqlBackend(connection dal.ConnectionString) Backend",
                     "Source": "ewoJYmFja2VuZCA6PSAmU3FsQmFja2VuZHtjb25uOiAmY29ubmVjdGlvbiwgcXVlcnlHZW5UeXBlTWFwcGluZzogZ2VuZXJhdG9ycy5EZWZhdWx0U3FsVHlwZU1hcHBpbmcsIGRyb3BUYWJsZVF1ZXJ5OiBgRFJPUCBUQUJMRSAlc2AsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwga25vd25Db2xsZWN0aW9uczogbWFrZShtYXBbc3RyaW5nXWJvb2wpLCBkZXRlY3RlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKX0KCWlmIGZuLCBvayA6PSBzcWxQcmVJbml0RnVuY3NbY29ubmVjdGlvbi5CYWNrZW5kKCldOyBvayAmJiBmbiAhPSBuaWwgewoJCWZuKGJhY2tlbmQpCgl9CgliYWNrZW5kLmluZGV4ZXIgPSBiYWNrZW5kCglyZXR1cm4gYmFja2VuZAp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewFileBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewDynamoBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewFilesystemBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewMongoBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
                     "IsPackageLevel": true
                 }
             ],

@@ -21,13 +21,15 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/pivot/">
+                    <a class="navbar-brand" href="/pivot/index.html">
                         <strong>go-owndoc</strong>
                     </a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class=""><a href="/pivot/">Home</a></li>
+                        <li class="">
+                            <a href="/pivot/index.html">Home</a>
+                        </li>
 
                         <li class="dropdown active">
                             <a
@@ -71,9 +73,15 @@
                         </li>
 
                         <li class="">
-                            <a href="/pivot/-/about">About</a>
+                            <a href="/pivot/-/module.html">Manifest</a>
+                        </li>
+
+                        <li class="">
+                            <a href="/pivot/-/about.html">About</a>
                         </li>
                     </ul>
+
+                    
                 </div>
             </div>
         </nav>
@@ -82,7 +90,7 @@
             
 <br>
 <div class="clearfix" id="x-projnav">
-	<a href="URL"><strong>pivot:</strong></a>
+	<a href="https://github.com/ghetzel/pivot"><strong>pivot:</strong></a>
 	
 	<span class="text-muted">https://github.com/ghetzel/pivot</span>
 	
@@ -126,129 +134,101 @@
 	
 	
     <li>
-		
 		<strong>
-			<a href="#ApplySchemata">func ApplySchemata(fileOrDirPath string, db Backend) error</a>
+		<a href="#ApplySchemata">func ApplySchemata(fileOrDirPath string, db Backend) error</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#Dir">func Dir(useLocal bool, name string) http.FileSystem</a>
+		<a href="#Dir">func Dir(useLocal bool, name string) http.FileSystem</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#FS">func FS(useLocal bool) http.FileSystem</a>
+		<a href="#FS">func FS(useLocal bool) http.FileSystem</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#FSByte">func FSByte(useLocal bool, name string) ([]byte, error)</a>
+		<a href="#FSByte">func FSByte(useLocal bool, name string) ([]byte, error)</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#FSMustByte">func FSMustByte(useLocal bool, name string) []byte</a>
+		<a href="#FSMustByte">func FSMustByte(useLocal bool, name string) []byte</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#FSMustString">func FSMustString(useLocal bool, name string) string</a>
+		<a href="#FSMustString">func FSMustString(useLocal bool, name string) string</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#FSString">func FSString(useLocal bool, name string) (string, error)</a>
+		<a href="#FSString">func FSString(useLocal bool, name string) (string, error)</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#LoadFixtures">func LoadFixtures(fileOrDirPath string, db Backend) error</a>
+		<a href="#LoadFixtures">func LoadFixtures(fileOrDirPath string, db Backend) error</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#LoadFixturesFromFile">func LoadFixturesFromFile(filename string, db Backend) error</a>
+		<a href="#LoadFixturesFromFile">func LoadFixturesFromFile(filename string, db Backend) error</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#LoadSchemata">func LoadSchemata(fileOrDirPaths ...string) ([]*dal.Collection, error)</a>
+		<a href="#LoadSchemata">func LoadSchemata(fileOrDirPaths ...string) ([]*dal.Collection, error)</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#LoadSchemataFromFile">func LoadSchemataFromFile(filename string) ([]*dal.Collection, error)</a>
+		<a href="#LoadSchemataFromFile">func LoadSchemataFromFile(filename string) ([]*dal.Collection, error)</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#MustGetCollection">func MustGetCollection(db Backend, name string) *dal.Collection</a>
+		<a href="#MustGetCollection">func MustGetCollection(db Backend, name string) *dal.Collection</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#NewDatabase">func NewDatabase(connection string) (DB, error)</a>
+		<a href="#NewDatabase">func NewDatabase(connection string) (DB, error)</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#NewDatabaseWithOptions">func NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)</a>
+		<a href="#NewDatabaseWithOptions">func NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)</a>
 		</strong>
-		
 	</li>
 	
 
 	
 	
     <li>
-		<a href="#Backend">type Backend</a>
+		<a href="#Backend">type Backend </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#Collection">type Collection</a>
+		<a href="#Collection">type Collection </a>
 
 		
 		
@@ -266,9 +246,11 @@
 			
 			
 			<li>
+				
 				<a href="#Configuration.LoadConfigFile">
 					func LoadConfigFile(path string) (Configuration, error)
 				</a>
+				
 			</li>
 			
 			
@@ -277,11 +259,13 @@
 			
 			
 			<li>
+				
 				<a href="#Configuration.ForEnv">
 					func
 					(self *Configuration)
 					ForEnv(env string) Configuration
 				</a>
+				
 			</li>
 			
 			
@@ -292,42 +276,42 @@
 	</li>
 	
     <li>
-		<a href="#ConnectOptions">type ConnectOptions</a>
+		<a href="#ConnectOptions">type ConnectOptions </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#DB">type DB</a>
+		<a href="#DB">type DB </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#Filter">type Filter</a>
+		<a href="#Filter">type Filter </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#Model">type Model</a>
+		<a href="#Model">type Model </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#Record">type Record</a>
+		<a href="#Record">type Record </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#RecordSet">type RecordSet</a>
+		<a href="#RecordSet">type RecordSet </a>
 
 		
 		
@@ -349,9 +333,11 @@
 			
 			
 			<li>
+				
 				<a href="#Server.NewServer">
 					func NewServer(connectionString ...string) *Server
 				</a>
+				
 			</li>
 			
 			
@@ -360,31 +346,37 @@
 			
 			
 			<li>
+				
 				<a href="#Server.AddFixturePath">
 					func
 					(self *Server)
 					AddFixturePath(fileOrDirPath string)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Server.AddSchemaDefinition">
 					func
 					(self *Server)
 					AddSchemaDefinition(fileOrDirPath string)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Server.ListenAndServe">
 					func
 					(self *Server)
 					ListenAndServe() error
 				</a>
+				
 			</li>
 			
 			
@@ -425,7 +417,7 @@
 			
 		</td>
 		<td class="text-right">1KB</td>
-		<td class="text-right">46 lines</td>
+		<td class="text-right">46</td>
 		<td class="text-right">2</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -439,7 +431,7 @@
 			
 		</td>
 		<td class="text-right">2KB</td>
-		<td class="text-right">88 lines</td>
+		<td class="text-right">88</td>
 		<td class="text-right"></td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -453,7 +445,7 @@
 			
 		</td>
 		<td class="text-right">38KB</td>
-		<td class="text-right">1180 lines</td>
+		<td class="text-right">1180</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right">3</td>
@@ -466,8 +458,8 @@
 			<a href="pivot.go">pivot.go</a>
 			
 		</td>
-		<td class="text-right">8KB</td>
-		<td class="text-right">231 lines</td>
+		<td class="text-right">9KB</td>
+		<td class="text-right">261</td>
 		<td class="text-right">8</td>
 		<td class="text-right">7</td>
 		<td class="text-right"></td>
@@ -481,7 +473,7 @@
 			
 		</td>
 		<td class="text-right">22KB</td>
-		<td class="text-right">641 lines</td>
+		<td class="text-right">641</td>
 		<td class="text-right">4</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -495,7 +487,7 @@
 			
 		</td>
 		<td class="text-right">1MB</td>
-		<td class="text-right">18095 lines</td>
+		<td class="text-right">18095</td>
 		<td class="text-right">6</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -508,8 +500,8 @@
 			<a href="version.go">version.go</a>
 			
 		</td>
-		<td class="text-right">154B</td>
-		<td class="text-right">4 lines</td>
+		<td class="text-right">155B</td>
+		<td class="text-right">4</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right">3</td>
@@ -532,7 +524,7 @@
 	<pre>
 const <span id="ApplicationName">ApplicationName   </span> = `pivot`
 const <span id="ApplicationSummary">ApplicationSummary</span> = `an extensible database abstraction service`
-const <span id="ApplicationVersion">ApplicationVersion</span> = `3.3.6`
+const <span id="ApplicationVersion">ApplicationVersion</span> = `3.3.13`
 const <span id="TestFirst">TestFirst         </span> = iota
 const <span id="TestSecond">TestSecond        </span> = 
 const <span id="TestThird">TestThird         </span> = 
@@ -1157,10 +1149,10 @@ var <span id="TestData">TestData            </span> = []byte{0x00, 0x01, 0x02, 0
         <div id="x-footer" class="clearfix">
             <div class="container">
                 
+                Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></i> v0.0.3
+                
 
                 <span class="pull-right">
-                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></a></i> v0.0.3
-                    <span class="text-muted">|</span>
                     <a href="#">Back to top</a>
                 </span>
             </div>

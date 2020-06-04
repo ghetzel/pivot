@@ -21,13 +21,15 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/pivot/">
+                    <a class="navbar-brand" href="/pivot/index.html">
                         <strong>go-owndoc</strong>
                     </a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class=""><a href="/pivot/">Home</a></li>
+                        <li class="">
+                            <a href="/pivot/index.html">Home</a>
+                        </li>
 
                         <li class="dropdown active">
                             <a
@@ -71,9 +73,15 @@
                         </li>
 
                         <li class="">
-                            <a href="/pivot/-/about">About</a>
+                            <a href="/pivot/-/module.html">Manifest</a>
+                        </li>
+
+                        <li class="">
+                            <a href="/pivot/-/about.html">About</a>
                         </li>
                     </ul>
+
+                    
                 </div>
             </div>
         </nav>
@@ -82,7 +90,7 @@
             
 <br>
 <div class="clearfix" id="x-projnav">
-	<a href="URL"><strong>pivot:</strong></a>
+	<a href="https://github.com/ghetzel/pivot"><strong>pivot:</strong></a>
 	
 	<a href="/pivot/pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">dal</span>
 	
@@ -131,26 +139,68 @@
 	
     <li>
 		
+		<a href="#ChangeCase">func ChangeCase(cases ...string) FieldFormatterFunc</a>
+		
+	</li>
+	
+    <li>
 		<strong>
-			<a href="#CurrentTime">func CurrentTime(value interface{}, op FieldOperation) (interface{}, error)</a>
+		<a href="#CurrentTime">func CurrentTime(value interface{}, op FieldOperation) (interface{}, error)</a>
 		</strong>
+	</li>
+	
+    <li>
+		<strong>
+		<a href="#CurrentTimeIfUnset">func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error)</a>
+		</strong>
+	</li>
+	
+    <li>
+		<strong>
+		<a href="#DeriveFromFields">func DeriveFromFields(format string, fields ...string) FieldFormatterFunc</a>
+		</strong>
+	</li>
+	
+    <li>
+		
+		<a href="#FormatAll">func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc</a>
 		
 	</li>
 	
     <li>
 		
-		<strong>
-			<a href="#CurrentTimeIfUnset">func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error)</a>
-		</strong>
+		<a href="#FormatterFromMap">func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)</a>
 		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#GenerateUUID">func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error)</a>
+		<a href="#GenerateEncodedUUID">func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc</a>
 		</strong>
+	</li>
+	
+    <li>
+		<strong>
+		<a href="#GenerateUUID">func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error)</a>
+		</strong>
+	</li>
+	
+    <li>
 		
+		<a href="#GetFormatter">func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)</a>
+		
+	</li>
+	
+    <li>
+		<strong>
+		<a href="#GetValidator">func GetValidator(name string, args interface{}) (FieldValidatorFunc, error)</a>
+		</strong>
+	</li>
+	
+    <li>
+		<strong>
+		<a href="#IfUnset">func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc</a>
+		</strong>
 	</li>
 	
     <li>
@@ -178,11 +228,21 @@
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#ShouldCreateCollection">func ShouldCreateCollection(collection *Collection, errs ...error) bool</a>
+		<a href="#NowPlusDuration">func NowPlusDuration(duration time.Duration) FieldFormatterFunc</a>
 		</strong>
+	</li>
+	
+    <li>
 		
+		<a href="#Replace">func Replace(pairs []interface{}) FieldFormatterFunc</a>
+		
+	</li>
+	
+    <li>
+		<strong>
+		<a href="#ShouldCreateCollection">func ShouldCreateCollection(collection *Collection, errs ...error) bool</a>
+		</strong>
 	</li>
 	
     <li>
@@ -192,50 +252,70 @@
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#ValidateIsURL">func ValidateIsURL(value interface{}) error</a>
+		<a href="#ValidateAll">func ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#ValidateNonZero">func ValidateNonZero(value interface{}) error</a>
+		<a href="#ValidateIsOneOf">func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#ValidateNotEmpty">func ValidateNotEmpty(value interface{}) error</a>
+		<a href="#ValidateIsURL">func ValidateIsURL(value interface{}) error</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#ValidatePositiveInteger">func ValidatePositiveInteger(value interface{}) error</a>
+		<a href="#ValidateMatchAll">func ValidateMatchAll(patterns ...string) FieldValidatorFunc</a>
 		</strong>
-		
 	</li>
 	
     <li>
-		
 		<strong>
-			<a href="#ValidatePositiveOrZeroInteger">func ValidatePositiveOrZeroInteger(value interface{}) error</a>
+		<a href="#ValidateMatchAny">func ValidateMatchAny(patterns ...string) FieldValidatorFunc</a>
 		</strong>
-		
+	</li>
+	
+    <li>
+		<strong>
+		<a href="#ValidateNonZero">func ValidateNonZero(value interface{}) error</a>
+		</strong>
+	</li>
+	
+    <li>
+		<strong>
+		<a href="#ValidateNotEmpty">func ValidateNotEmpty(value interface{}) error</a>
+		</strong>
+	</li>
+	
+    <li>
+		<strong>
+		<a href="#ValidatePositiveInteger">func ValidatePositiveInteger(value interface{}) error</a>
+		</strong>
+	</li>
+	
+    <li>
+		<strong>
+		<a href="#ValidatePositiveOrZeroInteger">func ValidatePositiveOrZeroInteger(value interface{}) error</a>
+		</strong>
+	</li>
+	
+    <li>
+		<strong>
+		<a href="#ValidatorFromMap">func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)</a>
+		</strong>
 	</li>
 	
 
 	
 	
     <li>
-		<a href="#Backend">type Backend</a>
+		<a href="#Backend">type Backend </a>
 
 		
 		
@@ -299,9 +379,11 @@
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.NewCollection">
 					func NewCollection(name string, fields ...Field) *Collection
 				</a>
+				</strong>
 			</li>
 			
 			
@@ -324,241 +406,289 @@
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.AddFields">
 					func
 					(self *Collection)
 					AddFields(fields ...Field) *Collection
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.ApplyDefinition">
 					func
 					(self *Collection)
 					ApplyDefinition(definition *Collection) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.Check">
 					func
 					(self *Collection)
 					Check() error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.ConvertValue">
 					func
 					(self *Collection)
 					ConvertValue(name string, value interface{}) interface{}
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.Diff">
 					func
 					(self *Collection)
 					Diff(actual *Collection) []*SchemaDelta
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Collection.EmptyRecord">
 					func
 					(self *Collection)
 					EmptyRecord() *Record
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.FillDefaults">
 					func
 					(self *Collection)
 					FillDefaults(record *Record)
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.GetAggregatorName">
 					func
 					(self *Collection)
 					GetAggregatorName() string
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.GetAllConstraints">
 					func
 					(self *Collection)
 					GetAllConstraints() constraints []Constraint
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.GetField">
 					func
 					(self *Collection)
 					GetField(name string) (Field, bool)
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.GetFieldByIndex">
 					func
 					(self *Collection)
 					GetFieldByIndex(index int) (Field, bool)
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.GetFirstNonIdentityKeyField">
 					func
 					(self *Collection)
 					GetFirstNonIdentityKeyField() (Field, bool)
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.GetIdentityFieldName">
 					func
 					(self *Collection)
 					GetIdentityFieldName() string
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.GetIndexName">
 					func
 					(self *Collection)
 					GetIndexName() string
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.GetRelatedCollection">
 					func
 					(self *Collection)
 					GetRelatedCollection(name string) (*Collection, error)
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Collection.HasRecordType">
 					func
 					(self *Collection)
 					HasRecordType() bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.IsExpired">
 					func
 					(self *Collection)
 					IsExpired(record *Record) bool
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.IsIdentityField">
 					func
 					(self *Collection)
 					IsIdentityField(name string) bool
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.IsKeyField">
 					func
 					(self *Collection)
 					IsKeyField(name string) bool
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.KeyCount">
 					func
 					(self *Collection)
 					KeyCount() int
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.KeyFieldNames">
 					func
 					(self *Collection)
 					KeyFieldNames() names []string
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.KeyFields">
 					func
 					(self *Collection)
 					KeyFields() []Field
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.MakeRecord">
 					func
 					(self *Collection)
 					MakeRecord(in interface{}, ops ...FieldOperation) (*Record, error)
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.MapFromRecord">
 					func
 					(self *Collection)
 					MapFromRecord(record *Record, fields ...string) (map[string]interface{}, error)
 				</a>
+				</strong>
 			</li>
 			
 			
@@ -566,71 +696,85 @@
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.SetBackend">
 					func
 					(self *Collection)
 					SetBackend(backend Backend)
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.SetIdentity">
 					func
 					(self *Collection)
 					SetIdentity(name string, idtype Type, formatter FieldFormatterFunc, validator FieldValidatorFunc) *Collection
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.SetRecordType">
 					func
 					(self *Collection)
 					SetRecordType(in interface{}) *Collection
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.StructToRecord">
 					func
 					(self *Collection)
 					StructToRecord(in interface{}) (*Record, error)
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.TTL">
 					func
 					(self *Collection)
 					TTL(record *Record) time.Duration
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.ValidateRecord">
 					func
 					(self *Collection)
 					ValidateRecord(record *Record, op FieldOperation) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Collection.ValueForField">
 					func
 					(self *Collection)
 					ValueForField(name string, value interface{}, op FieldOperation) (interface{}, error)
 				</a>
+				</strong>
 			</li>
 			
 			
@@ -639,14 +783,14 @@
 	</li>
 	
     <li>
-		<a href="#CollectionAction">type CollectionAction</a>
+		<a href="#CollectionAction">type CollectionAction int</a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#CollectionValidatorFunc">type CollectionValidatorFunc</a>
+		<a href="#CollectionValidatorFunc">type CollectionValidatorFunc </a>
 
 		
 		
@@ -698,27 +842,33 @@
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.ParseConnectionString">
 					func ParseConnectionString(conn string) (ConnectionString, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.MustParseConnectionString">
 					func MustParseConnectionString(conn string) ConnectionString
 				</a>
+				
 			</li>
 			
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.MakeConnectionString">
 					func MakeConnectionString(scheme string, host string, dataset string, options map[string]interface{}) (ConnectionString, error)
 				</a>
+				
 			</li>
 			
 			
@@ -727,181 +877,217 @@
 			
 			
 			<li>
+				<strong>
 				<a href="#ConnectionString.Backend">
 					func
 					(self *ConnectionString)
 					Backend() string
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.ClearOpt">
 					func
 					(self *ConnectionString)
 					ClearOpt(key string)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#ConnectionString.Credentials">
 					func
 					(self *ConnectionString)
 					Credentials() (string, string, bool)
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#ConnectionString.Dataset">
 					func
 					(self *ConnectionString)
 					Dataset() string
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.HasOpt">
 					func
 					(self *ConnectionString)
 					HasOpt(key string) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#ConnectionString.Host">
 					func
 					(self *ConnectionString)
 					Host(defaults ...string) string
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#ConnectionString.LoadCredentialsFromNetrc">
 					func
 					(self *ConnectionString)
 					LoadCredentialsFromNetrc(filename string) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.Opt">
 					func
 					(self *ConnectionString)
 					Opt(key string) typeutil.Variant
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.OptBool">
 					func
 					(self *ConnectionString)
 					OptBool(key string, fallback bool) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.OptDuration">
 					func
 					(self *ConnectionString)
 					OptDuration(key string, fallback time.Duration) time.Duration
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.OptFloat">
 					func
 					(self *ConnectionString)
 					OptFloat(key string, fallback float64) float64
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.OptInt">
 					func
 					(self *ConnectionString)
 					OptInt(key string, fallback int64) int64
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.OptString">
 					func
 					(self *ConnectionString)
 					OptString(key string, fallback string) string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.OptTime">
 					func
 					(self *ConnectionString)
 					OptTime(key string, fallback time.Time) time.Time
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#ConnectionString.Protocol">
 					func
 					(self *ConnectionString)
 					Protocol(defaults ...string) string
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#ConnectionString.Scheme">
 					func
 					(self *ConnectionString)
 					Scheme() (string, string)
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#ConnectionString.SetCredentials">
 					func
 					(self *ConnectionString)
 					SetCredentials(username string, password string)
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#ConnectionString.String">
 					func
 					(self *ConnectionString)
 					String() string
 				</a>
+				
 			</li>
 			
 			
@@ -931,21 +1117,25 @@
 			
 			
 			<li>
+				
 				<a href="#Constraint.Equal">
 					func
 					(self Constraint)
 					Equal(other *Constraint) bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Constraint.Validate">
 					func
 					(self Constraint)
 					Validate() error
 				</a>
+				
 			</li>
 			
 			
@@ -954,21 +1144,21 @@
 	</li>
 	
     <li>
-		<a href="#DeltaIssue">type DeltaIssue</a>
+		<a href="#DeltaIssue">type DeltaIssue int</a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#DeltaType">type DeltaType</a>
+		<a href="#DeltaType">type DeltaType string</a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#EncoderFunc">type EncoderFunc</a>
+		<a href="#EncoderFunc">type EncoderFunc </a>
 
 		
 		
@@ -1004,91 +1194,109 @@
 			
 			
 			<li>
+				<strong>
 				<a href="#Field.BelongsToConstraint">
 					func
 					(self *Field)
 					BelongsToConstraint() *Constraint
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Field.ConvertValue">
 					func
 					(self *Field)
 					ConvertValue(in interface{}) (interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Field.Diff">
 					func
 					(self *Field)
 					Diff(other *Field) []*SchemaDelta
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Field.Format">
 					func
 					(self *Field)
 					Format(value interface{}, op FieldOperation) (interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Field.GetDefaultValue">
 					func
 					(self *Field)
 					GetDefaultValue() interface{}
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Field.GetTypeInstance">
 					func
 					(self *Field)
 					GetTypeInstance() interface{}
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Field.MarshalJSON">
 					func
 					(self *Field)
 					MarshalJSON() ([]byte, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Field.UnmarshalJSON">
 					func
 					(self *Field)
 					UnmarshalJSON(b []byte) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Field.Validate">
 					func
 					(self *Field)
 					Validate(value interface{}) error
 				</a>
+				
 			</li>
 			
 			
@@ -1097,35 +1305,35 @@
 	</li>
 	
     <li>
-		<a href="#FieldFormatterFunc">type FieldFormatterFunc</a>
+		<a href="#FieldFormatterFunc">type FieldFormatterFunc </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#FieldOperation">type FieldOperation</a>
+		<a href="#FieldOperation">type FieldOperation int</a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#FieldValidatorFunc">type FieldValidatorFunc</a>
+		<a href="#FieldValidatorFunc">type FieldValidatorFunc </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#Migratable">type Migratable</a>
+		<a href="#Migratable">type Migratable </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#Model">type Model</a>
+		<a href="#Model">type Model </a>
 
 		
 		
@@ -1157,18 +1365,22 @@
 			
 			
 			<li>
+				
 				<a href="#Record.NewRecord">
 					func NewRecord(id interface{}, data ...map[string]interface{}) *Record
 				</a>
+				
 			</li>
 			
 			
 			
 			
 			<li>
+				
 				<a href="#Record.NewRecordErr">
 					func NewRecordErr(id interface{}, err error) *Record
 				</a>
+				
 			</li>
 			
 			
@@ -1193,81 +1405,97 @@
 			
 			
 			<li>
+				
 				<a href="#Record.Append">
 					func
 					(self *Record)
 					Append(key string, value ...interface{}) *Record
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.AppendNested">
 					func
 					(self *Record)
 					AppendNested(key string, value ...interface{}) *Record
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.Copy">
 					func
 					(self *Record)
 					Copy(other *Record, schema ...*Collection) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.Get">
 					func
 					(self *Record)
 					Get(key string, fallback ...interface{}) interface{}
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.GetNested">
 					func
 					(self *Record)
 					GetNested(key string, fallback ...interface{}) interface{}
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.GetString">
 					func
 					(self *Record)
 					GetString(key string, fallback ...string) string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.Keys">
 					func
 					(self *Record)
 					Keys(collection *Collection) []interface{}
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.Map">
 					func
 					(self *Record)
 					Map(fields ...string) map[string]interface{}
 				</a>
+				
 			</li>
 			
 			
@@ -1277,81 +1505,97 @@
 			
 			
 			<li>
+				
 				<a href="#Record.OnlyFields">
 					func
 					(self *Record)
 					OnlyFields(fields []string) *Record
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Record.Populate">
 					func
 					(self *Record)
 					Populate(into interface{}, collection *Collection) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.Set">
 					func
 					(self *Record)
 					Set(key string, value interface{}) *Record
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.SetData">
 					func
 					(self *Record)
 					SetData(data []byte) *Record
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.SetFields">
 					func
 					(self *Record)
 					SetFields(values map[string]interface{}) *Record
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.SetKeys">
 					func
 					(self *Record)
 					SetKeys(collection *Collection, op FieldOperation, keys ...interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.SetNested">
 					func
 					(self *Record)
 					SetNested(key string, value interface{}) *Record
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Record.String">
 					func
 					(self *Record)
 					String() string
 				</a>
+				
 			</li>
 			
 			
@@ -1377,9 +1621,11 @@
 			
 			
 			<li>
+				
 				<a href="#RecordSet.NewRecordSet">
 					func NewRecordSet(records ...*Record) *RecordSet
 				</a>
+				
 			</li>
 			
 			
@@ -1394,41 +1640,49 @@
 			
 			
 			<li>
+				
 				<a href="#RecordSet.Append">
 					func
 					(self *RecordSet)
 					Append(other *RecordSet) *RecordSet
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RecordSet.GetRecord">
 					func
 					(self *RecordSet)
 					GetRecord(index int) (*Record, bool)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RecordSet.GetRecordByID">
 					func
 					(self *RecordSet)
 					GetRecordByID(id interface{}) (*Record, bool)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RecordSet.IsEmpty">
 					func
 					(self *RecordSet)
 					IsEmpty() bool
 				</a>
+				
 			</li>
 			
 			
@@ -1436,31 +1690,37 @@
 			
 			
 			<li>
+				
 				<a href="#RecordSet.Pluck">
 					func
 					(self *RecordSet)
 					Pluck(field string, fallback ...interface{}) []interface{}
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#RecordSet.PopulateFromRecords">
 					func
 					(self *RecordSet)
 					PopulateFromRecords(into interface{}, schema *Collection) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#RecordSet.Push">
 					func
 					(self *RecordSet)
 					Push(record *Record) *RecordSet
 				</a>
+				
 			</li>
 			
 			
@@ -1482,11 +1742,13 @@
 			
 			
 			<li>
+				
 				<a href="#Relationship.RelatedCollectionName">
 					func
 					(self *Relationship)
 					RelatedCollectionName() string
 				</a>
+				
 			</li>
 			
 			
@@ -1510,21 +1772,25 @@
 			
 			
 			<li>
+				
 				<a href="#SchemaDelta.DesiredField">
 					func
 					(self SchemaDelta)
 					DesiredField(from Field) *Field
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#SchemaDelta.String">
 					func
 					(self SchemaDelta)
 					String() string
 				</a>
+				
 			</li>
 			
 			
@@ -1534,6 +1800,20 @@
 	
     <li>
 		<a href="#TestRecord">type TestRecord</a>
+
+		
+		
+		<ul>
+			
+
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#TestRecordEmbedded">type TestRecordEmbedded</a>
 
 		
 		
@@ -1575,7 +1855,7 @@
 	</li>
 	
     <li>
-		<a href="#Type">type Type</a>
+		<a href="#Type">type Type string</a>
 
 		
 		
@@ -1612,7 +1892,7 @@
 			
 		</td>
 		<td class="text-right">25KB</td>
-		<td class="text-right">589 lines</td>
+		<td class="text-right">589</td>
 		<td class="text-right">33</td>
 		<td class="text-right">3</td>
 		<td class="text-right">5</td>
@@ -1626,7 +1906,7 @@
 			
 		</td>
 		<td class="text-right">7KB</td>
-		<td class="text-right">240 lines</td>
+		<td class="text-right">245</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -1640,7 +1920,7 @@
 			
 		</td>
 		<td class="text-right">7KB</td>
-		<td class="text-right">239 lines</td>
+		<td class="text-right">239</td>
 		<td class="text-right">22</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -1654,7 +1934,7 @@
 			
 		</td>
 		<td class="text-right">1KB</td>
-		<td class="text-right">35 lines</td>
+		<td class="text-right">35</td>
 		<td class="text-right">2</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -1668,7 +1948,7 @@
 			
 		</td>
 		<td class="text-right">587B</td>
-		<td class="text-right">25 lines</td>
+		<td class="text-right">25</td>
 		<td class="text-right">4</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -1682,7 +1962,7 @@
 			
 		</td>
 		<td class="text-right">13KB</td>
-		<td class="text-right">360 lines</td>
+		<td class="text-right">360</td>
 		<td class="text-right">9</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -1696,7 +1976,7 @@
 			
 		</td>
 		<td class="text-right">12KB</td>
-		<td class="text-right">406 lines</td>
+		<td class="text-right">406</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -1710,7 +1990,7 @@
 			
 		</td>
 		<td class="text-right">7KB</td>
-		<td class="text-right">225 lines</td>
+		<td class="text-right">225</td>
 		<td class="text-right">13</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -1723,8 +2003,8 @@
 			<a href="record.go">record.go</a>
 			
 		</td>
-		<td class="text-right">12KB</td>
-		<td class="text-right">378 lines</td>
+		<td class="text-right">13KB</td>
+		<td class="text-right">379</td>
 		<td class="text-right">18</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -1738,7 +2018,7 @@
 			
 		</td>
 		<td class="text-right">5KB</td>
-		<td class="text-right">147 lines</td>
+		<td class="text-right">166</td>
 		<td class="text-right"></td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -1752,9 +2032,9 @@
 			
 		</td>
 		<td class="text-right">1KB</td>
-		<td class="text-right">43 lines</td>
+		<td class="text-right">57</td>
 		<td class="text-right"></td>
-		<td class="text-right">3</td>
+		<td class="text-right">4</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 	</tr>
@@ -1766,7 +2046,7 @@
 			
 		</td>
 		<td class="text-right">10KB</td>
-		<td class="text-right">332 lines</td>
+		<td class="text-right">344</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -1780,7 +2060,7 @@
 			
 		</td>
 		<td class="text-right">3KB</td>
-		<td class="text-right">96 lines</td>
+		<td class="text-right">96</td>
 		<td class="text-right">8</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -1794,7 +2074,7 @@
 			
 		</td>
 		<td class="text-right">2KB</td>
-		<td class="text-right">69 lines</td>
+		<td class="text-right">69</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -1808,7 +2088,7 @@
 			
 		</td>
 		<td class="text-right">450B</td>
-		<td class="text-right">15 lines</td>
+		<td class="text-right">15</td>
 		<td class="text-right">1</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -1822,7 +2102,7 @@
 			
 		</td>
 		<td class="text-right">2KB</td>
-		<td class="text-right">102 lines</td>
+		<td class="text-right">102</td>
 		<td class="text-right">4</td>
 		<td class="text-right">9</td>
 		<td class="text-right">22</td>
@@ -1836,7 +2116,7 @@
 			
 		</td>
 		<td class="text-right">5KB</td>
-		<td class="text-right">144 lines</td>
+		<td class="text-right">144</td>
 		<td class="text-right">11</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -1929,6 +2209,17 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 
+<h3 id="ChangeCase" data-kind="f">
+	func <a title="View Source" href="">ChangeCase</a>
+	<a class="permalink" href="#ChangeCase">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ChangeCase(cases ...string) FieldFormatterFunc</pre>
+</div>
+
+
+
 <h3 id="CurrentTime" data-kind="f">
 	func <a title="View Source" href="">CurrentTime</a>
 	<a class="permalink" href="#CurrentTime">&#182;</a>
@@ -1957,6 +2248,56 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </p>
 
 
+<h3 id="DeriveFromFields" data-kind="f">
+	func <a title="View Source" href="">DeriveFromFields</a>
+	<a class="permalink" href="#DeriveFromFields">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func DeriveFromFields(format string, fields ...string) FieldFormatterFunc</pre>
+</div>
+
+
+<p><p>Extracts values from the given Record and generates a deterministic output based on those values.</p>
+</p>
+
+
+<h3 id="FormatAll" data-kind="f">
+	func <a title="View Source" href="">FormatAll</a>
+	<a class="permalink" href="#FormatAll">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc</pre>
+</div>
+
+
+
+<h3 id="FormatterFromMap" data-kind="f">
+	func <a title="View Source" href="">FormatterFromMap</a>
+	<a class="permalink" href="#FormatterFromMap">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)</pre>
+</div>
+
+
+
+<h3 id="GenerateEncodedUUID" data-kind="f">
+	func <a title="View Source" href="">GenerateEncodedUUID</a>
+	<a class="permalink" href="#GenerateEncodedUUID">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc</pre>
+</div>
+
+
+<p><p>Same as GenerateUUID, but allows for a custom representation of the underlying bytes.</p>
+</p>
+
+
 <h3 id="GenerateUUID" data-kind="f">
 	func <a title="View Source" href="">GenerateUUID</a>
 	<a class="permalink" href="#GenerateUUID">&#182;</a>
@@ -1968,6 +2309,45 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 <p><p>Generates a V4 UUID value if the existing value is empty.</p>
+</p>
+
+
+<h3 id="GetFormatter" data-kind="f">
+	func <a title="View Source" href="">GetFormatter</a>
+	<a class="permalink" href="#GetFormatter">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)</pre>
+</div>
+
+
+
+<h3 id="GetValidator" data-kind="f">
+	func <a title="View Source" href="">GetValidator</a>
+	<a class="permalink" href="#GetValidator">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GetValidator(name string, args interface{}) (FieldValidatorFunc, error)</pre>
+</div>
+
+
+<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
+</p>
+
+
+<h3 id="IfUnset" data-kind="f">
+	func <a title="View Source" href="">IfUnset</a>
+	<a class="permalink" href="#IfUnset">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc</pre>
+</div>
+
+
+<p><p>Only evaluates the given formatter if the current value of the field is empty.</p>
 </p>
 
 
@@ -2015,6 +2395,31 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 
+<h3 id="NowPlusDuration" data-kind="f">
+	func <a title="View Source" href="">NowPlusDuration</a>
+	<a class="permalink" href="#NowPlusDuration">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NowPlusDuration(duration time.Duration) FieldFormatterFunc</pre>
+</div>
+
+
+<p><p>Returns the current time with an added offset when the field is persisted.</p>
+</p>
+
+
+<h3 id="Replace" data-kind="f">
+	func <a title="View Source" href="">Replace</a>
+	<a class="permalink" href="#Replace">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func Replace(pairs []interface{}) FieldFormatterFunc</pre>
+</div>
+
+
+
 <h3 id="ShouldCreateCollection" data-kind="f">
 	func <a title="View Source" href="">ShouldCreateCollection</a>
 	<a class="permalink" href="#ShouldCreateCollection">&#182;</a>
@@ -2040,6 +2445,34 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 
+<h3 id="ValidateAll" data-kind="f">
+	func <a title="View Source" href="">ValidateAll</a>
+	<a class="permalink" href="#ValidateAll">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc</pre>
+</div>
+
+
+<p><p>Validate that all of the given validator functions pass.</p>
+</p>
+
+
+<h3 id="ValidateIsOneOf" data-kind="f">
+	func <a title="View Source" href="">ValidateIsOneOf</a>
+	<a class="permalink" href="#ValidateIsOneOf">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc</pre>
+</div>
+
+
+<p><p>Validate that the given value is among the given choices.</p>
+</p>
+
+
 <h3 id="ValidateIsURL" data-kind="f">
 	func <a title="View Source" href="">ValidateIsURL</a>
 	<a class="permalink" href="#ValidateIsURL">&#182;</a>
@@ -2051,6 +2484,34 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 <p><p>Validate that the value is a URL with a non-empty scheme and host component.</p>
+</p>
+
+
+<h3 id="ValidateMatchAll" data-kind="f">
+	func <a title="View Source" href="">ValidateMatchAll</a>
+	<a class="permalink" href="#ValidateMatchAll">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateMatchAll(patterns ...string) FieldValidatorFunc</pre>
+</div>
+
+
+<p><p>Validate that the given value matches all of the given regular expressions.</p>
+</p>
+
+
+<h3 id="ValidateMatchAny" data-kind="f">
+	func <a title="View Source" href="">ValidateMatchAny</a>
+	<a class="permalink" href="#ValidateMatchAny">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidateMatchAny(patterns ...string) FieldValidatorFunc</pre>
+</div>
+
+
+<p><p>Validate that the given value matches at least one of the given regular expressions.</p>
 </p>
 
 
@@ -2107,6 +2568,20 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 <p><p>Validate that the given value is an integer &gt;= 0.</p>
+</p>
+
+
+<h3 id="ValidatorFromMap" data-kind="f">
+	func <a title="View Source" href="">ValidatorFromMap</a>
+	<a class="permalink" href="#ValidatorFromMap">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)</pre>
+</div>
+
+
+<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
 </p>
 
 
@@ -3612,153 +4087,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 
-<h4 id="FormatterFromMap" data-kind="f">
-	func <a title="View Source" href="">FormatterFromMap</a>
-	<a class="permalink" href="#FormatterFromMap">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)</pre>
-</div>
-
-
-
-
-<h4 id="GetFormatter" data-kind="f">
-	func <a title="View Source" href="">GetFormatter</a>
-	<a class="permalink" href="#GetFormatter">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)</pre>
-</div>
-
-
-
-
-<h4 id="FormatAll" data-kind="f">
-	func <a title="View Source" href="">FormatAll</a>
-	<a class="permalink" href="#FormatAll">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc</pre>
-</div>
-
-
-
-
-<h4 id="ChangeCase" data-kind="f">
-	func <a title="View Source" href="">ChangeCase</a>
-	<a class="permalink" href="#ChangeCase">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ChangeCase(cases ...string) FieldFormatterFunc</pre>
-</div>
-
-
-
-
-<h4 id="Replace" data-kind="f">
-	func <a title="View Source" href="">Replace</a>
-	<a class="permalink" href="#Replace">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func Replace(pairs []interface{}) FieldFormatterFunc</pre>
-</div>
-
-
-
-
-<h4 id="GenerateEncodedUUID" data-kind="f">
-	func <a title="View Source" href="">GenerateEncodedUUID</a>
-	<a class="permalink" href="#GenerateEncodedUUID">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc</pre>
-</div>
-
-<p><p>Same as GenerateUUID, but allows for a custom representation of the underlying bytes.</p>
-</p>
-
-
-
-
-<h4 id="IfUnset" data-kind="f">
-	func <a title="View Source" href="">IfUnset</a>
-	<a class="permalink" href="#IfUnset">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc</pre>
-</div>
-
-<p><p>Only evaluates the given formatter if the current value of the field is empty.</p>
-</p>
-
-
-
-
-<h4 id="DeriveFromFields" data-kind="f">
-	func <a title="View Source" href="">DeriveFromFields</a>
-	<a class="permalink" href="#DeriveFromFields">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func DeriveFromFields(format string, fields ...string) FieldFormatterFunc</pre>
-</div>
-
-<p><p>Extracts values from the given Record and generates a deterministic output based on those values.</p>
-</p>
-
-
-
-
-<h4 id="NowPlusDuration" data-kind="f">
-	func <a title="View Source" href="">NowPlusDuration</a>
-	<a class="permalink" href="#NowPlusDuration">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NowPlusDuration(duration time.Duration) FieldFormatterFunc</pre>
-</div>
-
-<p><p>Returns the current time with an added offset when the field is persisted.</p>
-</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3793,114 +4121,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	
 	<pre>type FieldValidatorFunc func(interface{}) error</pre>
 </div>
-
-
-
-
-<h4 id="ValidatorFromMap" data-kind="f">
-	func <a title="View Source" href="">ValidatorFromMap</a>
-	<a class="permalink" href="#ValidatorFromMap">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)</pre>
-</div>
-
-<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
-</p>
-
-
-
-
-<h4 id="GetValidator" data-kind="f">
-	func <a title="View Source" href="">GetValidator</a>
-	<a class="permalink" href="#GetValidator">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func GetValidator(name string, args interface{}) (FieldValidatorFunc, error)</pre>
-</div>
-
-<p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
-</p>
-
-
-
-
-<h4 id="ValidateMatchAll" data-kind="f">
-	func <a title="View Source" href="">ValidateMatchAll</a>
-	<a class="permalink" href="#ValidateMatchAll">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateMatchAll(patterns ...string) FieldValidatorFunc</pre>
-</div>
-
-<p><p>Validate that the given value matches all of the given regular expressions.</p>
-</p>
-
-
-
-
-<h4 id="ValidateMatchAny" data-kind="f">
-	func <a title="View Source" href="">ValidateMatchAny</a>
-	<a class="permalink" href="#ValidateMatchAny">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateMatchAny(patterns ...string) FieldValidatorFunc</pre>
-</div>
-
-<p><p>Validate that the given value matches at least one of the given regular expressions.</p>
-</p>
-
-
-
-
-<h4 id="ValidateAll" data-kind="f">
-	func <a title="View Source" href="">ValidateAll</a>
-	<a class="permalink" href="#ValidateAll">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc</pre>
-</div>
-
-<p><p>Validate that all of the given validator functions pass.</p>
-</p>
-
-
-
-
-<h4 id="ValidateIsOneOf" data-kind="f">
-	func <a title="View Source" href="">ValidateIsOneOf</a>
-	<a class="permalink" href="#ValidateIsOneOf">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc</pre>
-</div>
-
-<p><p>Validate that the given value is among the given choices.</p>
-</p>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3963,7 +4183,9 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	Error          error                  `json:&#34;error,omitempty&#34;`
 	CollectionName string                 `json:&#34;collection,omitempty&#34;`
 	Operation      string                 `json:&#34;operation,omitempty&#34;`
-}</pre>
+	Optional       bool                   `json:&#34;optional,omitempty&#34;`
+}// Specifies that the record is &#34;optional&#34;, which is namely used in fixtures to indicate that a missing collection should not be considered fatal.
+</pre>
 </div>
 
 
@@ -4557,10 +4779,32 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	
 	
 	<pre>type TestRecord struct {
-	Model `pivot:&#34;test_records&#34;`
-	ID    int
-	Name  string `pivot:&#34;name,omitempty&#34;`
-	Size  int    `pivot:&#34;size&#34;`
+	ID   int
+	Name string `pivot:&#34;name,omitempty&#34;`
+	Size int    `pivot:&#34;size&#34;`
+}</pre>
+</div>
+
+
+
+
+
+
+
+<h3 id="TestRecordEmbedded" data-kind="t">
+	type
+	<a title="View Source" href="">TestRecordEmbedded</a>
+	<a class="permalink" href="#TestRecordEmbedded">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	<pre>type TestRecordEmbedded struct {
+	TestRecordTwo
+	TestRecord
+	Local bool
 }</pre>
 </div>
 
@@ -4669,10 +4913,10 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
         <div id="x-footer" class="clearfix">
             <div class="container">
                 
+                Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></i> v0.0.3
+                
 
                 <span class="pull-right">
-                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></a></i> v0.0.3
-                    <span class="text-muted">|</span>
                     <a href="#">Back to top</a>
                 </span>
             </div>

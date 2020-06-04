@@ -27,8 +27,8 @@ require (
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/fatih/structs v1.0.0
 	github.com/ghetzel/cli v1.17.0
-	github.com/ghetzel/diecast v1.17.13
-	github.com/ghetzel/go-stockutil v1.8.52
+	github.com/ghetzel/diecast v1.17.34
+	github.com/ghetzel/go-stockutil v1.8.66
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd // indirect
 	github.com/glycerine/goconvey v0.0.0-20180728074245-46e3a41ad493 // indirect
@@ -46,6 +46,9 @@ require (
 	github.com/jmhodges/levigo v0.0.0-20161115193449-c42d9e0ca023 // indirect
 	github.com/jtolds/gls v4.2.1+incompatible // indirect
 	github.com/lib/pq v1.1.0
+	github.com/mattn/go-isatty v0.0.12 // indirect
+	github.com/mattn/go-runewidth v0.0.9 // indirect
+	github.com/mattn/go-shellwords v1.0.10 // indirect
 	github.com/mattn/go-sqlite3 v1.9.0
 	github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
@@ -64,6 +67,10 @@ require (
 	github.com/tinylib/msgp v1.0.2 // indirect
 	github.com/urfave/negroni v1.0.1-0.20191011213438-f4316798d5d3
 	github.com/willf/bitset v0.0.0-20161202170036-5c3c0fce4884 // indirect
+	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37 // indirect
+	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
+	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
+	golang.org/x/text v0.3.2 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/ini.v1 v1.39.0 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528
@@ -71,3 +78,5 @@ require (
 )
 
 go 1.13
+
+replace github.com/ghetzel/go-stockutil v1.8.62 => ../go-stockutil

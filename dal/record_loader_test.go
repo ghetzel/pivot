@@ -7,10 +7,9 @@ import (
 )
 
 type TestRecord struct {
-	Model `pivot:"test_records"`
-	ID    int
-	Name  string `pivot:"name,omitempty"`
-	Size  int    `pivot:"size"`
+	ID   int
+	Name string `pivot:"name,omitempty"`
+	Size int    `pivot:"size"`
 }
 
 type TestRecordTwo struct {
@@ -21,6 +20,12 @@ type TestRecordThree struct {
 	UUID string
 }
 
+type TestRecordEmbedded struct {
+	TestRecordTwo
+	TestRecord
+	Local bool
+}
+
 func TestGetIdentityFieldNameFromStruct(t *testing.T) {
 	assert := require.New(t)
 
@@ -29,13 +34,13 @@ func TestGetIdentityFieldNameFromStruct(t *testing.T) {
 	}
 
 	field, key, err := getIdentityFieldNameFromStruct(&f, ``)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`ID`, key)
 	assert.Equal(`ID`, key)
 
 	f = TestRecord{}
 	field, key, err = getIdentityFieldNameFromStruct(&f, `Size`)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`Size`, field)
 	assert.Equal(`Size`, key)
 
@@ -52,4 +57,16 @@ func TestGetIdentityFieldNameFromStruct(t *testing.T) {
 	field, key, err = getIdentityFieldNameFromStruct(&f4, `UUID`)
 	assert.Equal(`UUID`, field)
 	assert.Equal(`UUID`, key)
+
+	f5 := TestRecordEmbedded{}
+	f5.UUID = `42`
+	f5.UUID = `42`
+	f5.ID = 42
+	f5.Name = `Fourty Two`
+	f5.Size = 42
+	f5.Local = true
+
+	field, key, err = getIdentityFieldNameFromStruct(&f5, ``)
+	assert.Equal(`UUID`, field)
+	assert.Equal(`uuid`, key)
 }

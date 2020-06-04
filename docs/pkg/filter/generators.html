@@ -21,13 +21,15 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/pivot/">
+                    <a class="navbar-brand" href="/pivot/index.html">
                         <strong>go-owndoc</strong>
                     </a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class=""><a href="/pivot/">Home</a></li>
+                        <li class="">
+                            <a href="/pivot/index.html">Home</a>
+                        </li>
 
                         <li class="dropdown active">
                             <a
@@ -71,9 +73,15 @@
                         </li>
 
                         <li class="">
-                            <a href="/pivot/-/about">About</a>
+                            <a href="/pivot/-/module.html">Manifest</a>
+                        </li>
+
+                        <li class="">
+                            <a href="/pivot/-/about.html">About</a>
                         </li>
                     </ul>
+
+                    
                 </div>
             </div>
         </nav>
@@ -82,7 +90,7 @@
             
 <br>
 <div class="clearfix" id="x-projnav">
-	<a href="URL"><strong>pivot:</strong></a>
+	<a href="https://github.com/ghetzel/pivot"><strong>pivot:</strong></a>
 	
 	<a href="/pivot/pkg/filter.html">https://github.com/ghetzel/filter</a><span class="text-muted">/</span><span class="text-muted">generators</span>
 	
@@ -146,9 +154,11 @@
 			
 			
 			<li>
+				
 				<a href="#Elasticsearch.NewElasticsearchGenerator">
 					func NewElasticsearchGenerator() *Elasticsearch
 				</a>
+				
 			</li>
 			
 			
@@ -165,51 +175,61 @@
 			
 			
 			<li>
+				
 				<a href="#Elasticsearch.AggregateByField">
 					func
 					(self *Elasticsearch)
 					AggregateByField(agg filter.Aggregation, field string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Elasticsearch.Finalize">
 					func
 					(self *Elasticsearch)
 					Finalize(flt *filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Elasticsearch.GetValues">
 					func
 					(self *Elasticsearch)
 					GetValues() []interface{}
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Elasticsearch.GroupByField">
 					func
 					(self *Elasticsearch)
 					GroupByField(field string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Elasticsearch.Initialize">
 					func
 					(self *Elasticsearch)
 					Initialize(collectionName string) error
 				</a>
+				
 			</li>
 			
 			
@@ -217,41 +237,49 @@
 			
 			
 			<li>
+				
 				<a href="#Elasticsearch.SetMinimumVersion">
 					func
 					(self *Elasticsearch)
 					SetMinimumVersion(v float64)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Elasticsearch.SetOption">
 					func
 					(self *Elasticsearch)
 					SetOption(key string, value interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Elasticsearch.WithCriterion">
 					func
 					(self *Elasticsearch)
 					WithCriterion(criterion filter.Criterion) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Elasticsearch.WithField">
 					func
 					(self *Elasticsearch)
 					WithField(field string) error
 				</a>
+				
 			</li>
 			
 			
@@ -279,9 +307,11 @@
 			
 			
 			<li>
+				
 				<a href="#MongoDB.NewMongoDBGenerator">
 					func NewMongoDBGenerator() *MongoDB
 				</a>
+				
 			</li>
 			
 			
@@ -296,51 +326,61 @@
 			
 			
 			<li>
+				
 				<a href="#MongoDB.AggregateByField">
 					func
 					(self *MongoDB)
 					AggregateByField(agg filter.Aggregation, field string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoDB.Finalize">
 					func
 					(self *MongoDB)
 					Finalize(f *filter.Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoDB.GetValues">
 					func
 					(self *MongoDB)
 					GetValues() []interface{}
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoDB.GroupByField">
 					func
 					(self *MongoDB)
 					GroupByField(field string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoDB.Initialize">
 					func
 					(self *MongoDB)
 					Initialize(collectionName string) error
 				</a>
+				
 			</li>
 			
 			
@@ -348,31 +388,37 @@
 			
 			
 			<li>
+				
 				<a href="#MongoDB.SetOption">
 					func
 					(self *MongoDB)
 					SetOption(key string, value interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoDB.WithCriterion">
 					func
 					(self *MongoDB)
 					WithCriterion(criterion filter.Criterion) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#MongoDB.WithField">
 					func
 					(self *MongoDB)
 					WithField(field string) error
 				</a>
+				
 			</li>
 			
 			
@@ -408,9 +454,11 @@
 			
 			
 			<li>
+				
 				<a href="#Sql.NewSqlGenerator">
 					func NewSqlGenerator() *Sql
 				</a>
+				
 			</li>
 			
 			
@@ -443,91 +491,109 @@
 			
 			
 			<li>
+				
 				<a href="#Sql.AggregateByField">
 					func
 					(self *Sql)
 					AggregateByField(agg filter.Aggregation, field string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.ApplyNormalizer">
 					func
 					(self *Sql)
 					ApplyNormalizer(fieldName string, in string) string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.ArrayTypeDecode">
 					func
 					(self *Sql)
 					ArrayTypeDecode(in []byte, out interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.ArrayTypeEncode">
 					func
 					(self *Sql)
 					ArrayTypeEncode(in interface{}) ([]byte, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Sql.Finalize">
 					func
 					(self *Sql)
 					Finalize(f *filter.Filter) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.GetPlaceholder">
 					func
 					(self *Sql)
 					GetPlaceholder(fieldName string) string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.GetValues">
 					func
 					(self *Sql)
 					GetValues() []interface{}
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.GroupByField">
 					func
 					(self *Sql)
 					GroupByField(field string) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.Initialize">
 					func
 					(self *Sql)
 					Initialize(collectionName string) error
 				</a>
+				
 			</li>
 			
 			
@@ -535,121 +601,145 @@
 			
 			
 			<li>
+				
 				<a href="#Sql.ObjectTypeDecode">
 					func
 					(self *Sql)
 					ObjectTypeDecode(in []byte, out interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.ObjectTypeEncode">
 					func
 					(self *Sql)
 					ObjectTypeEncode(in interface{}) ([]byte, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.PrepareInputValue">
 					func
 					(self *Sql)
 					PrepareInputValue(f string, value interface{}) (interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.SetOption">
 					func
 					(self *Sql)
 					SetOption(_ string, _ interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.SplitTypeLength">
 					func
 					(self *Sql)
 					SplitTypeLength(in string) (string, int, int)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.ToAggregatedFieldName">
 					func
 					(self *Sql)
 					ToAggregatedFieldName(agg filter.Aggregation, field string) string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.ToFieldName">
 					func
 					(self *Sql)
 					ToFieldName(field string) string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.ToNativeType">
 					func
 					(self *Sql)
 					ToNativeType(in dal.Type, subtypes []dal.Type, length int) (string, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.ToNativeValue">
 					func
 					(self *Sql)
 					ToNativeValue(t dal.Type, subtypes []dal.Type, in interface{}) string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.ToTableName">
 					func
 					(self *Sql)
 					ToTableName(table string) string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.WithCriterion">
 					func
 					(self *Sql)
 					WithCriterion(criterion filter.Criterion) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Sql.WithField">
 					func
 					(self *Sql)
 					WithField(field string) error
 				</a>
+				
 			</li>
 			
 			
@@ -658,35 +748,35 @@
 	</li>
 	
     <li>
-		<a href="#SqlArrayTypeDecodeFunc">type SqlArrayTypeDecodeFunc</a>
+		<a href="#SqlArrayTypeDecodeFunc">type SqlArrayTypeDecodeFunc </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#SqlArrayTypeEncodeFunc">type SqlArrayTypeEncodeFunc</a>
+		<a href="#SqlArrayTypeEncodeFunc">type SqlArrayTypeEncodeFunc </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#SqlObjectTypeDecodeFunc">type SqlObjectTypeDecodeFunc</a>
+		<a href="#SqlObjectTypeDecodeFunc">type SqlObjectTypeDecodeFunc </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#SqlObjectTypeEncodeFunc">type SqlObjectTypeEncodeFunc</a>
+		<a href="#SqlObjectTypeEncodeFunc">type SqlObjectTypeEncodeFunc </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#SqlStatementType">type SqlStatementType</a>
+		<a href="#SqlStatementType">type SqlStatementType int</a>
 
 		
 		
@@ -704,9 +794,11 @@
 			
 			
 			<li>
+				
 				<a href="#SqlTypeMapping.GetSqlTypeMapping">
 					func GetSqlTypeMapping(name string) (SqlTypeMapping, error)
 				</a>
+				
 			</li>
 			
 			
@@ -715,11 +807,13 @@
 			
 			
 			<li>
+				
 				<a href="#SqlTypeMapping.String">
 					func
 					(self SqlTypeMapping)
 					String() string
 				</a>
+				
 			</li>
 			
 			
@@ -756,25 +850,11 @@
 	<tr>
 		<td class="text-left">
 			
-			<a href="elasticsearch-util.go">elasticsearch-util.go</a>
-			
-		</td>
-		<td class="text-right">5KB</td>
-		<td class="text-right">150 lines</td>
-		<td class="text-right"></td>
-		<td class="text-right"></td>
-		<td class="text-right"></td>
-		<td class="text-right">1</td>
-	</tr>
-	
-	<tr>
-		<td class="text-left">
-			
 			<a href="elasticsearch.go">elasticsearch.go</a>
 			
 		</td>
-		<td class="text-right">3KB</td>
-		<td class="text-right">135 lines</td>
+		<td class="text-right">4KB</td>
+		<td class="text-right">137</td>
 		<td class="text-right">10</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -784,11 +864,25 @@
 	<tr>
 		<td class="text-left">
 			
+			<a href="elasticsearch_util.go">elasticsearch_util.go</a>
+			
+		</td>
+		<td class="text-right">5KB</td>
+		<td class="text-right">177</td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right"></td>
+		<td class="text-right">2</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
 			<a href="mongodb-util.go">mongodb-util.go</a>
 			
 		</td>
 		<td class="text-right">5KB</td>
-		<td class="text-right">162 lines</td>
+		<td class="text-right">162</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -802,7 +896,7 @@
 			
 		</td>
 		<td class="text-right">3KB</td>
-		<td class="text-right">115 lines</td>
+		<td class="text-right">115</td>
 		<td class="text-right">9</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -816,7 +910,7 @@
 			
 		</td>
 		<td class="text-right">4KB</td>
-		<td class="text-right">206 lines</td>
+		<td class="text-right">206</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -830,7 +924,7 @@
 			
 		</td>
 		<td class="text-right">29KB</td>
-		<td class="text-right">857 lines</td>
+		<td class="text-right">857</td>
 		<td class="text-right">24</td>
 		<td class="text-right">7</td>
 		<td class="text-right">4</td>
@@ -844,7 +938,7 @@
 			
 		</td>
 		<td class="text-right">29KB</td>
-		<td class="text-right">988 lines</td>
+		<td class="text-right">988</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -883,19 +977,20 @@ const <span id="SqlUpdateStatement">SqlUpdateStatement</span> =
 	<a title="View Source" href="">&#10070;</a>
 
 	<pre>
-var <span id="CassandraTypeMapping">CassandraTypeMapping            </span> = 
-var <span id="DefaultMinVersionCompat">DefaultMinVersionCompat         </span> = float64(6)
-var <span id="DefaultSqlTypeMapping">DefaultSqlTypeMapping           </span> = GenericTypeMapping
-var <span id="ElasticsearchExactMatchQueryType">ElasticsearchExactMatchQueryType</span> = `term`
-var <span id="GenericTypeMapping">GenericTypeMapping              </span> = 
-var <span id="MysqlTypeMapping">MysqlTypeMapping                </span> = 
-var <span id="NoTypeMapping">NoTypeMapping                   </span> = SqlTypeMapping{}
-var <span id="PostgresJsonTypeMapping">PostgresJsonTypeMapping         </span> = 
-var <span id="PostgresTypeMapping">PostgresTypeMapping             </span> = 
-var <span id="SqlJsonTypeDecoder">SqlJsonTypeDecoder              </span> = 
-var <span id="SqlJsonTypeEncoder">SqlJsonTypeEncoder              </span> = 
-var <span id="SqlMaxPlaceholders">SqlMaxPlaceholders              </span> = 16384
-var <span id="SqliteTypeMapping">SqliteTypeMapping               </span> = 
+var <span id="CassandraTypeMapping">CassandraTypeMapping                      </span> = 
+var <span id="DefaultMinVersionCompat">DefaultMinVersionCompat                   </span> = float64(6)
+var <span id="DefaultSqlTypeMapping">DefaultSqlTypeMapping                     </span> = GenericTypeMapping
+var <span id="ElasticsearchExactMatchQueryType">ElasticsearchExactMatchQueryType          </span> = `term`
+var <span id="ElasticsearchFulltextDefaultConjunctionAnd">ElasticsearchFulltextDefaultConjunctionAnd</span> = true
+var <span id="GenericTypeMapping">GenericTypeMapping                        </span> = 
+var <span id="MysqlTypeMapping">MysqlTypeMapping                          </span> = 
+var <span id="NoTypeMapping">NoTypeMapping                             </span> = SqlTypeMapping{}
+var <span id="PostgresJsonTypeMapping">PostgresJsonTypeMapping                   </span> = 
+var <span id="PostgresTypeMapping">PostgresTypeMapping                       </span> = 
+var <span id="SqlJsonTypeDecoder">SqlJsonTypeDecoder                        </span> = 
+var <span id="SqlJsonTypeEncoder">SqlJsonTypeEncoder                        </span> = 
+var <span id="SqlMaxPlaceholders">SqlMaxPlaceholders                        </span> = 16384
+var <span id="SqliteTypeMapping">SqliteTypeMapping                         </span> = 
 </pre>
 </div>
 
@@ -907,10 +1002,10 @@ var <span id="SqliteTypeMapping">SqliteTypeMapping               </span> =
         <div id="x-footer" class="clearfix">
             <div class="container">
                 
+                Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></i> v0.0.3
+                
 
                 <span class="pull-right">
-                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></a></i> v0.0.3
-                    <span class="text-muted">|</span>
                     <a href="#">Back to top</a>
                 </span>
             </div>

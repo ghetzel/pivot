@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/fatih/structs"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/structutil"
@@ -100,20 +99,48 @@ func getIdentityFieldNameFromStruct(instance interface{}, fallbackIdentityFieldN
 		return ``, ``, err
 	}
 
-	s := structs.New(instance)
+	var structFieldName string
+	var dbFieldName string
+	var fieldNames = make(map[string]bool)
 
 	// find a field with an ",identity" tag and get its value
-	for _, field := range s.Fields() {
-		if tag := field.Tag(RecordStructTag); tag != `` {
-			v := strings.Split(tag, `,`)
+	var fn structutil.StructFieldFunc
 
-			if sliceutil.ContainsString(v[1:], `identity`) {
-				if v[0] != `` {
-					return field.Name(), v[0], nil
-				} else {
-					return field.Name(), field.Name(), nil
+	fn = func(field *reflect.StructField, v reflect.Value) error {
+		if field.Anonymous && v.CanInterface() {
+			var substruct interface{} = v.Interface()
+
+			if v.CanAddr() {
+				substruct = v.Addr().Interface()
+			}
+
+			return structutil.FieldsFunc(substruct, fn)
+		} else {
+			fieldNames[field.Name] = true
+
+			if tag := field.Tag.Get(RecordStructTag); tag != `` {
+				if v := strings.Split(tag, `,`); sliceutil.ContainsString(v[1:], `identity`) {
+					structFieldName = field.Name
+
+					if v[0] != `` {
+						dbFieldName = v[0]
+					}
+
+					return structutil.StopIterating
 				}
 			}
+
+			return nil
+		}
+	}
+
+	structutil.FieldsFunc(instance, fn)
+
+	if structFieldName != `` {
+		if dbFieldName != `` {
+			return structFieldName, dbFieldName, nil
+		} else {
+			return structFieldName, structFieldName, nil
 		}
 	}
 
@@ -121,9 +148,9 @@ func getIdentityFieldNameFromStruct(instance interface{}, fallbackIdentityFieldN
 		fallbackIdentityFieldName = DefaultStructIdentityFieldName
 	}
 
-	if _, ok := s.FieldOk(fallbackIdentityFieldName); ok {
+	if _, ok := fieldNames[fallbackIdentityFieldName]; ok {
 		return fallbackIdentityFieldName, fallbackIdentityFieldName, nil
-	} else if _, ok := s.FieldOk(DefaultStructIdentityFieldName); ok {
+	} else if _, ok := fieldNames[DefaultStructIdentityFieldName]; ok {
 		return DefaultStructIdentityFieldName, DefaultStructIdentityFieldName, nil
 	}
 

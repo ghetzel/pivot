@@ -935,7 +935,7 @@ func testCompositeKeyQueries(t *testing.T, backend backends.Backend) {
 		assert.NotNil(recordset)
 
 		assert.EqualValues(2, recordset.ResultCount, "%v", recordset.Records)
-		assert.Equal([]interface{}{int64(1), int64(2)}, recordset.Pluck(`other_id`))
+		assert.ElementsMatch([]interface{}{int64(1), int64(2)}, recordset.Pluck(`other_id`))
 	}
 }
 

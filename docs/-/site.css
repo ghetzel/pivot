@@ -26,9 +26,8 @@ h4 {
 	padding-top: 14px;
 	padding-bottom: 15px;
 	margin-top: 5px;
-	background-color: #eee;
-	border-top-style: solid;
-	border-top-width: 1px;
+	border-top: 1px solid #ccc;
+	background-color: #e1e7f4;
 }
 
 .highlighted {
@@ -105,20 +104,18 @@ a {
 	color: white;
 }
 
-.navbar-default,
-#x-footer {
+.navbar-default {
 	background-color: #375eab;
 	border: 0;
 	color: white;
 }
 
 .navbar-nav .text-muted,
-#x-footer .text-muted {
+.navbar-nav .navbar-text {
 	color: #ccc;
 }
 
-.navbar-default .navbar-nav>li>a,
-#x-footer a {
+.navbar-default .navbar-nav>li>a {
 	color: white;
 }
 

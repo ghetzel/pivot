@@ -21,13 +21,15 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/pivot/">
+                    <a class="navbar-brand" href="/pivot/index.html">
                         <strong>go-owndoc</strong>
                     </a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class=""><a href="/pivot/">Home</a></li>
+                        <li class="">
+                            <a href="/pivot/index.html">Home</a>
+                        </li>
 
                         <li class="dropdown active">
                             <a
@@ -71,9 +73,15 @@
                         </li>
 
                         <li class="">
-                            <a href="/pivot/-/about">About</a>
+                            <a href="/pivot/-/module.html">Manifest</a>
+                        </li>
+
+                        <li class="">
+                            <a href="/pivot/-/about.html">About</a>
                         </li>
                     </ul>
+
+                    
                 </div>
             </div>
         </nav>
@@ -82,7 +90,7 @@
             
 <br>
 <div class="clearfix" id="x-projnav">
-	<a href="URL"><strong>pivot:</strong></a>
+	<a href="https://github.com/ghetzel/pivot"><strong>pivot:</strong></a>
 	
 	<a href="/pivot/pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">mapper</span>
 	
@@ -123,7 +131,7 @@
 	
 	
     <li>
-		<a href="#Mapper">type Mapper</a>
+		<a href="#Mapper">type Mapper </a>
 
 		
 		
@@ -181,9 +189,11 @@
 			
 			
 			<li>
+				
 				<a href="#Model.NewModel">
 					func NewModel(db backends.Backend, collection *dal.Collection) *Model
 				</a>
+				
 			</li>
 			
 			
@@ -198,211 +208,253 @@
 			
 			
 			<li>
+				
 				<a href="#Model.All">
 					func
 					(self *Model)
 					All(into interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.Average">
 					func
 					(self *Model)
 					Average(field string, flt interface{}) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.Count">
 					func
 					(self *Model)
 					Count(flt interface{}) (uint64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Model.Create">
 					func
 					(self *Model)
 					Create(from interface{}) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Model.CreateOrUpdate">
 					func
 					(self *Model)
 					CreateOrUpdate(id interface{}, from interface{}) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Model.Delete">
 					func
 					(self *Model)
 					Delete(ids ...interface{}) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Model.DeleteQuery">
 					func
 					(self *Model)
 					DeleteQuery(flt interface{}) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.Drop">
 					func
 					(self *Model)
 					Drop() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.Each">
 					func
 					(self *Model)
 					Each(destZeroValue interface{}, resultFn ResultFunc) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Model.Exists">
 					func
 					(self *Model)
 					Exists(id interface{}) bool
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Model.Find">
 					func
 					(self *Model)
 					Find(flt interface{}, into interface{}) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Model.FindFunc">
 					func
 					(self *Model)
 					FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Model.Get">
 					func
 					(self *Model)
 					Get(id interface{}, into interface{}) error
 				</a>
+				</strong>
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.GetBackend">
 					func
 					(self *Model)
 					GetBackend() backends.Backend
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.GetCollection">
 					func
 					(self *Model)
 					GetCollection() *dal.Collection
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.GroupBy">
 					func
 					(self *Model)
 					GroupBy(fields []string, aggregates []filter.Aggregate, flt interface{}) (*dal.RecordSet, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.List">
 					func
 					(self *Model)
 					List(fields []string) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.ListWithFilter">
 					func
 					(self *Model)
 					ListWithFilter(fields []string, flt interface{}) (map[string][]interface{}, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.Maximum">
 					func
 					(self *Model)
 					Maximum(field string, flt interface{}) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.Migrate">
 					func
 					(self *Model)
 					Migrate() error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.Minimum">
 					func
 					(self *Model)
 					Minimum(field string, flt interface{}) (float64, error)
 				</a>
+				
 			</li>
 			
 			
@@ -410,31 +462,37 @@
 			
 			
 			<li>
+				
 				<a href="#Model.String">
 					func
 					(self *Model)
 					String() string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Model.Sum">
 					func
 					(self *Model)
 					Sum(field string, flt interface{}) (float64, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Model.Update">
 					func
 					(self *Model)
 					Update(from interface{}) error
 				</a>
+				</strong>
 			</li>
 			
 			
@@ -443,7 +501,7 @@
 	</li>
 	
     <li>
-		<a href="#ResultFunc">type ResultFunc</a>
+		<a href="#ResultFunc">type ResultFunc </a>
 
 		
 		
@@ -480,7 +538,7 @@
 			
 		</td>
 		<td class="text-right">11KB</td>
-		<td class="text-right">294 lines</td>
+		<td class="text-right">294</td>
 		<td class="text-right">25</td>
 		<td class="text-right">3</td>
 		<td class="text-right"></td>
@@ -502,10 +560,10 @@
         <div id="x-footer" class="clearfix">
             <div class="container">
                 
+                Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></i> v0.0.3
+                
 
                 <span class="pull-right">
-                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></a></i> v0.0.3
-                    <span class="text-muted">|</span>
                     <a href="#">Back to top</a>
                 </span>
             </div>

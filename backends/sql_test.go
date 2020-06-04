@@ -1,71 +1,63 @@
 package backends
 
-import (
-	"fmt"
-	"testing"
+// func TestSqlAlterStatements(t *testing.T) {
+// 	assert := require.New(t)
+// 	b := NewSqlBackend(dal.MustParseConnectionString(`sqlite://temporary`)).(*SqlBackend)
+// 	assert.NoError(b.Initialize())
 
-	"github.com/ghetzel/pivot/v3/dal"
-	"github.com/stretchr/testify/require"
-)
+// 	have := &dal.Collection{
+// 		Name:          `TestSqlAlterStatements`,
+// 		IdentityField: `id`,
+// 		Fields: []dal.Field{
+// 			{
+// 				Name:     `name`,
+// 				Type:     dal.StringType,
+// 				Required: true,
+// 			}, {
+// 				Name:     `created_at`,
+// 				Type:     dal.IntType,
+// 				Required: true,
+// 			},
+// 		},
+// 	}
 
-func TestSqlAlterStatements(t *testing.T) {
-	assert := require.New(t)
-	b := NewSqlBackend(dal.MustParseConnectionString(`sqlite://temporary`)).(*SqlBackend)
-	assert.NoError(b.Initialize())
+// 	want := &dal.Collection{
+// 		Name:          `TestSqlAlterStatements`,
+// 		IdentityField: `id`,
+// 		Fields: []dal.Field{
+// 			{
+// 				Name:     `name`,
+// 				Type:     dal.StringType,
+// 				Required: true,
+// 			}, {
+// 				Name:         `age`,
+// 				Type:         dal.IntType,
+// 				Required:     true,
+// 				DefaultValue: 1,
+// 			}, {
+// 				Name:         `created_at`,
+// 				Type:         dal.TimeType,
+// 				Required:     true,
+// 				DefaultValue: `now`,
+// 			},
+// 		},
+// 	}
 
-	have := &dal.Collection{
-		Name:          `TestSqlAlterStatements`,
-		IdentityField: `id`,
-		Fields: []dal.Field{
-			{
-				Name:     `name`,
-				Type:     dal.StringType,
-				Required: true,
-			}, {
-				Name:     `created_at`,
-				Type:     dal.IntType,
-				Required: true,
-			},
-		},
-	}
+// 	b.RegisterCollection(have)
+// 	assert.NoError(b.Migrate())
 
-	want := &dal.Collection{
-		Name:          `TestSqlAlterStatements`,
-		IdentityField: `id`,
-		Fields: []dal.Field{
-			{
-				Name:     `name`,
-				Type:     dal.StringType,
-				Required: true,
-			}, {
-				Name:         `age`,
-				Type:         dal.IntType,
-				Required:     true,
-				DefaultValue: 1,
-			}, {
-				Name:         `created_at`,
-				Type:         dal.TimeType,
-				Required:     true,
-				DefaultValue: `now`,
-			},
-		},
-	}
+// 	for _, delta := range want.Diff(have) {
+// 		stmt, _, err := b.generateAlterStatement(delta)
+// 		assert.NoError(err)
 
-	b.RegisterCollection(have)
-	assert.NoError(b.Migrate())
-
-	for _, delta := range want.Diff(have) {
-		stmt, _, err := b.generateAlterStatement(delta)
-		assert.NoError(err)
-
-		// TODO: this is the wrong order, need to work out whats going on
-		switch delta.Name {
-		case `age`:
-			assert.Equal(`ALTER TABLE "TestSqlAlterStatements" ADD "created_at" INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP`, stmt)
-		case `created_at`:
-			assert.Equal(`ALTER TABLE "TestSqlAlterStatements" ADD "age" BIGINT NOT NULL`, stmt)
-		default:
-			assert.NoError(fmt.Errorf("extra diff: %v", delta))
-		}
-	}
-}
+// 		// TODO: this is the wrong order, need to work out whats going on
+// 		switch delta.Name {
+// 		case `age`:
+// 			assert.Equal(`ALTER TABLE "TestSqlAlterStatements" ADD "created_at" INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP`, stmt)
+// 		case `created_at`:
+// 			assert.Equal(`ALTER TABLE "TestSqlAlterStatements" ADD "age" BIGINT NOT NULL`, stmt)
+// 		default:
+// 			assert.NoError(fmt.Errorf("extra diff: %v", delta))
+// 		}
+// 	}
+// }

@@ -21,13 +21,15 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/pivot/">
+                    <a class="navbar-brand" href="/pivot/index.html">
                         <strong>go-owndoc</strong>
                     </a>
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class=""><a href="/pivot/">Home</a></li>
+                        <li class="">
+                            <a href="/pivot/index.html">Home</a>
+                        </li>
 
                         <li class="dropdown active">
                             <a
@@ -71,9 +73,15 @@
                         </li>
 
                         <li class="">
-                            <a href="/pivot/-/about">About</a>
+                            <a href="/pivot/-/module.html">Manifest</a>
+                        </li>
+
+                        <li class="">
+                            <a href="/pivot/-/about.html">About</a>
                         </li>
                     </ul>
+
+                    
                 </div>
             </div>
         </nav>
@@ -82,7 +90,7 @@
             
 <br>
 <div class="clearfix" id="x-projnav">
-	<a href="URL"><strong>pivot:</strong></a>
+	<a href="https://github.com/ghetzel/pivot"><strong>pivot:</strong></a>
 	
 	<a href="/pivot/pkg/pivot.html">https://github.com/ghetzel/pivot</a><span class="text-muted">/</span><span class="text-muted">filter</span>
 	
@@ -167,14 +175,14 @@
 	</li>
 	
     <li>
-		<a href="#Aggregation">type Aggregation</a>
+		<a href="#Aggregation">type Aggregation int</a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#ConjunctionType">type ConjunctionType</a>
+		<a href="#ConjunctionType">type ConjunctionType string</a>
 
 		
 		
@@ -196,21 +204,25 @@
 			
 			
 			<li>
+				
 				<a href="#Criterion.IsExactMatch">
 					func
 					(self *Criterion)
 					IsExactMatch() bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Criterion.String">
 					func
 					(self *Criterion)
 					String() string
 				</a>
+				
 			</li>
 			
 			
@@ -230,9 +242,11 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.All">
 					func All() *Filter
 				</a>
+				
 			</li>
 			
 			
@@ -243,9 +257,11 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.Copy">
 					func Copy(other *Filter) Filter
 				</a>
+				
 			</li>
 			
 			
@@ -254,9 +270,11 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.FromMap">
 					func FromMap(in map[string]interface{}) (*Filter, error)
 				</a>
+				
 			</li>
 			
 			
@@ -275,9 +293,11 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.MakeFilter">
 					func MakeFilter(specs ...string) Filter
 				</a>
+				
 			</li>
 			
 			
@@ -286,18 +306,22 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.MustParse">
 					func MustParse(in interface{}) *Filter
 				</a>
+				
 			</li>
 			
 			
 			
 			
 			<li>
+				
 				<a href="#Filter.New">
 					func New() *Filter
 				</a>
+				
 			</li>
 			
 			
@@ -308,27 +332,33 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.Null">
 					func Null() *Filter
 				</a>
+				
 			</li>
 			
 			
 			
 			
 			<li>
+				
 				<a href="#Filter.Parse">
 					func Parse(in interface{}) (*Filter, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			
 			<li>
+				<strong>
 				<a href="#Filter.ParseSpec">
 					func ParseSpec(spec string) (*Filter, error)
 				</a>
+				</strong>
 			</li>
 			
 			
@@ -343,11 +373,13 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.AddCriteria">
 					func
 					(self *Filter)
 					AddCriteria(criteria ...Criterion) *Filter
 				</a>
+				
 			</li>
 			
 			
@@ -355,21 +387,25 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.ApplyOptions">
 					func
 					(self *Filter)
 					ApplyOptions(in interface{}) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Filter.BoundedBy">
 					func
 					(self *Filter)
 					BoundedBy(limit int, offset int) *Filter
 				</a>
+				
 			</li>
 			
 			
@@ -377,11 +413,13 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.CriteriaFields">
 					func
 					(self *Filter)
 					CriteriaFields() []string
 				</a>
+				
 			</li>
 			
 			
@@ -389,61 +427,73 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.GetFirstValue">
 					func
 					(self *Filter)
 					GetFirstValue() (interface{}, bool)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Filter.GetIdentityValue">
 					func
 					(self *Filter)
 					GetIdentityValue() (interface{}, bool)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Filter.GetSort">
 					func
 					(self *Filter)
 					GetSort() []SortBy
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Filter.GetValues">
 					func
 					(self *Filter)
 					GetValues(field string) ([]interface{}, bool)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Filter.IdOnly">
 					func
 					(self *Filter)
 					IdOnly() bool
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Filter.IsMatchAll">
 					func
 					(self *Filter)
 					IsMatchAll() bool
 				</a>
+				
 			</li>
 			
 			
@@ -451,11 +501,13 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.MatchesRecord">
 					func
 					(self *Filter)
 					MatchesRecord(record *dal.Record) bool
 				</a>
+				
 			</li>
 			
 			
@@ -465,21 +517,25 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.NewFromMap">
 					func
 					(self *Filter)
 					NewFromMap(in map[string]interface{}) (*Filter, error)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Filter.NewFromSpec">
 					func
 					(self *Filter)
 					NewFromSpec(specs ...string) (*Filter, error)
 				</a>
+				
 			</li>
 			
 			
@@ -491,31 +547,37 @@
 			
 			
 			<li>
+				
 				<a href="#Filter.SortBy">
 					func
 					(self *Filter)
 					SortBy(fields ...string) *Filter
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Filter.String">
 					func
 					(self *Filter)
 					String() string
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Filter.WithFields">
 					func
 					(self *Filter)
 					WithFields(fields ...string) *Filter
 				</a>
+				
 			</li>
 			
 			
@@ -545,51 +607,61 @@
 			
 			
 			<li>
+				
 				<a href="#Generator.Finalize">
 					func
 					(self *Generator)
 					Finalize(_ *Filter) error
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Generator.Payload">
 					func
 					(self *Generator)
 					Payload() []byte
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Generator.Push">
 					func
 					(self *Generator)
 					Push(data []byte)
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Generator.Reset">
 					func
 					(self *Generator)
 					Reset()
 				</a>
+				
 			</li>
 			
 			
 			
 			<li>
+				
 				<a href="#Generator.Set">
 					func
 					(self *Generator)
 					Set(data []byte)
 				</a>
+				
 			</li>
 			
 			
@@ -598,14 +670,14 @@
 	</li>
 	
     <li>
-		<a href="#IGenerator">type IGenerator</a>
+		<a href="#IGenerator">type IGenerator </a>
 
 		
 		
 	</li>
 	
     <li>
-		<a href="#NormalizerFunc">type NormalizerFunc</a>
+		<a href="#NormalizerFunc">type NormalizerFunc </a>
 
 		
 		
@@ -656,7 +728,7 @@
 			
 		</td>
 		<td class="text-right">15KB</td>
-		<td class="text-right">565 lines</td>
+		<td class="text-right">565</td>
 		<td class="text-right">30</td>
 		<td class="text-right">7</td>
 		<td class="text-right">9</td>
@@ -670,7 +742,7 @@
 			
 		</td>
 		<td class="text-right">3KB</td>
-		<td class="text-right">49 lines</td>
+		<td class="text-right">49</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -684,7 +756,7 @@
 			
 		</td>
 		<td class="text-right">6KB</td>
-		<td class="text-right">211 lines</td>
+		<td class="text-right">211</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -698,7 +770,7 @@
 			
 		</td>
 		<td class="text-right">2KB</td>
-		<td class="text-right">68 lines</td>
+		<td class="text-right">68</td>
 		<td class="text-right">6</td>
 		<td class="text-right">2</td>
 		<td class="text-right"></td>
@@ -1588,10 +1660,10 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
         <div id="x-footer" class="clearfix">
             <div class="container">
                 
+                Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></i> v0.0.3
+                
 
                 <span class="pull-right">
-                    Generated by <i><a target="_blank" href="https://github.com/ghetzel/go-owndoc">go-owndoc</a></a></i> v0.0.3
-                    <span class="text-muted">|</span>
                     <a href="#">Back to top</a>
                 </span>
             </div>
