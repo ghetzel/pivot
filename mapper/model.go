@@ -302,6 +302,7 @@ func (self *Model) Sum(field string, flt interface{}) (float64, error) {
 func (self *Model) Count(flt interface{}) (uint64, error) {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
+		f.Paginate = false
 
 		if agg := self.db.WithAggregator(self.collection); agg != nil {
 			return agg.Count(self.collection, f)

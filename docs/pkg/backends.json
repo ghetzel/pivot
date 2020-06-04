@@ -1910,6 +1910,23 @@
                     "IsPackageLevel": true
                 },
                 {
+                    "Name": "NewRedisBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewRedisBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZSZWRpc0JhY2tlbmR7Y3M6IGNvbm5lY3Rpb24sIGtleVByZWZpeDogcmVkaXNEZWZhdWx0S2V5UHJlZml4LCB0aW1lb3V0OiByZWRpc0RlZmF1bHRQaW5nVGltZW91dH0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
                     "Name": "NewSqlBackend",
                     "Arguments": [
                         {
@@ -1941,23 +1958,6 @@
                     ],
                     "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
                     "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewRedisBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewRedisBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZSZWRpc0JhY2tlbmR7Y3M6IGNvbm5lY3Rpb24sIGtleVByZWZpeDogcmVkaXNEZWZhdWx0S2V5UHJlZml4LCB0aW1lb3V0OiByZWRpc0RlZmF1bHRQaW5nVGltZW91dH0KfQ==",
                     "IsPackageLevel": true
                 },
                 {
