@@ -139,7 +139,7 @@
 	
     <li>
 		
-		<a href="#NewRedisBackend">func NewRedisBackend(connection dal.ConnectionString) Backend</a>
+		<a href="#NewFileBackend">func NewFileBackend(connection dal.ConnectionString) Backend</a>
 		
 	</li>
 	
@@ -5641,13 +5641,13 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 
 
-<h3 id="NewRedisBackend" data-kind="f">
-	func <a title="View Source" href="">NewRedisBackend</a>
-	<a class="permalink" href="#NewRedisBackend">&#182;</a>
+<h3 id="NewFileBackend" data-kind="f">
+	func <a title="View Source" href="">NewFileBackend</a>
+	<a class="permalink" href="#NewFileBackend">&#182;</a>
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
+	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -5817,19 +5817,6 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 
 
-<h4 id="NewFileBackend" data-kind="f">
-	func <a title="View Source" href="">NewFileBackend</a>
-	<a class="permalink" href="#NewFileBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
 <h4 id="NewDynamoBackend" data-kind="f">
 	func <a title="View Source" href="">NewDynamoBackend</a>
 	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
@@ -5838,6 +5825,19 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewRedisBackend" data-kind="f">
+	func <a title="View Source" href="">NewRedisBackend</a>
+	<a class="permalink" href="#NewRedisBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
