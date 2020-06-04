@@ -205,18 +205,6 @@
 		</strong>
 	</li>
 	
-    <li>
-		<strong>
-		<a href="#NewDatabase">func NewDatabase(connection string) (DB, error)</a>
-		</strong>
-	</li>
-	
-    <li>
-		<strong>
-		<a href="#NewDatabaseWithOptions">func NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)</a>
-		</strong>
-	</li>
-	
 
 	
 	
@@ -524,7 +512,7 @@
 	<pre>
 const <span id="ApplicationName">ApplicationName   </span> = `pivot`
 const <span id="ApplicationSummary">ApplicationSummary</span> = `an extensible database abstraction service`
-const <span id="ApplicationVersion">ApplicationVersion</span> = `3.3.15`
+const <span id="ApplicationVersion">ApplicationVersion</span> = `3.3.16`
 const <span id="TestFirst">TestFirst         </span> = iota
 const <span id="TestSecond">TestSecond        </span> = 
 const <span id="TestThird">TestThird         </span> = 
@@ -724,34 +712,6 @@ var <span id="TestData">TestData            </span> = []byte{0x00, 0x01, 0x02, 0
 </p>
 
 
-<h3 id="NewDatabase" data-kind="f">
-	func <a title="View Source" href="">NewDatabase</a>
-	<a class="permalink" href="#NewDatabase">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDatabase(connection string) (DB, error)</pre>
-</div>
-
-
-<p><p>Create a new database connection with the default options.</p>
-</p>
-
-
-<h3 id="NewDatabaseWithOptions" data-kind="f">
-	func <a title="View Source" href="">NewDatabaseWithOptions</a>
-	<a class="permalink" href="#NewDatabaseWithOptions">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)</pre>
-</div>
-
-
-<p><p>Create a new database connection with the given options.</p>
-</p>
-
-
 
 
 
@@ -892,6 +852,42 @@ var <span id="TestData">TestData            </span> = []byte{0x00, 0x01, 0x02, 0
 	SetBackend(Backend)
 }</pre>
 </div>
+
+
+
+
+<h4 id="NewDatabaseWithOptions" data-kind="f">
+	func <a title="View Source" href="">NewDatabaseWithOptions</a>
+	<a class="permalink" href="#NewDatabaseWithOptions">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)</pre>
+</div>
+
+<p><p>Create a new database connection with the given options.</p>
+</p>
+
+
+
+
+<h4 id="NewDatabase" data-kind="f">
+	func <a title="View Source" href="">NewDatabase</a>
+	<a class="permalink" href="#NewDatabase">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewDatabase(connection string) (DB, error)</pre>
+</div>
+
+<p><p>Create a new database connection with the default options.</p>
+</p>
+
+
+
+
 
 
 

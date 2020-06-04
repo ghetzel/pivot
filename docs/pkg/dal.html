@@ -138,12 +138,6 @@
 	</li>
 	
     <li>
-		
-		<a href="#ChangeCase">func ChangeCase(cases ...string) FieldFormatterFunc</a>
-		
-	</li>
-	
-    <li>
 		<strong>
 		<a href="#CurrentTime">func CurrentTime(value interface{}, op FieldOperation) (interface{}, error)</a>
 		</strong>
@@ -157,43 +151,7 @@
 	
     <li>
 		<strong>
-		<a href="#DeriveFromFields">func DeriveFromFields(format string, fields ...string) FieldFormatterFunc</a>
-		</strong>
-	</li>
-	
-    <li>
-		
-		<a href="#FormatAll">func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#FormatterFromMap">func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)</a>
-		
-	</li>
-	
-    <li>
-		<strong>
-		<a href="#GenerateEncodedUUID">func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc</a>
-		</strong>
-	</li>
-	
-    <li>
-		<strong>
 		<a href="#GenerateUUID">func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error)</a>
-		</strong>
-	</li>
-	
-    <li>
-		
-		<a href="#GetFormatter">func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)</a>
-		
-	</li>
-	
-    <li>
-		<strong>
-		<a href="#IfUnset">func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc</a>
 		</strong>
 	</li>
 	
@@ -218,18 +176,6 @@
     <li>
 		
 		<a href="#IsNotExistError">func IsNotExistError(err error) bool</a>
-		
-	</li>
-	
-    <li>
-		<strong>
-		<a href="#NowPlusDuration">func NowPlusDuration(duration time.Duration) FieldFormatterFunc</a>
-		</strong>
-	</li>
-	
-    <li>
-		
-		<a href="#Replace">func Replace(pairs []interface{}) FieldFormatterFunc</a>
 		
 	</li>
 	
@@ -2173,17 +2119,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 
-<h3 id="ChangeCase" data-kind="f">
-	func <a title="View Source" href="">ChangeCase</a>
-	<a class="permalink" href="#ChangeCase">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func ChangeCase(cases ...string) FieldFormatterFunc</pre>
-</div>
-
-
-
 <h3 id="CurrentTime" data-kind="f">
 	func <a title="View Source" href="">CurrentTime</a>
 	<a class="permalink" href="#CurrentTime">&#182;</a>
@@ -2212,56 +2147,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </p>
 
 
-<h3 id="DeriveFromFields" data-kind="f">
-	func <a title="View Source" href="">DeriveFromFields</a>
-	<a class="permalink" href="#DeriveFromFields">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func DeriveFromFields(format string, fields ...string) FieldFormatterFunc</pre>
-</div>
-
-
-<p><p>Extracts values from the given Record and generates a deterministic output based on those values.</p>
-</p>
-
-
-<h3 id="FormatAll" data-kind="f">
-	func <a title="View Source" href="">FormatAll</a>
-	<a class="permalink" href="#FormatAll">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc</pre>
-</div>
-
-
-
-<h3 id="FormatterFromMap" data-kind="f">
-	func <a title="View Source" href="">FormatterFromMap</a>
-	<a class="permalink" href="#FormatterFromMap">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)</pre>
-</div>
-
-
-
-<h3 id="GenerateEncodedUUID" data-kind="f">
-	func <a title="View Source" href="">GenerateEncodedUUID</a>
-	<a class="permalink" href="#GenerateEncodedUUID">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc</pre>
-</div>
-
-
-<p><p>Same as GenerateUUID, but allows for a custom representation of the underlying bytes.</p>
-</p>
-
-
 <h3 id="GenerateUUID" data-kind="f">
 	func <a title="View Source" href="">GenerateUUID</a>
 	<a class="permalink" href="#GenerateUUID">&#182;</a>
@@ -2273,31 +2158,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 
 <p><p>Generates a V4 UUID value if the existing value is empty.</p>
-</p>
-
-
-<h3 id="GetFormatter" data-kind="f">
-	func <a title="View Source" href="">GetFormatter</a>
-	<a class="permalink" href="#GetFormatter">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)</pre>
-</div>
-
-
-
-<h3 id="IfUnset" data-kind="f">
-	func <a title="View Source" href="">IfUnset</a>
-	<a class="permalink" href="#IfUnset">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc</pre>
-</div>
-
-
-<p><p>Only evaluates the given formatter if the current value of the field is empty.</p>
 </p>
 
 
@@ -2341,31 +2201,6 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func IsNotExistError(err error) bool</pre>
-</div>
-
-
-
-<h3 id="NowPlusDuration" data-kind="f">
-	func <a title="View Source" href="">NowPlusDuration</a>
-	<a class="permalink" href="#NowPlusDuration">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NowPlusDuration(duration time.Duration) FieldFormatterFunc</pre>
-</div>
-
-
-<p><p>Returns the current time with an added offset when the field is persisted.</p>
-</p>
-
-
-<h3 id="Replace" data-kind="f">
-	func <a title="View Source" href="">Replace</a>
-	<a class="permalink" href="#Replace">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func Replace(pairs []interface{}) FieldFormatterFunc</pre>
 </div>
 
 
@@ -3963,6 +3798,153 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	
 	<pre>type FieldFormatterFunc func(interface{}, FieldOperation) (interface{}, error)</pre>
 </div>
+
+
+
+
+<h4 id="FormatterFromMap" data-kind="f">
+	func <a title="View Source" href="">FormatterFromMap</a>
+	<a class="permalink" href="#FormatterFromMap">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)</pre>
+</div>
+
+
+
+
+<h4 id="GetFormatter" data-kind="f">
+	func <a title="View Source" href="">GetFormatter</a>
+	<a class="permalink" href="#GetFormatter">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)</pre>
+</div>
+
+
+
+
+<h4 id="FormatAll" data-kind="f">
+	func <a title="View Source" href="">FormatAll</a>
+	<a class="permalink" href="#FormatAll">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc</pre>
+</div>
+
+
+
+
+<h4 id="ChangeCase" data-kind="f">
+	func <a title="View Source" href="">ChangeCase</a>
+	<a class="permalink" href="#ChangeCase">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func ChangeCase(cases ...string) FieldFormatterFunc</pre>
+</div>
+
+
+
+
+<h4 id="Replace" data-kind="f">
+	func <a title="View Source" href="">Replace</a>
+	<a class="permalink" href="#Replace">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func Replace(pairs []interface{}) FieldFormatterFunc</pre>
+</div>
+
+
+
+
+<h4 id="GenerateEncodedUUID" data-kind="f">
+	func <a title="View Source" href="">GenerateEncodedUUID</a>
+	<a class="permalink" href="#GenerateEncodedUUID">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Same as GenerateUUID, but allows for a custom representation of the underlying bytes.</p>
+</p>
+
+
+
+
+<h4 id="IfUnset" data-kind="f">
+	func <a title="View Source" href="">IfUnset</a>
+	<a class="permalink" href="#IfUnset">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Only evaluates the given formatter if the current value of the field is empty.</p>
+</p>
+
+
+
+
+<h4 id="DeriveFromFields" data-kind="f">
+	func <a title="View Source" href="">DeriveFromFields</a>
+	<a class="permalink" href="#DeriveFromFields">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func DeriveFromFields(format string, fields ...string) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Extracts values from the given Record and generates a deterministic output based on those values.</p>
+</p>
+
+
+
+
+<h4 id="NowPlusDuration" data-kind="f">
+	func <a title="View Source" href="">NowPlusDuration</a>
+	<a class="permalink" href="#NowPlusDuration">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NowPlusDuration(duration time.Duration) FieldFormatterFunc</pre>
+</div>
+
+<p><p>Returns the current time with an added offset when the field is persisted.</p>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
