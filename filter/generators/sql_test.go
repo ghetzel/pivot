@@ -190,6 +190,16 @@ func TestSqlSelects(t *testing.T) {
 				values:  []interface{}{`bob`, `alice`, `mary`},
 				mapping: DefaultSqlTypeMapping,
 			},
+			`name/null|alice|mary`: {
+				query:   `SELECT ` + field + ` FROM foo WHERE (name IN(NULL, ?, ?))`,
+				values:  []interface{}{`alice`, `mary`},
+				mapping: DefaultSqlTypeMapping,
+			},
+			`name/not:null|alice|mary`: {
+				query:   `SELECT ` + field + ` FROM foo WHERE (name NOT IN(NULL, ?, ?))`,
+				values:  []interface{}{`alice`, `mary`},
+				mapping: DefaultSqlTypeMapping,
+			},
 		}
 
 		for spec, expected := range tests {

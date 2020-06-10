@@ -587,9 +587,12 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 				switch criterion.Operator {
 				case `is`, ``, `like`:
 					if value == `NULL` {
-						outVal = outVal + ` IS NULL`
+						if useInStatement {
+							outVal = outVal + `NULL`
+						} else {
+							outVal = outVal + ` IS NULL`
+						}
 					} else {
-
 						if useInStatement {
 							if criterion.Operator == `like` {
 								outVal = outVal + self.ApplyNormalizer(criterion.Field, fmt.Sprintf("%s", value))
@@ -607,7 +610,11 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 					}
 				case `not`, `unlike`:
 					if value == `NULL` {
-						outVal = outVal + ` IS NOT NULL`
+						if useInStatement {
+							outVal = outVal + `NULL`
+						} else {
+							outVal = outVal + ` IS NOT NULL`
+						}
 					} else {
 						if useInStatement {
 							if criterion.Operator == `unlike` {
