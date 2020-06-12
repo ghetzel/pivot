@@ -28,7 +28,7 @@ require (
 	github.com/fatih/structs v1.0.0
 	github.com/ghetzel/cli v1.17.0
 	github.com/ghetzel/diecast v1.17.34
-	github.com/ghetzel/go-stockutil v1.8.67
+	github.com/ghetzel/go-stockutil v1.8.69
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd // indirect
 	github.com/glycerine/goconvey v0.0.0-20180728074245-46e3a41ad493 // indirect
@@ -79,4 +79,4 @@ require (
 
 go 1.13
 
-replace github.com/ghetzel/go-stockutil v1.8.62 => ../go-stockutil
+//  replace github.com/ghetzel/go-stockutil v1.8.62 => ../go-stockutil
