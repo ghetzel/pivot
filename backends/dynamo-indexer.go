@@ -7,6 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 )
@@ -160,11 +161,47 @@ func (self *DynamoBackend) Query(collection *dal.Collection, f *filter.Filter, r
 }
 
 func (self *DynamoBackend) ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error) {
-	return nil, fmt.Errorf("%T.ListValues: Not Implemented", self)
+	if flt == nil {
+		flt = filter.All()
+	}
+
+	flt.Fields = fields
+	flt.Limit = DyanmoListFieldsLimit
+
+	if rs, err := self.Query(collection, flt); err == nil {
+		var values = make(map[string][]interface{})
+
+		for _, record := range rs.Records {
+			for _, field := range fields {
+				values[field] = append(values[field], record.Get(field))
+			}
+		}
+
+		for k, v := range values {
+			values[k] = sliceutil.Unique(v)
+		}
+
+		return values, nil
+	} else {
+		return nil, err
+	}
 }
 
 func (self *DynamoBackend) DeleteQuery(collection *dal.Collection, flt *filter.Filter) error {
-	return fmt.Errorf("%T.DeleteQuery: Not Implemented", self)
+	if flt == nil {
+		flt = filter.All()
+	}
+
+	flt.Fields = []string{
+		collection.GetIdentityFieldName(),
+	}
+	flt.Limit = DyanmoListFieldsLimit
+
+	if rs, err := self.Query(collection, flt); err == nil {
+		return self.Delete(collection.Name, rs.IDs()...)
+	} else {
+		return err
+	}
 }
 
 func (self *DynamoBackend) FlushIndex() error {

@@ -7,15 +7,15 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 250,
-    "LineCount": 9248,
-    "SourceLineCount": 7176,
+    "LineCount": 9314,
+    "SourceLineCount": 7229,
     "FunctionCount": 340,
     "TypeCount": 31,
     "ConstantCount": 16,
-    "VariableCount": 31,
+    "VariableCount": 33,
     "Statistics": {
-        "Mean": 0.0185,
-        "StdDev": 0.1327,
+        "Mean": 0.0184,
+        "StdDev": 0.1324,
         "GeometricMean": 0,
         "HarmonicMean": 0,
         "Median": 0,
@@ -223,6 +223,10 @@
                     "Alias": "dynamodb"
                 },
                 {
+                    "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
+                    "Alias": "sliceutil"
+                },
+                {
                     "PackageName": "github.com/ghetzel/pivot/v3/dal",
                     "Alias": "dal"
                 },
@@ -231,9 +235,9 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 6521,
-            "LineCount": 238,
-            "SourceLineCount": 189,
+            "Size": 7185,
+            "LineCount": 275,
+            "SourceLineCount": 219,
             "FunctionCount": 12,
             "TypeCount": 0,
             "ConstantCount": 0,
@@ -319,13 +323,13 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 16424,
-            "LineCount": 618,
-            "SourceLineCount": 509,
+            "Size": 16457,
+            "LineCount": 619,
+            "SourceLineCount": 510,
             "FunctionCount": 20,
             "TypeCount": 1,
             "ConstantCount": 0,
-            "VariableCount": 3
+            "VariableCount": 4
         },
         {
             "Name": "dynamo_test.go",
@@ -579,12 +583,12 @@
             "Name": "fs-indexer.go",
             "Imports": [
                 {
-                    "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
-                    "Alias": "sliceutil"
+                    "PackageName": "strings",
+                    "Alias": "strings"
                 },
                 {
-                    "PackageName": "github.com/ghetzel/go-stockutil/stringutil",
-                    "Alias": "stringutil"
+                    "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
+                    "Alias": "sliceutil"
                 },
                 {
                     "PackageName": "github.com/ghetzel/pivot/v3/dal",
@@ -595,9 +599,9 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 4928,
-            "LineCount": 184,
-            "SourceLineCount": 151,
+            "Size": 5066,
+            "LineCount": 193,
+            "SourceLineCount": 158,
             "FunctionCount": 12,
             "TypeCount": 0,
             "ConstantCount": 0,
@@ -639,6 +643,14 @@
                     "Alias": "pathutil"
                 },
                 {
+                    "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
+                    "Alias": "sliceutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
+                    "Alias": "typeutil"
+                },
+                {
                     "PackageName": "github.com/ghetzel/pivot/v3/dal",
                     "Alias": "dal"
                 },
@@ -652,16 +664,16 @@
                 },
                 {
                     "PackageName": "github.com/hashicorp/golang-lru",
-                    "Alias": "golang-lru"
+                    "Alias": "lru"
                 }
             ],
-            "Size": 15200,
-            "LineCount": 603,
-            "SourceLineCount": 488,
+            "Size": 15728,
+            "LineCount": 622,
+            "SourceLineCount": 503,
             "FunctionCount": 20,
             "TypeCount": 2,
             "ConstantCount": 4,
-            "VariableCount": 3
+            "VariableCount": 4
         },
         {
             "Name": "indexer-multi.go",
@@ -1564,6 +1576,10 @@
             "Value": "default"
         },
         {
+            "Name": "DyanmoListFieldsLimit",
+            "Expression": "8192"
+        },
+        {
             "Name": "ElasticsearchBatchFlushCount",
             "Expression": "1"
         },
@@ -1596,6 +1612,11 @@
         {
             "Name": "ElasticsearchTLSTimeout",
             "Expression": "10 * time.Second"
+        },
+        {
+            "Name": "FilesystemKeyJoiner",
+            "Expression": "`--`",
+            "Value": "--"
         },
         {
             "Name": "FilesystemRecordCacheSize",
@@ -1687,6 +1708,40 @@
             ],
             "Signature": "DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)",
             "Source": "ewoJcmVjb3Jkc2V0IDo9IGRhbC5OZXdSZWNvcmRTZXQoKQoJaWYgZXJyIDo9IGluZGV4ZXIuUXVlcnlGdW5jKGNvbGxlY3Rpb24sIGYsIGZ1bmMoaW5kZXhSZWNvcmQgKmRhbC5SZWNvcmQsIGVyciBlcnJvciwgcGFnZSBJbmRleFBhZ2UpIGVycm9yIHsKCQlkZWZlciBQb3B1bGF0ZVJlY29yZFNldFBhZ2VEZXRhaWxzKHJlY29yZHNldCwgZiwgcGFnZSkKCQlwYXJlbnQgOj0gaW5kZXhlci5HZXRCYWNrZW5kKCkKCQl2YXIgZm9yY2VJbmRleFJlY29yZCBib29sCgkJaWYgZiAhPSBuaWwgewoJCQlpZiB2SSwgb2sgOj0gZi5PcHRpb25zW2BGb3JjZUluZGV4UmVjb3JkYF07IG9rIHsKCQkJCWlmIHYsIG9rIDo9IHZJLihib29sKTsgb2sgewoJCQkJCWZvcmNlSW5kZXhSZWNvcmQgPSB2CgkJCQl9CgkJCX0KCQl9CgkJaWYgcGFyZW50ICE9IG5pbCB7CgkJCWlmIGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpID4gMSB7CgkJCQlqb2luZXIgOj0gY29sbGVjdGlvbi5JbmRleENvbXBvdW5kRmllbGRKb2luZXIKCQkJCWlmIGpvaW5lciA9PSBgYCB7CgkJCQkJam9pbmVyID0gRGVmYXVsdENvbXBvdW5kSm9pbmVyCgkJCQl9CgkJCQl2YXIgdmFsdWVzIFtdaW50ZXJmYWNle30KCQkJCXZhbHVlcyA9IHNsaWNldXRpbC5TbGljZWlmeShzdHJpbmdzLlNwbGl0KGZtdC5TcHJpbnRmKCIldiIsIGluZGV4UmVjb3JkLklEKSwgam9pbmVyKSkKCQkJCWlmIGxlbih2YWx1ZXMpICE9IGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpIHsKCQkJCQlpZiBkaWZmIDo9IGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpIC0gbGVuKHZhbHVlcyk7IGRpZmYgPj0gMSB7CgkJCQkJCWZvciBfLCBjZiA6PSByYW5nZSBjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHNbZGlmZjpdIHsKCQkJCQkJCWlmIHYgOj0gaW5kZXhSZWNvcmQuR2V0KGNmKTsgdiAhPSBuaWwgewoJCQkJCQkJCXZhbHVlcyA9IGFwcGVuZCh2YWx1ZXMsIHYpCgkJCQkJCQl9CgkJCQkJCX0KCQkJCQl9CgkJCQkJaWYgbGVuKHZhbHVlcykgIT0gbGVuKGNvbGxlY3Rpb24uSW5kZXhDb21wb3VuZEZpZWxkcykgewoJCQkJCQlyZXR1cm4gZm10LkVycm9yZigiSW5kZXggaXRlbSAldjogZXhwZWN0ZWQgJWQgY29tcG91bmQgZmllbGQgY29tcG9uZW50cywgZ290ICVkIiwgaW5kZXhSZWNvcmQuSUQsIGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpLCBsZW4odmFsdWVzKSkKCQkJCQl9CgkJCQl9CgkJCQlmb3IgaSwgZmllbGQgOj0gcmFuZ2UgY29sbGVjdGlvbi5JbmRleENvbXBvdW5kRmllbGRzIHsKCQkJCQlpZiBpID09IDAgewoJCQkJCQlpbmRleFJlY29yZC5JRCA9IHZhbHVlcwoJCQkJCX0gZWxzZSB7CgkJCQkJCWluZGV4UmVjb3JkLlNldChmaWVsZCwgdmFsdWVzW2ldKQoJCQkJCX0KCQkJCX0KCQkJfQoJCX0KCQllbXB0eVJlY29yZCA6PSBkYWwuTmV3UmVjb3JkKGluZGV4UmVjb3JkLklEKQoJCWVtcHR5UmVjb3JkLkVycm9yID0gZXJyCgkJaWYgbGVuKHJlc3VsdEZucykgPiAwIHsKCQkJcmVzdWx0Rm4gOj0gcmVzdWx0Rm5zWzBdCgkJCWlmIGYuSWRPbmx5KCkgewoJCQkJcmV0dXJuIHJlc3VsdEZuKGVtcHR5UmVjb3JkLCBlcnIsIHBhZ2UpCgkJCX0gZWxzZSBpZiBwYXJlbnQgIT0gbmlsICYmICFmb3JjZUluZGV4UmVjb3JkIHsKCQkJCWlmIHJlY29yZCwgZXJyIDo9IHBhcmVudC5SZXRyaWV2ZShjb2xsZWN0aW9uLk5hbWUsIGluZGV4UmVjb3JkLklELCBmLkZpZWxkcy4uLik7IGVyciA9PSBuaWwgewoJCQkJCXJldHVybiByZXN1bHRGbihyZWNvcmQsIGVyciwgcGFnZSkKCQkJCX0gZWxzZSB7CgkJCQkJcmV0dXJuIHJlc3VsdEZuKGVtcHR5UmVjb3JkLCBlcnIsIHBhZ2UpCgkJCQl9CgkJCX0gZWxzZSB7CgkJCQlyZXR1cm4gcmVzdWx0Rm4oaW5kZXhSZWNvcmQsIGVyciwgcGFnZSkKCQkJfQoJCX0gZWxzZSB7CgkJCWlmIGYuSWRPbmx5KCkgewoJCQkJcmVjb3Jkc2V0LlJlY29yZHMgPSBhcHBlbmQocmVjb3Jkc2V0LlJlY29yZHMsIGRhbC5OZXdSZWNvcmQoaW5kZXhSZWNvcmQuSUQpKQoJCQl9IGVsc2UgaWYgcGFyZW50ICE9IG5pbCAmJiAhZm9yY2VJbmRleFJlY29yZCB7CgkJCQlpZiByZWNvcmQsIGVyciA6PSBwYXJlbnQuUmV0cmlldmUoY29sbGVjdGlvbi5OYW1lLCBpbmRleFJlY29yZC5JRCwgZi5GaWVsZHMuLi4pOyBlcnIgPT0gbmlsIHsKCQkJCQlyZWNvcmRzZXQuUmVjb3JkcyA9IGFwcGVuZChyZWNvcmRzZXQuUmVjb3JkcywgcmVjb3JkKQoJCQkJfSBlbHNlIHsKCQkJCQlyZWNvcmRzZXQuUmVjb3JkcyA9IGFwcGVuZChyZWNvcmRzZXQuUmVjb3JkcywgZGFsLk5ld1JlY29yZEVycihpbmRleFJlY29yZC5JRCwgZXJyKSkKCQkJCX0KCQkJfSBlbHNlIHsKCQkJCXJlY29yZHNldC5SZWNvcmRzID0gYXBwZW5kKHJlY29yZHNldC5SZWNvcmRzLCBpbmRleFJlY29yZCkKCQkJfQoJCQlyZXR1cm4gbmlsCgkJfQoJfSk7IGVyciAhPSBuaWwgewoJCXJldHVybiBuaWwsIGVycgoJfQoJcmV0dXJuIHJlY29yZHNldCwgbmlsCn0=",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "NewRedisBackend",
+            "Arguments": [
+                {
+                    "Name": "connection",
+                    "Type": "dal.ConnectionString"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "Backend"
+                }
+            ],
+            "Signature": "NewRedisBackend(connection dal.ConnectionString) Backend",
+            "Source": "ewoJcmV0dXJuICZSZWRpc0JhY2tlbmR7Y3M6IGNvbm5lY3Rpb24sIGtleVByZWZpeDogcmVkaXNEZWZhdWx0S2V5UHJlZml4LCB0aW1lb3V0OiByZWRpc0RlZmF1bHRQaW5nVGltZW91dH0KfQ==",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "NewSqlBackend",
+            "Arguments": [
+                {
+                    "Name": "connection",
+                    "Type": "dal.ConnectionString"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "Backend"
+                }
+            ],
+            "Signature": "NewSqlBackend(connection dal.ConnectionString) Backend",
+            "Source": "ewoJYmFja2VuZCA6PSAmU3FsQmFja2VuZHtjb25uOiAmY29ubmVjdGlvbiwgcXVlcnlHZW5UeXBlTWFwcGluZzogZ2VuZXJhdG9ycy5EZWZhdWx0U3FsVHlwZU1hcHBpbmcsIGRyb3BUYWJsZVF1ZXJ5OiBgRFJPUCBUQUJMRSAlc2AsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwga25vd25Db2xsZWN0aW9uczogbWFrZShtYXBbc3RyaW5nXWJvb2wpLCBkZXRlY3RlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKX0KCWlmIGZuLCBvayA6PSBzcWxQcmVJbml0RnVuY3NbY29ubmVjdGlvbi5CYWNrZW5kKCldOyBvayAmJiBmbiAhPSBuaWwgewoJCWZuKGJhY2tlbmQpCgl9CgliYWNrZW5kLmluZGV4ZXIgPSBiYWNrZW5kCglyZXR1cm4gYmFja2VuZAp9",
             "IsPackageLevel": true
         },
         {
@@ -1893,6 +1948,23 @@
                     "IsPackageLevel": true
                 },
                 {
+                    "Name": "NewMongoBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
+                    "IsPackageLevel": true
+                },
+                {
                     "Name": "NewFileBackend",
                     "Arguments": [
                         {
@@ -1941,57 +2013,6 @@
                     ],
                     "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
                     "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewRedisBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewRedisBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZSZWRpc0JhY2tlbmR7Y3M6IGNvbm5lY3Rpb24sIGtleVByZWZpeDogcmVkaXNEZWZhdWx0S2V5UHJlZml4LCB0aW1lb3V0OiByZWRpc0RlZmF1bHRQaW5nVGltZW91dH0KfQ==",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewSqlBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewSqlBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJYmFja2VuZCA6PSAmU3FsQmFja2VuZHtjb25uOiAmY29ubmVjdGlvbiwgcXVlcnlHZW5UeXBlTWFwcGluZzogZ2VuZXJhdG9ycy5EZWZhdWx0U3FsVHlwZU1hcHBpbmcsIGRyb3BUYWJsZVF1ZXJ5OiBgRFJPUCBUQUJMRSAlc2AsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwga25vd25Db2xsZWN0aW9uczogbWFrZShtYXBbc3RyaW5nXWJvb2wpLCBkZXRlY3RlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKX0KCWlmIGZuLCBvayA6PSBzcWxQcmVJbml0RnVuY3NbY29ubmVjdGlvbi5CYWNrZW5kKCldOyBvayAmJiBmbiAhPSBuaWwgewoJCWZuKGJhY2tlbmQpCgl9CgliYWNrZW5kLmluZGV4ZXIgPSBiYWNrZW5kCglyZXR1cm4gYmFja2VuZAp9",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewMongoBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
                     "IsPackageLevel": true
                 }
             ],

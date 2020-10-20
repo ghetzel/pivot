@@ -1,8 +1,9 @@
 package backends
 
 import (
+	"strings"
+
 	"github.com/ghetzel/go-stockutil/sliceutil"
-	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 )
@@ -60,15 +61,23 @@ func (self *FilesystemBackend) QueryFunc(collection *dal.Collection, filter *fil
 		}
 	} else {
 		if ids, err := self.listObjectIdsInCollection(collection); err == nil {
-			page := 1
-			processed := 0
-			offset := filter.Offset
+			var page = 1
+			var processed = 0
+			var offset = filter.Offset
 
 			for _, id := range ids {
-				// retrieve the record by id
-				if record, err := self.Retrieve(collection.Name, id); err == nil {
-					record.ID = stringutil.Autotype(record.ID)
+				var parts = strings.Split(id, FilesystemKeyJoiner)
+				var record *dal.Record
+				var err error
 
+				if len(parts) == 1 {
+					record, err = self.Retrieve(collection.Name, parts[0])
+				} else {
+					record, err = self.Retrieve(collection.Name, parts)
+				}
+
+				// retrieve the record by id
+				if err == nil {
 					// if matching all records OR the found record matches the filter
 					if filter.MatchesRecord(record) {
 						if processed >= offset {

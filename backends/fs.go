@@ -10,15 +10,18 @@ import (
 	"time"
 
 	"github.com/ghetzel/go-stockutil/pathutil"
+	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/ghodss/yaml"
-	"github.com/hashicorp/golang-lru"
+	lru "github.com/hashicorp/golang-lru"
 )
 
 var WriteLockFormat = `%s.lock`
 var FilesystemRecordCacheSize = 1024
 var RecordCacheEnabled = false
+var FilesystemKeyJoiner = `--`
 
 const DefaultFilesystemRecordSubdirectory = `data`
 
@@ -183,10 +186,10 @@ func (self *FilesystemBackend) Exists(name string, id interface{}) bool {
 	if collection, err := self.GetCollection(name); err == nil {
 		if dataRoot, err := self.getDataRoot(collection.Name, true); err == nil {
 			if record, ok := id.(*dal.Record); ok {
-				id = record.ID
+				id = self.keyFromRecord(collection, record)
 			}
 
-			if filename := self.makeFilename(collection, fmt.Sprintf("%v", id), true); filename != `` {
+			if filename := self.makeFilename(collection, typeutil.String(id), true); filename != `` {
 				if stat, err := os.Stat(filepath.Join(dataRoot, filename)); err == nil {
 					if stat.Size() > 0 {
 						return true
@@ -203,13 +206,15 @@ func (self *FilesystemBackend) Retrieve(name string, id interface{}, fields ...s
 	if collection, err := self.GetCollection(name); err == nil {
 		var record dal.Record
 
-		if err := self.readObject(collection, fmt.Sprintf("%v", id), true, &record); err == nil {
+		var idkey = strings.Join(sliceutil.Stringify(id), FilesystemKeyJoiner)
+
+		if err := self.readObject(collection, idkey, true, &record); err == nil {
 			if err := self.prepareIncomingRecord(collection.Name, &record); err != nil {
 				return nil, err
 			}
 
 			// add/touch item in cache for rapid readback if necessary
-			self.recordCache.Add(fmt.Sprintf("%v|%v", collection.Name, record.ID), &record)
+			self.recordCache.Add(fmt.Sprintf("%v|%v", collection.Name, idkey), &record)
 
 			return &record, nil
 		} else {
@@ -223,18 +228,21 @@ func (self *FilesystemBackend) Retrieve(name string, id interface{}, fields ...s
 func (self *FilesystemBackend) Update(name string, recordset *dal.RecordSet, target ...string) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		for _, record := range recordset.Records {
+			var idkey string
+
 			if r, err := collection.StructToRecord(record); err == nil {
 				record = r
+				idkey = self.keyFromRecord(collection, record)
 			} else {
 				return err
 			}
 
-			if err := self.writeObject(collection, fmt.Sprintf("%v", record.ID), true, record); err != nil {
+			if err := self.writeObject(collection, idkey, true, record); err != nil {
 				return err
 			}
 
 			// add/touch item in cache for rapid readback if necessary
-			self.recordCache.Add(fmt.Sprintf("%v|%v", name, record.ID), record)
+			self.recordCache.Add(fmt.Sprintf("%v|%v", name, idkey), record)
 		}
 
 		if search := self.WithSearch(collection); search != nil {
@@ -258,12 +266,14 @@ func (self *FilesystemBackend) Delete(name string, ids ...interface{}) error {
 
 		if dataRoot, err := self.getDataRoot(collection.Name, true); err == nil {
 			for _, id := range ids {
-				if filename := self.makeFilename(collection, fmt.Sprintf("%v", id), true); filename != `` {
+				var idkey = strings.Join(sliceutil.Stringify(id), FilesystemKeyJoiner)
+
+				if filename := self.makeFilename(collection, idkey, true); filename != `` {
 					os.Remove(filepath.Join(dataRoot, filename))
 				}
 
 				// explicitly remove item from cache
-				self.recordCache.Remove(fmt.Sprintf("%v|%v", name, id))
+				self.recordCache.Remove(fmt.Sprintf("%v|%v", name, idkey))
 			}
 
 			return nil
@@ -506,8 +516,8 @@ func (self *FilesystemBackend) listObjectIdsInCollection(collection *dal.Collect
 	if dataRoot, err := self.getDataRoot(collection.Name, true); err == nil {
 		if entries, err := ioutil.ReadDir(dataRoot); err == nil {
 			for _, entry := range entries {
-				basename := filepath.Base(entry.Name())
-				baseNoExt := strings.TrimSuffix(basename, filepath.Ext(entry.Name()))
+				var basename = filepath.Base(entry.Name())
+				var baseNoExt = strings.TrimSuffix(basename, filepath.Ext(entry.Name()))
 
 				if filename := self.makeFilename(collection, baseNoExt, true); filename == basename {
 					ids = append(ids, baseNoExt)
@@ -599,4 +609,13 @@ func (self *FilesystemBackend) prepareIncomingRecord(collectionName string, reco
 	}
 
 	return nil
+}
+
+func (self *FilesystemBackend) keyFromRecord(collection *dal.Collection, record *dal.Record) string {
+	return strings.Join(
+		sliceutil.Stringify(
+			record.Keys(collection),
+		),
+		FilesystemKeyJoiner,
+	)
 }

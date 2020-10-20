@@ -26,6 +26,7 @@ import (
 var DefaultAmazonRegion = `us-east-1`
 var DefaultSharedCredentialsFile = `~/.aws/credentials`
 var DefaultSharedCredentialsProfile = `default`
+var DyanmoListFieldsLimit = 8192
 
 type DynamoBackend struct {
 	Backend

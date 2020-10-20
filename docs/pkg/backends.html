@@ -139,6 +139,18 @@
 	
     <li>
 		
+		<a href="#NewRedisBackend">func NewRedisBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#NewSqlBackend">func NewSqlBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
 		<a href="#PopulateRecordSetPageDetails">func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f *filter.Filter, page IndexPage)</a>
 		
 	</li>
@@ -5128,8 +5140,8 @@
 			<a href="dynamo-indexer.go">dynamo-indexer.go</a>
 			
 		</td>
-		<td class="text-right">6KB</td>
-		<td class="text-right">189</td>
+		<td class="text-right">7KB</td>
+		<td class="text-right">219</td>
 		<td class="text-right">12</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -5143,11 +5155,11 @@
 			
 		</td>
 		<td class="text-right">16KB</td>
-		<td class="text-right">509</td>
+		<td class="text-right">510</td>
 		<td class="text-right">20</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
-		<td class="text-right">3</td>
+		<td class="text-right">4</td>
 	</tr>
 	
 	<tr>
@@ -5241,7 +5253,7 @@
 			
 		</td>
 		<td class="text-right">5KB</td>
-		<td class="text-right">151</td>
+		<td class="text-right">158</td>
 		<td class="text-right">12</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -5255,11 +5267,11 @@
 			
 		</td>
 		<td class="text-right">15KB</td>
-		<td class="text-right">488</td>
+		<td class="text-right">503</td>
 		<td class="text-right">20</td>
 		<td class="text-right">2</td>
 		<td class="text-right">4</td>
-		<td class="text-right">3</td>
+		<td class="text-right">4</td>
 	</tr>
 	
 	<tr>
@@ -5596,6 +5608,7 @@ var <span id="DefaultCompoundJoiner">DefaultCompoundJoiner             </span> =
 var <span id="DefaultConnectTimeout">DefaultConnectTimeout             </span> = 10 * time.Second
 var <span id="DefaultSharedCredentialsFile">DefaultSharedCredentialsFile      </span> = `~/.aws/credentials`
 var <span id="DefaultSharedCredentialsProfile">DefaultSharedCredentialsProfile   </span> = `default`
+var <span id="DyanmoListFieldsLimit">DyanmoListFieldsLimit             </span> = 8192
 var <span id="ElasticsearchBatchFlushCount">ElasticsearchBatchFlushCount      </span> = 1
 var <span id="ElasticsearchBatchFlushInterval">ElasticsearchBatchFlushInterval   </span> = 10 * time.Second
 var <span id="ElasticsearchConnectTimeout">ElasticsearchConnectTimeout       </span> = 3 * time.Second
@@ -5604,6 +5617,7 @@ var <span id="ElasticsearchIdentityField">ElasticsearchIdentityField        </sp
 var <span id="ElasticsearchRequestTimeout">ElasticsearchRequestTimeout       </span> = 30 * time.Second
 var <span id="ElasticsearchResponseHeaderTimeout">ElasticsearchResponseHeaderTimeout</span> = 10 * time.Second
 var <span id="ElasticsearchTLSTimeout">ElasticsearchTLSTimeout           </span> = 10 * time.Second
+var <span id="FilesystemKeyJoiner">FilesystemKeyJoiner               </span> = `--`
 var <span id="FilesystemRecordCacheSize">FilesystemRecordCacheSize         </span> = 1024
 var <span id="IndexerPageSize">IndexerPageSize                   </span> = 100
 var <span id="IndexerResultsStop">IndexerResultsStop                </span> = fmt.Errorf(`stop indexer results`)
@@ -5631,6 +5645,28 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)</pre>
+</div>
+
+
+
+<h3 id="NewRedisBackend" data-kind="f">
+	func <a title="View Source" href="">NewRedisBackend</a>
+	<a class="permalink" href="#NewRedisBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+<h3 id="NewSqlBackend" data-kind="f">
+	func <a title="View Source" href="">NewSqlBackend</a>
+	<a class="permalink" href="#NewSqlBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -5787,6 +5823,19 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 
 
+<h4 id="NewMongoBackend" data-kind="f">
+	func <a title="View Source" href="">NewMongoBackend</a>
+	<a class="permalink" href="#NewMongoBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
 <h4 id="NewFileBackend" data-kind="f">
 	func <a title="View Source" href="">NewFileBackend</a>
 	<a class="permalink" href="#NewFileBackend">&#182;</a>
@@ -5822,49 +5871,6 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
 </div>
-
-
-
-
-<h4 id="NewRedisBackend" data-kind="f">
-	func <a title="View Source" href="">NewRedisBackend</a>
-	<a class="permalink" href="#NewRedisBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-<h4 id="NewSqlBackend" data-kind="f">
-	func <a title="View Source" href="">NewSqlBackend</a>
-	<a class="permalink" href="#NewSqlBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-<h4 id="NewMongoBackend" data-kind="f">
-	func <a title="View Source" href="">NewMongoBackend</a>
-	<a class="permalink" href="#NewMongoBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
 
 
 

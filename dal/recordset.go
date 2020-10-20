@@ -24,6 +24,14 @@ func NewRecordSet(records ...*Record) *RecordSet {
 	}
 }
 
+func (self *RecordSet) IDs() (ids []interface{}) {
+	for _, record := range self.Records {
+		ids = append(ids, record.ID)
+	}
+
+	return
+}
+
 func (self *RecordSet) Push(record *Record) *RecordSet {
 	self.Records = append(self.Records, record)
 	self.ResultCount = self.ResultCount + 1
