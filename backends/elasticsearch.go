@@ -20,7 +20,7 @@ import (
 	"github.com/ghetzel/pivot/v3/filter"
 )
 
-var ElasticsearchDefaultType = `document`
+var ElasticsearchDefaultType = `_doc`
 var ElasticsearchDefaultCompositeJoiner = `:`
 var ElasticsearchDefaultScheme = `http`
 var ElasticsearchDefaultHost = `localhost:9200`
@@ -51,12 +51,13 @@ func (self *elasticsearchError) Error() string {
 }
 
 type elasticsearchIndexSettings struct {
-	NumberOfShards   int `json:"number_of_shards"`
-	NumberOfReplicas int `json:"number_of_replicas"`
+	NumberOfShards   int `json:"index.number_of_shards"`
+	NumberOfReplicas int `json:"index.number_of_replicas"`
 }
 
 type elasticsearchIndexMappings struct {
 	Properties map[string]interface{} `json:"properties"`
+	Dyanmic    bool                   `json:"dynamic"`
 }
 
 type elasticsearchCreateIndex struct {
@@ -71,11 +72,15 @@ type ElasticsearchBackend struct {
 	tableCache  sync.Map
 	docType     string
 	pkSeparator string
+	shards      int
+	replicas    int
 }
 
 func NewElasticsearchBackend(connection dal.ConnectionString) Backend {
 	return &ElasticsearchBackend{
-		cs: connection,
+		cs:       connection,
+		shards:   ElasticsearchDefaultShards,
+		replicas: ElasticsearchDefaultReplicas,
 	}
 }
 
@@ -104,7 +109,7 @@ func (self *ElasticsearchBackend) Ping(timeout time.Duration) error {
 	if self.client == nil {
 		return fmt.Errorf("Backend not initialized")
 	} else {
-		_, err := self.client.Get(`/`, nil, nil)
+		_, err := self.client.Get(`/_cat/health`, nil, nil)
 		return err
 	}
 }
@@ -156,6 +161,8 @@ func (self *ElasticsearchBackend) Initialize() error {
 	self.client.SetInsecureTLS(self.cs.Opt(`insecure`).Bool())
 	self.docType = self.cs.OptString(`type`, ElasticsearchDefaultType)
 	self.pkSeparator = self.cs.OptString(`joiner`, ElasticsearchDefaultCompositeJoiner)
+	self.shards = int(self.cs.OptInt(`shards`, int64(self.shards)))
+	self.replicas = int(self.cs.OptInt(`replicas`, int64(self.replicas)))
 
 	if self.cs.OptBool(`autoregister`, true) {
 		if res, err := self.client.Get(`/_cat/indices`, nil, nil); err == nil {
@@ -202,7 +209,7 @@ func (self *ElasticsearchBackend) Exists(name string, id interface{}) bool {
 			http.MethodHead,
 			fmt.Sprintf(
 				"/%s/%s/%v",
-				self.esIndexName(collection.Name),
+				collection.Name,
 				self.docType,
 				self.pk(id),
 			),
@@ -222,7 +229,7 @@ func (self *ElasticsearchBackend) Retrieve(name string, id interface{}, fields .
 		if res, err := self.client.Get(
 			fmt.Sprintf(
 				"/%s/%s/%v",
-				self.esIndexName(collection.Name),
+				collection.Name,
 				self.docType,
 				self.pk(id),
 			),
@@ -235,7 +242,22 @@ func (self *ElasticsearchBackend) Retrieve(name string, id interface{}, fields .
 				return nil, err
 			}
 
-			return dal.NewRecord(doc.ID).SetFields(doc.Source), nil
+			if ids := sliceutil.Sliceify(doc.Keys(self.pkSeparator)); len(ids) == collection.KeyCount() {
+				var record = dal.NewRecord(nil).SetFields(doc.Source)
+
+				if err := record.SetKeys(collection, dal.RetrieveOperation, ids...); err != nil {
+					return nil, err
+				}
+
+				if err := record.Populate(record, collection); err != nil {
+					return nil, err
+				}
+
+				return record, nil
+			} else {
+				return nil, fmt.Errorf("%v: expected %d key values, got %d", self, collection.KeyCount(), len(ids))
+			}
+
 		} else {
 			return nil, err
 		}
@@ -267,7 +289,7 @@ func (self *ElasticsearchBackend) Delete(name string, ids ...interface{}) error 
 			if _, err := self.client.Delete(
 				fmt.Sprintf(
 					"/%s/%s/%v",
-					self.esIndexName(collection.Name),
+					collection.Name,
 					self.docType,
 					self.pk(id),
 				),
@@ -287,8 +309,8 @@ func (self *ElasticsearchBackend) Delete(name string, ids ...interface{}) error 
 func (self *ElasticsearchBackend) CreateCollection(definition *dal.Collection) error {
 	var index = elasticsearchCreateIndex{
 		Settings: elasticsearchIndexSettings{
-			NumberOfShards:   ElasticsearchDefaultShards,
-			NumberOfReplicas: ElasticsearchDefaultReplicas,
+			NumberOfShards:   self.shards,
+			NumberOfReplicas: self.replicas,
 		},
 		Mappings: elasticsearchIndexMappings{
 			Properties: make(map[string]interface{}),
@@ -321,12 +343,12 @@ func (self *ElasticsearchBackend) CreateCollection(definition *dal.Collection) e
 	}
 
 	if _, err := self.client.Put(
-		fmt.Sprintf(
-			"/%s",
-			self.esIndexName(definition.Name),
-		),
+		`/`+definition.Name,
 		&index,
-		nil,
+		map[string]interface{}{
+			`wait_for_active_shards`: 1,
+			`include_type_name`:      false,
+		},
 		nil,
 	); err == nil {
 		self.RegisterCollection(definition)
@@ -338,7 +360,7 @@ func (self *ElasticsearchBackend) CreateCollection(definition *dal.Collection) e
 
 func (self *ElasticsearchBackend) DeleteCollection(name string) error {
 	if collection, err := self.GetCollection(name); err == nil {
-		res, err := self.client.Delete(`/`+self.esIndexName(collection.Name), nil, nil)
+		res, err := self.client.Delete(`/`+collection.Name, nil, nil)
 		self.tableCache.Delete(collection.Name)
 
 		if res.StatusCode == 404 {
@@ -403,17 +425,18 @@ func (self *ElasticsearchBackend) cacheIndex(name string) (*dal.Collection, erro
 	return collection, nil
 }
 
-func (self *ElasticsearchBackend) esIndexName(collectionName string) string {
-	return stringutil.Underscore(collectionName)
-}
-
 func (self *ElasticsearchBackend) upsertRecords(collection *dal.Collection, records *dal.RecordSet, isCreate bool) error {
 	for _, record := range records.Records {
-		var body = record.Map()
+		if r, err := collection.StructToRecord(record); err == nil {
+			record = r
+		} else {
+			return err
+		}
+
 		var pk = self.pk(record.Keys(collection))
 
-		delete(body, `id`)
-		body[`_id`] = pk
+		delete(record.Fields, collection.IdentityField)
+		delete(record.Fields, `_id`)
 
 		if _, err := self.client.Post(
 			fmt.Sprintf(
@@ -422,7 +445,7 @@ func (self *ElasticsearchBackend) upsertRecords(collection *dal.Collection, reco
 				self.docType,
 				pk,
 			),
-			body,
+			record.Map(),
 			nil,
 			nil,
 		); err != nil {

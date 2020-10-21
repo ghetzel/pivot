@@ -14,6 +14,7 @@ import (
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/ghetzel/pivot/v3/filter/generators"
@@ -43,6 +44,11 @@ type elasticsearchDocument struct {
 	Score   float64                `json:"_score"`
 	Found   bool                   `json:"found"`
 	Source  map[string]interface{} `json:"_source"`
+}
+
+func (self *elasticsearchDocument) Keys(sep string) []string {
+	var id = typeutil.String(self.ID)
+	return strings.Split(id, sep)
 }
 
 type hits struct {

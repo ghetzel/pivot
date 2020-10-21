@@ -25,6 +25,26 @@ import (
 type testTypeWithStringer int
 
 const (
+	nameCollectionTestManagement                    = `test_collection_management`
+	nameCollectionTestBasicCRUD                     = `test_basic_crud`
+	nameCollectionTestFormattersRandomID            = `test_formatters_random_id`
+	nameCollectionTestIdFormattersIdFromFieldValues = `test_id_formatters_id_from_field_values`
+	nameCollectionTestSearchQuery                   = `test_search_query`
+	nameCollectionTestSearchQueryPaginated          = `test_search_query_paginated`
+	nameCollectionTestSearchQueryLimit              = `test_search_query_limit`
+	nameCollectionTestSearchQueryOffset             = `test_search_query_offset`
+	nameCollectionTestSearchQueryOffsetLimit        = `test_search_query_offset_limit`
+	nameCollectionTestCompositeKeyQueries           = `test_composite_key_queries`
+	nameCollectionTestListValues                    = `test_list_values`
+	nameCollectionTestSearchAnalysis                = `test_search_analysis`
+	nameCollectionTestObjectType                    = `test_object_type`
+	nameCollectionTestAggregators                   = `test_aggregators`
+	nameCollectionTestModelCRUD                     = `test_model_crud`
+	nameCollectionTestModelFind                     = `test_model_find`
+	nameCollectionTestModelList                     = `test_model_list`
+)
+
+const (
 	TestFirst testTypeWithStringer = iota
 	TestSecond
 	TestThird
@@ -157,8 +177,9 @@ func TestAll(t *testing.T) {
 
 		go shouldRun(&waiter, `fs`, func() { setupTestFilesystemJson(run) })
 		go shouldRun(&waiter, `fs`, func() { setupTestFilesystemYaml(run) })
-		shouldRun(&waiter, `fs`, func() { setupTestFilesystemDefault(run) })
+		go shouldRun(&waiter, `fs`, func() { setupTestFilesystemDefault(run) })
 
+		time.Sleep(time.Second)
 		waiter.Wait()
 	} else {
 		t.Logf("CI tests not running")
@@ -228,7 +249,7 @@ func setupTestRedis(version string, run testRunnerFunc) {
 func setupTestElasticsearch(version string, run testRunnerFunc) {
 	docker(`elasticsearch`, version, nil, func(res *dockertest.Resource) (backends.Backend, error) {
 		if b, err := makeBackend(
-			fmt.Sprintf("elasticsearch://localhost:%v/", res.GetPort("9200/tcp")),
+			fmt.Sprintf("elasticsearch://localhost:%v/?shards=1&replicas=1", res.GetPort("9200/tcp")),
 		); err == nil {
 			return b, b.Ping(time.Second)
 		} else {
@@ -387,16 +408,16 @@ func makeBackend(conn string, options ...backends.ConnectOptions) (backends.Back
 func testCollectionManagement(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 
-	err := backend.CreateCollection(dal.NewCollection(`TestCollectionManagement`))
+	err := backend.CreateCollection(dal.NewCollection(nameCollectionTestManagement))
 
 	defer func() {
-		assert.NoError(backend.DeleteCollection(`TestCollectionManagement`))
+		assert.NoError(backend.DeleteCollection(nameCollectionTestManagement))
 	}()
 
 	assert.NoError(err)
 
-	if coll, err := backend.GetCollection(`TestCollectionManagement`); err == nil {
-		assert.Equal(`TestCollectionManagement`, coll.Name)
+	if coll, err := backend.GetCollection(nameCollectionTestManagement); err == nil {
+		assert.Equal(nameCollectionTestManagement, coll.Name)
 	} else {
 		assert.NoError(err)
 	}
@@ -406,7 +427,7 @@ func testBasicCRUD(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 
 	err := backend.CreateCollection(
-		dal.NewCollection(`TestBasicCRUD`).
+		dal.NewCollection(nameCollectionTestBasicCRUD).
 			AddFields(dal.Field{
 				Name: `name`,
 				Type: dal.StringType,
@@ -417,7 +438,7 @@ func testBasicCRUD(t *testing.T, backend backends.Backend) {
 			}))
 
 	defer func() {
-		assert.Nil(backend.DeleteCollection(`TestBasicCRUD`))
+		assert.Nil(backend.DeleteCollection(nameCollectionTestBasicCRUD))
 	}()
 
 	assert.Nil(err)
@@ -430,14 +451,14 @@ func testBasicCRUD(t *testing.T, backend backends.Backend) {
 		dal.NewRecord(testCrudIdSet[1]).Set(`name`, `Second`),
 		dal.NewRecord(testCrudIdSet[2]).Set(`name`, `Third`))
 
-	assert.Nil(backend.Insert(`TestBasicCRUD`, recordset))
+	assert.Nil(backend.Insert(nameCollectionTestBasicCRUD, recordset))
 
-	assert.True(backend.Exists(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[0].ID)))
-	assert.True(backend.Exists(`TestBasicCRUD`, recordset.Records[0].ID))
-	assert.False(backend.Exists(`TestBasicCRUD`, `99`))
-	assert.False(backend.Exists(`TestBasicCRUD`, 99))
+	assert.True(backend.Exists(nameCollectionTestBasicCRUD, fmt.Sprintf("%v", recordset.Records[0].ID)))
+	assert.True(backend.Exists(nameCollectionTestBasicCRUD, recordset.Records[0].ID))
+	assert.False(backend.Exists(nameCollectionTestBasicCRUD, `99`))
+	assert.False(backend.Exists(nameCollectionTestBasicCRUD, 99))
 
-	record, err = backend.Retrieve(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[0].ID))
+	record, err = backend.Retrieve(nameCollectionTestBasicCRUD, fmt.Sprintf("%v", recordset.Records[0].ID))
 	assert.Nil(err)
 	assert.NotNil(record)
 
@@ -454,7 +475,7 @@ func testBasicCRUD(t *testing.T, backend backends.Backend) {
 	assert.IsType(time.Now(), v, fmt.Sprintf("expected time.Time, got %T (value=%v)", v, v))
 	assert.False(typeutil.IsZero(v))
 
-	record, err = backend.Retrieve(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[1].ID))
+	record, err = backend.Retrieve(nameCollectionTestBasicCRUD, fmt.Sprintf("%v", recordset.Records[1].ID))
 	assert.Nil(err)
 	assert.NotNil(record)
 
@@ -466,7 +487,7 @@ func testBasicCRUD(t *testing.T, backend backends.Backend) {
 
 	assert.Equal(`Second`, record.Get(`name`))
 
-	record, err = backend.Retrieve(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[2].ID))
+	record, err = backend.Retrieve(nameCollectionTestBasicCRUD, fmt.Sprintf("%v", recordset.Records[2].ID))
 	assert.Nil(err)
 	assert.NotNil(record)
 
@@ -484,10 +505,10 @@ func testBasicCRUD(t *testing.T, backend backends.Backend) {
 
 	// Update and Retrieve
 	// --------------------------------------------------------------------------------------------
-	assert.Nil(backend.Update(`TestBasicCRUD`, dal.NewRecordSet(
+	assert.Nil(backend.Update(nameCollectionTestBasicCRUD, dal.NewRecordSet(
 		dal.NewRecord(fmt.Sprintf("%v", recordset.Records[2].ID)).Set(`name`, `Threeve`))))
 
-	record, err = backend.Retrieve(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[2].ID))
+	record, err = backend.Retrieve(nameCollectionTestBasicCRUD, fmt.Sprintf("%v", recordset.Records[2].ID))
 	assert.Nil(err)
 	assert.NotNil(record)
 
@@ -501,7 +522,7 @@ func testBasicCRUD(t *testing.T, backend backends.Backend) {
 
 	// Retrieve-Delete-Verify
 	// --------------------------------------------------------------------------------------------
-	record, err = backend.Retrieve(`TestBasicCRUD`, fmt.Sprintf("%v", recordset.Records[1].ID))
+	record, err = backend.Retrieve(nameCollectionTestBasicCRUD, fmt.Sprintf("%v", recordset.Records[1].ID))
 	assert.Nil(err)
 
 	if testCrudIdSet[1] == nil {
@@ -510,14 +531,14 @@ func testBasicCRUD(t *testing.T, backend backends.Backend) {
 		assert.Equal(int64(2), record.ID)
 	}
 
-	assert.Nil(backend.Delete(`TestBasicCRUD`, recordset.Records[1].ID))
+	assert.Nil(backend.Delete(nameCollectionTestBasicCRUD, recordset.Records[1].ID))
 }
 
 func testIdFormattersRandomId(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 
 	assert.Nil(backend.CreateCollection(
-		dal.NewCollection(`TestIdFormattersRandomId`).
+		dal.NewCollection(nameCollectionTestFormattersRandomID).
 			SetIdentity(``, dal.StringType, dal.GenerateUUID, nil).
 			AddFields(dal.Field{
 				Name: `name`,
@@ -529,7 +550,7 @@ func testIdFormattersRandomId(t *testing.T, backend backends.Backend) {
 			})))
 
 	defer func() {
-		assert.Nil(backend.DeleteCollection(`TestIdFormattersRandomId`))
+		assert.Nil(backend.DeleteCollection(nameCollectionTestFormattersRandomID))
 	}()
 
 	// Insert and Retrieve (UUID)
@@ -540,23 +561,23 @@ func testIdFormattersRandomId(t *testing.T, backend backends.Backend) {
 		dal.NewRecord(nil).Set(`name`, `Third`))
 
 	assert.Equal(3, len(recordset.Records))
-	assert.Nil(backend.Insert(`TestIdFormattersRandomId`, recordset))
+	assert.Nil(backend.Insert(nameCollectionTestFormattersRandomID, recordset))
 
 	assert.NotNil(stringutil.MustUUID(fmt.Sprintf("%v", recordset.Records[0].ID)))
 	assert.NotNil(stringutil.MustUUID(fmt.Sprintf("%v", recordset.Records[1].ID)))
 	assert.NotNil(stringutil.MustUUID(fmt.Sprintf("%v", recordset.Records[2].ID)))
 
-	record, err := backend.Retrieve(`TestIdFormattersRandomId`, recordset.Records[0].ID)
+	record, err := backend.Retrieve(nameCollectionTestFormattersRandomID, recordset.Records[0].ID)
 	assert.NoError(err)
 	assert.EqualValues(recordset.Records[0].ID, record.ID)
 	assert.Equal(`First`, record.Get(`name`))
 
-	record, err = backend.Retrieve(`TestIdFormattersRandomId`, recordset.Records[1].ID)
+	record, err = backend.Retrieve(nameCollectionTestFormattersRandomID, recordset.Records[1].ID)
 	assert.NoError(err)
 	assert.EqualValues(recordset.Records[1].ID, record.ID)
 	assert.Equal(`Second`, record.Get(`name`))
 
-	record, err = backend.Retrieve(`TestIdFormattersRandomId`, recordset.Records[2].ID)
+	record, err = backend.Retrieve(nameCollectionTestFormattersRandomID, recordset.Records[2].ID)
 	assert.NoError(err)
 	assert.EqualValues(recordset.Records[2].ID, record.ID)
 	assert.Equal(`Third`, record.Get(`name`))
@@ -566,7 +587,7 @@ func testIdFormattersIdFromFieldValues(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 
 	assert.Nil(backend.CreateCollection(
-		dal.NewCollection(`TestIdFormattersIdFromFieldValues`).
+		dal.NewCollection(nameCollectionTestIdFormattersIdFromFieldValues).
 			SetIdentity(``, dal.StringType, dal.DeriveFromFields("%v-%v", `group`, `name`), nil).
 			AddFields(dal.Field{
 				Name:         `group`,
@@ -584,7 +605,7 @@ func testIdFormattersIdFromFieldValues(t *testing.T, backend backends.Backend) {
 			})))
 
 	defer func() {
-		assert.Nil(backend.DeleteCollection(`TestIdFormattersIdFromFieldValues`))
+		assert.Nil(backend.DeleteCollection(nameCollectionTestIdFormattersIdFromFieldValues))
 	}()
 
 	// Insert and Retrieve (UUID)
@@ -595,24 +616,24 @@ func testIdFormattersIdFromFieldValues(t *testing.T, backend backends.Backend) {
 		dal.NewRecord(nil).Set(`name`, `third`))
 
 	assert.Equal(3, len(recordset.Records))
-	assert.Nil(backend.Insert(`TestIdFormattersIdFromFieldValues`, recordset))
+	assert.Nil(backend.Insert(nameCollectionTestIdFormattersIdFromFieldValues, recordset))
 
 	assert.Equal(`system-first`, fmt.Sprintf("%v", recordset.Records[0].ID), "%#+v", recordset.Records[0])
 	assert.Equal(`users-first`, fmt.Sprintf("%v", recordset.Records[1].ID), "%#+v", recordset.Records[1])
 	assert.Equal(`system-third`, fmt.Sprintf("%v", recordset.Records[2].ID), "%#+v", recordset.Records[2])
 
-	record, err := backend.Retrieve(`TestIdFormattersIdFromFieldValues`, recordset.Records[0].ID)
+	record, err := backend.Retrieve(nameCollectionTestIdFormattersIdFromFieldValues, recordset.Records[0].ID)
 	assert.NoError(err)
 	assert.EqualValues(`system-first`, record.ID, "%#+v", record)
 	assert.Equal(`first`, record.Get(`name`))
 
-	record, err = backend.Retrieve(`TestIdFormattersIdFromFieldValues`, recordset.Records[1].ID)
+	record, err = backend.Retrieve(nameCollectionTestIdFormattersIdFromFieldValues, recordset.Records[1].ID)
 	assert.NoError(err)
 	assert.EqualValues(`users-first`, record.ID)
 	assert.Equal(`first`, record.Get(`name`))
 	assert.Equal(`users`, record.Get(`group`))
 
-	record, err = backend.Retrieve(`TestIdFormattersIdFromFieldValues`, recordset.Records[2].ID)
+	record, err = backend.Retrieve(nameCollectionTestIdFormattersIdFromFieldValues, recordset.Records[2].ID)
 	assert.NoError(err)
 	assert.EqualValues(`system-third`, record.ID)
 	assert.Equal(`third`, record.Get(`name`))
@@ -620,7 +641,7 @@ func testIdFormattersIdFromFieldValues(t *testing.T, backend backends.Backend) {
 
 func testSearchQuery(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
-	collection := dal.NewCollection(`TestSearchQuery`).
+	collection := dal.NewCollection(nameCollectionTestSearchQuery).
 		AddFields(dal.Field{
 			Name: `name`,
 			Type: dal.StringType,
@@ -630,7 +651,7 @@ func testSearchQuery(t *testing.T, backend backends.Backend) {
 		err := backend.CreateCollection(collection)
 
 		defer func() {
-			assert.Nil(backend.DeleteCollection(`TestSearchQuery`))
+			assert.Nil(backend.DeleteCollection(nameCollectionTestSearchQuery))
 		}()
 
 		assert.Nil(err)
@@ -638,7 +659,7 @@ func testSearchQuery(t *testing.T, backend backends.Backend) {
 		var record *dal.Record
 		var ok bool
 
-		assert.Nil(backend.Insert(`TestSearchQuery`, dal.NewRecordSet(
+		assert.Nil(backend.Insert(nameCollectionTestSearchQuery, dal.NewRecordSet(
 			dal.NewRecord(`1`).Set(`name`, `First`),
 			dal.NewRecord(`2`).Set(`name`, `Second`),
 			dal.NewRecord(`3`).Set(`name`, `Third`))))
@@ -701,7 +722,7 @@ func testSearchQuery(t *testing.T, backend backends.Backend) {
 
 func testSearchQueryPaginated(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
-	collection := dal.NewCollection(`TestSearchQueryPaginated`)
+	collection := dal.NewCollection(nameCollectionTestSearchQueryPaginated)
 
 	// set the global page size at the package level for this test
 	backends.IndexerPageSize = 5
@@ -710,7 +731,7 @@ func testSearchQueryPaginated(t *testing.T, backend backends.Backend) {
 		err := backend.CreateCollection(collection)
 
 		defer func() {
-			assert.Nil(backend.DeleteCollection(`TestSearchQueryPaginated`))
+			assert.Nil(backend.DeleteCollection(nameCollectionTestSearchQueryPaginated))
 		}()
 
 		assert.Nil(err)
@@ -723,7 +744,7 @@ func testSearchQueryPaginated(t *testing.T, backend backends.Backend) {
 			)
 		}
 
-		assert.Nil(backend.Insert(`TestSearchQueryPaginated`, rsSave))
+		assert.Nil(backend.Insert(nameCollectionTestSearchQueryPaginated, rsSave))
 
 		f := filter.All()
 		f.Limit = 25
@@ -744,14 +765,14 @@ func testSearchQueryPaginated(t *testing.T, backend backends.Backend) {
 func testSearchQueryLimit(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 	backends.IndexerPageSize = 100
-	c := dal.NewCollection(`TestSearchQueryLimit`)
+	c := dal.NewCollection(nameCollectionTestSearchQueryLimit)
 
 	if search := backend.WithSearch(c); search != nil {
 		c.IdentityFieldType = dal.StringType
 		err := backend.CreateCollection(c)
 
 		defer func() {
-			assert.Nil(backend.DeleteCollection(`TestSearchQueryLimit`))
+			assert.Nil(backend.DeleteCollection(nameCollectionTestSearchQueryLimit))
 		}()
 
 		assert.Nil(err)
@@ -762,7 +783,7 @@ func testSearchQueryLimit(t *testing.T, backend backends.Backend) {
 			rsSave.Push(dal.NewRecord(fmt.Sprintf("%02d", i)))
 		}
 
-		assert.Nil(backend.Insert(`TestSearchQueryLimit`, rsSave))
+		assert.Nil(backend.Insert(nameCollectionTestSearchQueryLimit, rsSave))
 
 		f, err := filter.Parse(`all`)
 		assert.Nil(err)
@@ -790,14 +811,14 @@ func testSearchQueryLimit(t *testing.T, backend backends.Backend) {
 func testSearchQueryOffset(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 	backends.IndexerPageSize = 100
-	c := dal.NewCollection(`TestSearchQueryOffset`)
+	c := dal.NewCollection(nameCollectionTestSearchQueryOffset)
 
 	if search := backend.WithSearch(c); search != nil {
 		c.IdentityFieldType = dal.StringType
 		err := backend.CreateCollection(c)
 
 		defer func() {
-			assert.Nil(backend.DeleteCollection(`TestSearchQueryOffset`))
+			assert.Nil(backend.DeleteCollection(nameCollectionTestSearchQueryOffset))
 		}()
 
 		assert.Nil(err)
@@ -808,7 +829,7 @@ func testSearchQueryOffset(t *testing.T, backend backends.Backend) {
 			rsSave.Push(dal.NewRecord(fmt.Sprintf("%02d", i)))
 		}
 
-		assert.Nil(backend.Insert(`TestSearchQueryOffset`, rsSave))
+		assert.Nil(backend.Insert(nameCollectionTestSearchQueryOffset, rsSave))
 
 		f, err := filter.Parse(`all`)
 		assert.Nil(err)
@@ -835,7 +856,7 @@ func testSearchQueryOffset(t *testing.T, backend backends.Backend) {
 
 func testSearchQueryOffsetLimit(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
-	c := dal.NewCollection(`TestSearchQueryOffsetLimit`)
+	c := dal.NewCollection(nameCollectionTestSearchQueryOffsetLimit)
 
 	if search := backend.WithSearch(c); search != nil {
 		old := backends.IndexerPageSize
@@ -849,7 +870,7 @@ func testSearchQueryOffsetLimit(t *testing.T, backend backends.Backend) {
 		err := backend.CreateCollection(c)
 
 		defer func() {
-			assert.Nil(backend.DeleteCollection(`TestSearchQueryOffsetLimit`))
+			assert.Nil(backend.DeleteCollection(nameCollectionTestSearchQueryOffsetLimit))
 		}()
 
 		assert.Nil(err)
@@ -860,7 +881,7 @@ func testSearchQueryOffsetLimit(t *testing.T, backend backends.Backend) {
 			rsSave.Push(dal.NewRecord(fmt.Sprintf("%02d", i)))
 		}
 
-		assert.Nil(backend.Insert(`TestSearchQueryOffsetLimit`, rsSave))
+		assert.Nil(backend.Insert(nameCollectionTestSearchQueryOffsetLimit, rsSave))
 
 		f, err := filter.Parse(`all`)
 		assert.Nil(err)
@@ -888,7 +909,7 @@ func testSearchQueryOffsetLimit(t *testing.T, backend backends.Backend) {
 func testCompositeKeyQueries(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 	collection := &dal.Collection{
-		Name:              `TestCompositeKeyQueries`,
+		Name:              nameCollectionTestCompositeKeyQueries,
 		IdentityFieldType: dal.StringType,
 		Fields: []dal.Field{
 			{
@@ -906,12 +927,12 @@ func testCompositeKeyQueries(t *testing.T, backend backends.Backend) {
 		err := backend.CreateCollection(collection)
 
 		defer func() {
-			assert.Nil(backend.DeleteCollection(`TestCompositeKeyQueries`))
+			assert.Nil(backend.DeleteCollection(nameCollectionTestCompositeKeyQueries))
 		}()
 
 		assert.Nil(err)
 
-		assert.Nil(backend.Insert(`TestCompositeKeyQueries`, dal.NewRecordSet(
+		assert.Nil(backend.Insert(nameCollectionTestCompositeKeyQueries, dal.NewRecordSet(
 			dal.NewRecord(`a`).SetFields(map[string]interface{}{
 				`other_id`: 1,
 				`group`:    `first`,
@@ -955,7 +976,7 @@ func testCompositeKeyQueries(t *testing.T, backend backends.Backend) {
 
 func testListValues(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
-	collection := dal.NewCollection(`TestListValues`).
+	collection := dal.NewCollection(nameCollectionTestListValues).
 		AddFields(dal.Field{
 			Name: `name`,
 			Type: dal.StringType,
@@ -968,12 +989,12 @@ func testListValues(t *testing.T, backend backends.Backend) {
 		err := backend.CreateCollection(collection)
 
 		defer func() {
-			assert.Nil(backend.DeleteCollection(`TestListValues`))
+			assert.Nil(backend.DeleteCollection(nameCollectionTestListValues))
 		}()
 
 		assert.Nil(err)
 
-		assert.Nil(backend.Insert(`TestListValues`, dal.NewRecordSet(
+		assert.Nil(backend.Insert(nameCollectionTestListValues, dal.NewRecordSet(
 			dal.NewRecord(`1`).SetFields(map[string]interface{}{
 				`name`:  `first`,
 				`group`: `reds`,
@@ -1024,7 +1045,7 @@ func testListValues(t *testing.T, backend backends.Backend) {
 
 func testSearchAnalysis(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
-	collection := dal.NewCollection(`TestSearchAnalysis`).
+	collection := dal.NewCollection(nameCollectionTestSearchAnalysis).
 		AddFields(dal.Field{
 			Name: `single`,
 			Type: dal.StringType,
@@ -1037,12 +1058,12 @@ func testSearchAnalysis(t *testing.T, backend backends.Backend) {
 		err := backend.CreateCollection(collection)
 
 		defer func() {
-			assert.Nil(backend.DeleteCollection(`TestSearchAnalysis`))
+			assert.Nil(backend.DeleteCollection(nameCollectionTestSearchAnalysis))
 		}()
 
 		assert.Nil(err)
 
-		assert.Nil(backend.Insert(`TestSearchAnalysis`, dal.NewRecordSet(
+		assert.Nil(backend.Insert(nameCollectionTestSearchAnalysis, dal.NewRecordSet(
 			dal.NewRecord(`1`).SetFields(map[string]interface{}{
 				`single`:           `first-result`,
 				`char_filter_test`: `this:resUlt`,
@@ -1077,14 +1098,14 @@ func testObjectType(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
 
 	err := backend.CreateCollection(
-		dal.NewCollection(`TestObjectType`).
+		dal.NewCollection(nameCollectionTestObjectType).
 			AddFields(dal.Field{
 				Name: `properties`,
 				Type: dal.ObjectType,
 			}))
 
 	defer func() {
-		assert.Nil(backend.DeleteCollection(`TestObjectType`))
+		assert.Nil(backend.DeleteCollection(nameCollectionTestObjectType))
 	}()
 
 	assert.Nil(err)
@@ -1107,9 +1128,9 @@ func testObjectType(t *testing.T, backend backends.Backend) {
 			`count`: 3,
 		}))
 
-	assert.Nil(backend.Insert(`TestObjectType`, recordset))
+	assert.Nil(backend.Insert(nameCollectionTestObjectType, recordset))
 
-	record, err = backend.Retrieve(`TestObjectType`, recordset.Records[0].ID)
+	record, err = backend.Retrieve(nameCollectionTestObjectType, recordset.Records[0].ID)
 	assert.NoError(err)
 	assert.NotNil(record)
 
@@ -1125,7 +1146,7 @@ func testObjectType(t *testing.T, backend backends.Backend) {
 
 func testAggregators(t *testing.T, backend backends.Backend) {
 	assert := require.New(t)
-	collection := dal.NewCollection(`TestAggregators`).
+	collection := dal.NewCollection(nameCollectionTestAggregators).
 		AddFields(dal.Field{
 			Name: `color`,
 			Type: dal.StringType,
@@ -1145,7 +1166,7 @@ func testAggregators(t *testing.T, backend backends.Backend) {
 	err := backend.CreateCollection(collection)
 
 	defer func() {
-		assert.NoError(backend.DeleteCollection(`TestAggregators`))
+		assert.NoError(backend.DeleteCollection(nameCollectionTestAggregators))
 	}()
 
 	assert.NoError(err)
@@ -1153,7 +1174,7 @@ func testAggregators(t *testing.T, backend backends.Backend) {
 	if agg := backend.WithAggregator(collection); agg != nil {
 		// Insert and Retrieve
 		// --------------------------------------------------------------------------------------------
-		assert.NoError(backend.Insert(`TestAggregators`, dal.NewRecordSet(
+		assert.NoError(backend.Insert(nameCollectionTestAggregators, dal.NewRecordSet(
 			dal.NewRecord(1).Set(`color`, `red`).Set(`inventory`, 34).Set(`factor`, float64(2.7)).Set(`created_at`, time.Now()),
 			dal.NewRecord(2).Set(`color`, `green`).Set(`inventory`, 92).Set(`factor`, float64(9.8)).Set(`created_at`, time.Now()),
 			dal.NewRecord(3).Set(`color`, `blue`).Set(`inventory`, 0).Set(`factor`, float64(5.6)).Set(`created_at`, time.Now()),
@@ -1200,7 +1221,7 @@ func testModelCRUD(t *testing.T, db backends.Backend) {
 	}
 
 	model1 := mapper.NewModel(db, &dal.Collection{
-		Name: `testModelCRUD`,
+		Name: nameCollectionTestModelCRUD,
 		Fields: []dal.Field{
 			{
 				Name: `name`,
@@ -1287,7 +1308,7 @@ func testModelFind(t *testing.T, db backends.Backend) {
 	}
 
 	model := mapper.NewModel(db, &dal.Collection{
-		Name: `testModelFind`,
+		Name: nameCollectionTestModelFind,
 		Fields: []dal.Field{
 			{
 				Name: `name`,
@@ -1400,7 +1421,7 @@ func testModelList(t *testing.T, db backends.Backend) {
 	}
 
 	model := mapper.NewModel(db, &dal.Collection{
-		Name: `testModelList`,
+		Name: nameCollectionTestModelList,
 		Fields: []dal.Field{
 			{
 				Name: `name`,
