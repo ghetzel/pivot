@@ -50,17 +50,19 @@ var NotImplementedError = fmt.Errorf("Not Implemented")
 type BackendFunc func(dal.ConnectionString) Backend
 
 var backendMap = map[string]BackendFunc{
-	`dynamodb`:   NewDynamoBackend,
-	`file`:       NewFileBackend,
-	`fs`:         NewFilesystemBackend,
-	`mongodb`:    NewMongoBackend,
-	`mongo`:      NewMongoBackend,
-	`mysql`:      NewSqlBackend,
-	`postgres`:   NewSqlBackend,
-	`postgresql`: NewSqlBackend,
-	`psql`:       NewSqlBackend,
-	`sqlite`:     NewSqlBackend,
-	`redis`:      NewRedisBackend,
+	`dynamodb`:      NewDynamoBackend,
+	`file`:          NewFileBackend,
+	`fs`:            NewFilesystemBackend,
+	`mongodb`:       NewMongoBackend,
+	`mongo`:         NewMongoBackend,
+	`mysql`:         NewSqlBackend,
+	`postgres`:      NewSqlBackend,
+	`postgresql`:    NewSqlBackend,
+	`psql`:          NewSqlBackend,
+	`sqlite`:        NewSqlBackend,
+	`redis`:         NewRedisBackend,
+	`elasticsearch`: NewElasticsearchBackend,
+	`es`:            NewElasticsearchBackend,
 }
 
 // Register a new or replacement backend for the given connection string scheme.

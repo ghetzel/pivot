@@ -27,7 +27,7 @@ Below is a table describing which data systems are currently supported.  For sys
 | MongoDB          | X       | X         |       |
 | Amazon DynamoDB  | X       | _partial_ | Supports queries that involve Range Key and Sort Key *only* |
 | Redis            | X       |           |       |
-| Elasticsearch    |         | X         |       |
+| Elasticsearch    | X       | X         |       |
 
 ## How: Examples
 

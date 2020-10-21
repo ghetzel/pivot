@@ -153,6 +153,8 @@ func TestAll(t *testing.T) {
 		go shouldRun(&waiter, `sqlite`, func() { setupTestSqliteWithAdditionalBleveIndexer(run) })
 		go shouldRun(&waiter, `sqlite`, func() { setupTestSqliteWithBleveIndexer(run) })
 
+		go shouldRun(&waiter, `elasticsearch`, func() { setupTestElasticsearch(`6.8.0`, run) })
+
 		go shouldRun(&waiter, `fs`, func() { setupTestFilesystemJson(run) })
 		go shouldRun(&waiter, `fs`, func() { setupTestFilesystemYaml(run) })
 		shouldRun(&waiter, `fs`, func() { setupTestFilesystemDefault(run) })
@@ -215,6 +217,18 @@ func setupTestRedis(version string, run testRunnerFunc) {
 	docker(`redis`, version, nil, func(res *dockertest.Resource) (backends.Backend, error) {
 		if b, err := makeBackend(
 			fmt.Sprintf("redis://localhost:%v/testing?autoregister=true", res.GetPort("6379/tcp")),
+		); err == nil {
+			return b, b.Ping(time.Second)
+		} else {
+			return nil, err
+		}
+	}, run)
+}
+
+func setupTestElasticsearch(version string, run testRunnerFunc) {
+	docker(`elasticsearch`, version, nil, func(res *dockertest.Resource) (backends.Backend, error) {
+		if b, err := makeBackend(
+			fmt.Sprintf("elasticsearch://localhost:%v/", res.GetPort("9200/tcp")),
 		); err == nil {
 			return b, b.Ping(time.Second)
 		} else {

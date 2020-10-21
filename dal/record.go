@@ -296,7 +296,7 @@ func (self *Record) OnlyFields(fields []string) *Record {
 }
 
 func (self *Record) Map(fields ...string) map[string]interface{} {
-	out := make(map[string]interface{})
+	var out = make(map[string]interface{})
 
 	if self.ID != nil {
 		out[`id`] = self.ID
