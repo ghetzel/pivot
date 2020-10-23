@@ -7,15 +7,15 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 250,
-    "LineCount": 9314,
-    "SourceLineCount": 7229,
-    "FunctionCount": 340,
-    "TypeCount": 31,
+    "LineCount": 9730,
+    "SourceLineCount": 7582,
+    "FunctionCount": 360,
+    "TypeCount": 32,
     "ConstantCount": 16,
-    "VariableCount": 33,
+    "VariableCount": 39,
     "Statistics": {
-        "Mean": 0.0184,
-        "StdDev": 0.1324,
+        "Mean": 0.0173,
+        "StdDev": 0.1283,
         "GeometricMean": 0,
         "HarmonicMean": 0,
         "Median": 0,
@@ -71,9 +71,9 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 3084,
-            "LineCount": 110,
-            "SourceLineCount": 87,
+            "Size": 3203,
+            "LineCount": 112,
+            "SourceLineCount": 89,
             "FunctionCount": 2,
             "TypeCount": 3,
             "ConstantCount": 3,
@@ -387,9 +387,9 @@
                     "Alias": "generators"
                 }
             ],
-            "Size": 4662,
-            "LineCount": 170,
-            "SourceLineCount": 136,
+            "Size": 4279,
+            "LineCount": 161,
+            "SourceLineCount": 129,
             "FunctionCount": 8,
             "TypeCount": 0,
             "ConstantCount": 0,
@@ -398,10 +398,6 @@
         {
             "Name": "elasticsearch-indexer.go",
             "Imports": [
-                {
-                    "PackageName": "bytes",
-                    "Alias": "bytes"
-                },
                 {
                     "PackageName": "encoding/json",
                     "Alias": "json"
@@ -415,8 +411,72 @@
                     "Alias": "math"
                 },
                 {
-                    "PackageName": "net",
-                    "Alias": "net"
+                    "PackageName": "strings",
+                    "Alias": "strings"
+                },
+                {
+                    "PackageName": "sync",
+                    "Alias": "sync"
+                },
+                {
+                    "PackageName": "time",
+                    "Alias": "time"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/httputil",
+                    "Alias": "httputil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/log",
+                    "Alias": "log"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
+                    "Alias": "sliceutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
+                    "Alias": "typeutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/dal",
+                    "Alias": "dal"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/filter",
+                    "Alias": "filter"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/filter/generators",
+                    "Alias": "generators"
+                }
+            ],
+            "Size": 14887,
+            "LineCount": 556,
+            "SourceLineCount": 435,
+            "FunctionCount": 13,
+            "TypeCount": 1,
+            "ConstantCount": 0,
+            "VariableCount": 8
+        },
+        {
+            "Name": "elasticsearch.go",
+            "Imports": [
+                {
+                    "PackageName": "encoding/json",
+                    "Alias": "json"
+                },
+                {
+                    "PackageName": "fmt",
+                    "Alias": "fmt"
+                },
+                {
+                    "PackageName": "io",
+                    "Alias": "io"
+                },
+                {
+                    "PackageName": "io/ioutil",
+                    "Alias": "ioutil"
                 },
                 {
                     "PackageName": "net/http",
@@ -435,8 +495,12 @@
                     "Alias": "time"
                 },
                 {
-                    "PackageName": "github.com/ghetzel/go-stockutil/log",
-                    "Alias": "log"
+                    "PackageName": "unicode",
+                    "Alias": "unicode"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/httputil",
+                    "Alias": "httputil"
                 },
                 {
                     "PackageName": "github.com/ghetzel/go-stockutil/maputil",
@@ -447,25 +511,29 @@
                     "Alias": "sliceutil"
                 },
                 {
+                    "PackageName": "github.com/ghetzel/go-stockutil/stringutil",
+                    "Alias": "stringutil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
+                    "Alias": "typeutil"
+                },
+                {
                     "PackageName": "github.com/ghetzel/pivot/v3/dal",
                     "Alias": "dal"
                 },
                 {
                     "PackageName": "github.com/ghetzel/pivot/v3/filter",
                     "Alias": "filter"
-                },
-                {
-                    "PackageName": "github.com/ghetzel/pivot/v3/filter/generators",
-                    "Alias": "generators"
                 }
             ],
-            "Size": 16368,
-            "LineCount": 608,
-            "SourceLineCount": 479,
-            "FunctionCount": 13,
+            "Size": 11176,
+            "LineCount": 475,
+            "SourceLineCount": 402,
+            "FunctionCount": 20,
             "TypeCount": 1,
             "ConstantCount": 0,
-            "VariableCount": 8
+            "VariableCount": 6
         },
         {
             "Name": "embedded-record-backend.go",
@@ -1592,9 +1660,37 @@
             "Expression": "3 * time.Second"
         },
         {
+            "Name": "ElasticsearchDefaultCompositeJoiner",
+            "Expression": "`:`",
+            "Value": ":"
+        },
+        {
+            "Name": "ElasticsearchDefaultHost",
+            "Expression": "`localhost:9200`",
+            "Value": "localhost:9200"
+        },
+        {
+            "Name": "ElasticsearchDefaultReplicas",
+            "Expression": "2"
+        },
+        {
+            "Name": "ElasticsearchDefaultScheme",
+            "Expression": "`http`",
+            "Value": "http"
+        },
+        {
+            "Name": "ElasticsearchDefaultShards",
+            "Expression": "3"
+        },
+        {
+            "Name": "ElasticsearchDefaultType",
+            "Expression": "`_doc`",
+            "Value": "_doc"
+        },
+        {
             "Name": "ElasticsearchDocumentType",
-            "Expression": "`document`",
-            "Value": "document"
+            "Expression": "`_doc`",
+            "Value": "_doc"
         },
         {
             "Name": "ElasticsearchIdentityField",
@@ -1711,7 +1807,7 @@
             "IsPackageLevel": true
         },
         {
-            "Name": "NewRedisBackend",
+            "Name": "NewDynamoBackend",
             "Arguments": [
                 {
                     "Name": "connection",
@@ -1723,8 +1819,25 @@
                     "Type": "Backend"
                 }
             ],
-            "Signature": "NewRedisBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJcmV0dXJuICZSZWRpc0JhY2tlbmR7Y3M6IGNvbm5lY3Rpb24sIGtleVByZWZpeDogcmVkaXNEZWZhdWx0S2V5UHJlZml4LCB0aW1lb3V0OiByZWRpc0RlZmF1bHRQaW5nVGltZW91dH0KfQ==",
+            "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
+            "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "NewMongoBackend",
+            "Arguments": [
+                {
+                    "Name": "connection",
+                    "Type": "dal.ConnectionString"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "Backend"
+                }
+            ],
+            "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
+            "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
             "IsPackageLevel": true
         },
         {
@@ -1948,7 +2061,7 @@
                     "IsPackageLevel": true
                 },
                 {
-                    "Name": "NewMongoBackend",
+                    "Name": "NewElasticsearchBackend",
                     "Arguments": [
                         {
                             "Name": "connection",
@@ -1960,12 +2073,12 @@
                             "Type": "Backend"
                         }
                     ],
-                    "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
+                    "Signature": "NewElasticsearchBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoQmFja2VuZHtjczogY29ubmVjdGlvbiwgc2hhcmRzOiBFbGFzdGljc2VhcmNoRGVmYXVsdFNoYXJkcywgcmVwbGljYXM6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVwbGljYXN9Cn0=",
                     "IsPackageLevel": true
                 },
                 {
-                    "Name": "NewFileBackend",
+                    "Name": "NewRedisBackend",
                     "Arguments": [
                         {
                             "Name": "connection",
@@ -1977,25 +2090,8 @@
                             "Type": "Backend"
                         }
                     ],
-                    "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewDynamoBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
+                    "Signature": "NewRedisBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZSZWRpc0JhY2tlbmR7Y3M6IGNvbm5lY3Rpb24sIGtleVByZWZpeDogcmVkaXNEZWZhdWx0S2V5UHJlZml4LCB0aW1lb3V0OiByZWRpc0RlZmF1bHRQaW5nVGltZW91dH0KfQ==",
                     "IsPackageLevel": true
                 },
                 {
@@ -2013,6 +2109,23 @@
                     ],
                     "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
                     "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewFileBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
                     "IsPackageLevel": true
                 }
             ],
@@ -3376,6 +3489,362 @@
             "Source": "dHlwZSBEeW5hbW9CYWNrZW5kIHN0cnVjdCB7CglCYWNrZW5kCglJbmRleGVyCgp9Cg==",
             "HasUnexportedFields": true
         },
+        "ElasticsearchBackend": {
+            "Name": "ElasticsearchBackend",
+            "MetaType": "struct",
+            "Methods": [
+                {
+                    "Name": "CreateCollection",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "definition",
+                            "Type": "*dal.Collection"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "CreateCollection(definition *dal.Collection) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Delete",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "name",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "ids",
+                            "Type": "...interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Delete(name string, ids ...interface{}) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "DeleteCollection",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "name",
+                            "Type": "string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "DeleteCollection(name string) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Exists",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "name",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "id",
+                            "Type": "interface{}"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "bool"
+                        }
+                    ],
+                    "Signature": "Exists(name string, id interface{}) bool",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Flush",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Flush() error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "GetCollection",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "name",
+                            "Type": "string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*dal.Collection"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "GetCollection(name string) (*dal.Collection, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "GetConnectionString",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "*dal.ConnectionString"
+                        }
+                    ],
+                    "Signature": "GetConnectionString() *dal.ConnectionString",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Initialize",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Initialize() error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Insert",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "name",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "records",
+                            "Type": "*dal.RecordSet"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Insert(name string, records *dal.RecordSet) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "ListCollections",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "[]string"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "ListCollections() ([]string, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Ping",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "timeout",
+                            "Type": "time.Duration"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Ping(timeout time.Duration) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "RegisterCollection",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "definition",
+                            "Type": "*dal.Collection"
+                        }
+                    ],
+                    "Signature": "RegisterCollection(definition *dal.Collection)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Retrieve",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "name",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "id",
+                            "Type": "interface{}"
+                        },
+                        {
+                            "Name": "fields",
+                            "Type": "...string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "*dal.Record"
+                        },
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "SetIndexer",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "indexConnString",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "SetIndexer(indexConnString dal.ConnectionString) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "String",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Returns": [
+                        {
+                            "Type": "string"
+                        }
+                    ],
+                    "Signature": "String() string",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Supports",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "features",
+                            "Type": "...BackendFeature"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "bool"
+                        }
+                    ],
+                    "Signature": "Supports(features ...BackendFeature) bool",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "Update",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "name",
+                            "Type": "string"
+                        },
+                        {
+                            "Name": "records",
+                            "Type": "*dal.RecordSet"
+                        },
+                        {
+                            "Name": "target",
+                            "Type": "...string"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "error"
+                        }
+                    ],
+                    "Signature": "Update(name string, records *dal.RecordSet, target ...string) error",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "WithAggregator",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "collection",
+                            "Type": "*dal.Collection"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Aggregator"
+                        }
+                    ],
+                    "Signature": "WithAggregator(collection *dal.Collection) Aggregator",
+                    "IsPackageLevel": false
+                },
+                {
+                    "Name": "WithSearch",
+                    "PointerReceiver": true,
+                    "ReceiverName": "self",
+                    "Arguments": [
+                        {
+                            "Name": "collection",
+                            "Type": "*dal.Collection"
+                        },
+                        {
+                            "Name": "filters",
+                            "Type": "...*filter.Filter"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Indexer"
+                        }
+                    ],
+                    "Signature": "WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer",
+                    "IsPackageLevel": false
+                }
+            ],
+            "Source": "dHlwZSBFbGFzdGljc2VhcmNoQmFja2VuZCBzdHJ1Y3QgewoKfQo=",
+            "HasUnexportedFields": true
+        },
         "ElasticsearchIndexer": {
             "Name": "ElasticsearchIndexer",
             "MetaType": "struct",
@@ -3765,7 +4234,7 @@
                         }
                     ],
                     "Signature": "NewElasticsearchIndexer(connection dal.ConnectionString) *ElasticsearchIndexer",
-                    "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoSW5kZXhlcntjb25uOiAmY29ubmVjdGlvbiwgaW5kZXhDYWNoZTogbWFrZShtYXBbc3RyaW5nXSplbGFzdGljc2VhcmNoSW5kZXgpLCBpbmRleERlZmVycmVkQmF0Y2g6IG5ldyhlc0RlZmVycmVkQmF0Y2gpLCBjbGllbnQ6ICZodHRwLkNsaWVudHtUaW1lb3V0OiBFbGFzdGljc2VhcmNoUmVxdWVzdFRpbWVvdXQsIFRyYW5zcG9ydDogJmh0dHAuVHJhbnNwb3J0e0RpYWw6ICgmbmV0LkRpYWxlcntUaW1lb3V0OiBFbGFzdGljc2VhcmNoQ29ubmVjdFRpbWVvdXQsIEtlZXBBbGl2ZTogMzAgKiB0aW1lLlNlY29uZH0pLkRpYWwsIFRMU0hhbmRzaGFrZVRpbWVvdXQ6IEVsYXN0aWNzZWFyY2hUTFNUaW1lb3V0LCBSZXNwb25zZUhlYWRlclRpbWVvdXQ6IEVsYXN0aWNzZWFyY2hSZXNwb25zZUhlYWRlclRpbWVvdXR9fX0KfQ==",
+                    "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoSW5kZXhlcntjb25uOiAmY29ubmVjdGlvbiwgaW5kZXhDYWNoZTogbWFrZShtYXBbc3RyaW5nXSplbGFzdGljc2VhcmNoSW5kZXgpLCBpbmRleERlZmVycmVkQmF0Y2g6IG5ldyhlc0RlZmVycmVkQmF0Y2gpfQp9",
                     "IsPackageLevel": true
                 },
                 {

@@ -8,7 +8,10 @@ import (
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
+	"github.com/ghetzel/pivot/v3/util"
 )
+
+const ClientUserAgent = `pivot/` + util.Version
 
 var querylog = log.Logger()
 var stats, _ = statsd.New()

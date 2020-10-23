@@ -21,11 +21,25 @@ import (
 )
 
 var ElasticsearchDefaultType = `_doc`
-var ElasticsearchDefaultCompositeJoiner = `:`
+var ElasticsearchDefaultCompositeJoiner = `--`
 var ElasticsearchDefaultScheme = `http`
 var ElasticsearchDefaultHost = `localhost:9200`
 var ElasticsearchDefaultShards = 3
 var ElasticsearchDefaultReplicas = 2
+var ElasticsearchDefaultRefresh = `false`
+var ElasticsearchAnalyzers = map[string]interface{}{
+	`pivot_case_insensitive`: map[string]interface{}{
+		`tokenizer`: `keyword`,
+		`filter`:    []string{`lowercase`},
+	},
+}
+
+var ElasticsearchNormalizers = map[string]interface{}{
+	`pivot_normalize_string`: map[string]interface{}{
+		`type`:   `custom`,
+		`filter`: []string{`lowercase`},
+	},
+}
 
 type elasticsearchErrorCause struct {
 	Type         string `json:"type"`
@@ -42,17 +56,23 @@ type elasticsearchErrorDetail struct {
 }
 
 type elasticsearchError struct {
-	StatusCode int                      `json:"status"`
-	Detail     elasticsearchErrorDetail `json:"error"`
+	StatusCode int                       `json:"status"`
+	Detail     *elasticsearchErrorDetail `json:"error,omitempty"`
 }
 
 func (self *elasticsearchError) Error() string {
 	return self.Detail.Reason
 }
 
+type elasticsearchIndexAnalysis struct {
+	Analyzer   map[string]interface{} `json:"analyzer"`
+	Normalizer map[string]interface{} `json:"normalizer"`
+}
+
 type elasticsearchIndexSettings struct {
-	NumberOfShards   int `json:"index.number_of_shards"`
-	NumberOfReplicas int `json:"index.number_of_replicas"`
+	NumberOfShards   int                        `json:"index.number_of_shards"`
+	NumberOfReplicas int                        `json:"index.number_of_replicas"`
+	Analysis         elasticsearchIndexAnalysis `json:"analysis"`
 }
 
 type elasticsearchIndexMappings struct {
@@ -66,14 +86,16 @@ type elasticsearchCreateIndex struct {
 }
 
 type ElasticsearchBackend struct {
-	cs          dal.ConnectionString
-	indexer     Indexer
-	client      *httputil.Client
-	tableCache  sync.Map
-	docType     string
-	pkSeparator string
-	shards      int
-	replicas    int
+	cs              dal.ConnectionString
+	indexer         Indexer
+	client          *httputil.Client
+	tableCache      sync.Map
+	docType         string
+	pkSeparator     string
+	shards          int
+	replicas        int
+	refresh         string
+	iAmMyOwnIndexer bool
 }
 
 func NewElasticsearchBackend(connection dal.ConnectionString) Backend {
@@ -81,6 +103,7 @@ func NewElasticsearchBackend(connection dal.ConnectionString) Backend {
 		cs:       connection,
 		shards:   ElasticsearchDefaultShards,
 		replicas: ElasticsearchDefaultReplicas,
+		refresh:  ElasticsearchDefaultRefresh,
 	}
 }
 
@@ -132,23 +155,10 @@ func (self *ElasticsearchBackend) Initialize() error {
 		),
 	); err == nil {
 		self.client = client
+		self.client.SetErrorDecoder(esErrorDecoder)
 		self.client.SetHeader(`Content-Type`, `application/json`)
-		self.client.SetHeader(`Accept`, `identity`)
-		self.client.SetErrorDecoder(func(res *http.Response) error {
-			var body io.ReadCloser = res.Body
-
-			if body != nil {
-				var eserr elasticsearchError
-
-				if err := json.NewDecoder(body).Decode(&eserr); err == nil {
-					return &eserr
-				} else {
-					return err
-				}
-			} else {
-				return nil
-			}
-		})
+		self.client.SetHeader(`Accept-Encoding`, `identity`)
+		self.client.SetHeader(`User-Agent`, ClientUserAgent)
 	} else {
 		return err
 	}
@@ -159,10 +169,12 @@ func (self *ElasticsearchBackend) Initialize() error {
 	}
 
 	self.client.SetInsecureTLS(self.cs.Opt(`insecure`).Bool())
+
 	self.docType = self.cs.OptString(`type`, ElasticsearchDefaultType)
 	self.pkSeparator = self.cs.OptString(`joiner`, ElasticsearchDefaultCompositeJoiner)
 	self.shards = int(self.cs.OptInt(`shards`, int64(self.shards)))
 	self.replicas = int(self.cs.OptInt(`replicas`, int64(self.replicas)))
+	self.refresh = self.cs.OptString(`refresh`, self.refresh)
 
 	if self.cs.OptBool(`autoregister`, true) {
 		if res, err := self.client.Get(`/_cat/indices`, nil, nil); err == nil {
@@ -187,11 +199,18 @@ func (self *ElasticsearchBackend) Initialize() error {
 	}
 
 	if self.indexer == nil {
-		self.indexer = NewElasticsearchIndexer(self.cs)
+		var esi = NewElasticsearchIndexer(self.cs)
+
+		// we're going to use our client in the indexer
+		esi.client = self.client
+		esi.refresh = self.refresh
+		self.indexer = esi
 	}
 
 	if self.indexer != nil {
-		if err := self.indexer.IndexInitialize(self); err != nil {
+		if err := self.indexer.IndexInitialize(self); err == nil {
+			self.iAmMyOwnIndexer = true
+		} else {
 			return err
 		}
 	}
@@ -242,22 +261,7 @@ func (self *ElasticsearchBackend) Retrieve(name string, id interface{}, fields .
 				return nil, err
 			}
 
-			if ids := sliceutil.Sliceify(doc.Keys(self.pkSeparator)); len(ids) == collection.KeyCount() {
-				var record = dal.NewRecord(nil).SetFields(doc.Source)
-
-				if err := record.SetKeys(collection, dal.RetrieveOperation, ids...); err != nil {
-					return nil, err
-				}
-
-				if err := record.Populate(record, collection); err != nil {
-					return nil, err
-				}
-
-				return record, nil
-			} else {
-				return nil, fmt.Errorf("%v: expected %d key values, got %d", self, collection.KeyCount(), len(ids))
-			}
-
+			return doc.record(collection, self.pkSeparator)
 		} else {
 			return nil, err
 		}
@@ -311,6 +315,10 @@ func (self *ElasticsearchBackend) CreateCollection(definition *dal.Collection) e
 		Settings: elasticsearchIndexSettings{
 			NumberOfShards:   self.shards,
 			NumberOfReplicas: self.replicas,
+			Analysis: elasticsearchIndexAnalysis{
+				Analyzer:   ElasticsearchAnalyzers,
+				Normalizer: ElasticsearchNormalizers,
+			},
 		},
 		Mappings: elasticsearchIndexMappings{
 			Properties: make(map[string]interface{}),
@@ -318,28 +326,42 @@ func (self *ElasticsearchBackend) CreateCollection(definition *dal.Collection) e
 	}
 
 	for _, field := range definition.Fields {
-		var estype string
+		var estype map[string]interface{}
 
 		switch field.Type {
 		case dal.BooleanType:
-			estype = `boolean`
+			estype = map[string]interface{}{
+				`type`: `boolean`,
+			}
 		case dal.IntType:
-			estype = `long`
+			estype = map[string]interface{}{
+				`type`: `long`,
+			}
 		case dal.FloatType:
-			estype = `double`
+			estype = map[string]interface{}{
+				`type`: `double`,
+			}
 		case dal.TimeType:
-			estype = `date`
+			estype = map[string]interface{}{
+				`type`: `date`,
+			}
 		case dal.ObjectType:
-			estype = `object`
+			estype = map[string]interface{}{
+				`type`:    `object`,
+				`dynamic`: true,
+			}
 		case dal.ArrayType:
-			estype = `nested`
+			estype = map[string]interface{}{
+				`type`: `nested`,
+			}
 		default:
-			estype = `text`
+			estype = map[string]interface{}{
+				`type`:       `keyword`,
+				`normalizer`: `pivot_normalize_string`,
+			}
 		}
 
-		index.Mappings.Properties[field.Name] = map[string]interface{}{
-			`type`: estype,
-		}
+		index.Mappings.Properties[field.Name] = estype
 	}
 
 	if _, err := self.client.Put(
@@ -446,14 +468,16 @@ func (self *ElasticsearchBackend) upsertRecords(collection *dal.Collection, reco
 				pk,
 			),
 			record.Map(),
-			nil,
+			map[string]interface{}{
+				`refresh`: self.refresh,
+			},
 			nil,
 		); err != nil {
 			return err
 		}
 	}
 
-	if !collection.SkipIndexPersistence {
+	if !collection.SkipIndexPersistence && !self.iAmMyOwnIndexer {
 		if search := self.WithSearch(collection); search != nil {
 			if err := search.Index(collection, records); err != nil {
 				return err
@@ -462,4 +486,20 @@ func (self *ElasticsearchBackend) upsertRecords(collection *dal.Collection, reco
 	}
 
 	return nil
+}
+
+func esErrorDecoder(res *http.Response) error {
+	var body io.ReadCloser = res.Body
+
+	if body != nil {
+		var eserr elasticsearchError
+
+		if err := json.NewDecoder(body).Decode(&eserr); err == nil {
+			return &eserr
+		} else {
+			return err
+		}
+	} else {
+		return nil
+	}
 }

@@ -1,5 +1,7 @@
 package pivot
 
+import "github.com/ghetzel/pivot/v3/util"
+
 const ApplicationName = `pivot`
 const ApplicationSummary = `an extensible database abstraction service`
-const ApplicationVersion = `3.3.20`
+const ApplicationVersion = util.Version

@@ -139,7 +139,13 @@
 	
     <li>
 		
-		<a href="#NewRedisBackend">func NewRedisBackend(connection dal.ConnectionString) Backend</a>
+		<a href="#NewDynamoBackend">func NewDynamoBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#NewMongoBackend">func NewMongoBackend(connection dal.ConnectionString) Backend</a>
 		
 	</li>
 	
@@ -1212,6 +1218,286 @@
 				<a href="#DynamoBackend.WithSearch">
 					func
 					(self *DynamoBackend)
+					WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
+				</a>
+				
+			</li>
+			
+			
+		</ul>
+		
+	</li>
+	
+    <li>
+		<a href="#ElasticsearchBackend">type ElasticsearchBackend</a>
+
+		
+		
+		<ul>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.CreateCollection">
+					func
+					(self *ElasticsearchBackend)
+					CreateCollection(definition *dal.Collection) error
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.Delete">
+					func
+					(self *ElasticsearchBackend)
+					Delete(name string, ids ...interface{}) error
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.DeleteCollection">
+					func
+					(self *ElasticsearchBackend)
+					DeleteCollection(name string) error
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.Exists">
+					func
+					(self *ElasticsearchBackend)
+					Exists(name string, id interface{}) bool
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.Flush">
+					func
+					(self *ElasticsearchBackend)
+					Flush() error
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.GetCollection">
+					func
+					(self *ElasticsearchBackend)
+					GetCollection(name string) (*dal.Collection, error)
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.GetConnectionString">
+					func
+					(self *ElasticsearchBackend)
+					GetConnectionString() *dal.ConnectionString
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.Initialize">
+					func
+					(self *ElasticsearchBackend)
+					Initialize() error
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.Insert">
+					func
+					(self *ElasticsearchBackend)
+					Insert(name string, records *dal.RecordSet) error
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.ListCollections">
+					func
+					(self *ElasticsearchBackend)
+					ListCollections() ([]string, error)
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.Ping">
+					func
+					(self *ElasticsearchBackend)
+					Ping(timeout time.Duration) error
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.RegisterCollection">
+					func
+					(self *ElasticsearchBackend)
+					RegisterCollection(definition *dal.Collection)
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.Retrieve">
+					func
+					(self *ElasticsearchBackend)
+					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.SetIndexer">
+					func
+					(self *ElasticsearchBackend)
+					SetIndexer(indexConnString dal.ConnectionString) error
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.String">
+					func
+					(self *ElasticsearchBackend)
+					String() string
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.Supports">
+					func
+					(self *ElasticsearchBackend)
+					Supports(features ...BackendFeature) bool
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.Update">
+					func
+					(self *ElasticsearchBackend)
+					Update(name string, records *dal.RecordSet, target ...string) error
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.WithAggregator">
+					func
+					(self *ElasticsearchBackend)
+					WithAggregator(collection *dal.Collection) Aggregator
+				</a>
+				
+			</li>
+			
+			
+			
+			<li>
+				
+				<a href="#ElasticsearchBackend.WithSearch">
+					func
+					(self *ElasticsearchBackend)
 					WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer
 				</a>
 				
@@ -5099,7 +5385,7 @@
 			
 		</td>
 		<td class="text-right">3KB</td>
-		<td class="text-right">87</td>
+		<td class="text-right">89</td>
 		<td class="text-right">2</td>
 		<td class="text-right">3</td>
 		<td class="text-right">3</td>
@@ -5182,8 +5468,8 @@
 			<a href="elasticsearch-aggregator.go">elasticsearch-aggregator.go</a>
 			
 		</td>
-		<td class="text-right">5KB</td>
-		<td class="text-right">136</td>
+		<td class="text-right">4KB</td>
+		<td class="text-right">129</td>
 		<td class="text-right">8</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -5196,12 +5482,26 @@
 			<a href="elasticsearch-indexer.go">elasticsearch-indexer.go</a>
 			
 		</td>
-		<td class="text-right">16KB</td>
-		<td class="text-right">479</td>
+		<td class="text-right">15KB</td>
+		<td class="text-right">435</td>
 		<td class="text-right">13</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
 		<td class="text-right">8</td>
+	</tr>
+	
+	<tr>
+		<td class="text-left">
+			
+			<a href="elasticsearch.go">elasticsearch.go</a>
+			
+		</td>
+		<td class="text-right">11KB</td>
+		<td class="text-right">402</td>
+		<td class="text-right">20</td>
+		<td class="text-right">1</td>
+		<td class="text-right"></td>
+		<td class="text-right">6</td>
 	</tr>
 	
 	<tr>
@@ -5598,39 +5898,45 @@ const <span id="Sequential">Sequential                         </span> = iota
 	<a title="View Source" href="">&#10070;</a>
 
 	<pre>
-var <span id="AutopingTimeout">AutopingTimeout                   </span> = 5 * time.Second
-var <span id="BleveBatchFlushCount">BleveBatchFlushCount              </span> = 1
-var <span id="BleveBatchFlushInterval">BleveBatchFlushInterval           </span> = 10 * time.Second
-var <span id="BleveIdentityField">BleveIdentityField                </span> = `_id`
-var <span id="DefaultAmazonRegion">DefaultAmazonRegion               </span> = `us-east-1`
-var <span id="DefaultAutoregister">DefaultAutoregister               </span> = false
-var <span id="DefaultCompoundJoiner">DefaultCompoundJoiner             </span> = `:`
-var <span id="DefaultConnectTimeout">DefaultConnectTimeout             </span> = 10 * time.Second
-var <span id="DefaultSharedCredentialsFile">DefaultSharedCredentialsFile      </span> = `~/.aws/credentials`
-var <span id="DefaultSharedCredentialsProfile">DefaultSharedCredentialsProfile   </span> = `default`
-var <span id="DyanmoListFieldsLimit">DyanmoListFieldsLimit             </span> = 8192
-var <span id="ElasticsearchBatchFlushCount">ElasticsearchBatchFlushCount      </span> = 1
-var <span id="ElasticsearchBatchFlushInterval">ElasticsearchBatchFlushInterval   </span> = 10 * time.Second
-var <span id="ElasticsearchConnectTimeout">ElasticsearchConnectTimeout       </span> = 3 * time.Second
-var <span id="ElasticsearchDocumentType">ElasticsearchDocumentType         </span> = `document`
-var <span id="ElasticsearchIdentityField">ElasticsearchIdentityField        </span> = `_id`
-var <span id="ElasticsearchRequestTimeout">ElasticsearchRequestTimeout       </span> = 30 * time.Second
-var <span id="ElasticsearchResponseHeaderTimeout">ElasticsearchResponseHeaderTimeout</span> = 10 * time.Second
-var <span id="ElasticsearchTLSTimeout">ElasticsearchTLSTimeout           </span> = 10 * time.Second
-var <span id="FilesystemKeyJoiner">FilesystemKeyJoiner               </span> = `--`
-var <span id="FilesystemRecordCacheSize">FilesystemRecordCacheSize         </span> = 1024
-var <span id="IndexerPageSize">IndexerPageSize                   </span> = 100
-var <span id="IndexerResultsStop">IndexerResultsStop                </span> = fmt.Errorf(`stop indexer results`)
-var <span id="InitialPingTimeout">InitialPingTimeout                </span> = time.Duration(10) * time.Second
-var <span id="MaxFacetCardinality">MaxFacetCardinality               </span> = 10000
-var <span id="MongoIdentityField">MongoIdentityField                </span> = `_id`
-var <span id="NotImplementedError">NotImplementedError               </span> = fmt.Errorf(&#34;Not Implemented&#34;)
-var <span id="RecordCacheEnabled">RecordCacheEnabled                </span> = false
-var <span id="RedisDefaultAddress">RedisDefaultAddress               </span> = `localhost:6379`
-var <span id="RedisDefaultProtocol">RedisDefaultProtocol              </span> = `tcp`
-var <span id="SqlArrayFieldHintLength">SqlArrayFieldHintLength           </span> = 131069
-var <span id="SqlObjectFieldHintLength">SqlObjectFieldHintLength          </span> = 131071
-var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.lock`
+var <span id="AutopingTimeout">AutopingTimeout                    </span> = 5 * time.Second
+var <span id="BleveBatchFlushCount">BleveBatchFlushCount               </span> = 1
+var <span id="BleveBatchFlushInterval">BleveBatchFlushInterval            </span> = 10 * time.Second
+var <span id="BleveIdentityField">BleveIdentityField                 </span> = `_id`
+var <span id="DefaultAmazonRegion">DefaultAmazonRegion                </span> = `us-east-1`
+var <span id="DefaultAutoregister">DefaultAutoregister                </span> = false
+var <span id="DefaultCompoundJoiner">DefaultCompoundJoiner              </span> = `:`
+var <span id="DefaultConnectTimeout">DefaultConnectTimeout              </span> = 10 * time.Second
+var <span id="DefaultSharedCredentialsFile">DefaultSharedCredentialsFile       </span> = `~/.aws/credentials`
+var <span id="DefaultSharedCredentialsProfile">DefaultSharedCredentialsProfile    </span> = `default`
+var <span id="DyanmoListFieldsLimit">DyanmoListFieldsLimit              </span> = 8192
+var <span id="ElasticsearchBatchFlushCount">ElasticsearchBatchFlushCount       </span> = 1
+var <span id="ElasticsearchBatchFlushInterval">ElasticsearchBatchFlushInterval    </span> = 10 * time.Second
+var <span id="ElasticsearchConnectTimeout">ElasticsearchConnectTimeout        </span> = 3 * time.Second
+var <span id="ElasticsearchDefaultCompositeJoiner">ElasticsearchDefaultCompositeJoiner</span> = `:`
+var <span id="ElasticsearchDefaultHost">ElasticsearchDefaultHost           </span> = `localhost:9200`
+var <span id="ElasticsearchDefaultReplicas">ElasticsearchDefaultReplicas       </span> = 2
+var <span id="ElasticsearchDefaultScheme">ElasticsearchDefaultScheme         </span> = `http`
+var <span id="ElasticsearchDefaultShards">ElasticsearchDefaultShards         </span> = 3
+var <span id="ElasticsearchDefaultType">ElasticsearchDefaultType           </span> = `_doc`
+var <span id="ElasticsearchDocumentType">ElasticsearchDocumentType          </span> = `_doc`
+var <span id="ElasticsearchIdentityField">ElasticsearchIdentityField         </span> = `_id`
+var <span id="ElasticsearchRequestTimeout">ElasticsearchRequestTimeout        </span> = 30 * time.Second
+var <span id="ElasticsearchResponseHeaderTimeout">ElasticsearchResponseHeaderTimeout </span> = 10 * time.Second
+var <span id="ElasticsearchTLSTimeout">ElasticsearchTLSTimeout            </span> = 10 * time.Second
+var <span id="FilesystemKeyJoiner">FilesystemKeyJoiner                </span> = `--`
+var <span id="FilesystemRecordCacheSize">FilesystemRecordCacheSize          </span> = 1024
+var <span id="IndexerPageSize">IndexerPageSize                    </span> = 100
+var <span id="IndexerResultsStop">IndexerResultsStop                 </span> = fmt.Errorf(`stop indexer results`)
+var <span id="InitialPingTimeout">InitialPingTimeout                 </span> = time.Duration(10) * time.Second
+var <span id="MaxFacetCardinality">MaxFacetCardinality                </span> = 10000
+var <span id="MongoIdentityField">MongoIdentityField                 </span> = `_id`
+var <span id="NotImplementedError">NotImplementedError                </span> = fmt.Errorf(&#34;Not Implemented&#34;)
+var <span id="RecordCacheEnabled">RecordCacheEnabled                 </span> = false
+var <span id="RedisDefaultAddress">RedisDefaultAddress                </span> = `localhost:6379`
+var <span id="RedisDefaultProtocol">RedisDefaultProtocol               </span> = `tcp`
+var <span id="SqlArrayFieldHintLength">SqlArrayFieldHintLength            </span> = 131069
+var <span id="SqlObjectFieldHintLength">SqlObjectFieldHintLength           </span> = 131071
+var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.lock`
 </pre>
 </div>
 
@@ -5649,13 +5955,24 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 
 
-<h3 id="NewRedisBackend" data-kind="f">
-	func <a title="View Source" href="">NewRedisBackend</a>
-	<a class="permalink" href="#NewRedisBackend">&#182;</a>
+<h3 id="NewDynamoBackend" data-kind="f">
+	func <a title="View Source" href="">NewDynamoBackend</a>
+	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
+	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+<h3 id="NewMongoBackend" data-kind="f">
+	func <a title="View Source" href="">NewMongoBackend</a>
+	<a class="permalink" href="#NewMongoBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -5823,40 +6140,27 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 
 
 
-<h4 id="NewMongoBackend" data-kind="f">
-	func <a title="View Source" href="">NewMongoBackend</a>
-	<a class="permalink" href="#NewMongoBackend">&#182;</a>
+<h4 id="NewElasticsearchBackend" data-kind="f">
+	func <a title="View Source" href="">NewElasticsearchBackend</a>
+	<a class="permalink" href="#NewElasticsearchBackend">&#182;</a>
 </h4>
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
+	<pre>func NewElasticsearchBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
 
 
-<h4 id="NewFileBackend" data-kind="f">
-	func <a title="View Source" href="">NewFileBackend</a>
-	<a class="permalink" href="#NewFileBackend">&#182;</a>
+<h4 id="NewRedisBackend" data-kind="f">
+	func <a title="View Source" href="">NewRedisBackend</a>
+	<a class="permalink" href="#NewRedisBackend">&#182;</a>
 </h4>
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
-<h4 id="NewDynamoBackend" data-kind="f">
-	func <a title="View Source" href="">NewDynamoBackend</a>
-	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
+	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -5870,6 +6174,19 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewFileBackend" data-kind="f">
+	func <a title="View Source" href="">NewFileBackend</a>
+	<a class="permalink" href="#NewFileBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -7181,6 +7498,352 @@ var <span id="WriteLockFormat">WriteLockFormat                   </span> = `%s.l
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func (self *DynamoBackend) WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer</pre>
+</div>
+
+
+
+
+<h3 id="ElasticsearchBackend" data-kind="t">
+	type
+	<a title="View Source" href="">ElasticsearchBackend</a>
+	<a class="permalink" href="#ElasticsearchBackend">&#182;</a>
+</h3>
+
+<div class="decl" data-kind="d">
+	<a title="View Source" href="">&#182;</a>
+	
+	
+	
+	
+	<pre>type ElasticsearchBackend struct {
+  // contains filtered or unexported fields
+}</pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h4 id="ElasticsearchBackend.CreateCollection" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">CreateCollection</a>
+	<a class="permalink" href="#CreateCollection">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) CreateCollection(definition *dal.Collection) error</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.Delete" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">Delete</a>
+	<a class="permalink" href="#Delete">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) Delete(name string, ids ...interface{}) error</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.DeleteCollection" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">DeleteCollection</a>
+	<a class="permalink" href="#DeleteCollection">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) DeleteCollection(name string) error</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.Exists" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">Exists</a>
+	<a class="permalink" href="#Exists">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) Exists(name string, id interface{}) bool</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.Flush" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">Flush</a>
+	<a class="permalink" href="#Flush">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) Flush() error</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.GetCollection" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">GetCollection</a>
+	<a class="permalink" href="#GetCollection">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) GetCollection(name string) (*dal.Collection, error)</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.GetConnectionString" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">GetConnectionString</a>
+	<a class="permalink" href="#GetConnectionString">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) GetConnectionString() *dal.ConnectionString</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.Initialize" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">Initialize</a>
+	<a class="permalink" href="#Initialize">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) Initialize() error</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.Insert" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">Insert</a>
+	<a class="permalink" href="#Insert">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) Insert(name string, records *dal.RecordSet) error</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.ListCollections" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">ListCollections</a>
+	<a class="permalink" href="#ListCollections">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) ListCollections() ([]string, error)</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.Ping" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">Ping</a>
+	<a class="permalink" href="#Ping">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) Ping(timeout time.Duration) error</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.RegisterCollection" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">RegisterCollection</a>
+	<a class="permalink" href="#RegisterCollection">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) RegisterCollection(definition *dal.Collection)</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.Retrieve" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">Retrieve</a>
+	<a class="permalink" href="#Retrieve">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.SetIndexer" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">SetIndexer</a>
+	<a class="permalink" href="#SetIndexer">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) SetIndexer(indexConnString dal.ConnectionString) error</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.String" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">String</a>
+	<a class="permalink" href="#String">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) String() string</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.Supports" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">Supports</a>
+	<a class="permalink" href="#Supports">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) Supports(features ...BackendFeature) bool</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.Update" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">Update</a>
+	<a class="permalink" href="#Update">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) Update(name string, records *dal.RecordSet, target ...string) error</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.WithAggregator" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">WithAggregator</a>
+	<a class="permalink" href="#WithAggregator">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) WithAggregator(collection *dal.Collection) Aggregator</pre>
+</div>
+
+
+
+
+<h4 id="ElasticsearchBackend.WithSearch" data-kind="f">
+	func
+	(self *ElasticsearchBackend)
+	<a title="View Source" href="">WithSearch</a>
+	<a class="permalink" href="#WithSearch">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func (self *ElasticsearchBackend) WithSearch(collection *dal.Collection, filters ...*filter.Filter) Indexer</pre>
 </div>
 
 

@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/ghetzel/go-stockutil/httputil"
+	"github.com/ghetzel/go-stockutil/maputil"
+	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/ghetzel/pivot/v3/filter/generators"
@@ -13,8 +16,10 @@ import (
 
 type esAggregationQuery struct {
 	Aggregations map[string]esAggregation `json:"aggs"`
-	Filter       map[string]interface{}   `json:"filter,omitempty"`
+	Query        map[string]interface{}   `json:"query,omitempty"`
 	Size         int                      `json:"size"`
+	From         int                      `json:"from"`
+	Sort         []string                 `json:"sort,omitempty"`
 }
 
 type esAggregation map[string]interface{}
@@ -30,24 +35,27 @@ func (self *ElasticsearchIndexer) Count(collection *dal.Collection, flt ...*filt
 		f = flt[0]
 	}
 
-	f.Limit = 1
+	if query, err := filter.Render(
+		generators.NewElasticsearchGenerator(),
+		collection.GetAggregatorName(),
+		f,
+	); err == nil {
+		if res, err := self.client.GetWithBody(
+			fmt.Sprintf("/%s/_doc/_count", collection.GetAggregatorName()),
+			httputil.Literal(query),
+			nil,
+			nil,
+		); err == nil {
+			var rv map[string]interface{}
 
-	var count uint64
-	var wasSet bool
-
-	if _, err := self.Query(collection, f, func(_ *dal.Record, err error, page IndexPage) error {
-		if err == nil {
-			if !wasSet {
-				count = uint64(page.TotalResults)
-				wasSet = true
+			if err := self.client.Decode(res.Body, &rv); err == nil {
+				return uint64(typeutil.Int(rv[`count`])), nil
+			} else {
+				return 0, err
 			}
-
-			return nil
 		} else {
-			return err
+			return 0, err
 		}
-	}); err == nil {
-		return count, nil
 	} else {
 		return 0, err
 	}
@@ -80,7 +88,24 @@ func (self *ElasticsearchIndexer) aggregateFloat(collection *dal.Collection, agg
 			Field:       field,
 		},
 	}, flt, true); err == nil {
-		return result.(float64), nil
+		var aggkey string
+
+		switch aggregation {
+		case filter.Minimum:
+			aggkey = `min`
+		case filter.Maximum:
+			aggkey = `max`
+		case filter.Sum:
+			aggkey = `sum`
+		case filter.Average:
+			aggkey = `avg`
+		}
+
+		if aggkey != `` {
+			return maputil.M(result).Float(`aggregations.` + field + `.` + aggkey), nil
+		} else {
+			return 0, fmt.Errorf("unknown aggregation")
+		}
 	} else {
 		return 0, err
 	}
@@ -101,7 +126,7 @@ func (self *ElasticsearchIndexer) aggregate(collection *dal.Collection, groupBy 
 		var esFilter map[string]interface{}
 
 		if err := json.Unmarshal(query, &esFilter); err == nil {
-			aggs := esAggregationQuery{
+			var aggs = esAggregationQuery{
 				Aggregations: make(map[string]esAggregation),
 			}
 
@@ -123,37 +148,28 @@ func (self *ElasticsearchIndexer) aggregate(collection *dal.Collection, groupBy 
 			}
 
 			if len(esFilter) > 0 {
-				aggs.Filter = esFilter
+				aggs.Query = maputil.M(esFilter).Get(`query`).MapNative()
 				aggs.Size = 0
 			}
 
-			if query, err := json.Marshal(aggs); err == nil {
-				if req, err := self.newRequest(`GET`, fmt.Sprintf("/%s/_search", collection.GetAggregatorName()), string(query)); err == nil {
-					// perform request, read response
-					if response, err := self.client.Do(req); err == nil {
-						if response.StatusCode < 400 {
-							output := make(map[string]interface{})
+			if response, err := self.client.GetWithBody(
+				fmt.Sprintf("/%s/_search", collection.GetAggregatorName()),
+				&aggs,
+				nil,
+				nil,
+			); err == nil {
+				var output = make(map[string]interface{})
 
-							if err := json.NewDecoder(response.Body).Decode(&output); err == nil {
-								return output, nil
-							} else {
-								return nil, fmt.Errorf("response decode error: %v", err)
-							}
-						} else {
-							return nil, fmt.Errorf("Got HTTP %v", response.Status)
-						}
-					} else {
-						return nil, err
-					}
-
+				if err := self.client.Decode(response.Body, &output); err == nil {
+					return output, nil
 				} else {
-					return nil, err
+					return nil, fmt.Errorf("response decode error: %v", err)
 				}
 			} else {
-				return nil, fmt.Errorf("filter encode error: %v", err)
+				return nil, err
 			}
 		} else {
-			return nil, fmt.Errorf("filter decode error: %v", err)
+			return nil, fmt.Errorf("filter encode error: %v", err)
 		}
 	} else {
 		return nil, fmt.Errorf("filter error: %v", err)

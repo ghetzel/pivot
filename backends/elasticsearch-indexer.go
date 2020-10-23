@@ -1,18 +1,15 @@
 package backends
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"math"
-	"net"
-	"net/http"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/httputil"
 	"github.com/ghetzel/go-stockutil/log"
-	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/dal"
@@ -23,7 +20,8 @@ import (
 var ElasticsearchBatchFlushCount = 1
 var ElasticsearchBatchFlushInterval = 10 * time.Second
 var ElasticsearchIdentityField = `_id`
-var ElasticsearchDocumentType = `document`
+var ElasticsearchDocumentType = `_doc`
+var ElasticsearchScrollLifetime = `1m`
 
 var ElasticsearchRequestTimeout = 30 * time.Second
 var ElasticsearchConnectTimeout = 3 * time.Second
@@ -44,6 +42,24 @@ type elasticsearchDocument struct {
 	Score   float64                `json:"_score"`
 	Found   bool                   `json:"found"`
 	Source  map[string]interface{} `json:"_source"`
+}
+
+func (self *elasticsearchDocument) record(collection *dal.Collection, sep string) (*dal.Record, error) {
+	if ids := sliceutil.Sliceify(self.Keys(sep)); len(ids) == collection.KeyCount() {
+		var record = dal.NewRecord(nil).SetFields(self.Source)
+
+		if err := record.SetKeys(collection, dal.RetrieveOperation, ids...); err != nil {
+			return nil, err
+		}
+
+		if err := record.Populate(record, collection); err != nil {
+			return nil, err
+		}
+
+		return record, nil
+	} else {
+		return nil, fmt.Errorf("%v: expected %d key values, got %d", self, collection.KeyCount(), len(ids))
+	}
 }
 
 func (self *elasticsearchDocument) Keys(sep string) []string {
@@ -105,7 +121,7 @@ func (self *bulkOperation) GetBody() ([]map[string]interface{}, error) {
 	rv = append(rv, map[string]interface{}{
 		string(self.Type): map[string]interface{}{
 			`_index`: self.Index,
-			`_type`:  self.Type,
+			`_type`:  self.DocType,
 			`_id`:    self.ID,
 		},
 	})
@@ -121,7 +137,7 @@ func (self *bulkOperation) GetBody() ([]map[string]interface{}, error) {
 
 		if self.Type == bulkUpdate {
 			payload = map[string]interface{}{
-				`doc`: self.Payload,
+				ElasticsearchDefaultType: self.Payload,
 			}
 		} else {
 			payload = self.Payload
@@ -178,7 +194,9 @@ type ElasticsearchIndexer struct {
 	parent             Backend
 	indexCache         map[string]*elasticsearchIndex
 	indexDeferredBatch *esDeferredBatch
-	client             *http.Client
+	client             *httputil.Client
+	refresh            string
+	pkSeparator        string
 }
 
 func NewElasticsearchIndexer(connection dal.ConnectionString) *ElasticsearchIndexer {
@@ -186,17 +204,8 @@ func NewElasticsearchIndexer(connection dal.ConnectionString) *ElasticsearchInde
 		conn:               &connection,
 		indexCache:         make(map[string]*elasticsearchIndex),
 		indexDeferredBatch: new(esDeferredBatch),
-		client: &http.Client{
-			Timeout: ElasticsearchRequestTimeout,
-			Transport: &http.Transport{
-				Dial: (&net.Dialer{
-					Timeout:   ElasticsearchConnectTimeout,
-					KeepAlive: 30 * time.Second,
-				}).Dial,
-				TLSHandshakeTimeout:   ElasticsearchTLSTimeout,
-				ResponseHeaderTimeout: ElasticsearchResponseHeaderTimeout,
-			},
-		},
+		refresh:            ElasticsearchDefaultRefresh,
+		pkSeparator:        ElasticsearchDefaultCompositeJoiner,
 	}
 }
 
@@ -205,7 +214,30 @@ func (self *ElasticsearchIndexer) IndexConnectionString() *dal.ConnectionString 
 }
 
 func (self *ElasticsearchIndexer) IndexInitialize(parent Backend) error {
+	if self.client == nil {
+		if client, err := httputil.NewClient(
+			fmt.Sprintf(
+				"%s://%s",
+				self.conn.Protocol(ElasticsearchDefaultScheme),
+				self.conn.Host(ElasticsearchDefaultHost),
+			),
+		); err == nil {
+			self.client = client
+
+			self.client.SetErrorDecoder(esErrorDecoder)
+			self.client.Client().Timeout = ElasticsearchRequestTimeout
+			self.client.SetInsecureTLS(self.conn.OptBool(`insecure`, false))
+			self.client.SetHeader(`Content-Type`, `application/json`)
+			self.client.SetHeader(`Accept-Encoding`, `identity`)
+			self.client.SetHeader(`User-Agent`, ClientUserAgent)
+
+		} else {
+			return err
+		}
+	}
+
 	self.parent = parent
+
 	return nil
 }
 
@@ -217,26 +249,22 @@ func (self *ElasticsearchIndexer) IndexRetrieve(collection *dal.Collection, id i
 	defer stats.NewTiming().Send(`pivot.indexers.elasticsearch.retrieve_time`)
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
-		if req, err := self.newRequest(`GET`, fmt.Sprintf(
-			"/%v/%v/%v",
-			index.Name,
-			ElasticsearchDocumentType,
-			id,
-		), nil); err == nil {
-			if response, err := self.client.Do(req); err == nil {
-				if response.StatusCode < 400 {
-					var doc elasticsearchDocument
+		if response, err := self.client.Get(
+			fmt.Sprintf(
+				"/%s/%s/%v",
+				index.Name,
+				ElasticsearchDocumentType,
+				id,
+			),
+			nil,
+			nil,
+		); err == nil {
+			var doc elasticsearchDocument
 
-					if err := json.NewDecoder(response.Body).Decode(&doc); err == nil {
-						return dal.NewRecord(doc.ID).SetFields(doc.Source), nil
-					} else {
-						return nil, fmt.Errorf("decode error: %v", err)
-					}
-				} else {
-					return nil, fmt.Errorf("%v", response.Status)
-				}
+			if err := json.NewDecoder(response.Body).Decode(&doc); err == nil {
+				return doc.record(collection, self.pkSeparator)
 			} else {
-				return nil, fmt.Errorf("response error: %v", err)
+				return nil, fmt.Errorf("decode error: %v", err)
 			}
 		} else {
 			return nil, fmt.Errorf("request error: %v", err)
@@ -299,15 +327,24 @@ func (self *ElasticsearchIndexer) checkAndFlushBatches(forceFlush bool) {
 			if bulkBody, err := self.indexDeferredBatch.Flush(); err == nil {
 				querylog.Debugf("[%T] Indexing %d records to %s", self, l)
 
-				if req, err := self.newRequest(`POST`, `/_bulk`, bulkBody); err == nil {
-					if response, err := self.client.Do(req); err == nil {
-						if response.StatusCode >= 400 {
-							log.Errorf("[%T] error indexing %d records: %v", self, l, response.Status)
-						}
-					} else {
-						log.Errorf("[%T] error indexing %d records: %v", self, l, err)
+				var lines []string
+
+				for _, bb := range bulkBody {
+					if b, err := json.Marshal(bb); err == nil {
+						lines = append(lines, string(b))
 					}
-				} else {
+				}
+
+				if _, err := self.client.Post(
+					`/_bulk`,
+					httputil.Literal(
+						strings.Join(lines, "\n")+"\n",
+					),
+					map[string]interface{}{
+						`refresh`: self.refresh,
+					},
+					nil,
+				); err != nil {
 					log.Errorf("[%T] error indexing %d records: %v", self, l, err)
 				}
 			} else {
@@ -321,15 +358,46 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 	defer stats.NewTiming().Send(`pivot.indexers.elasticsearch.query_time`)
 
 	if f.IdentityField == `` {
-		f.IdentityField = ElasticsearchIdentityField
+		if collection != nil {
+			f.IdentityField = collection.IdentityField
+		} else {
+			f.IdentityField = ElasticsearchIdentityField
+		}
 	}
 
+	// for i, crit := range f.Criteria {
+	// 	switch crit.Field {
+	// 	case ElasticsearchIdentityField, `id`:
+	// 		f.Criteria[i].Field = sliceutil.OrString(
+	// 			collection.IdentityField,
+	// 			ElasticsearchIdentityField,
+	// 		)
+	// 	}
+	// }
+
 	if index, err := self.getIndexForCollection(collection); err == nil {
-		originalLimit := f.Limit
-		originalOffset := f.Offset
-		useScrollApi := false
-		isFirstScrollRequest := true
-		lastScrollId := ``
+		var useScrollApi bool
+		var lastScrollId string
+		var processed int
+		var originalLimit = f.Limit
+		var originalOffset = f.Offset
+		var isFirstScrollRequest = true
+		var page = 1
+
+		// shortpath for queries that specify both components of a composite key and nothing else
+		if ckeys := self.compositeKeyId(collection, f, self.pkSeparator); ckeys != `` {
+			if record, err := self.IndexRetrieve(collection, ckeys); err == nil {
+				return resultFn(record, nil, IndexPage{
+					Page:         1,
+					TotalPages:   1,
+					Limit:        originalLimit,
+					Offset:       f.Offset,
+					TotalResults: 1,
+				})
+			} else {
+				return err
+			}
+		}
 
 		// unbounded requests, or bounded ones exceeding 10k results, need to use the Scroll API
 		// see: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-scroll.html
@@ -345,9 +413,6 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 			f.Limit = originalLimit
 		}()
 
-		page := 1
-		processed := 0
-
 		// perform requests until we have enough results or the index is out of them
 		for {
 			if query, err := filter.Render(
@@ -355,59 +420,61 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 				index.Name,
 				f,
 			); err == nil {
-				var req *http.Request
+				var urlpath string
+				var body interface{}
 
 				// build the search request; either the initial Scroll API query, Scroll paging query,
 				// or just a regular old Search API query.
+
+				// if compositeId := self.compositeKeyId(collection, f, ElasticsearchDefaultCompositeJoiner); compositeId != `` {
+				// 	urlpath = fmt.Sprintf(
+				// 		"/%s/_doc/%s",
+				// 		index.Name,
+				// 		compositeId,
+				// 	)
+				// } else
+
 				if useScrollApi && isFirstScrollRequest {
-					if r, err := self.newRequest(`GET`, fmt.Sprintf("/%s/_search?scroll=1m", index.Name), string(query)); err == nil {
-						req = r
-						isFirstScrollRequest = false
-					} else {
-						return err
-					}
+					isFirstScrollRequest = false
+					urlpath = fmt.Sprintf("/%s/_search?scroll="+ElasticsearchScrollLifetime, index.Name)
+					body = httputil.Literal(query)
+
 				} else if useScrollApi {
-					if r, err := self.newRequest(`GET`, `/_search/scroll`, &elasticsearchScrollRequest{
-						ScrollLifetime: `1m`,
+					urlpath = `/_search/scroll`
+					body = &elasticsearchScrollRequest{
+						ScrollLifetime: ElasticsearchScrollLifetime,
 						ScrollId:       lastScrollId,
-					}); err == nil {
-						req = r
-					} else {
-						return err
 					}
 				} else {
-					if r, err := self.newRequest(`GET`, fmt.Sprintf("/%s/_search", index.Name), string(query)); err == nil {
-						req = r
-					} else {
-						return err
-					}
+					urlpath = fmt.Sprintf("/%s/_search", index.Name)
+					body = httputil.Literal(query)
 				}
 
 				// perform request, read response
-				if response, err := self.client.Do(req); err == nil {
-					if response.StatusCode < 400 {
-						var searchResult elasticsearchSearchResult
+				if response, err := self.client.GetWithBody(urlpath, body, nil, nil); err == nil {
+					var searchResult elasticsearchSearchResult
 
-						if err := json.NewDecoder(response.Body).Decode(&searchResult); err == nil {
-							results := searchResult.Hits
-							lastScrollId = searchResult.ScrollId
+					if err := self.client.Decode(response.Body, &searchResult); err == nil {
+						var results = searchResult.Hits
+						lastScrollId = searchResult.ScrollId
 
-							querylog.Debugf("[%T] Got %d/%d results", self, len(results.Hits), results.Total)
+						querylog.Debugf("[%T] Got %d/%d results", self, len(results.Hits), results.Total)
 
-							if len(results.Hits) == 0 {
-								return nil
-							}
+						if len(results.Hits) == 0 {
+							return nil
+						}
 
-							// totalPages = ceil(result count / page size)
-							totalPages := int(math.Ceil(float64(results.Total) / float64(f.Limit)))
+						// totalPages = ceil(result count / page size)
+						var totalPages = int(math.Ceil(float64(results.Total) / float64(f.Limit)))
 
-							if totalPages <= 0 {
-								totalPages = 1
-							}
+						if totalPages <= 0 {
+							totalPages = 1
+						}
 
-							// call the resultFn for each hit on this page
-							for _, hit := range results.Hits {
-								if err := resultFn(dal.NewRecord(hit.ID).SetFields(hit.Source), nil, IndexPage{
+						// call the resultFn for each hit on this page
+						for _, hit := range results.Hits {
+							if record, err := hit.record(collection, self.pkSeparator); err == nil {
+								if err := resultFn(record, nil, IndexPage{
 									Page:         page,
 									TotalPages:   totalPages,
 									Limit:        originalLimit,
@@ -424,34 +491,22 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 									querylog.Debugf("[%T] %d at or beyond limit %d, returning results", self, processed, originalLimit)
 									return nil
 								}
+							} else {
+								return err
 							}
+						}
 
-							// increment offset by the page size we just processed
-							page += 1
-							f.Offset += len(results.Hits)
+						// increment offset by the page size we just processed
+						page += 1
+						f.Offset += len(results.Hits)
 
-							// if the offset is now beyond the total results count
-							if int64(processed) >= results.Total {
-								querylog.Debugf("[%T] %d at or beyond total %d, returning results", self, processed, results.Total)
-								return nil
-							}
-
-						} else {
-							return err
+						// if the offset is now beyond the total results count
+						if int64(processed) >= results.Total {
+							querylog.Debugf("[%T] %d at or beyond total %d, returning results", self, processed, results.Total)
+							return nil
 						}
 					} else {
-						var errbody map[string]interface{}
-						json.NewDecoder(response.Body).Decode(&errbody)
-						reason := strings.Join(
-							sliceutil.Stringify(
-								maputil.Pluck(maputil.DeepGet(errbody, []string{
-									`error`, `root_cause`,
-								}), []string{`reason`}),
-							),
-							`; `,
-						)
-
-						return fmt.Errorf("%v: %s", response.Status, sliceutil.Or(reason, `Unknown Error`))
+						return fmt.Errorf("%v: %s", response.StatusCode, err)
 					}
 				} else {
 					return err
@@ -466,26 +521,42 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 }
 
 func (self *ElasticsearchIndexer) Query(collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
+	var recordset = dal.NewRecordSet()
+
 	if f.IdentityField == `` {
 		f.IdentityField = ElasticsearchIdentityField
 	}
 
-	return DefaultQueryImplementation(self, collection, f, resultFns...)
+	if err := self.QueryFunc(collection, f, func(record *dal.Record, err error, page IndexPage) error {
+		if err == nil {
+			recordset.Push(record)
+			PopulateRecordSetPageDetails(recordset, f, page)
+			return nil
+		} else {
+			return err
+		}
+	}); err == nil {
+		return recordset, nil
+	} else {
+		return nil, err
+	}
 }
 
 func (self *ElasticsearchIndexer) IndexRemove(collection *dal.Collection, ids []interface{}) error {
 	if index, err := self.getIndexForCollection(collection); err == nil {
+		var merr error
+
 		for _, id := range ids {
-			if req, err := self.newRequest(
-				`DELETE`,
+			_, err := self.client.Delete(
 				fmt.Sprintf("/%v/%v/%v", index.Name, ElasticsearchDocumentType, id),
 				nil,
-			); err == nil {
-				self.client.Do(req)
-			}
+				nil,
+			)
+
+			log.AppendError(merr, err)
 		}
 
-		return nil
+		return merr
 	} else {
 		return err
 	}
@@ -518,96 +589,54 @@ func (self *ElasticsearchIndexer) FlushIndex() error {
 	return nil
 }
 
-func (self *ElasticsearchIndexer) newRequest(method string, urlpath string, body interface{}) (*http.Request, error) {
-	var buf bytes.Buffer
-	var lines []string
-
-	for _, item := range sliceutil.Sliceify(body) {
-		if str, ok := item.(string); ok {
-			// strings go through as-is
-			lines = append(lines, str)
-
-		} else if data, err := json.Marshal(item); err == nil {
-			// everything else gets jsonified
-			lines = append(lines, string(data))
-		} else {
-			return nil, err
-		}
-	}
-
-	buf.Write([]byte(strings.Join(lines, "\n")))
-
-	querylog.Debugf("[%T] %v %v %v", self, method, urlpath, body)
-
-	host := self.conn.Host()
-	protocol := sliceutil.Or(self.conn.Protocol(), `http`)
-
-	if req, err := http.NewRequest(
-		method,
-		fmt.Sprintf("%s://%s/%s", protocol, host, strings.Trim(urlpath, `/`)),
-		&buf,
-	); err == nil {
-		req.Header.Set(`Content-Type`, `application/json`)
-
-		return req, nil
-	} else {
-		return nil, err
-	}
-}
-
 func (self *ElasticsearchIndexer) getIndexForCollection(collection *dal.Collection) (*elasticsearchIndex, error) {
 	defer stats.NewTiming().Send(`pivot.indexers.elasticsearch.retrieve_index`)
-	name := collection.GetIndexName()
+	var name = collection.GetIndexName()
 
 	if v, ok := self.indexCache[name]; ok {
 		return v, nil
 	} else {
-		if req, err := self.newRequest(`GET`, fmt.Sprintf("/%s", name), nil); err == nil {
-			if response, err := self.client.Do(req); err == nil {
-				switch {
-				case response.StatusCode < 400:
-					var index elasticsearchIndex
+		if response, err := self.client.Get(
+			fmt.Sprintf("/%s", name),
+			map[string]interface{}{
+				`include_type_name`: false,
+			},
+			nil,
+		); err == nil {
+			var index elasticsearchIndex
 
-					if err := json.NewDecoder(response.Body).Decode(&index); err == nil {
-						index.Name = name
-						self.indexCache[name] = &index
+			if err := self.client.Decode(response.Body, &index); err == nil {
+				index.Name = name
+				self.indexCache[name] = &index
 
-						return &index, nil
-					} else {
-						return nil, err
-					}
-
-				case response.StatusCode == 404:
-					return nil, fmt.Errorf("Index %v not found", name)
-
-				default:
-					return nil, err
-				}
+				return &index, nil
 			} else {
 				return nil, err
 			}
+		} else if response.StatusCode == 404 {
+			return nil, fmt.Errorf("Index %v not found", name)
 		} else {
 			return nil, err
 		}
 	}
 }
 
-func (self *ElasticsearchIndexer) useFilterMapping(index *elasticsearchIndex) {
-	// mappingImpl.AddCustomCharFilter(`remove_expression_tokens`, map[string]interface{}{
-	// 	`type`:   regexp.Name,
-	// 	`regexp`: `[\:\[\]\*]+`,
-	// })
+func (self *ElasticsearchIndexer) compositeKeyId(collection *dal.Collection, flt *filter.Filter, sep string) string {
+	if flt != nil && len(flt.Criteria) > 0 {
+		var parts []string
 
-	// mappingImpl.AddCustomAnalyzer(`pivot_filter`, map[string]interface{}{
-	// 	`type`: custom.Name,
-	// 	`char_filters`: []string{
-	// 		`remove_expression_tokens`,
-	// 	},
-	// 	`tokenizer`: single.Name,
-	// 	`token_filters`: []string{
-	// 		lowercase.Name,
-	// 	},
-	// })
+		for _, crit := range flt.Criteria {
+			if collection.IsIdentityField(crit.Field) || crit.Field == ElasticsearchIdentityField {
+				parts = append(parts, sliceutil.Stringify(crit.Values)...)
+			} else if collection.IsKeyField(crit.Field) {
+				parts = append(parts, sliceutil.Stringify(crit.Values)...)
+			}
+		}
 
-	// mappingImpl.DefaultAnalyzer = `pivot_filter`
+		if len(parts) == len(flt.Criteria) {
+			return strings.Join(parts, sep)
+		}
+	}
+
+	return ``
 }

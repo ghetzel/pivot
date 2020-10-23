@@ -82,36 +82,32 @@ func PopulateRecordSetPageDetails(recordset *dal.RecordSet, f *filter.Filter, pa
 }
 
 func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error) {
-	recordset := dal.NewRecordSet()
+	var recordset = dal.NewRecordSet()
 
 	if err := indexer.QueryFunc(collection, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
 		defer PopulateRecordSetPageDetails(recordset, f, page)
 
-		parent := indexer.GetBackend()
+		var parent = indexer.GetBackend()
 		var forceIndexRecord bool
 
 		// look for a filter option that specifies that we should explicitly NOT attempt to retrieve the
 		// record from the parent by ID, but rather always use the index record as-is.
 		if f != nil {
-			if vI, ok := f.Options[`ForceIndexRecord`]; ok {
-				if v, ok := vI.(bool); ok {
-					forceIndexRecord = v
-				}
+			if v, ok := f.Options[`ForceIndexRecord`].(bool); ok {
+				forceIndexRecord = v
 			}
 		}
 
 		// index compound field processing
 		if parent != nil {
 			if len(collection.IndexCompoundFields) > 1 {
-				joiner := collection.IndexCompoundFieldJoiner
+				var joiner = collection.IndexCompoundFieldJoiner
 
 				if joiner == `` {
 					joiner = DefaultCompoundJoiner
 				}
 
-				var values []interface{}
-
-				values = sliceutil.Sliceify(
+				var values = sliceutil.Sliceify(
 					strings.Split(fmt.Sprintf("%v", indexRecord.ID), joiner),
 				)
 
@@ -146,11 +142,11 @@ func DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *
 			}
 		}
 
-		emptyRecord := dal.NewRecord(indexRecord.ID)
+		var emptyRecord = dal.NewRecord(indexRecord.ID)
 		emptyRecord.Error = err
 
 		if len(resultFns) > 0 {
-			resultFn := resultFns[0]
+			var resultFn = resultFns[0]
 
 			if f.IdOnly() {
 				return resultFn(emptyRecord, err, page)

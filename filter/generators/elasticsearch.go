@@ -45,7 +45,7 @@ func (self *Elasticsearch) Initialize(collectionName string) error {
 }
 
 func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
-	conjunction := `must`
+	var conjunction = `must`
 
 	if flt.Conjunction == filter.OrConjunction {
 		conjunction = `should`
@@ -82,7 +82,7 @@ func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
 	}
 
 	if len(flt.Sort) > 0 {
-		sorts := make([]interface{}, 0)
+		var sorts = make([]interface{}, 0)
 
 		for _, sort := range flt.Sort {
 			if len(sort) > 1 && sort[0] == '-' {
@@ -143,10 +143,14 @@ func (self *Elasticsearch) WithCriterion(criterion filter.Criterion) error {
 	var err error
 
 	switch criterion.Operator {
-	case `is`, ``, `like`:
+	case `is`, ``:
 		c, err = esCriterionOperatorIs(self, criterion)
-	case `not`, `unlike`:
+	case `not`:
 		c, err = esCriterionOperatorNot(self, criterion)
+	case `like`:
+		c, err = esCriterionOperatorLike(self, criterion)
+	case `unlike`:
+		c, err = esCriterionOperatorUnlike(self, criterion)
 	case `contains`, `prefix`, `suffix`:
 		c, err = esCriterionOperatorPattern(self, criterion.Operator, criterion)
 	case `gt`, `gte`, `lt`, `lte`:
