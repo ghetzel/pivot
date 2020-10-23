@@ -962,16 +962,16 @@ func testCompositeKeyQueries(t *testing.T, backend backends.Backend) {
 		assert.EqualValues(1, record.Get(`other_id`))
 
 		// test scanning the primary key
-		// f, err = filter.Parse(`id/a`)
-		// // f = filter.All()
-		// assert.NoError(err)
+		f, err = filter.Parse(`id/a`)
+		// f = filter.All()
+		assert.NoError(err)
 
-		// recordset, err = search.Query(collection, f)
-		// assert.NoError(err)
-		// assert.NotNil(recordset)
+		recordset, err = search.Query(collection, f)
+		assert.NoError(err)
+		assert.NotNil(recordset)
 
-		// assert.EqualValues(2, recordset.ResultCount, "%v", recordset.Records)
-		// assert.ElementsMatch([]interface{}{int64(1), int64(2)}, recordset.Pluck(`other_id`))
+		assert.EqualValues(2, recordset.ResultCount, "%v", recordset.Records)
+		assert.ElementsMatch([]interface{}{int64(1), int64(2)}, recordset.Pluck(`other_id`))
 	}
 }
 
@@ -1379,7 +1379,7 @@ func testModelFind(t *testing.T, db backends.Backend) {
 
 	assert.NoError(model.All(&resultsStruct))
 	assert.Equal(3, len(resultsStruct))
-	assert.EqualValues([]ModelTwo{
+	assert.ElementsMatch([]ModelTwo{
 		{
 			ID:      1,
 			Name:    `test-one`,
@@ -1469,6 +1469,11 @@ func testModelList(t *testing.T, db backends.Backend) {
 	}))
 
 	values, err := model.List([]string{`name`})
+
+	if err != nil && err.Error() == `Not Implemented` {
+		return
+	}
+
 	assert.NoError(err)
 	assert.EqualValues([]interface{}{
 		`test-1`,

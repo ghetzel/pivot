@@ -489,17 +489,19 @@ func (self *ElasticsearchBackend) upsertRecords(collection *dal.Collection, reco
 }
 
 func esErrorDecoder(res *http.Response) error {
-	var body io.ReadCloser = res.Body
+	if res != nil {
+		var body io.ReadCloser = res.Body
 
-	if body != nil {
-		var eserr elasticsearchError
+		if body != nil {
+			var eserr elasticsearchError
 
-		if err := json.NewDecoder(body).Decode(&eserr); err == nil {
-			return &eserr
-		} else {
-			return err
+			if err := json.NewDecoder(body).Decode(&eserr); err == nil {
+				return &eserr
+			} else {
+				return err
+			}
 		}
-	} else {
-		return nil
 	}
+
+	return nil
 }
