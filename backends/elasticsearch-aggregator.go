@@ -40,9 +40,15 @@ func (self *ElasticsearchIndexer) Count(collection *dal.Collection, flt ...*filt
 		collection.GetAggregatorName(),
 		f,
 	); err == nil {
+		var q = maputil.M(query)
+
+		q.Delete(`size`)
+		q.Delete(`from`)
+		q.Delete(`sort`)
+
 		if res, err := self.client.GetWithBody(
 			fmt.Sprintf("/%s/_doc/_count", collection.GetAggregatorName()),
-			httputil.Literal(query),
+			httputil.Literal(q.JSON()),
 			nil,
 			nil,
 		); err == nil {

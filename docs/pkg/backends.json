@@ -7,15 +7,15 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 250,
-    "LineCount": 9730,
-    "SourceLineCount": 7582,
+    "LineCount": 9925,
+    "SourceLineCount": 7704,
     "FunctionCount": 360,
     "TypeCount": 32,
-    "ConstantCount": 16,
-    "VariableCount": 39,
+    "ConstantCount": 17,
+    "VariableCount": 43,
     "Statistics": {
-        "Mean": 0.0173,
-        "StdDev": 0.1283,
+        "Mean": 0.0172,
+        "StdDev": 0.1277,
         "GeometricMean": 0,
         "HarmonicMean": 0,
         "Median": 0,
@@ -69,14 +69,18 @@
                 {
                     "PackageName": "github.com/ghetzel/pivot/v3/filter",
                     "Alias": "filter"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/pivot/v3/util",
+                    "Alias": "util"
                 }
             ],
-            "Size": 3203,
-            "LineCount": 112,
-            "SourceLineCount": 89,
+            "Size": 3288,
+            "LineCount": 115,
+            "SourceLineCount": 91,
             "FunctionCount": 2,
             "TypeCount": 3,
-            "ConstantCount": 3,
+            "ConstantCount": 4,
             "VariableCount": 3
         },
         {
@@ -375,6 +379,18 @@
                     "Alias": "fmt"
                 },
                 {
+                    "PackageName": "github.com/ghetzel/go-stockutil/httputil",
+                    "Alias": "httputil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/maputil",
+                    "Alias": "maputil"
+                },
+                {
+                    "PackageName": "github.com/ghetzel/go-stockutil/typeutil",
+                    "Alias": "typeutil"
+                },
+                {
                     "PackageName": "github.com/ghetzel/pivot/v3/dal",
                     "Alias": "dal"
                 },
@@ -387,9 +403,9 @@
                     "Alias": "generators"
                 }
             ],
-            "Size": 4279,
-            "LineCount": 161,
-            "SourceLineCount": 129,
+            "Size": 5092,
+            "LineCount": 187,
+            "SourceLineCount": 154,
             "FunctionCount": 8,
             "TypeCount": 0,
             "ConstantCount": 0,
@@ -451,13 +467,13 @@
                     "Alias": "generators"
                 }
             ],
-            "Size": 14887,
-            "LineCount": 556,
-            "SourceLineCount": 435,
+            "Size": 18493,
+            "LineCount": 695,
+            "SourceLineCount": 503,
             "FunctionCount": 13,
             "TypeCount": 1,
             "ConstantCount": 0,
-            "VariableCount": 8
+            "VariableCount": 9
         },
         {
             "Name": "elasticsearch.go",
@@ -527,13 +543,13 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 11176,
-            "LineCount": 475,
-            "SourceLineCount": 402,
+            "Size": 12184,
+            "LineCount": 506,
+            "SourceLineCount": 432,
             "FunctionCount": 20,
             "TypeCount": 1,
             "ConstantCount": 0,
-            "VariableCount": 6
+            "VariableCount": 9
         },
         {
             "Name": "embedded-record-backend.go",
@@ -823,9 +839,9 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 5661,
-            "LineCount": 189,
-            "SourceLineCount": 150,
+            "Size": 5617,
+            "LineCount": 185,
+            "SourceLineCount": 147,
             "FunctionCount": 3,
             "TypeCount": 3,
             "ConstantCount": 0,
@@ -1526,6 +1542,11 @@
             "Immutable": true
         },
         {
+            "Name": "ClientUserAgent",
+            "Immutable": true,
+            "Expression": "`pivot/` + util.Version"
+        },
+        {
             "Name": "CompositeKeys",
             "Immutable": true
         },
@@ -1648,6 +1669,9 @@
             "Expression": "8192"
         },
         {
+            "Name": "ElasticsearchAnalyzers"
+        },
+        {
             "Name": "ElasticsearchBatchFlushCount",
             "Expression": "1"
         },
@@ -1661,13 +1685,18 @@
         },
         {
             "Name": "ElasticsearchDefaultCompositeJoiner",
-            "Expression": "`:`",
-            "Value": ":"
+            "Expression": "`--`",
+            "Value": "--"
         },
         {
             "Name": "ElasticsearchDefaultHost",
             "Expression": "`localhost:9200`",
             "Value": "localhost:9200"
+        },
+        {
+            "Name": "ElasticsearchDefaultRefresh",
+            "Expression": "`false`",
+            "Value": "false"
         },
         {
             "Name": "ElasticsearchDefaultReplicas",
@@ -1698,12 +1727,20 @@
             "Value": "_id"
         },
         {
+            "Name": "ElasticsearchNormalizers"
+        },
+        {
             "Name": "ElasticsearchRequestTimeout",
             "Expression": "30 * time.Second"
         },
         {
             "Name": "ElasticsearchResponseHeaderTimeout",
             "Expression": "10 * time.Second"
+        },
+        {
+            "Name": "ElasticsearchScrollLifetime",
+            "Expression": "`1m`",
+            "Value": "1m"
         },
         {
             "Name": "ElasticsearchTLSTimeout",
@@ -1803,7 +1840,7 @@
                 }
             ],
             "Signature": "DefaultQueryImplementation(indexer Indexer, collection *dal.Collection, f *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)",
-            "Source": "ewoJcmVjb3Jkc2V0IDo9IGRhbC5OZXdSZWNvcmRTZXQoKQoJaWYgZXJyIDo9IGluZGV4ZXIuUXVlcnlGdW5jKGNvbGxlY3Rpb24sIGYsIGZ1bmMoaW5kZXhSZWNvcmQgKmRhbC5SZWNvcmQsIGVyciBlcnJvciwgcGFnZSBJbmRleFBhZ2UpIGVycm9yIHsKCQlkZWZlciBQb3B1bGF0ZVJlY29yZFNldFBhZ2VEZXRhaWxzKHJlY29yZHNldCwgZiwgcGFnZSkKCQlwYXJlbnQgOj0gaW5kZXhlci5HZXRCYWNrZW5kKCkKCQl2YXIgZm9yY2VJbmRleFJlY29yZCBib29sCgkJaWYgZiAhPSBuaWwgewoJCQlpZiB2SSwgb2sgOj0gZi5PcHRpb25zW2BGb3JjZUluZGV4UmVjb3JkYF07IG9rIHsKCQkJCWlmIHYsIG9rIDo9IHZJLihib29sKTsgb2sgewoJCQkJCWZvcmNlSW5kZXhSZWNvcmQgPSB2CgkJCQl9CgkJCX0KCQl9CgkJaWYgcGFyZW50ICE9IG5pbCB7CgkJCWlmIGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpID4gMSB7CgkJCQlqb2luZXIgOj0gY29sbGVjdGlvbi5JbmRleENvbXBvdW5kRmllbGRKb2luZXIKCQkJCWlmIGpvaW5lciA9PSBgYCB7CgkJCQkJam9pbmVyID0gRGVmYXVsdENvbXBvdW5kSm9pbmVyCgkJCQl9CgkJCQl2YXIgdmFsdWVzIFtdaW50ZXJmYWNle30KCQkJCXZhbHVlcyA9IHNsaWNldXRpbC5TbGljZWlmeShzdHJpbmdzLlNwbGl0KGZtdC5TcHJpbnRmKCIldiIsIGluZGV4UmVjb3JkLklEKSwgam9pbmVyKSkKCQkJCWlmIGxlbih2YWx1ZXMpICE9IGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpIHsKCQkJCQlpZiBkaWZmIDo9IGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpIC0gbGVuKHZhbHVlcyk7IGRpZmYgPj0gMSB7CgkJCQkJCWZvciBfLCBjZiA6PSByYW5nZSBjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHNbZGlmZjpdIHsKCQkJCQkJCWlmIHYgOj0gaW5kZXhSZWNvcmQuR2V0KGNmKTsgdiAhPSBuaWwgewoJCQkJCQkJCXZhbHVlcyA9IGFwcGVuZCh2YWx1ZXMsIHYpCgkJCQkJCQl9CgkJCQkJCX0KCQkJCQl9CgkJCQkJaWYgbGVuKHZhbHVlcykgIT0gbGVuKGNvbGxlY3Rpb24uSW5kZXhDb21wb3VuZEZpZWxkcykgewoJCQkJCQlyZXR1cm4gZm10LkVycm9yZigiSW5kZXggaXRlbSAldjogZXhwZWN0ZWQgJWQgY29tcG91bmQgZmllbGQgY29tcG9uZW50cywgZ290ICVkIiwgaW5kZXhSZWNvcmQuSUQsIGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpLCBsZW4odmFsdWVzKSkKCQkJCQl9CgkJCQl9CgkJCQlmb3IgaSwgZmllbGQgOj0gcmFuZ2UgY29sbGVjdGlvbi5JbmRleENvbXBvdW5kRmllbGRzIHsKCQkJCQlpZiBpID09IDAgewoJCQkJCQlpbmRleFJlY29yZC5JRCA9IHZhbHVlcwoJCQkJCX0gZWxzZSB7CgkJCQkJCWluZGV4UmVjb3JkLlNldChmaWVsZCwgdmFsdWVzW2ldKQoJCQkJCX0KCQkJCX0KCQkJfQoJCX0KCQllbXB0eVJlY29yZCA6PSBkYWwuTmV3UmVjb3JkKGluZGV4UmVjb3JkLklEKQoJCWVtcHR5UmVjb3JkLkVycm9yID0gZXJyCgkJaWYgbGVuKHJlc3VsdEZucykgPiAwIHsKCQkJcmVzdWx0Rm4gOj0gcmVzdWx0Rm5zWzBdCgkJCWlmIGYuSWRPbmx5KCkgewoJCQkJcmV0dXJuIHJlc3VsdEZuKGVtcHR5UmVjb3JkLCBlcnIsIHBhZ2UpCgkJCX0gZWxzZSBpZiBwYXJlbnQgIT0gbmlsICYmICFmb3JjZUluZGV4UmVjb3JkIHsKCQkJCWlmIHJlY29yZCwgZXJyIDo9IHBhcmVudC5SZXRyaWV2ZShjb2xsZWN0aW9uLk5hbWUsIGluZGV4UmVjb3JkLklELCBmLkZpZWxkcy4uLik7IGVyciA9PSBuaWwgewoJCQkJCXJldHVybiByZXN1bHRGbihyZWNvcmQsIGVyciwgcGFnZSkKCQkJCX0gZWxzZSB7CgkJCQkJcmV0dXJuIHJlc3VsdEZuKGVtcHR5UmVjb3JkLCBlcnIsIHBhZ2UpCgkJCQl9CgkJCX0gZWxzZSB7CgkJCQlyZXR1cm4gcmVzdWx0Rm4oaW5kZXhSZWNvcmQsIGVyciwgcGFnZSkKCQkJfQoJCX0gZWxzZSB7CgkJCWlmIGYuSWRPbmx5KCkgewoJCQkJcmVjb3Jkc2V0LlJlY29yZHMgPSBhcHBlbmQocmVjb3Jkc2V0LlJlY29yZHMsIGRhbC5OZXdSZWNvcmQoaW5kZXhSZWNvcmQuSUQpKQoJCQl9IGVsc2UgaWYgcGFyZW50ICE9IG5pbCAmJiAhZm9yY2VJbmRleFJlY29yZCB7CgkJCQlpZiByZWNvcmQsIGVyciA6PSBwYXJlbnQuUmV0cmlldmUoY29sbGVjdGlvbi5OYW1lLCBpbmRleFJlY29yZC5JRCwgZi5GaWVsZHMuLi4pOyBlcnIgPT0gbmlsIHsKCQkJCQlyZWNvcmRzZXQuUmVjb3JkcyA9IGFwcGVuZChyZWNvcmRzZXQuUmVjb3JkcywgcmVjb3JkKQoJCQkJfSBlbHNlIHsKCQkJCQlyZWNvcmRzZXQuUmVjb3JkcyA9IGFwcGVuZChyZWNvcmRzZXQuUmVjb3JkcywgZGFsLk5ld1JlY29yZEVycihpbmRleFJlY29yZC5JRCwgZXJyKSkKCQkJCX0KCQkJfSBlbHNlIHsKCQkJCXJlY29yZHNldC5SZWNvcmRzID0gYXBwZW5kKHJlY29yZHNldC5SZWNvcmRzLCBpbmRleFJlY29yZCkKCQkJfQoJCQlyZXR1cm4gbmlsCgkJfQoJfSk7IGVyciAhPSBuaWwgewoJCXJldHVybiBuaWwsIGVycgoJfQoJcmV0dXJuIHJlY29yZHNldCwgbmlsCn0=",
+            "Source": "ewoJdmFyIHJlY29yZHNldCA9IGRhbC5OZXdSZWNvcmRTZXQoKQoJaWYgZXJyIDo9IGluZGV4ZXIuUXVlcnlGdW5jKGNvbGxlY3Rpb24sIGYsIGZ1bmMoaW5kZXhSZWNvcmQgKmRhbC5SZWNvcmQsIGVyciBlcnJvciwgcGFnZSBJbmRleFBhZ2UpIGVycm9yIHsKCQlkZWZlciBQb3B1bGF0ZVJlY29yZFNldFBhZ2VEZXRhaWxzKHJlY29yZHNldCwgZiwgcGFnZSkKCQl2YXIgcGFyZW50ID0gaW5kZXhlci5HZXRCYWNrZW5kKCkKCQl2YXIgZm9yY2VJbmRleFJlY29yZCBib29sCgkJaWYgZiAhPSBuaWwgewoJCQlpZiB2LCBvayA6PSBmLk9wdGlvbnNbYEZvcmNlSW5kZXhSZWNvcmRgXS4oYm9vbCk7IG9rIHsKCQkJCWZvcmNlSW5kZXhSZWNvcmQgPSB2CgkJCX0KCQl9CgkJaWYgcGFyZW50ICE9IG5pbCB7CgkJCWlmIGxlbihjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMpID4gMSB7CgkJCQl2YXIgam9pbmVyID0gY29sbGVjdGlvbi5JbmRleENvbXBvdW5kRmllbGRKb2luZXIKCQkJCWlmIGpvaW5lciA9PSBgYCB7CgkJCQkJam9pbmVyID0gRGVmYXVsdENvbXBvdW5kSm9pbmVyCgkJCQl9CgkJCQl2YXIgdmFsdWVzID0gc2xpY2V1dGlsLlNsaWNlaWZ5KHN0cmluZ3MuU3BsaXQoZm10LlNwcmludGYoIiV2IiwgaW5kZXhSZWNvcmQuSUQpLCBqb2luZXIpKQoJCQkJaWYgbGVuKHZhbHVlcykgIT0gbGVuKGNvbGxlY3Rpb24uSW5kZXhDb21wb3VuZEZpZWxkcykgewoJCQkJCWlmIGRpZmYgOj0gbGVuKGNvbGxlY3Rpb24uSW5kZXhDb21wb3VuZEZpZWxkcykgLSBsZW4odmFsdWVzKTsgZGlmZiA+PSAxIHsKCQkJCQkJZm9yIF8sIGNmIDo9IHJhbmdlIGNvbGxlY3Rpb24uSW5kZXhDb21wb3VuZEZpZWxkc1tkaWZmOl0gewoJCQkJCQkJaWYgdiA6PSBpbmRleFJlY29yZC5HZXQoY2YpOyB2ICE9IG5pbCB7CgkJCQkJCQkJdmFsdWVzID0gYXBwZW5kKHZhbHVlcywgdikKCQkJCQkJCX0KCQkJCQkJfQoJCQkJCX0KCQkJCQlpZiBsZW4odmFsdWVzKSAhPSBsZW4oY29sbGVjdGlvbi5JbmRleENvbXBvdW5kRmllbGRzKSB7CgkJCQkJCXJldHVybiBmbXQuRXJyb3JmKCJJbmRleCBpdGVtICV2OiBleHBlY3RlZCAlZCBjb21wb3VuZCBmaWVsZCBjb21wb25lbnRzLCBnb3QgJWQiLCBpbmRleFJlY29yZC5JRCwgbGVuKGNvbGxlY3Rpb24uSW5kZXhDb21wb3VuZEZpZWxkcyksIGxlbih2YWx1ZXMpKQoJCQkJCX0KCQkJCX0KCQkJCWZvciBpLCBmaWVsZCA6PSByYW5nZSBjb2xsZWN0aW9uLkluZGV4Q29tcG91bmRGaWVsZHMgewoJCQkJCWlmIGkgPT0gMCB7CgkJCQkJCWluZGV4UmVjb3JkLklEID0gdmFsdWVzCgkJCQkJfSBlbHNlIHsKCQkJCQkJaW5kZXhSZWNvcmQuU2V0KGZpZWxkLCB2YWx1ZXNbaV0pCgkJCQkJfQoJCQkJfQoJCQl9CgkJfQoJCXZhciBlbXB0eVJlY29yZCA9IGRhbC5OZXdSZWNvcmQoaW5kZXhSZWNvcmQuSUQpCgkJZW1wdHlSZWNvcmQuRXJyb3IgPSBlcnIKCQlpZiBsZW4ocmVzdWx0Rm5zKSA+IDAgewoJCQl2YXIgcmVzdWx0Rm4gPSByZXN1bHRGbnNbMF0KCQkJaWYgZi5JZE9ubHkoKSB7CgkJCQlyZXR1cm4gcmVzdWx0Rm4oZW1wdHlSZWNvcmQsIGVyciwgcGFnZSkKCQkJfSBlbHNlIGlmIHBhcmVudCAhPSBuaWwgJiYgIWZvcmNlSW5kZXhSZWNvcmQgewoJCQkJaWYgcmVjb3JkLCBlcnIgOj0gcGFyZW50LlJldHJpZXZlKGNvbGxlY3Rpb24uTmFtZSwgaW5kZXhSZWNvcmQuSUQsIGYuRmllbGRzLi4uKTsgZXJyID09IG5pbCB7CgkJCQkJcmV0dXJuIHJlc3VsdEZuKHJlY29yZCwgZXJyLCBwYWdlKQoJCQkJfSBlbHNlIHsKCQkJCQlyZXR1cm4gcmVzdWx0Rm4oZW1wdHlSZWNvcmQsIGVyciwgcGFnZSkKCQkJCX0KCQkJfSBlbHNlIHsKCQkJCXJldHVybiByZXN1bHRGbihpbmRleFJlY29yZCwgZXJyLCBwYWdlKQoJCQl9CgkJfSBlbHNlIHsKCQkJaWYgZi5JZE9ubHkoKSB7CgkJCQlyZWNvcmRzZXQuUmVjb3JkcyA9IGFwcGVuZChyZWNvcmRzZXQuUmVjb3JkcywgZGFsLk5ld1JlY29yZChpbmRleFJlY29yZC5JRCkpCgkJCX0gZWxzZSBpZiBwYXJlbnQgIT0gbmlsICYmICFmb3JjZUluZGV4UmVjb3JkIHsKCQkJCWlmIHJlY29yZCwgZXJyIDo9IHBhcmVudC5SZXRyaWV2ZShjb2xsZWN0aW9uLk5hbWUsIGluZGV4UmVjb3JkLklELCBmLkZpZWxkcy4uLik7IGVyciA9PSBuaWwgewoJCQkJCXJlY29yZHNldC5SZWNvcmRzID0gYXBwZW5kKHJlY29yZHNldC5SZWNvcmRzLCByZWNvcmQpCgkJCQl9IGVsc2UgewoJCQkJCXJlY29yZHNldC5SZWNvcmRzID0gYXBwZW5kKHJlY29yZHNldC5SZWNvcmRzLCBkYWwuTmV3UmVjb3JkRXJyKGluZGV4UmVjb3JkLklELCBlcnIpKQoJCQkJfQoJCQl9IGVsc2UgewoJCQkJcmVjb3Jkc2V0LlJlY29yZHMgPSBhcHBlbmQocmVjb3Jkc2V0LlJlY29yZHMsIGluZGV4UmVjb3JkKQoJCQl9CgkJCXJldHVybiBuaWwKCQl9Cgl9KTsgZXJyICE9IG5pbCB7CgkJcmV0dXJuIG5pbCwgZXJyCgl9CglyZXR1cm4gcmVjb3Jkc2V0LCBuaWwKfQ==",
             "IsPackageLevel": true
         },
         {
@@ -1821,6 +1858,40 @@
             ],
             "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
             "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "NewFileBackend",
+            "Arguments": [
+                {
+                    "Name": "connection",
+                    "Type": "dal.ConnectionString"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "Backend"
+                }
+            ],
+            "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
+            "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
+            "IsPackageLevel": true
+        },
+        {
+            "Name": "NewFilesystemBackend",
+            "Arguments": [
+                {
+                    "Name": "connection",
+                    "Type": "dal.ConnectionString"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "Backend"
+                }
+            ],
+            "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
+            "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
             "IsPackageLevel": true
         },
         {
@@ -2061,23 +2132,6 @@
                     "IsPackageLevel": true
                 },
                 {
-                    "Name": "NewElasticsearchBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewElasticsearchBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoQmFja2VuZHtjczogY29ubmVjdGlvbiwgc2hhcmRzOiBFbGFzdGljc2VhcmNoRGVmYXVsdFNoYXJkcywgcmVwbGljYXM6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVwbGljYXN9Cn0=",
-                    "IsPackageLevel": true
-                },
-                {
                     "Name": "NewRedisBackend",
                     "Arguments": [
                         {
@@ -2095,7 +2149,7 @@
                     "IsPackageLevel": true
                 },
                 {
-                    "Name": "NewFilesystemBackend",
+                    "Name": "NewElasticsearchBackend",
                     "Arguments": [
                         {
                             "Name": "connection",
@@ -2107,25 +2161,8 @@
                             "Type": "Backend"
                         }
                     ],
-                    "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewFileBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
+                    "Signature": "NewElasticsearchBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoQmFja2VuZHtjczogY29ubmVjdGlvbiwgc2hhcmRzOiBFbGFzdGljc2VhcmNoRGVmYXVsdFNoYXJkcywgcmVwbGljYXM6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVwbGljYXMsIHJlZnJlc2g6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVmcmVzaH0KfQ==",
                     "IsPackageLevel": true
                 }
             ],
@@ -4234,7 +4271,7 @@
                         }
                     ],
                     "Signature": "NewElasticsearchIndexer(connection dal.ConnectionString) *ElasticsearchIndexer",
-                    "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoSW5kZXhlcntjb25uOiAmY29ubmVjdGlvbiwgaW5kZXhDYWNoZTogbWFrZShtYXBbc3RyaW5nXSplbGFzdGljc2VhcmNoSW5kZXgpLCBpbmRleERlZmVycmVkQmF0Y2g6IG5ldyhlc0RlZmVycmVkQmF0Y2gpfQp9",
+                    "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoSW5kZXhlcntjb25uOiAmY29ubmVjdGlvbiwgaW5kZXhDYWNoZTogbWFrZShtYXBbc3RyaW5nXSplbGFzdGljc2VhcmNoSW5kZXgpLCBpbmRleERlZmVycmVkQmF0Y2g6IG5ldyhlc0RlZmVycmVkQmF0Y2gpLCByZWZyZXNoOiBFbGFzdGljc2VhcmNoRGVmYXVsdFJlZnJlc2gsIHBrU2VwYXJhdG9yOiBFbGFzdGljc2VhcmNoRGVmYXVsdENvbXBvc2l0ZUpvaW5lcn0KfQ==",
                     "IsPackageLevel": true
                 },
                 {

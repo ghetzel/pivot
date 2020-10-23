@@ -145,6 +145,18 @@
 	
     <li>
 		
+		<a href="#NewFileBackend">func NewFileBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
+		<a href="#NewFilesystemBackend">func NewFilesystemBackend(connection dal.ConnectionString) Backend</a>
+		
+	</li>
+	
+    <li>
+		
 		<a href="#NewMongoBackend">func NewMongoBackend(connection dal.ConnectionString) Backend</a>
 		
 	</li>
@@ -5385,10 +5397,10 @@
 			
 		</td>
 		<td class="text-right">3KB</td>
-		<td class="text-right">89</td>
+		<td class="text-right">91</td>
 		<td class="text-right">2</td>
 		<td class="text-right">3</td>
-		<td class="text-right">3</td>
+		<td class="text-right">4</td>
 		<td class="text-right">3</td>
 	</tr>
 	
@@ -5468,8 +5480,8 @@
 			<a href="elasticsearch-aggregator.go">elasticsearch-aggregator.go</a>
 			
 		</td>
-		<td class="text-right">4KB</td>
-		<td class="text-right">129</td>
+		<td class="text-right">5KB</td>
+		<td class="text-right">154</td>
 		<td class="text-right">8</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -5482,12 +5494,12 @@
 			<a href="elasticsearch-indexer.go">elasticsearch-indexer.go</a>
 			
 		</td>
-		<td class="text-right">15KB</td>
-		<td class="text-right">435</td>
+		<td class="text-right">18KB</td>
+		<td class="text-right">503</td>
 		<td class="text-right">13</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
-		<td class="text-right">8</td>
+		<td class="text-right">9</td>
 	</tr>
 	
 	<tr>
@@ -5496,12 +5508,12 @@
 			<a href="elasticsearch.go">elasticsearch.go</a>
 			
 		</td>
-		<td class="text-right">11KB</td>
-		<td class="text-right">402</td>
+		<td class="text-right">12KB</td>
+		<td class="text-right">432</td>
 		<td class="text-right">20</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
-		<td class="text-right">6</td>
+		<td class="text-right">9</td>
 	</tr>
 	
 	<tr>
@@ -5608,8 +5620,8 @@
 			<a href="indexers.go">indexers.go</a>
 			
 		</td>
-		<td class="text-right">6KB</td>
-		<td class="text-right">150</td>
+		<td class="text-right">5KB</td>
+		<td class="text-right">147</td>
 		<td class="text-right">3</td>
 		<td class="text-right">3</td>
 		<td class="text-right"></td>
@@ -5870,6 +5882,7 @@
 	<pre>
 const <span id="All">All                                </span> = 
 const <span id="AllExceptFirst">AllExceptFirst                     </span> = 
+const <span id="ClientUserAgent">ClientUserAgent                    </span> = `pivot/` &#43; util.Version
 const <span id="CompositeKeys">CompositeKeys                      </span> = 
 const <span id="Constraints">Constraints                        </span> = 
 const <span id="DefaultFilesystemRecordSubdirectory">DefaultFilesystemRecordSubdirectory</span> = `data`
@@ -5909,19 +5922,23 @@ var <span id="DefaultConnectTimeout">DefaultConnectTimeout              </span> 
 var <span id="DefaultSharedCredentialsFile">DefaultSharedCredentialsFile       </span> = `~/.aws/credentials`
 var <span id="DefaultSharedCredentialsProfile">DefaultSharedCredentialsProfile    </span> = `default`
 var <span id="DyanmoListFieldsLimit">DyanmoListFieldsLimit              </span> = 8192
+var <span id="ElasticsearchAnalyzers">ElasticsearchAnalyzers             </span> = 
 var <span id="ElasticsearchBatchFlushCount">ElasticsearchBatchFlushCount       </span> = 1
 var <span id="ElasticsearchBatchFlushInterval">ElasticsearchBatchFlushInterval    </span> = 10 * time.Second
 var <span id="ElasticsearchConnectTimeout">ElasticsearchConnectTimeout        </span> = 3 * time.Second
-var <span id="ElasticsearchDefaultCompositeJoiner">ElasticsearchDefaultCompositeJoiner</span> = `:`
+var <span id="ElasticsearchDefaultCompositeJoiner">ElasticsearchDefaultCompositeJoiner</span> = `--`
 var <span id="ElasticsearchDefaultHost">ElasticsearchDefaultHost           </span> = `localhost:9200`
+var <span id="ElasticsearchDefaultRefresh">ElasticsearchDefaultRefresh        </span> = `false`
 var <span id="ElasticsearchDefaultReplicas">ElasticsearchDefaultReplicas       </span> = 2
 var <span id="ElasticsearchDefaultScheme">ElasticsearchDefaultScheme         </span> = `http`
 var <span id="ElasticsearchDefaultShards">ElasticsearchDefaultShards         </span> = 3
 var <span id="ElasticsearchDefaultType">ElasticsearchDefaultType           </span> = `_doc`
 var <span id="ElasticsearchDocumentType">ElasticsearchDocumentType          </span> = `_doc`
 var <span id="ElasticsearchIdentityField">ElasticsearchIdentityField         </span> = `_id`
+var <span id="ElasticsearchNormalizers">ElasticsearchNormalizers           </span> = 
 var <span id="ElasticsearchRequestTimeout">ElasticsearchRequestTimeout        </span> = 30 * time.Second
 var <span id="ElasticsearchResponseHeaderTimeout">ElasticsearchResponseHeaderTimeout </span> = 10 * time.Second
+var <span id="ElasticsearchScrollLifetime">ElasticsearchScrollLifetime        </span> = `1m`
 var <span id="ElasticsearchTLSTimeout">ElasticsearchTLSTimeout            </span> = 10 * time.Second
 var <span id="FilesystemKeyJoiner">FilesystemKeyJoiner                </span> = `--`
 var <span id="FilesystemRecordCacheSize">FilesystemRecordCacheSize          </span> = 1024
@@ -5962,6 +5979,28 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+<h3 id="NewFileBackend" data-kind="f">
+	func <a title="View Source" href="">NewFileBackend</a>
+	<a class="permalink" href="#NewFileBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+<h3 id="NewFilesystemBackend" data-kind="f">
+	func <a title="View Source" href="">NewFilesystemBackend</a>
+	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
+</h3>
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -6140,19 +6179,6 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 
 
-<h4 id="NewElasticsearchBackend" data-kind="f">
-	func <a title="View Source" href="">NewElasticsearchBackend</a>
-	<a class="permalink" href="#NewElasticsearchBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewElasticsearchBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
 <h4 id="NewRedisBackend" data-kind="f">
 	func <a title="View Source" href="">NewRedisBackend</a>
 	<a class="permalink" href="#NewRedisBackend">&#182;</a>
@@ -6166,32 +6192,15 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 
 
-<h4 id="NewFilesystemBackend" data-kind="f">
-	func <a title="View Source" href="">NewFilesystemBackend</a>
-	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
+<h4 id="NewElasticsearchBackend" data-kind="f">
+	func <a title="View Source" href="">NewElasticsearchBackend</a>
+	<a class="permalink" href="#NewElasticsearchBackend">&#182;</a>
 </h4>
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
+	<pre>func NewElasticsearchBackend(connection dal.ConnectionString) Backend</pre>
 </div>
-
-
-
-
-<h4 id="NewFileBackend" data-kind="f">
-	func <a title="View Source" href="">NewFileBackend</a>
-	<a class="permalink" href="#NewFileBackend">&#182;</a>
-</h4>
-
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-
 
 
 

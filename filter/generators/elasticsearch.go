@@ -65,7 +65,7 @@ func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
 		}
 	}
 
-	payload := map[string]interface{}{
+	var payload = map[string]interface{}{
 		`query`: query,
 		`size`:  flt.Limit,
 		`from`:  flt.Offset,
@@ -99,6 +99,10 @@ func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
 		payload[`sort`] = sorts
 	} else {
 		payload[`sort`] = []string{`_doc`}
+	}
+
+	for k, v := range self.options {
+		payload[k] = v
 	}
 
 	if data, err := json.MarshalIndent(payload, ``, `    `); err == nil {

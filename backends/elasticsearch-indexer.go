@@ -465,7 +465,7 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 						}
 
 						// totalPages = ceil(result count / page size)
-						var totalPages = int(math.Ceil(float64(results.Total) / float64(f.Limit)))
+						var totalPages = int(math.Ceil(float64(results.Total) / float64(originalLimit)))
 
 						if totalPages <= 0 {
 							totalPages = 1
@@ -563,11 +563,63 @@ func (self *ElasticsearchIndexer) IndexRemove(collection *dal.Collection, ids []
 }
 
 func (self *ElasticsearchIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
-	if _, err := self.getIndexForCollection(collection); err == nil {
-		return nil, fmt.Errorf("Not Implemented")
-	} else {
-		return nil, err
-	}
+	// if f == nil {
+	// 	f = filter.All()
+	// }
+
+	// if index, err := self.getIndexForCollection(collection); err == nil {
+	// 	var aggs = make(map[string]interface{})
+
+	// 	for _, field := range fields {
+	// 		aggs[field] = map[string]interface{}{
+	// 			`terms`: map[string]interface{}{
+	// 				`field`: field,
+	// 			},
+	// 		}
+	// 	}
+
+	// 	f.Options = map[string]interface{}{
+	// 		`aggs`: aggs,
+	// 	}
+
+	// 	if query, err := filter.Render(
+	// 		generators.NewElasticsearchGenerator(),
+	// 		index.Name,
+	// 		f,
+	// 	); err == nil {
+	// 		if response, err := self.client.GetWithBody(
+	// 			fmt.Sprintf("/%s/_search", index.Name),
+	// 			httputil.Literal(query),
+	// 			nil,
+	// 			nil,
+	// 		); err == nil {
+	// 			var aggResponse = make(map[string]interface{})
+
+	// 			if err := self.client.Decode(response.Body, &aggResponse); err == nil {
+	// 				var out = make(map[string][]interface{})
+
+	// 				for k, v := range maputil.M(aggResponse).Get(`aggregations`).MapNative() {
+	// 					out[k] = maputil.Pluck(
+	// 						maputil.M(v).Get(`buckets`).Value,
+	// 						[]string{`key`},
+	// 					)
+	// 				}
+
+	// 				return out, nil
+	// 			} else {
+	// 				return nil, fmt.Errorf("response decode error: %v", err)
+	// 			}
+	// 		} else {
+	// 			return nil, err
+	// 		}
+	// 	} else {
+	// 		return nil, err
+	// 	}
+	// } else {
+	// 	return nil, err
+	// }
+
+	return nil, fmt.Errorf("Not Implemented")
 }
 
 func (self *ElasticsearchIndexer) DeleteQuery(collection *dal.Collection, f *filter.Filter) error {

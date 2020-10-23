@@ -15,13 +15,13 @@ func TestFilterParse(t *testing.T) {
 
 	tests := map[string]func(*Filter, error){
 		AllValue: func(f *Filter, err error) {
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.True(f.MatchAll)
 			assert.Equal(f.Spec, AllValue)
 			assert.Equal(0, len(f.Criteria))
 		},
 		`k1/contains:v1/int:k2/lt:v2a|v2b`: func(f *Filter, err error) {
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.Equal(2, len(f.Criteria))
 
 			assert.True(dal.AutoType == f.Criteria[0].Type)
@@ -47,7 +47,7 @@ func TestFilterIdentity(t *testing.T) {
 	spec := `str#16:name/prefix:foo`
 
 	filter, err := Parse(spec)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(1, len(filter.Criteria))
 	assert.Equal(dal.StringType, filter.Criteria[0].Type)
 	assert.Equal(16, filter.Criteria[0].Length)
@@ -78,13 +78,13 @@ func TestFilterParseAltDelimiters(t *testing.T) {
 
 	tests := map[string]func(*Filter, error){
 		AllValue: func(f *Filter, err error) {
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.True(f.MatchAll)
 			assert.Equal(f.Spec, AllValue)
 			assert.Equal(0, len(f.Criteria))
 		},
 		`k1=contains:v1 int:k2=lt:v2a|v2b`: func(f *Filter, err error) {
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.Equal(2, len(f.Criteria))
 
 			assert.True(dal.AutoType == f.Criteria[0].Type)
@@ -119,7 +119,7 @@ func TestFilterFromMap(t *testing.T) {
 		`other`:    `2|4|6`,
 	})
 
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(5, len(f.Criteria))
 
 	for _, criterion := range f.Criteria {
@@ -151,7 +151,7 @@ func TestFilterGetSort(t *testing.T) {
 	assert := require.New(t)
 
 	f, err := Parse(`name/test/-age/4/+group/one`)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	sortBy := f.GetSort()
 
@@ -168,7 +168,7 @@ func TestFilterCopy(t *testing.T) {
 	assert := require.New(t)
 
 	f1, err := Parse(`id/42`)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	f2 := Copy(f1)
 
@@ -222,7 +222,7 @@ func TestFilterParseStruct(t *testing.T) {
 		Age:     42,
 	})
 
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(3, len(f.Criteria))
 
 	values, ok := f.GetValues(`name`)
@@ -251,7 +251,7 @@ func TestFilterParsePtrToStruct(t *testing.T) {
 		Name: `test1`,
 	})
 
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(2, len(f.Criteria))
 
 	values, ok := f.GetValues(`name`)

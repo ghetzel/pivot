@@ -7,11 +7,11 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 0,
-    "LineCount": 59,
-    "SourceLineCount": 44,
+    "LineCount": 63,
+    "SourceLineCount": 46,
     "FunctionCount": 4,
     "TypeCount": 3,
-    "ConstantCount": 0,
+    "ConstantCount": 1,
     "VariableCount": 1,
     "Statistics": {
         "Mean": 0,
@@ -58,6 +58,24 @@
             "TypeCount": 1,
             "ConstantCount": 0,
             "VariableCount": 1
+        },
+        {
+            "Name": "version.go",
+            "Size": 38,
+            "LineCount": 4,
+            "SourceLineCount": 2,
+            "FunctionCount": 0,
+            "TypeCount": 0,
+            "ConstantCount": 1,
+            "VariableCount": 0
+        }
+    ],
+    "Constants": [
+        {
+            "Name": "Version",
+            "Immutable": true,
+            "Expression": "`3.4.0`",
+            "Value": "3.4.0"
         }
     ],
     "Variables": [

@@ -90,7 +90,7 @@ func TestRecordPopulateStruct(t *testing.T) {
 	record := NewRecord(1).Set(`name`, `test-name`).Set(`Size`, 42)
 
 	err := record.Populate(&thing, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`test-name`, thing.Name)
 	assert.Zero(thing.Group)
 	assert.Equal(42, thing.Size)
@@ -102,7 +102,7 @@ func TestRecordPopulateStruct(t *testing.T) {
 	record = NewRecord(1).Set(`name`, `test-name`).Set(`Size`, 42)
 
 	err = record.Populate(&thing, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`test-name`, thing.Name)
 	assert.Equal(`tests`, thing.Group)
 	assert.Equal(42, thing.Size)
@@ -116,7 +116,7 @@ func TestRecordPopulateStruct(t *testing.T) {
 	kv := new(KV)
 
 	err = record.Populate(kv, nil)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`this.is.an.id`, kv.Key)
 	assert.Equal(42, kv.Value)
 }
@@ -167,7 +167,7 @@ func TestRecordPopulateStructWithValidator(t *testing.T) {
 	record = NewRecord(1).Set(`name`, `test-name`).Set(`Size`, 42)
 
 	err := record.Populate(&thing, collection)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`test-name`, thing.Name)
 
 	// this remains untouched because this field isn't in the collection
@@ -202,7 +202,7 @@ func TestRecordPopulateStructWithFormatter(t *testing.T) {
 	record := NewRecord(1).Set(`name`, `TestName`).Set(`Size`, 42)
 
 	err := record.Populate(&thing, collection)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`test_name`, thing.Name)
 	assert.Zero(thing.Group)
 	assert.Zero(thing.Size)
@@ -215,7 +215,7 @@ func TestRecordPopulateStructWithFormatter(t *testing.T) {
 	record = NewRecord(1).Set(`name`, `test-name`).Set(`Size`, 42)
 
 	err = record.Populate(&thing, collection)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`test_name`, thing.Name)
 
 	// this remains untouched because this field isn't in the collection
@@ -257,7 +257,7 @@ func TestRecordPopulateStructWithFormatterValidator(t *testing.T) {
 	record := NewRecord(1).Set(`name`, `TestValue`).Set(`Size`, 42)
 
 	err := record.Populate(&thing, collection)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`test_value`, thing.Name)
 }
 

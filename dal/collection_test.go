@@ -77,7 +77,7 @@ func TestCollectionStructToRecord(t *testing.T) {
 	}
 
 	record, err := collection.StructToRecord(&testRecord)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(record)
 
 	assert.Nil(record.ID)
@@ -98,7 +98,7 @@ func TestCollectionStructToRecord(t *testing.T) {
 	}
 
 	record, err = collection.StructToRecord(&testRecord2)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(record)
 
 	assert.Equal(3, len(record.Fields))
@@ -140,7 +140,7 @@ func TestCollectionStructToRecordRelated(t *testing.T) {
 		},
 		Age: 42,
 	})
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.NotNil(record)
 
 	assert.Zero(record.ID)

@@ -201,7 +201,7 @@ func TestMongodb(t *testing.T) {
 
 	for spec, expected := range tests {
 		f, err := filter.Parse(spec)
-		assert.Nil(err)
+		assert.NoError(err)
 
 		gen := NewMongoDBGenerator()
 		actual, err := filter.Render(gen, `foo`, f)

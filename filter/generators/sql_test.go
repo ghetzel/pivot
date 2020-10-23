@@ -204,7 +204,7 @@ func TestSqlSelects(t *testing.T) {
 
 		for spec, expected := range tests {
 			f, err := filter.Parse(spec)
-			assert.Nil(err)
+			assert.NoError(err)
 			if field != `*` {
 				f.Fields = strings.Split(field, `, `)
 			}
@@ -212,7 +212,7 @@ func TestSqlSelects(t *testing.T) {
 			gen := NewSqlGenerator()
 			gen.TypeMapping = expected.mapping
 			actual, err := filter.Render(gen, `foo`, f)
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.Equal(expected.query, string(actual[:]), spec)
 			assert.EqualValues(expected.values, gen.GetValues(), spec)
 		}
@@ -284,7 +284,7 @@ func TestSqlInserts(t *testing.T) {
 		gen.InputData = expected.input
 
 		actual, err := filter.Render(gen, `foo`, f)
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.Equal(expected.query, string(actual[:]))
 
 		keys := maputil.StringKeys(expected.input)
@@ -356,14 +356,14 @@ func TestSqlUpdates(t *testing.T) {
 
 	for expected, testData := range tests {
 		f, err := filter.Parse(testData.Filter)
-		assert.Nil(err)
+		assert.NoError(err)
 
 		gen := NewSqlGenerator()
 		gen.Type = SqlUpdateStatement
 		gen.InputData = testData.Input
 
 		actual, err := filter.Render(gen, `foo`, f)
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.Equal(expected, string(actual[:]), expected)
 	}
 
@@ -490,12 +490,12 @@ func TestSqlDeletes(t *testing.T) {
 
 	for spec, expected := range tests {
 		f, err := filter.Parse(spec)
-		assert.Nil(err)
+		assert.NoError(err)
 
 		gen := NewSqlGenerator()
 		gen.Type = SqlDeleteStatement
 		actual, err := filter.Render(gen, `foo`, f)
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.Equal(expected.query, string(actual[:]), spec)
 		assert.Equal(expected.values, gen.GetValues(), spec)
 	}
@@ -505,12 +505,12 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 	assert := require.New(t)
 
 	f, err := filter.Parse(`age/7/name/ted/enabled/true`)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	// test defaults (MySQL/sqlite compatible)
 	gen := NewSqlGenerator()
 	actual, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`SELECT * FROM foo WHERE (age = ?) AND (name = ?) AND (enabled = ?)`, string(actual[:]))
 	assert.Equal([]interface{}{int64(7), `ted`, true}, gen.GetValues())
 
@@ -518,7 +518,7 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 	gen = NewSqlGenerator()
 	gen.TypeMapping = PostgresTypeMapping
 	actual, err = filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`SELECT * FROM "foo" WHERE ("age" = $1) AND ("name" = $2) AND ("enabled" = $3)`, string(actual[:]))
 	assert.Equal([]interface{}{int64(7), `ted`, true}, gen.GetValues())
 
@@ -532,7 +532,7 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 	}
 	pgfilter := filter.MustParse(`id/123`)
 	actual, err = filter.Render(pggen, `foo`, pgfilter)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`UPDATE "foo" SET "created_at" = $1, "name" = $2 WHERE ("id" = $3)`, string(actual[:]))
 	assert.Equal([]interface{}{
 		time.Date(2006, 1, 2, 0, 0, 0, 0, time.UTC),
@@ -545,7 +545,7 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 	gen.TypeMapping.PlaceholderFormat = `:%s`
 	gen.TypeMapping.PlaceholderArgument = `field`
 	actual, err = filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`SELECT * FROM foo WHERE (age = :age) AND (name = :name) AND (enabled = :enabled)`, string(actual[:]))
 	assert.Equal([]interface{}{int64(7), `ted`, true}, gen.GetValues())
 
@@ -554,7 +554,7 @@ func TestSqlPlaceholderStyles(t *testing.T) {
 	gen.TypeMapping.PlaceholderFormat = `<arg%d>`
 	gen.TypeMapping.PlaceholderArgument = `index`
 	actual, err = filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`SELECT * FROM foo WHERE (age = <arg0>) AND (name = <arg1>) AND (enabled = <arg2>)`, string(actual[:]))
 	assert.Equal([]interface{}{int64(7), `ted`, true}, gen.GetValues())
 }
@@ -563,12 +563,12 @@ func TestSqlTypeMapping(t *testing.T) {
 	assert := require.New(t)
 
 	f, err := filter.Parse(`int:age/7/str:name/ted/bool:enabled/true/float:rating/4.5/date:created_at/lt:now`)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	// test default type mapping
 	gen := NewSqlGenerator()
 	actual, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(
 		`SELECT * FROM foo `+
 			`WHERE (age = ?) `+
@@ -583,7 +583,7 @@ func TestSqlTypeMapping(t *testing.T) {
 	gen = NewSqlGenerator()
 	gen.TypeMapping = DefaultSqlTypeMapping
 	actual, err = filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(
 		`SELECT * FROM foo `+
 			`WHERE (age = ?) `+
@@ -598,7 +598,7 @@ func TestSqlTypeMapping(t *testing.T) {
 	gen = NewSqlGenerator()
 	gen.TypeMapping = PostgresTypeMapping
 	actual, err = filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(
 		`SELECT * FROM "foo" `+
 			`WHERE ("age" = $1) `+
@@ -613,7 +613,7 @@ func TestSqlTypeMapping(t *testing.T) {
 	gen = NewSqlGenerator()
 	gen.TypeMapping = SqliteTypeMapping
 	actual, err = filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(
 		`SELECT * FROM "foo" `+
 			`WHERE ("age" = ?) `+
@@ -628,7 +628,7 @@ func TestSqlTypeMapping(t *testing.T) {
 	// gen = NewSqlGenerator()
 	// gen.TypeMapping = CassandraTypeMapping
 	// actual, err = filter.Render(gen, `foo`, f)
-	// assert.Nil(err)
+	// assert.NoError(err)
 	// assert.Equal(
 	// 	`SELECT * FROM foo `+
 	// 		`WHERE (age = ?) `+
@@ -644,7 +644,7 @@ func TestSqlFieldQuoting(t *testing.T) {
 	assert := require.New(t)
 
 	f, err := filter.Parse(`age/7/name/ted/multi field/true`)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	for format, quotechar := range map[string]string{
 		``:     ``,
@@ -659,7 +659,7 @@ func TestSqlFieldQuoting(t *testing.T) {
 		}
 
 		actual, err := filter.Render(gen, `foo`, f)
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.Equal(
 			`SELECT * FROM foo `+
 				`WHERE (`+quotechar+`age`+quotechar+` = ?) `+
@@ -683,7 +683,7 @@ func TestSqlFieldQuoting(t *testing.T) {
 		}
 
 		actual, err = filter.Render(gen, `foo`, f)
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.Equal(
 			`INSERT INTO foo (`+quotechar+`age`+quotechar+`, `+
 				quotechar+`multi field`+quotechar+`, `+
@@ -706,7 +706,7 @@ func TestSqlFieldQuoting(t *testing.T) {
 		}
 
 		actual, err = filter.Render(gen, `foo`, f)
-		assert.Nil(err)
+		assert.NoError(err)
 		assert.Equal(
 			`UPDATE foo SET `+
 				quotechar+`age`+quotechar+` = ?, `+
@@ -726,13 +726,13 @@ func TestSqlMultipleValues(t *testing.T) {
 	fn := func(tests map[string]qv, withIn bool) {
 		for spec, expected := range tests {
 			f, err := filter.Parse(spec)
-			assert.Nil(err)
+			assert.NoError(err)
 
 			gen := NewSqlGenerator()
 			gen.UseInStatement = withIn
 
 			actual, err := filter.Render(gen, `foo`, f)
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.Equal(expected.query, string(actual[:]))
 			assert.Equal(expected.values, gen.GetValues())
 		}
@@ -811,7 +811,7 @@ func TestSqlMultipleValuesWithNormalizer(t *testing.T) {
 	fn := func(tests map[string]qv, withIn bool) {
 		for spec, expected := range tests {
 			f, err := filter.Parse(spec)
-			assert.Nil(err)
+			assert.NoError(err)
 
 			gen := NewSqlGenerator()
 			gen.UseInStatement = withIn
@@ -819,7 +819,7 @@ func TestSqlMultipleValuesWithNormalizer(t *testing.T) {
 			gen.NormalizerFormat = `LOWER(%v)`
 
 			actual, err := filter.Render(gen, `foo`, f)
-			assert.Nil(err)
+			assert.NoError(err)
 			assert.Equal(expected.query, string(actual[:]))
 			assert.Equal(expected.values, gen.GetValues())
 		}
@@ -868,7 +868,7 @@ func TestSqlSorting(t *testing.T) {
 	gen := NewSqlGenerator()
 
 	sql, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	assert.Equal(`SELECT * FROM foo ORDER BY name ASC, age DESC`, string(sql[:]))
 }
@@ -880,7 +880,7 @@ func TestSqlLimitOffset(t *testing.T) {
 	f.Limit = 4
 	gen := NewSqlGenerator()
 	sql, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`SELECT * FROM foo LIMIT 4`, string(sql[:]))
 
 	f = filter.All()
@@ -888,7 +888,7 @@ func TestSqlLimitOffset(t *testing.T) {
 	f.Offset = 12
 	gen = NewSqlGenerator()
 	sql, err = filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 	assert.Equal(`SELECT * FROM foo LIMIT 4 OFFSET 12`, string(sql[:]))
 }
 
@@ -896,14 +896,14 @@ func TestSqlSelectFull(t *testing.T) {
 	assert := require.New(t)
 
 	f, err := filter.Parse(`+name/prefix:ted/-age/gt:7/city/suffix:berg/state/contains:new`)
-	assert.Nil(err)
+	assert.NoError(err)
 	f.Limit = 4
 	f.Offset = 12
 	f.Fields = []string{`id`, `age`}
 
 	gen := NewSqlGenerator()
 	sql, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	assert.Equal(
 		`SELECT id, age FROM foo `+
@@ -928,7 +928,7 @@ func TestSqlSelectWithNormalizerAndPlaceholders(t *testing.T) {
 	assert := require.New(t)
 
 	f, err := filter.Parse(`+name/prefix:ted/-age/gt:7/city/suffix:berg/state/contains:new`)
-	assert.Nil(err)
+	assert.NoError(err)
 	f.Limit = 4
 	f.Offset = 12
 	f.Fields = []string{`id`, `age`}
@@ -937,7 +937,7 @@ func TestSqlSelectWithNormalizerAndPlaceholders(t *testing.T) {
 	gen.NormalizeFields = []string{`name`, `city`}
 	gen.NormalizerFormat = `LOWER(%s)`
 	sql, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	assert.Equal(
 		`SELECT id, age FROM foo `+
@@ -962,7 +962,7 @@ func TestSqlSelectAggregateFunctions(t *testing.T) {
 	assert := require.New(t)
 
 	f, err := filter.Parse(`+name/prefix:ted/city/suffix:berg/state/contains:new`)
-	assert.Nil(err)
+	assert.NoError(err)
 	f.Limit = 4
 	f.Offset = 12
 	f.Fields = []string{`age`}
@@ -973,7 +973,7 @@ func TestSqlSelectAggregateFunctions(t *testing.T) {
 	}
 
 	sql, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	assert.Equal(
 		`SELECT SUM(age) FROM foo `+
@@ -996,7 +996,7 @@ func TestSqlSelectGroupBy(t *testing.T) {
 	assert := require.New(t)
 
 	f, err := filter.Parse(`all`)
-	assert.Nil(err)
+	assert.NoError(err)
 	f.Fields = []string{`state`, `city`}
 
 	gen := NewSqlGenerator()
@@ -1006,7 +1006,7 @@ func TestSqlSelectGroupBy(t *testing.T) {
 	gen.AggregateByField(filter.Average, `age`)
 
 	sql, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	assert.Equal(
 		`SELECT state, city, AVG(age) AS age FROM foo GROUP BY state, city`,
@@ -1018,13 +1018,13 @@ func TestSqlBulkDelete(t *testing.T) {
 	assert := require.New(t)
 
 	f, err := filter.Parse(`name/not:Bob|Frank|Steve`)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	gen := NewSqlGenerator()
 	gen.Type = SqlDeleteStatement
 
 	sql, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	assert.Equal(
 		`DELETE FROM foo WHERE (name NOT IN(?, ?, ?))`,
@@ -1042,7 +1042,7 @@ func TestSqlBulkDeleteWithNormalizers(t *testing.T) {
 	assert := require.New(t)
 
 	f, err := filter.Parse(`name/unlike:Bob|Frank|Steve`)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	gen := NewSqlGenerator()
 	gen.Type = SqlDeleteStatement
@@ -1050,7 +1050,7 @@ func TestSqlBulkDeleteWithNormalizers(t *testing.T) {
 	gen.NormalizerFormat = `LOWER(%s)`
 
 	sql, err := filter.Render(gen, `foo`, f)
-	assert.Nil(err)
+	assert.NoError(err)
 
 	assert.Equal(
 		`DELETE FROM foo WHERE (LOWER(name) NOT IN(LOWER(?), LOWER(?), LOWER(?)))`,
