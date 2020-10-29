@@ -10,6 +10,7 @@ import (
 
 	"github.com/ghetzel/go-stockutil/httputil"
 	"github.com/ghetzel/go-stockutil/log"
+	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
 	"github.com/ghetzel/pivot/v3/dal"
@@ -425,15 +426,6 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 
 				// build the search request; either the initial Scroll API query, Scroll paging query,
 				// or just a regular old Search API query.
-
-				// if compositeId := self.compositeKeyId(collection, f, ElasticsearchDefaultCompositeJoiner); compositeId != `` {
-				// 	urlpath = fmt.Sprintf(
-				// 		"/%s/_doc/%s",
-				// 		index.Name,
-				// 		compositeId,
-				// 	)
-				// } else
-
 				if useScrollApi && isFirstScrollRequest {
 					isFirstScrollRequest = false
 					urlpath = fmt.Sprintf("/%s/_search?scroll="+ElasticsearchScrollLifetime, index.Name)
@@ -563,63 +555,67 @@ func (self *ElasticsearchIndexer) IndexRemove(collection *dal.Collection, ids []
 }
 
 func (self *ElasticsearchIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
-	// if f == nil {
-	// 	f = filter.All()
-	// }
+	if f == nil {
+		f = filter.All()
+	}
 
-	// if index, err := self.getIndexForCollection(collection); err == nil {
-	// 	var aggs = make(map[string]interface{})
+	if index, err := self.getIndexForCollection(collection); err == nil {
+		var aggs = make(map[string]interface{})
 
-	// 	for _, field := range fields {
-	// 		aggs[field] = map[string]interface{}{
-	// 			`terms`: map[string]interface{}{
-	// 				`field`: field,
-	// 			},
-	// 		}
-	// 	}
+		for _, field := range fields {
+			aggs[field] = map[string]interface{}{
+				`terms`: map[string]interface{}{
+					`field`: field,
+				},
+			}
+		}
 
-	// 	f.Options = map[string]interface{}{
-	// 		`aggs`: aggs,
-	// 	}
+		f.Options = map[string]interface{}{
+			`aggs`: aggs,
+		}
 
-	// 	if query, err := filter.Render(
-	// 		generators.NewElasticsearchGenerator(),
-	// 		index.Name,
-	// 		f,
-	// 	); err == nil {
-	// 		if response, err := self.client.GetWithBody(
-	// 			fmt.Sprintf("/%s/_search", index.Name),
-	// 			httputil.Literal(query),
-	// 			nil,
-	// 			nil,
-	// 		); err == nil {
-	// 			var aggResponse = make(map[string]interface{})
+		if query, err := filter.Render(
+			generators.NewElasticsearchGenerator(),
+			index.Name,
+			f,
+		); err == nil {
+			if response, err := self.client.GetWithBody(
+				fmt.Sprintf("/%s/_search", index.Name),
+				httputil.Literal(query),
+				nil,
+				nil,
+			); err == nil {
+				var aggResponse = make(map[string]interface{})
 
-	// 			if err := self.client.Decode(response.Body, &aggResponse); err == nil {
-	// 				var out = make(map[string][]interface{})
+				if err := self.client.Decode(response.Body, &aggResponse); err == nil {
+					var out = make(map[string][]interface{})
 
-	// 				for k, v := range maputil.M(aggResponse).Get(`aggregations`).MapNative() {
-	// 					out[k] = maputil.Pluck(
-	// 						maputil.M(v).Get(`buckets`).Value,
-	// 						[]string{`key`},
-	// 					)
-	// 				}
+					for k, v := range maputil.M(aggResponse).Get(`aggregations`).MapNative() {
+						var values = maputil.Pluck(
+							maputil.M(v).Get(`buckets`).Value,
+							[]string{`key`},
+						)
 
-	// 				return out, nil
-	// 			} else {
-	// 				return nil, fmt.Errorf("response decode error: %v", err)
-	// 			}
-	// 		} else {
-	// 			return nil, err
-	// 		}
-	// 	} else {
-	// 		return nil, err
-	// 	}
-	// } else {
-	// 	return nil, err
-	// }
+						for i, v := range values {
+							values[i] = collection.ConvertValue(k, v)
+						}
 
-	return nil, nil
+						out[k] = values
+					}
+
+					return out, nil
+				} else {
+					return nil, fmt.Errorf("response decode error: %v", err)
+				}
+			} else {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	} else {
+		return nil, err
+	}
 }
 
 func (self *ElasticsearchIndexer) DeleteQuery(collection *dal.Collection, f *filter.Filter) error {
@@ -674,7 +670,7 @@ func (self *ElasticsearchIndexer) getIndexForCollection(collection *dal.Collecti
 }
 
 func (self *ElasticsearchIndexer) compositeKeyId(collection *dal.Collection, flt *filter.Filter, sep string) string {
-	if flt != nil && len(flt.Criteria) > 0 {
+	if flt != nil && len(flt.Criteria) == collection.KeyCount() {
 		var parts []string
 
 		for _, crit := range flt.Criteria {

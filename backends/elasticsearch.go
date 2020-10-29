@@ -343,43 +343,10 @@ func (self *ElasticsearchBackend) CreateCollection(definition *dal.Collection) e
 	}
 
 	for _, field := range definition.Fields {
-		var estype map[string]interface{}
-
-		switch field.Type {
-		case dal.BooleanType:
-			estype = map[string]interface{}{
-				`type`: `boolean`,
-			}
-		case dal.IntType:
-			estype = map[string]interface{}{
-				`type`: `long`,
-			}
-		case dal.FloatType:
-			estype = map[string]interface{}{
-				`type`: `double`,
-			}
-		case dal.TimeType:
-			estype = map[string]interface{}{
-				`type`: `date`,
-			}
-		case dal.ObjectType:
-			estype = map[string]interface{}{
-				`type`:    `object`,
-				`dynamic`: true,
-			}
-		case dal.ArrayType:
-			estype = map[string]interface{}{
-				`type`: `nested`,
-			}
-		default:
-			estype = map[string]interface{}{
-				`type`:       `keyword`,
-				`normalizer`: `pivot_normalize_string`,
-			}
-		}
-
-		index.Mappings.Properties[field.Name] = estype
+		index.Mappings.Properties[field.Name] = fieldTypeToEsMapping(field.Type)
 	}
+
+	index.Mappings.Properties[definition.GetIdentityFieldName()] = fieldTypeToEsMapping(definition.IdentityFieldType)
 
 	if _, err := self.client.Put(
 		`/`+definition.Name,
@@ -544,4 +511,39 @@ func esErrorDecoder(res *http.Response) error {
 	}
 
 	return nil
+}
+
+func fieldTypeToEsMapping(ftype dal.Type) map[string]interface{} {
+	switch ftype {
+	case dal.BooleanType:
+		return map[string]interface{}{
+			`type`: `boolean`,
+		}
+	case dal.IntType:
+		return map[string]interface{}{
+			`type`: `long`,
+		}
+	case dal.FloatType:
+		return map[string]interface{}{
+			`type`: `double`,
+		}
+	case dal.TimeType:
+		return map[string]interface{}{
+			`type`: `date`,
+		}
+	case dal.ObjectType:
+		return map[string]interface{}{
+			`type`:    `object`,
+			`dynamic`: true,
+		}
+	case dal.ArrayType:
+		return map[string]interface{}{
+			`type`: `nested`,
+		}
+	default:
+		return map[string]interface{}{
+			`type`:       `keyword`,
+			`normalizer`: `pivot_normalize_string`,
+		}
+	}
 }
