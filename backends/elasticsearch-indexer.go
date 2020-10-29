@@ -360,7 +360,7 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 
 	if f.IdentityField == `` {
 		if collection != nil {
-			f.IdentityField = collection.IdentityField
+			f.IdentityField = collection.GetIdentityFieldName()
 		} else {
 			f.IdentityField = ElasticsearchIdentityField
 		}

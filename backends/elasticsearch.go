@@ -462,22 +462,26 @@ func (self *ElasticsearchBackend) upsertRecords(collection *dal.Collection, reco
 
 		var pk = self.pk(record.Keys(collection))
 
-		delete(record.Fields, collection.IdentityField)
+		delete(record.Fields, collection.GetIdentityFieldName())
 		delete(record.Fields, `_id`)
 
-		if _, err := self.client.Post(
-			fmt.Sprintf(
-				"/%s/%s/%v",
-				collection.Name,
-				self.docType,
-				pk,
-			),
-			record.Map(),
-			map[string]interface{}{
-				`refresh`: self.refresh,
-			},
-			nil,
-		); err != nil {
+		if payload, err := collection.MapFromRecord(record); err == nil {
+			if _, err := self.client.Post(
+				fmt.Sprintf(
+					"/%s/%s/%v",
+					collection.Name,
+					self.docType,
+					pk,
+				),
+				payload,
+				map[string]interface{}{
+					`refresh`: self.refresh,
+				},
+				nil,
+			); err != nil {
+				return err
+			}
+		} else {
 			return err
 		}
 	}
