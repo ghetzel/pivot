@@ -7,8 +7,8 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 250,
-    "LineCount": 9925,
-    "SourceLineCount": 7704,
+    "LineCount": 9972,
+    "SourceLineCount": 7737,
     "FunctionCount": 360,
     "TypeCount": 32,
     "ConstantCount": 17,
@@ -403,9 +403,9 @@
                     "Alias": "generators"
                 }
             ],
-            "Size": 5092,
-            "LineCount": 187,
-            "SourceLineCount": 154,
+            "Size": 5180,
+            "LineCount": 192,
+            "SourceLineCount": 158,
             "FunctionCount": 8,
             "TypeCount": 0,
             "ConstantCount": 0,
@@ -467,7 +467,7 @@
                     "Alias": "generators"
                 }
             ],
-            "Size": 18493,
+            "Size": 18467,
             "LineCount": 695,
             "SourceLineCount": 503,
             "FunctionCount": 13,
@@ -543,9 +543,9 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 12184,
-            "LineCount": 506,
-            "SourceLineCount": 432,
+            "Size": 13120,
+            "LineCount": 548,
+            "SourceLineCount": 461,
             "FunctionCount": 20,
             "TypeCount": 1,
             "ConstantCount": 0,
@@ -1844,7 +1844,7 @@
             "IsPackageLevel": true
         },
         {
-            "Name": "NewDynamoBackend",
+            "Name": "NewElasticsearchBackend",
             "Arguments": [
                 {
                     "Name": "connection",
@@ -1856,8 +1856,8 @@
                     "Type": "Backend"
                 }
             ],
-            "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
+            "Signature": "NewElasticsearchBackend(connection dal.ConnectionString) Backend",
+            "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoQmFja2VuZHtjczogY29ubmVjdGlvbiwgc2hhcmRzOiBFbGFzdGljc2VhcmNoRGVmYXVsdFNoYXJkcywgcmVwbGljYXM6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVwbGljYXMsIHJlZnJlc2g6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVmcmVzaH0KfQ==",
             "IsPackageLevel": true
         },
         {
@@ -2149,7 +2149,7 @@
                     "IsPackageLevel": true
                 },
                 {
-                    "Name": "NewElasticsearchBackend",
+                    "Name": "NewDynamoBackend",
                     "Arguments": [
                         {
                             "Name": "connection",
@@ -2161,8 +2161,8 @@
                             "Type": "Backend"
                         }
                     ],
-                    "Signature": "NewElasticsearchBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoQmFja2VuZHtjczogY29ubmVjdGlvbiwgc2hhcmRzOiBFbGFzdGljc2VhcmNoRGVmYXVsdFNoYXJkcywgcmVwbGljYXM6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVwbGljYXMsIHJlZnJlc2g6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVmcmVzaH0KfQ==",
+                    "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
                     "IsPackageLevel": true
                 }
             ],

@@ -61,7 +61,11 @@ type elasticsearchError struct {
 }
 
 func (self *elasticsearchError) Error() string {
-	return self.Detail.Reason
+	if detail := self.Detail; detail != nil {
+		return detail.Reason
+	} else {
+		return fmt.Sprintf("HTTP %d", self.StatusCode)
+	}
 }
 
 type elasticsearchIndexAnalysis struct {
@@ -155,6 +159,17 @@ func (self *ElasticsearchBackend) Initialize() error {
 		),
 	); err == nil {
 		self.client = client
+
+		// self.client.SetPreRequestHook(func(req *http.Request) (interface{}, error) {
+		// 	log.Debugf("elastic > %s %v", req.Method, req.URL)
+		// 	return nil, nil
+		// })
+
+		// self.client.SetPostRequestHook(func(res *http.Response, _ interface{}) error {
+		// 	log.Debugf("elastic < HTTP %v", res.Status)
+		// 	return nil
+		// })
+
 		self.client.SetErrorDecoder(esErrorDecoder)
 		self.client.SetHeader(`Content-Type`, `application/json`)
 		self.client.SetHeader(`Accept-Encoding`, `identity`)
@@ -223,20 +238,22 @@ func (self *ElasticsearchBackend) RegisterCollection(definition *dal.Collection)
 }
 
 func (self *ElasticsearchBackend) Exists(name string, id interface{}) bool {
-	if collection, err := self.GetCollection(name); err == nil {
-		if _, err := self.client.Request(
-			http.MethodHead,
-			fmt.Sprintf(
-				"/%s/%s/%v",
-				collection.Name,
-				self.docType,
-				self.pk(id),
-			),
-			nil,
-			nil,
-			nil,
-		); err == nil {
-			return true
+	if pk := self.pk(id); pk != `` {
+		if collection, err := self.GetCollection(name); err == nil {
+			if _, err := self.client.Request(
+				http.MethodHead,
+				fmt.Sprintf(
+					"/%s/%s/%v",
+					collection.Name,
+					self.docType,
+					pk,
+				),
+				nil,
+				nil,
+				nil,
+			); err == nil {
+				return true
+			}
 		}
 	}
 
@@ -434,17 +451,38 @@ func (self *ElasticsearchBackend) pk(id interface{}) string {
 }
 
 func (self *ElasticsearchBackend) cacheIndex(name string) (*dal.Collection, error) {
+	var collection *dal.Collection
+
 	if collectionI, ok := self.tableCache.Load(name); ok {
-		return collectionI.(*dal.Collection), nil
+		if c, ok := collectionI.(*dal.Collection); ok {
+			if c.Ready {
+				return c, nil
+			} else {
+				collection = c
+			}
+		}
 	}
 
-	var collection = dal.NewCollection(name)
+	if res, err := self.client.Get(
+		`/`+name,
+		nil,
+		nil,
+	); err == nil {
+		if collection == nil {
+			collection = dal.NewCollection(name)
+		}
 
-	//TODO: parse existing mapping and work out fields
+		//TODO: parse existing mapping and work out fields
 
-	self.tableCache.Store(name, collection)
+		collection.Ready = true
+		self.tableCache.Store(name, collection)
 
-	return collection, nil
+		return collection, nil
+	} else if res.StatusCode == http.StatusNotFound {
+		return nil, dal.CollectionNotFound
+	} else {
+		return nil, err
+	}
 }
 
 func (self *ElasticsearchBackend) upsertRecords(collection *dal.Collection, records *dal.RecordSet, isCreate bool) error {
@@ -496,9 +534,11 @@ func esErrorDecoder(res *http.Response) error {
 			var eserr elasticsearchError
 
 			if err := json.NewDecoder(body).Decode(&eserr); err == nil {
-				return &eserr
+				if eserr.StatusCode > 0 {
+					return &eserr
+				}
 			} else {
-				return err
+				return fmt.Errorf("elastic error decode: %v", err)
 			}
 		}
 	}

@@ -7,7 +7,7 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 177,
-    "LineCount": 393,
+    "LineCount": 388,
     "SourceLineCount": 295,
     "FunctionCount": 25,
     "TypeCount": 3,
@@ -63,8 +63,8 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 11145,
-            "LineCount": 393,
+            "Size": 10982,
+            "LineCount": 388,
             "SourceLineCount": 295,
             "FunctionCount": 25,
             "TypeCount": 3,

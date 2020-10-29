@@ -88,11 +88,6 @@ func (self *Model) Migrate() error {
 		actualCollection = c
 	}
 
-	// TODO: uncommenting this produces an infinite loop; investigate
-	// if migratable, ok := self.db.(dal.Migratable); ok {
-	// 	return migratable.Migrate()
-	// }
-
 	if diffs := self.collection.Diff(actualCollection); diffs != nil {
 		merr := fmt.Errorf("Actual schema for collection '%s' differs from desired schema", self.collection.Name)
 

@@ -619,7 +619,7 @@ func (self *ElasticsearchIndexer) ListValues(collection *dal.Collection, fields 
 	// 	return nil, err
 	// }
 
-	return nil, fmt.Errorf("Not Implemented")
+	return nil, nil
 }
 
 func (self *ElasticsearchIndexer) DeleteQuery(collection *dal.Collection, f *filter.Filter) error {

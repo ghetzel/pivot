@@ -121,6 +121,9 @@ type Collection struct {
 	// Specifies that creating this collection on the backend should always be attempted.
 	AlwaysCreate bool `json:"create,omitempty"`
 
+	// Specifies that the collection is fully ready to be used
+	Ready bool `json:"ready,omitempty"`
+
 	recordType reflect.Type
 	backend    Backend
 }
