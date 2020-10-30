@@ -7,8 +7,8 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 250,
-    "LineCount": 9972,
-    "SourceLineCount": 7737,
+    "LineCount": 9974,
+    "SourceLineCount": 7795,
     "FunctionCount": 360,
     "TypeCount": 32,
     "ConstantCount": 17,
@@ -447,6 +447,10 @@
                     "Alias": "log"
                 },
                 {
+                    "PackageName": "github.com/ghetzel/go-stockutil/maputil",
+                    "Alias": "maputil"
+                },
+                {
                     "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
                     "Alias": "sliceutil"
                 },
@@ -467,9 +471,9 @@
                     "Alias": "generators"
                 }
             ],
-            "Size": 18467,
-            "LineCount": 695,
-            "SourceLineCount": 503,
+            "Size": 18254,
+            "LineCount": 691,
+            "SourceLineCount": 555,
             "FunctionCount": 13,
             "TypeCount": 1,
             "ConstantCount": 0,
@@ -543,9 +547,9 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 13120,
-            "LineCount": 548,
-            "SourceLineCount": 461,
+            "Size": 13359,
+            "LineCount": 554,
+            "SourceLineCount": 467,
             "FunctionCount": 20,
             "TypeCount": 1,
             "ConstantCount": 0,
@@ -1844,7 +1848,7 @@
             "IsPackageLevel": true
         },
         {
-            "Name": "NewElasticsearchBackend",
+            "Name": "NewDynamoBackend",
             "Arguments": [
                 {
                     "Name": "connection",
@@ -1856,76 +1860,8 @@
                     "Type": "Backend"
                 }
             ],
-            "Signature": "NewElasticsearchBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoQmFja2VuZHtjczogY29ubmVjdGlvbiwgc2hhcmRzOiBFbGFzdGljc2VhcmNoRGVmYXVsdFNoYXJkcywgcmVwbGljYXM6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVwbGljYXMsIHJlZnJlc2g6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVmcmVzaH0KfQ==",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewFileBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewFilesystemBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewMongoBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewSqlBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewSqlBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJYmFja2VuZCA6PSAmU3FsQmFja2VuZHtjb25uOiAmY29ubmVjdGlvbiwgcXVlcnlHZW5UeXBlTWFwcGluZzogZ2VuZXJhdG9ycy5EZWZhdWx0U3FsVHlwZU1hcHBpbmcsIGRyb3BUYWJsZVF1ZXJ5OiBgRFJPUCBUQUJMRSAlc2AsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwga25vd25Db2xsZWN0aW9uczogbWFrZShtYXBbc3RyaW5nXWJvb2wpLCBkZXRlY3RlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKX0KCWlmIGZuLCBvayA6PSBzcWxQcmVJbml0RnVuY3NbY29ubmVjdGlvbi5CYWNrZW5kKCldOyBvayAmJiBmbiAhPSBuaWwgewoJCWZuKGJhY2tlbmQpCgl9CgliYWNrZW5kLmluZGV4ZXIgPSBiYWNrZW5kCglyZXR1cm4gYmFja2VuZAp9",
+            "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
+            "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
             "IsPackageLevel": true
         },
         {
@@ -2132,6 +2068,57 @@
                     "IsPackageLevel": true
                 },
                 {
+                    "Name": "NewSqlBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewSqlBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJYmFja2VuZCA6PSAmU3FsQmFja2VuZHtjb25uOiAmY29ubmVjdGlvbiwgcXVlcnlHZW5UeXBlTWFwcGluZzogZ2VuZXJhdG9ycy5EZWZhdWx0U3FsVHlwZU1hcHBpbmcsIGRyb3BUYWJsZVF1ZXJ5OiBgRFJPUCBUQUJMRSAlc2AsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwga25vd25Db2xsZWN0aW9uczogbWFrZShtYXBbc3RyaW5nXWJvb2wpLCBkZXRlY3RlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKX0KCWlmIGZuLCBvayA6PSBzcWxQcmVJbml0RnVuY3NbY29ubmVjdGlvbi5CYWNrZW5kKCldOyBvayAmJiBmbiAhPSBuaWwgewoJCWZuKGJhY2tlbmQpCgl9CgliYWNrZW5kLmluZGV4ZXIgPSBiYWNrZW5kCglyZXR1cm4gYmFja2VuZAp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewElasticsearchBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewElasticsearchBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoQmFja2VuZHtjczogY29ubmVjdGlvbiwgc2hhcmRzOiBFbGFzdGljc2VhcmNoRGVmYXVsdFNoYXJkcywgcmVwbGljYXM6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVwbGljYXMsIHJlZnJlc2g6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVmcmVzaH0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewFilesystemBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
+                    "IsPackageLevel": true
+                },
+                {
                     "Name": "NewRedisBackend",
                     "Arguments": [
                         {
@@ -2149,7 +2136,7 @@
                     "IsPackageLevel": true
                 },
                 {
-                    "Name": "NewDynamoBackend",
+                    "Name": "NewMongoBackend",
                     "Arguments": [
                         {
                             "Name": "connection",
@@ -2161,8 +2148,25 @@
                             "Type": "Backend"
                         }
                     ],
-                    "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
+                    "Signature": "NewMongoBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJYmFja2VuZCA6PSAmTW9uZ29CYWNrZW5ke2Nvbm46ICZjb25uZWN0aW9ufQoJYmFja2VuZC5pbmRleGVyID0gYmFja2VuZAoJcmV0dXJuIGJhY2tlbmQKfQ==",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewFileBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
                     "IsPackageLevel": true
                 }
             ],

@@ -139,31 +139,7 @@
 	
     <li>
 		
-		<a href="#NewElasticsearchBackend">func NewElasticsearchBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewFileBackend">func NewFileBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewFilesystemBackend">func NewFilesystemBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewMongoBackend">func NewMongoBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewSqlBackend">func NewSqlBackend(connection dal.ConnectionString) Backend</a>
+		<a href="#NewDynamoBackend">func NewDynamoBackend(connection dal.ConnectionString) Backend</a>
 		
 	</li>
 	
@@ -5495,7 +5471,7 @@
 			
 		</td>
 		<td class="text-right">18KB</td>
-		<td class="text-right">503</td>
+		<td class="text-right">555</td>
 		<td class="text-right">13</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -5509,7 +5485,7 @@
 			
 		</td>
 		<td class="text-right">13KB</td>
-		<td class="text-right">461</td>
+		<td class="text-right">467</td>
 		<td class="text-right">20</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -5972,57 +5948,13 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 
 
-<h3 id="NewElasticsearchBackend" data-kind="f">
-	func <a title="View Source" href="">NewElasticsearchBackend</a>
-	<a class="permalink" href="#NewElasticsearchBackend">&#182;</a>
+<h3 id="NewDynamoBackend" data-kind="f">
+	func <a title="View Source" href="">NewDynamoBackend</a>
+	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewElasticsearchBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewFileBackend" data-kind="f">
-	func <a title="View Source" href="">NewFileBackend</a>
-	<a class="permalink" href="#NewFileBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewFilesystemBackend" data-kind="f">
-	func <a title="View Source" href="">NewFilesystemBackend</a>
-	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewMongoBackend" data-kind="f">
-	func <a title="View Source" href="">NewMongoBackend</a>
-	<a class="permalink" href="#NewMongoBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewSqlBackend" data-kind="f">
-	func <a title="View Source" href="">NewSqlBackend</a>
-	<a class="permalink" href="#NewSqlBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
+	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -6179,6 +6111,45 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 
 
+<h4 id="NewSqlBackend" data-kind="f">
+	func <a title="View Source" href="">NewSqlBackend</a>
+	<a class="permalink" href="#NewSqlBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewElasticsearchBackend" data-kind="f">
+	func <a title="View Source" href="">NewElasticsearchBackend</a>
+	<a class="permalink" href="#NewElasticsearchBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewElasticsearchBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewFilesystemBackend" data-kind="f">
+	func <a title="View Source" href="">NewFilesystemBackend</a>
+	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
 <h4 id="NewRedisBackend" data-kind="f">
 	func <a title="View Source" href="">NewRedisBackend</a>
 	<a class="permalink" href="#NewRedisBackend">&#182;</a>
@@ -6192,15 +6163,36 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 
 
-<h4 id="NewDynamoBackend" data-kind="f">
-	func <a title="View Source" href="">NewDynamoBackend</a>
-	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
+<h4 id="NewMongoBackend" data-kind="f">
+	func <a title="View Source" href="">NewMongoBackend</a>
+	<a class="permalink" href="#NewMongoBackend">&#182;</a>
 </h4>
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
+	<pre>func NewMongoBackend(connection dal.ConnectionString) Backend</pre>
 </div>
+
+
+
+
+<h4 id="NewFileBackend" data-kind="f">
+	func <a title="View Source" href="">NewFileBackend</a>
+	<a class="permalink" href="#NewFileBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+
+
+
+
 
 
 
