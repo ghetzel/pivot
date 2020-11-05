@@ -74,8 +74,8 @@
         {
             "Name": "Version",
             "Immutable": true,
-            "Expression": "`3.4.0`",
-            "Value": "3.4.0"
+            "Expression": "`3.4.1`",
+            "Value": "3.4.1"
         }
     ],
     "Variables": [

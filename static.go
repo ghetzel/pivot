@@ -6,6 +6,8 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/base64"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -100,7 +102,24 @@ func (f *_escFile) Close() error {
 }
 
 func (f *_escFile) Readdir(count int) ([]os.FileInfo, error) {
-	return nil, nil
+	if !f.isDir {
+		return nil, fmt.Errorf(" escFile.Readdir: '%s' is not directory", f.name)
+	}
+
+	fis, ok := _escDirs[f.local]
+	if !ok {
+		return nil, fmt.Errorf(" escFile.Readdir: '%s' is directory, but we have no info about content of this dir, local=%s", f.name, f.local)
+	}
+	limit := count
+	if count <= 0 || limit > len(fis) {
+		limit = len(fis)
+	}
+
+	if len(fis) == 0 && count > 0 {
+		return nil, io.EOF
+	}
+
+	return fis[0:limit], nil
 }
 
 func (f *_escFile) Stat() (os.FileInfo, error) {
@@ -191,6 +210,7 @@ func FSMustString(useLocal bool, name string) string {
 var _escData = map[string]*_escFile{
 
 	"/_includes/paginator.html": {
+		name:    "paginator.html",
 		local:   "ui/_includes/paginator.html",
 		size:    2686,
 		modtime: 1500000000,
@@ -208,6 +228,7 @@ eZW3spytcsV25ezY6q8AAAD//6xHqEJ+CgAA
 	},
 
 	"/_layouts/default.html": {
+		name:    "default.html",
 		local:   "ui/_layouts/default.html",
 		size:    2783,
 		modtime: 1500000000,
@@ -229,6 +250,7 @@ wq43QMheWbJZfi+hc5nuylymr9H/AwAA//+ocN4N3woAAA==
 	},
 
 	"/_query.html": {
+		name:    "_query.html",
 		local:   "ui/_query.html",
 		size:    9258,
 		modtime: 1500000000,
@@ -270,6 +292,7 @@ KZc2Xa5qvlzVhGkrWgaXRYLrWjJf15r5uhbNha2ar23Z3N66ua1zc4VYfRG43ZdceSMVLqWt/fpv5OVu
 	},
 
 	"/css/app.css": {
+		name:    "app.css",
 		local:   "ui/css/app.css",
 		size:    2681,
 		modtime: 1500000000,
@@ -291,6 +314,7 @@ O8mduCpxWmCvzNv1vbzx+SsAAP//NnpYj3kKAAA=
 	},
 
 	"/css/bootstrap.min.css": {
+		name:    "bootstrap.min.css",
 		local:   "ui/css/bootstrap.min.css",
 		size:    127343,
 		modtime: 1500000000,
@@ -622,6 +646,7 @@ nbp4rmL0c1SW6fn4X//596/7omjqporKeZ6e53Fdz/OodP7w5f8PAAD//8SqlT1v8QEA
 	},
 
 	"/css/bootstrap.min.css.map": {
+		name:    "bootstrap.min.css.map",
 		local:   "ui/css/bootstrap.min.css.map",
 		size:    514728,
 		modtime: 1500000000,
@@ -2046,6 +2071,7 @@ rnb4bw//HwAA//9k8J9yqNoHAA==
 	},
 
 	"/css/codemirror-theme.css": {
+		name:    "codemirror-theme.css",
 		local:   "ui/css/codemirror-theme.css",
 		size:    2179,
 		modtime: 1500000000,
@@ -2064,6 +2090,7 @@ NEaia4OtZtC53fBB6co64oZWs5fZnwAAAP//zsygsYMIAAA=
 	},
 
 	"/css/codemirror.css": {
+		name:    "codemirror.css",
 		local:   "ui/css/codemirror.css",
 		size:    8542,
 		modtime: 1500000000,
@@ -2114,6 +2141,7 @@ BbUyHUqt0FSbzdFKpuaQHNnBv7/YJ9NOLb28ngznVk2UWNLHE3xvjv1vAAAA//+nmtk2XiEAAA==
 	},
 
 	"/css/font-awesome.min.css": {
+		name:    "font-awesome.min.css",
 		local:   "ui/css/font-awesome.min.css",
 		size:    29062,
 		modtime: 1500000000,
@@ -2231,6 +2259,7 @@ DHD36elh4//7GX/06yl8NKs17+34mhHjwxJ/IHLGv+bmWcec4L5x4y/L+daNf/tGPc0tGiS7lDA1acB8
 	},
 
 	"/css/jquery.json-viewer.css": {
+		name:    "jquery.json-viewer.css",
 		local:   "ui/css/jquery.json-viewer.css",
 		size:    976,
 		modtime: 1500000000,
@@ -2248,6 +2277,7 @@ BQAA//+PWwGl0AMAAA==
 	},
 
 	"/editor.html": {
+		name:    "editor.html",
 		local:   "ui/editor.html",
 		size:    11130,
 		modtime: 1500000000,
@@ -2298,6 +2328,7 @@ AAAA//9plaYBeisAAA==
 	},
 
 	"/fonts/FontAwesome.otf": {
+		name:    "FontAwesome.otf",
 		local:   "ui/fonts/FontAwesome.otf",
 		size:    124988,
 		modtime: 1500000000,
@@ -4036,6 +4067,7 @@ JLJ56uPRRrRtwCxJKNlTivJQ3scLq2eWO7lxN27HeebcimagyWjyrfUj7xg3ybPS/77nZJTgxSbJQ/Hk
 	},
 
 	"/fonts/fontawesome-webfont.eot": {
+		name:    "fontawesome-webfont.eot",
 		local:   "ui/fonts/fontawesome-webfont.eot",
 		size:    76518,
 		modtime: 1500000000,
@@ -5320,6 +5352,7 @@ xVIyGX/DLcIliESDCKAhF3wSkIBVj8s58Ti+JTek1PCUXhXRBFHQR0MT7gAAAAAAAAAAAQAA///kXoWC
 	},
 
 	"/fonts/fontawesome-webfont.svg": {
+		name:    "fontawesome-webfont.svg",
 		local:   "ui/fonts/fontawesome-webfont.svg",
 		size:    391622,
 		modtime: 1500000000,
@@ -7279,6 +7312,7 @@ xvkFAA==
 	},
 
 	"/fonts/fontawesome-webfont.ttf": {
+		name:    "fontawesome-webfont.ttf",
 		local:   "ui/fonts/fontawesome-webfont.ttf",
 		size:    152796,
 		modtime: 1500000000,
@@ -8810,6 +8844,7 @@ dd61Ou9anXetzrtW512r867VedfqvGt13rU679oJC+zE0TXXLiz8XwAAAP//tf3NX9xUAgA=
 	},
 
 	"/fonts/fontawesome-webfont.woff": {
+		name:    "fontawesome-webfont.woff",
 		local:   "ui/fonts/fontawesome-webfont.woff",
 		size:    90412,
 		modtime: 1500000000,
@@ -10324,6 +10359,7 @@ xzNsXflrfglmpWuErW6s4YUJO/a73fmo/xsefH5GL3jZ5IyG9sJAoL4ZDe3/CwAA//8sa3EjLGEBAA==
 	},
 
 	"/fonts/fontawesome-webfont.woff2": {
+		name:    "fontawesome-webfont.woff2",
 		local:   "ui/fonts/fontawesome-webfont.woff2",
 		size:    71896,
 		modtime: 1500000000,
@@ -11531,6 +11567,7 @@ CtIzf/uvX/zHALL5lB9fKP9XAAAA///Il+nI2BgBAA==
 	},
 
 	"/fonts/glyphicons-halflings-regular.eot": {
+		name:    "glyphicons-halflings-regular.eot",
 		local:   "ui/fonts/glyphicons-halflings-regular.eot",
 		size:    20127,
 		modtime: 1500000000,
@@ -11874,6 +11911,7 @@ gSlyhSHVCuIoCgPSBGmCYAEAAP//WMexnJ9OAAA=
 	},
 
 	"/fonts/glyphicons-halflings-regular.svg": {
+		name:    "glyphicons-halflings-regular.svg",
 		local:   "ui/fonts/glyphicons-halflings-regular.svg",
 		size:    108738,
 		modtime: 1500000000,
@@ -12318,6 +12356,7 @@ qAEA
 	},
 
 	"/fonts/glyphicons-halflings-regular.ttf": {
+		name:    "glyphicons-halflings-regular.ttf",
 		local:   "ui/fonts/glyphicons-halflings-regular.ttf",
 		size:    45404,
 		modtime: 1500000000,
@@ -12725,6 +12764,7 @@ AwAA//+aFzycXLEAAA==
 	},
 
 	"/fonts/glyphicons-halflings-regular.woff": {
+		name:    "glyphicons-halflings-regular.woff",
 		local:   "ui/fonts/glyphicons-halflings-regular.woff",
 		size:    23424,
 		modtime: 1500000000,
@@ -13120,6 +13160,7 @@ XmeJ/Rh6DP1ZZVv3n7j8Fyz+g9nTiFO5v4X3ds9a6htr3GsV07D1a7rC55mQA+lLhjvCx6gnuef/x7ge
 	},
 
 	"/fonts/glyphicons-halflings-regular.woff2": {
+		name:    "glyphicons-halflings-regular.woff2",
 		local:   "ui/fonts/glyphicons-halflings-regular.woff2",
 		size:    18028,
 		modtime: 1500000000,
@@ -13430,6 +13471,7 @@ AA==
 	},
 
 	"/index.html": {
+		name:    "index.html",
 		local:   "ui/index.html",
 		size:    1438,
 		modtime: 1500000000,
@@ -13448,6 +13490,7 @@ l3BUu4S4RIX3abmgXmTNhru9jf4FAAD//0RHwBeeBQAA
 	},
 
 	"/js/URI.min.js": {
+		name:    "URI.min.js",
 		local:   "ui/js/URI.min.js",
 		size:    47206,
 		modtime: 1500000000,
@@ -13708,6 +13751,7 @@ Au84ZrgAAA==
 	},
 
 	"/js/app.js": {
+		name:    "app.js",
 		local:   "ui/js/app.js",
 		size:    6010,
 		modtime: 1500000000,
@@ -13741,6 +13785,7 @@ ewboRDbdM3kND+7JPAikHYeHP+0z0RLhn+zLY62xc76RYv79EwAA//9GBPXrehcAAA==
 	},
 
 	"/js/bootstrap.bundle.min.js": {
+		name:    "bootstrap.bundle.min.js",
 		local:   "ui/js/bootstrap.bundle.min.js",
 		size:    69453,
 		modtime: 1500000000,
@@ -14072,6 +14117,7 @@ G/5xpW/FyRH/nKU3yaH4ITXZkhnjQP5YwX8Ek//z8uU/9Eq6LZboXbrZYHL74fIsudFzjm62JMtRdIdJ
 	},
 
 	"/js/bootstrap.bundle.min.js.map": {
+		name:    "bootstrap.bundle.min.js.map",
 		local:   "ui/js/bootstrap.bundle.min.js.map",
 		size:    271233,
 		modtime: 1500000000,
@@ -15241,6 +15287,7 @@ Cv6h+BT8AzgS/CXZD/ytOQ386zga4v8rZO7bt+nj09v/PwAA//+p2m3AgSMEAA==
 	},
 
 	"/js/bootstrap.min.js": {
+		name:    "bootstrap.min.js",
 		local:   "ui/js/bootstrap.min.js",
 		size:    37045,
 		modtime: 1500000000,
@@ -15413,6 +15460,7 @@ pH4cDg9HLOWlvPU1xxI/5FSW1gu8jRqgUbf3zd7s0zd785G285gqs8IQm/8bAAD//y+jxWq1kAAA
 	},
 
 	"/js/codemirror.js": {
+		name:    "codemirror.js",
 		local:   "ui/js/codemirror.js",
 		size:    368733,
 		modtime: 1500000000,
@@ -17121,6 +17169,7 @@ d6NiZblSZEVIgPwIdLqHPQ/KYCHoVA2+H3/3p/FksLVFg+5THWxt3SVJcvD/BgAA//8eKy7wXaAFAA==
 	},
 
 	"/js/codemirror/addons/active-line.js": {
+		name:    "active-line.js",
 		local:   "ui/js/codemirror/addons/active-line.js",
 		size:    2773,
 		modtime: 1500000000,
@@ -17145,6 +17194,7 @@ BgAA//8zvjlI1QoAAA==
 	},
 
 	"/js/codemirror/addons/closebrackets.js": {
+		name:    "closebrackets.js",
 		local:   "ui/js/codemirror/addons/closebrackets.js",
 		size:    5652,
 		modtime: 1500000000,
@@ -17180,6 +17230,7 @@ AP//mgKOPRQWAAA=
 	},
 
 	"/js/codemirror/addons/matchbrackets.js": {
+		name:    "matchbrackets.js",
 		local:   "ui/js/codemirror/addons/matchbrackets.js",
 		size:    6258,
 		modtime: 1500000000,
@@ -17225,6 +17276,7 @@ kR4bcpz/A8fFo7bYvxWI4VP8IAZH3uPPoSZ7L/lAiSM3Z14j+++/AQAA//9+aHsDchgAAA==
 	},
 
 	"/js/codemirror/addons/show-hint.js": {
+		name:    "show-hint.js",
 		local:   "ui/js/codemirror/addons/show-hint.js",
 		size:    15925,
 		modtime: 1500000000,
@@ -17310,6 +17362,7 @@ JP3j5o/bx8N89lN2Ow0AfY0ckRhry8QA9nrVXKfbQf/6LBz1z5DM4PFfjRrRGP+2Yppk7rZeKeH/AgAA
 	},
 
 	"/js/director.min.js": {
+		name:    "director.min.js",
 		local:   "ui/js/director.min.js",
 		size:    10169,
 		modtime: 1500000000,
@@ -17381,6 +17434,7 @@ A8qedQRMjbCQXRsFet2yCQgCjoQMDv3bIZkLI9ihRHw5NW3fzSLuzYr5gQD8dwAAAP//3TSrX7knAAA=
 	},
 
 	"/js/jquery-2.2.4.min.js": {
+		name:    "jquery-2.2.4.min.js",
 		local:   "ui/js/jquery-2.2.4.min.js",
 		size:    85578,
 		modtime: 1500000000,
@@ -17890,6 +17944,7 @@ nJiAJC66TD22UcV0/i//JwAA//9HBa+xSk4BAA==
 	},
 
 	"/js/jquery.json-viewer.js": {
+		name:    "jquery.json-viewer.js",
 		local:   "ui/js/jquery.json-viewer.js",
 		size:    4455,
 		modtime: 1500000000,
@@ -17922,6 +17977,7 @@ Ldo7GIEwBlysUPm3SxtsTvnqxUCdsNvP4tloG4VW/6LZ6PcAAAD//wRsH7ZnEQAA
 	},
 
 	"/js/stapes.min.js": {
+		name:    "stapes.min.js",
 		local:   "ui/js/stapes.min.js",
 		size:    6397,
 		modtime: 1500000000,
@@ -17967,6 +18023,7 @@ XBnfzMjiFu0TEP9z3V5705lcZmH1dSfdT2t8aM/29oMPbFLUw1fetEVdhaS3L8/85VQ3sp3fHGxsH7XQ
 	},
 
 	"/js/tether.min.js": {
+		name:    "tether.min.js",
 		local:   "ui/js/tether.min.js",
 		size:    24900,
 		modtime: 1500000000,
@@ -18100,6 +18157,7 @@ DjN9tCCmVhCLGvtUShdMkEEw4fT7iXjPCQ8jCXw2nRP9z+HAZ5O5e9HAISefTcZ/xkiuLStJcm30sc43
 	},
 
 	"/views/backend.html": {
+		name:    "backend.html",
 		local:   "ui/views/backend.html",
 		size:    4555,
 		modtime: 1500000000,
@@ -18123,6 +18181,7 @@ GwAA//+LzF9pyxEAAA==
 	},
 
 	"/views/index.html": {
+		name:    "index.html",
 		local:   "ui/views/index.html",
 		size:    2196,
 		modtime: 1500000000,
@@ -18141,47 +18200,134 @@ ajSx97nzMQy7Qff3JwAA///zR2tClAgAAA==
 	},
 
 	"/": {
+		name:  "/",
+		local: `ui`,
 		isDir: true,
-		local: "ui",
 	},
 
 	"/_includes": {
+		name:  "_includes",
+		local: `ui/_includes`,
 		isDir: true,
-		local: "ui/_includes",
 	},
 
 	"/_layouts": {
+		name:  "_layouts",
+		local: `ui/_layouts`,
 		isDir: true,
-		local: "ui/_layouts",
 	},
 
 	"/css": {
+		name:  "css",
+		local: `ui/css`,
 		isDir: true,
-		local: "ui/css",
 	},
 
 	"/fonts": {
+		name:  "fonts",
+		local: `ui/fonts`,
 		isDir: true,
-		local: "ui/fonts",
 	},
 
 	"/js": {
+		name:  "js",
+		local: `ui/js`,
 		isDir: true,
-		local: "ui/js",
 	},
 
 	"/js/codemirror": {
+		name:  "codemirror",
+		local: `ui/js/codemirror`,
 		isDir: true,
-		local: "ui/js/codemirror",
 	},
 
 	"/js/codemirror/addons": {
+		name:  "addons",
+		local: `ui/js/codemirror/addons`,
 		isDir: true,
-		local: "ui/js/codemirror/addons",
 	},
 
 	"/views": {
+		name:  "views",
+		local: `ui/views`,
 		isDir: true,
-		local: "ui/views",
+	},
+}
+
+var _escDirs = map[string][]os.FileInfo{
+
+	"ui": {
+		_escData["/_includes"],
+		_escData["/_layouts"],
+		_escData["/_query.html"],
+		_escData["/css"],
+		_escData["/editor.html"],
+		_escData["/fonts"],
+		_escData["/index.html"],
+		_escData["/js"],
+		_escData["/views"],
+	},
+
+	"ui/_includes": {
+		_escData["/_includes/paginator.html"],
+	},
+
+	"ui/_layouts": {
+		_escData["/_layouts/default.html"],
+	},
+
+	"ui/css": {
+		_escData["/css/app.css"],
+		_escData["/css/bootstrap.min.css"],
+		_escData["/css/bootstrap.min.css.map"],
+		_escData["/css/codemirror-theme.css"],
+		_escData["/css/codemirror.css"],
+		_escData["/css/font-awesome.min.css"],
+		_escData["/css/jquery.json-viewer.css"],
+	},
+
+	"ui/fonts": {
+		_escData["/fonts/FontAwesome.otf"],
+		_escData["/fonts/fontawesome-webfont.eot"],
+		_escData["/fonts/fontawesome-webfont.svg"],
+		_escData["/fonts/fontawesome-webfont.ttf"],
+		_escData["/fonts/fontawesome-webfont.woff"],
+		_escData["/fonts/fontawesome-webfont.woff2"],
+		_escData["/fonts/glyphicons-halflings-regular.eot"],
+		_escData["/fonts/glyphicons-halflings-regular.svg"],
+		_escData["/fonts/glyphicons-halflings-regular.ttf"],
+		_escData["/fonts/glyphicons-halflings-regular.woff"],
+		_escData["/fonts/glyphicons-halflings-regular.woff2"],
+	},
+
+	"ui/js": {
+		_escData["/js/URI.min.js"],
+		_escData["/js/app.js"],
+		_escData["/js/bootstrap.bundle.min.js"],
+		_escData["/js/bootstrap.bundle.min.js.map"],
+		_escData["/js/bootstrap.min.js"],
+		_escData["/js/codemirror"],
+		_escData["/js/codemirror.js"],
+		_escData["/js/director.min.js"],
+		_escData["/js/jquery-2.2.4.min.js"],
+		_escData["/js/jquery.json-viewer.js"],
+		_escData["/js/stapes.min.js"],
+		_escData["/js/tether.min.js"],
+	},
+
+	"ui/js/codemirror": {
+		_escData["/js/codemirror/addons"],
+	},
+
+	"ui/js/codemirror/addons": {
+		_escData["/js/codemirror/addons/active-line.js"],
+		_escData["/js/codemirror/addons/closebrackets.js"],
+		_escData["/js/codemirror/addons/matchbrackets.js"],
+		_escData["/js/codemirror/addons/show-hint.js"],
+	},
+
+	"ui/views": {
+		_escData["/views/backend.html"],
+		_escData["/views/index.html"],
 	},
 }
