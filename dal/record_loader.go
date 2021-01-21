@@ -107,34 +107,26 @@ func getIdentityFieldNameFromStruct(instance interface{}, fallbackIdentityFieldN
 	var fn structutil.StructFieldFunc
 
 	fn = func(field *reflect.StructField, v reflect.Value) error {
-		if field.Anonymous && v.CanInterface() {
-			var substruct interface{} = v.Interface()
+		fieldNames[field.Name] = true
 
-			if v.CanAddr() {
-				substruct = v.Addr().Interface()
-			}
+		if tag := field.Tag.Get(RecordStructTag); tag != `` {
+			if v := strings.Split(tag, `,`); sliceutil.ContainsString(v[1:], `identity`) {
+				structFieldName = field.Name
 
-			return structutil.FieldsFunc(substruct, fn)
-		} else {
-			fieldNames[field.Name] = true
-
-			if tag := field.Tag.Get(RecordStructTag); tag != `` {
-				if v := strings.Split(tag, `,`); sliceutil.ContainsString(v[1:], `identity`) {
-					structFieldName = field.Name
-
-					if v[0] != `` {
-						dbFieldName = v[0]
-					}
-
-					return structutil.StopIterating
+				if v[0] != `` {
+					dbFieldName = v[0]
 				}
-			}
 
-			return nil
+				return structutil.StopIterating
+			}
 		}
+
+		return nil
 	}
 
-	structutil.FieldsFunc(instance, fn)
+	if err := structutil.FieldsFunc(instance, fn); err != nil {
+		return ``, ``, err
+	}
 
 	if structFieldName != `` {
 		if dbFieldName != `` {

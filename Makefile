@@ -1,6 +1,8 @@
 .EXPORT_ALL_VARIABLES:
 EXAMPLES    := $(wildcard examples/*)
 GO111MODULE ?= on
+CGO_CFLAGS   = -I/opt/homebrew/include
+CGO_LDFLAGS  = -L/opt/homebrew/lib
 
 all: deps fmt test build docs
 
@@ -24,7 +26,7 @@ $(EXAMPLES):
 	go build --tags json1 -o bin/example-$(notdir $(@)) $(@)/*.go
 
 build: $(EXAMPLES)
-	go build --tags json1 -i -o bin/pivot cmd/pivot/*.go
+	go build --tags json1 -o bin/pivot cmd/pivot/*.go
 	which pivot && cp -v bin/pivot `which pivot` || true
 
 .PHONY: test deps docs $(EXAMPLES) build

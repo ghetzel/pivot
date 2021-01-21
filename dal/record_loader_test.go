@@ -67,6 +67,7 @@ func TestGetIdentityFieldNameFromStruct(t *testing.T) {
 	f5.Local = true
 
 	field, key, err = getIdentityFieldNameFromStruct(&f5, ``)
+	assert.NoError(err)
 	assert.Equal(`UUID`, field)
 	assert.Equal(`uuid`, key)
 }
