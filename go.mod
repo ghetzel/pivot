@@ -27,7 +27,7 @@ require (
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/fatih/structs v1.0.0
 	github.com/ghetzel/cli v1.17.0
-	github.com/ghetzel/diecast v1.19.21
+	github.com/ghetzel/diecast v1.20.0
 	github.com/ghetzel/go-stockutil v1.9.5
 	github.com/ghodss/yaml v1.0.0
 	github.com/glycerine/go-unsnap-stream v0.0.0-20180323001048-9f0cb55181dd // indirect
