@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"regexp"
 
+	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/go-stockutil/typeutil"
@@ -31,6 +32,8 @@ func GetValidator(name string, args interface{}) (FieldValidatorFunc, error) {
 	case `one-of`:
 		if typeutil.IsArray(args) {
 			return ValidateIsOneOf(sliceutil.Sliceify(args)...), nil
+		} else if typeutil.IsMap(args) {
+			return ValidateIsOneOf(maputil.MapValues(args)...), nil
 		} else {
 			return nil, fmt.Errorf("Must specify an array of values for validator 'one-of'")
 		}
