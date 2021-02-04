@@ -1882,6 +1882,23 @@
             "IsPackageLevel": true
         },
         {
+            "Name": "NewFileBackend",
+            "Arguments": [
+                {
+                    "Name": "connection",
+                    "Type": "dal.ConnectionString"
+                }
+            ],
+            "Returns": [
+                {
+                    "Type": "Backend"
+                }
+            ],
+            "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
+            "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
+            "IsPackageLevel": true
+        },
+        {
             "Name": "NewFilesystemBackend",
             "Arguments": [
                 {
@@ -2150,23 +2167,6 @@
                     ],
                     "Signature": "MakeBackend(connection dal.ConnectionString) (Backend, error)",
                     "Source": "ewoJdmFyIGF1dG9waW5nSW50ZXJ2YWwgdGltZS5EdXJhdGlvbgoJYmFja2VuZE5hbWUgOj0gY29ubmVjdGlvbi5CYWNrZW5kKCkKCWxvZy5JbmZvZigiQ3JlYXRpbmcgYmFja2VuZDogJXYiLCBjb25uZWN0aW9uLlN0cmluZygpKQoJaWYgZm4sIG9rIDo9IGJhY2tlbmRNYXBbYmFja2VuZE5hbWVdOyBvayB7CgkJaWYgaSA6PSBjb25uZWN0aW9uLk9wdER1cmF0aW9uKGBwaW5nYCwgMCk7IGkgPiAwIHsKCQkJYXV0b3BpbmdJbnRlcnZhbCA9IGkKCQl9CgkJY29ubmVjdGlvbi5DbGVhck9wdChgcGluZ2ApCgkJaWYgYmFja2VuZCA6PSBmbihjb25uZWN0aW9uKTsgYmFja2VuZCAhPSBuaWwgewoJCQlpZiBhdXRvcGluZ0ludGVydmFsID4gMCB7CgkJCQlnbyBzdGFydFBlcmlvZGljUGluZ2VyKGF1dG9waW5nSW50ZXJ2YWwsIGJhY2tlbmQpCgkJCX0KCQkJcmV0dXJuIGJhY2tlbmQsIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkVycm9yIG9jY3VycmVkIGluc3RhbnRpYXRpbmcgYmFja2VuZCAlcSIsIGJhY2tlbmROYW1lKQoJCX0KCX0gZWxzZSB7CgkJcmV0dXJuIG5pbCwgZm10LkVycm9yZigiVW5rbm93biBiYWNrZW5kIHR5cGUgJXEiLCBiYWNrZW5kTmFtZSkKCX0KfQ==",
-                    "IsPackageLevel": true
-                },
-                {
-                    "Name": "NewFileBackend",
-                    "Arguments": [
-                        {
-                            "Name": "connection",
-                            "Type": "dal.ConnectionString"
-                        }
-                    ],
-                    "Returns": [
-                        {
-                            "Type": "Backend"
-                        }
-                    ],
-                    "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
-                    "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
                     "IsPackageLevel": true
                 }
             ],
