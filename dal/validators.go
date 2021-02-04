@@ -31,7 +31,15 @@ func GetValidator(name string, args interface{}) (FieldValidatorFunc, error) {
 	switch name {
 	case `one-of`:
 		if typeutil.IsArray(args) {
-			return ValidateIsOneOf(sliceutil.Sliceify(args)...), nil
+			var values []interface{} = sliceutil.Sliceify(args)
+
+			for i, v := range values {
+				if vAtKey := maputil.M(v).Get(`value`); !vAtKey.IsNil() {
+					values[i] = vAtKey.Value
+				}
+			}
+
+			return ValidateIsOneOf(values...), nil
 		} else if typeutil.IsMap(args) {
 			return ValidateIsOneOf(maputil.MapValues(args)...), nil
 		} else {
