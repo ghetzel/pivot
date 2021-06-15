@@ -1,8 +1,9 @@
 .EXPORT_ALL_VARIABLES:
-EXAMPLES    := $(wildcard examples/*)
-GO111MODULE ?= on
-CGO_CFLAGS   = -I/opt/homebrew/include
-CGO_LDFLAGS  = -L/opt/homebrew/lib
+EXAMPLES       := $(wildcard examples/*)
+GO111MODULE    ?= on
+CGO_CFLAGS      = -I/opt/homebrew/include
+CGO_LDFLAGS     = -L/opt/homebrew/lib
+DOCKER_VERSION  = $(shell grep -m1 'go get github.com/ghetzel/pivot' Dockerfile | cut -d@ -f2 | tr -d v)
 
 all: deps fmt test build docs
 
@@ -29,4 +30,14 @@ build: $(EXAMPLES)
 	go build --tags json1 -o bin/pivot cmd/pivot/*.go
 	which pivot && cp -v bin/pivot `which pivot` || true
 
-.PHONY: test deps docs $(EXAMPLES) build
+docker-build:
+	@docker build -t ghetzel/pivot:$(DOCKER_VERSION) .
+
+docker-push:
+	@docker tag ghetzel/pivot:$(DOCKER_VERSION) ghetzel/pivot:latest
+	@docker push ghetzel/pivot:$(DOCKER_VERSION)
+	@docker push ghetzel/pivot:latest
+
+docker: docker-build docker-push
+
+.PHONY: test deps docs $(EXAMPLES) build docker docker-build docker-push
