@@ -52,9 +52,9 @@ func (self *MongoBackend) String() string {
 }
 
 func (self *MongoBackend) Initialize() error {
-	cstring := fmt.Sprintf("%s://%s/%s", self.conn.Backend(), self.conn.Host(), self.conn.Dataset())
+	var autoregister = self.conn.ClearOpt(`autoregister`).Bool()
 
-	if session, err := mgo.DialWithTimeout(cstring, DefaultConnectTimeout); err == nil {
+	if session, err := mgo.DialWithTimeout(self.conn.String(), DefaultConnectTimeout); err == nil {
 		self.session = session
 
 		if u, p, ok := self.conn.Credentials(); ok {
@@ -80,7 +80,7 @@ func (self *MongoBackend) Initialize() error {
 
 		self.db = session.DB(self.conn.Dataset())
 
-		if self.conn.OptBool(`autoregister`, DefaultAutoregister) {
+		if autoregister {
 			if names, err := self.db.CollectionNames(); err == nil {
 				for _, name := range names {
 					collection := dal.NewCollection(name)

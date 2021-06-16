@@ -149,8 +149,10 @@ func (self *ConnectionString) HasOpt(key string) bool {
 	return ok
 }
 
-func (self *ConnectionString) ClearOpt(key string) {
+func (self *ConnectionString) ClearOpt(key string) typeutil.Variant {
+	var r = self.Opt(key)
 	delete(self.Options, key)
+	return r
 }
 
 func (self *ConnectionString) Opt(key string) typeutil.Variant {
