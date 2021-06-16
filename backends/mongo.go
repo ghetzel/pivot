@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ghetzel/go-stockutil/executil"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
 	"github.com/ghetzel/go-stockutil/stringutil"
@@ -80,7 +81,7 @@ func (self *MongoBackend) Initialize() error {
 
 		self.db = session.DB(self.conn.Dataset())
 
-		if autoregister {
+		if autoregister || executil.EnvBool(`PIVOT_AUTOREGISTER`, DefaultAutoregister) {
 			if names, err := self.db.CollectionNames(); err == nil {
 				for _, name := range names {
 					collection := dal.NewCollection(name)
