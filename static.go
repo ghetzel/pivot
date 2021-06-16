@@ -18229,6 +18229,12 @@ ajSx97nzMQy7Qff3JwAA///zR2tClAgAAA==
 		isDir: true,
 	},
 
+	"/img": {
+		name:  "img",
+		local: `ui/img`,
+		isDir: true,
+	},
+
 	"/js": {
 		name:  "js",
 		local: `ui/js`,
@@ -18263,6 +18269,7 @@ var _escDirs = map[string][]os.FileInfo{
 		_escData["/css"],
 		_escData["/editor.html"],
 		_escData["/fonts"],
+		_escData["/img"],
 		_escData["/index.html"],
 		_escData["/js"],
 		_escData["/views"],
@@ -18299,6 +18306,8 @@ var _escDirs = map[string][]os.FileInfo{
 		_escData["/fonts/glyphicons-halflings-regular.woff"],
 		_escData["/fonts/glyphicons-halflings-regular.woff2"],
 	},
+
+	"ui/img": {},
 
 	"ui/js": {
 		_escData["/js/URI.min.js"],

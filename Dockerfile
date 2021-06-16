@@ -4,7 +4,7 @@ ENV GO111MODULE on
 ENV LOGLEVEL    debug
 
 RUN apk update && apk add --no-cache bash gcc g++ ca-certificates curl wget make socat git jq libsass-dev libsass
-RUN go get github.com/ghetzel/pivot/v3/cmd/pivot@v3.4.6
+RUN go get github.com/ghetzel/pivot/v3/cmd/pivot@v3.4.7
 RUN rm -rf /go/pkg /go/src
 RUN mv /go/bin/pivot /usr/bin/pivot
 RUN rm -rf /usr/local/go /usr/libexec/gcc

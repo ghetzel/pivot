@@ -11,7 +11,7 @@ import (
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/ghetzel/pivot/v3/filter/generators"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 )
 
 func (self *MongoBackend) IndexConnectionString() *dal.ConnectionString {
