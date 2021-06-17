@@ -298,53 +298,66 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 	router.Get(`/api/collections/:collection/aggregate/:fields`,
 		func(w http.ResponseWriter, req *http.Request) {
-			name := vestigo.Param(req, `collection`)
-			fields := strings.Split(vestigo.Param(req, `fields`), `,`)
-			aggregations := strings.Split(httputil.Q(req, `fn`, `count`), `,`)
-			backend := backendForRequest(self, req, self.backend)
+			var name = vestigo.Param(req, `collection`)
+			var fields = strings.Split(vestigo.Param(req, `fields`), `,`)
+			var aggregations = strings.Split(httputil.Q(req, `fn`, `count`), `,`)
+			var backend = backendForRequest(self, req, self.backend)
+			var defaultField = httputil.Q(req, `field`)
 
 			if f, err := filterFromRequest(req, httputil.Q(req, `q`, `all`), 0); err == nil {
 				if collection, err := backend.GetCollection(name); err == nil {
 					collection = injectRequestParamsIntoCollection(req, collection)
 
 					if aggregator := backend.WithAggregator(collection); aggregator != nil {
-						results := make(map[string]interface{})
+						var fns = fnFieldPairsToAggs(httputil.QStrings(req, `fn`, `,`, `count`), defaultField)
 
-						for _, field := range fields {
-							fieldResults := make(map[string]interface{})
-
-							for _, aggregation := range aggregations {
-								var value interface{}
-								var err error
-
-								switch aggregation {
-								case `count`:
-									value, err = aggregator.Count(collection, f)
-								case `sum`:
-									value, err = aggregator.Sum(collection, field, f)
-								case `min`:
-									value, err = aggregator.Minimum(collection, field, f)
-								case `max`:
-									value, err = aggregator.Maximum(collection, field, f)
-								case `avg`:
-									value, err = aggregator.Average(collection, field, f)
-								default:
-									httputil.RespondJSON(w, fmt.Errorf("Unsupported aggregator '%s'", aggregation), http.StatusBadRequest)
-									return
-								}
-
-								if err != nil {
-									httputil.RespondJSON(w, err)
-									return
-								}
-
-								fieldResults[aggregation] = value
+						if groups := httputil.QStrings(req, `group`, `,`); len(groups) > 0 {
+							if rs, err := aggregator.GroupBy(collection, groups, fns, f); err == nil {
+								httputil.RespondJSON(w, rs)
+							} else {
+								httputil.RespondJSON(w, fmt.Errorf("group failed: %v", err), http.StatusBadRequest)
 							}
 
-							results[field] = fieldResults
-						}
+							return
+						} else {
+							var results = make(map[string]interface{})
 
-						httputil.RespondJSON(w, results)
+							for _, field := range fields {
+								var fieldResults = make(map[string]interface{})
+
+								for _, aggregation := range aggregations {
+									var value interface{}
+									var err error
+
+									switch aggregation {
+									case `count`:
+										value, err = aggregator.Count(collection, f)
+									case `sum`:
+										value, err = aggregator.Sum(collection, field, f)
+									case `min`:
+										value, err = aggregator.Minimum(collection, field, f)
+									case `max`:
+										value, err = aggregator.Maximum(collection, field, f)
+									case `avg`:
+										value, err = aggregator.Average(collection, field, f)
+									default:
+										httputil.RespondJSON(w, fmt.Errorf("Unsupported aggregator '%s'", aggregation), http.StatusBadRequest)
+										return
+									}
+
+									if err != nil {
+										httputil.RespondJSON(w, err)
+										return
+									}
+
+									fieldResults[aggregation] = value
+								}
+
+								results[field] = fieldResults
+							}
+
+							httputil.RespondJSON(w, results)
+						}
 					} else {
 						httputil.RespondJSON(w, fmt.Errorf("Backend %T does not support aggregations.", self.backend), http.StatusBadRequest)
 					}
@@ -778,4 +791,39 @@ func backendForRequest(server *Server, req *http.Request, backend Backend) Backe
 	}
 
 	return backend
+}
+
+func fnFieldPairsToAggs(pairs []string, defaultField string) (aggs []filter.Aggregate) {
+	for _, pair := range pairs {
+		fn, field := stringutil.SplitPair(pair, `:`)
+
+		agg := filter.Aggregate{
+			Field: field,
+		}
+
+		if agg.Field == `` {
+			agg.Field = defaultField
+		}
+
+		switch fn {
+		case `sum`:
+			agg.Aggregation = filter.Sum
+		case `mean`, `avg`, `average`:
+			agg.Aggregation = filter.Average
+		case `first`:
+			agg.Aggregation = filter.First
+		case `last`:
+			agg.Aggregation = filter.Last
+		case `min`, `minimum`:
+			agg.Aggregation = filter.Minimum
+		case `max`, `maximum`:
+			agg.Aggregation = filter.Maximum
+		case `count`, ``:
+			agg.Aggregation = filter.Count
+		}
+
+		aggs = append(aggs, agg)
+	}
+
+	return
 }
