@@ -20,7 +20,6 @@ require (
 	github.com/cznic/strutil v0.0.0-20171016134553-529a34b1c186 // indirect
 	github.com/deckarep/golang-set v0.0.0-20171013212420-1d4478f51bed
 	github.com/docker/go-connections v0.3.0 // indirect
-	github.com/docker/go-units v0.3.3 // indirect
 	github.com/edsrzf/mmap-go v0.0.0-20170320065105-0bce6a688712 // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
@@ -51,7 +50,7 @@ require (
 	github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
-	github.com/opencontainers/runc v1.0.0-rc5 // indirect
+	github.com/opencontainers/runc v1.1.2 // indirect
 	github.com/orcaman/concurrent-map v0.0.0-20180319144342-a05df785d2dc
 	github.com/ory/dockertest v3.3.2+incompatible
 	github.com/philhofer/fwd v1.0.0 // indirect
@@ -65,7 +64,6 @@ require (
 	github.com/tinylib/msgp v1.0.2 // indirect
 	github.com/urfave/negroni v1.0.1-0.20191011213438-f4316798d5d3
 	github.com/willf/bitset v0.0.0-20161202170036-5c3c0fce4884 // indirect
-	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
 	golang.org/x/tools v0.1.3 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gotest.tools v2.1.0+incompatible // indirect
