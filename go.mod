@@ -65,7 +65,7 @@ require (
 	github.com/tinylib/msgp v1.0.2 // indirect
 	github.com/urfave/negroni v1.0.1-0.20191011213438-f4316798d5d3
 	github.com/willf/bitset v0.0.0-20161202170036-5c3c0fce4884 // indirect
-	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/tools v0.1.3 // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gotest.tools v2.1.0+incompatible // indirect
