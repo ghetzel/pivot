@@ -50,7 +50,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.4
 	github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
-	github.com/opencontainers/image-spec v1.0.1 // indirect
+	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/opencontainers/runc v1.0.0-rc5 // indirect
 	github.com/orcaman/concurrent-map v0.0.0-20180319144342-a05df785d2dc
 	github.com/ory/dockertest v3.3.2+incompatible
