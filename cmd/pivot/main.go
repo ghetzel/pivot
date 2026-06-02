@@ -320,7 +320,7 @@ func main() {
 								sourceItem := mapper.NewModel(source, collection)
 								var i int
 
-								if err := sourceItem.Each(&dal.Record{}, func(ptrToInstance interface{}, err error) {
+								if err := sourceItem.Each(&dal.Record{}, func(ptrToInstance any, err error) {
 									if newRecord, ok := ptrToInstance.(*dal.Record); ok && err == nil {
 										if err := destination.Insert(name, dal.NewRecordSet(newRecord)); err == nil {
 											i += 1
@@ -625,7 +625,7 @@ func main() {
 	app.Run(os.Args)
 }
 
-func logerr(c *cli.Context, format string, args ...interface{}) {
+func logerr(c *cli.Context, format string, args ...any) {
 	if c.Bool(`warn-errors`) {
 		log.Warningf(format, args...)
 	} else {
@@ -642,7 +642,7 @@ func pivotClient(c *cli.Context) *client.Pivot {
 	}
 }
 
-func output(c *cli.Context, value interface{}, textFn func() error) error {
+func output(c *cli.Context, value any, textFn func() error) error {
 	format := c.String(`format`)
 
 	var err error

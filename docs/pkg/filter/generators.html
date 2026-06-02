@@ -203,7 +203,7 @@
 				<a href="#Elasticsearch.GetValues">
 					func
 					(self *Elasticsearch)
-					GetValues() []interface{}
+					GetValues() []any
 				</a>
 				
 			</li>
@@ -253,7 +253,7 @@
 				<a href="#Elasticsearch.SetOption">
 					func
 					(self *Elasticsearch)
-					SetOption(key string, value interface{}) error
+					SetOption(key string, value any) error
 				</a>
 				
 			</li>
@@ -354,7 +354,7 @@
 				<a href="#MongoDB.GetValues">
 					func
 					(self *MongoDB)
-					GetValues() []interface{}
+					GetValues() []any
 				</a>
 				
 			</li>
@@ -392,7 +392,7 @@
 				<a href="#MongoDB.SetOption">
 					func
 					(self *MongoDB)
-					SetOption(key string, value interface{}) error
+					SetOption(key string, value any) error
 				</a>
 				
 			</li>
@@ -519,7 +519,7 @@
 				<a href="#Sql.ArrayTypeDecode">
 					func
 					(self *Sql)
-					ArrayTypeDecode(in []byte, out interface{}) error
+					ArrayTypeDecode(in []byte, out any) error
 				</a>
 				
 			</li>
@@ -531,7 +531,7 @@
 				<a href="#Sql.ArrayTypeEncode">
 					func
 					(self *Sql)
-					ArrayTypeEncode(in interface{}) ([]byte, error)
+					ArrayTypeEncode(in any) ([]byte, error)
 				</a>
 				
 			</li>
@@ -567,7 +567,7 @@
 				<a href="#Sql.GetValues">
 					func
 					(self *Sql)
-					GetValues() []interface{}
+					GetValues() []any
 				</a>
 				
 			</li>
@@ -605,7 +605,7 @@
 				<a href="#Sql.ObjectTypeDecode">
 					func
 					(self *Sql)
-					ObjectTypeDecode(in []byte, out interface{}) error
+					ObjectTypeDecode(in []byte, out any) error
 				</a>
 				
 			</li>
@@ -617,7 +617,7 @@
 				<a href="#Sql.ObjectTypeEncode">
 					func
 					(self *Sql)
-					ObjectTypeEncode(in interface{}) ([]byte, error)
+					ObjectTypeEncode(in any) ([]byte, error)
 				</a>
 				
 			</li>
@@ -629,7 +629,7 @@
 				<a href="#Sql.PrepareInputValue">
 					func
 					(self *Sql)
-					PrepareInputValue(f string, value interface{}) (interface{}, error)
+					PrepareInputValue(f string, value any) (any, error)
 				</a>
 				
 			</li>
@@ -641,7 +641,7 @@
 				<a href="#Sql.SetOption">
 					func
 					(self *Sql)
-					SetOption(_ string, _ interface{}) error
+					SetOption(_ string, _ any) error
 				</a>
 				
 			</li>
@@ -701,7 +701,7 @@
 				<a href="#Sql.ToNativeValue">
 					func
 					(self *Sql)
-					ToNativeValue(t dal.Type, subtypes []dal.Type, in interface{}) string
+					ToNativeValue(t dal.Type, subtypes []dal.Type, in any) string
 				</a>
 				
 			</li>
@@ -867,7 +867,7 @@
 			<a href="elasticsearch_util.go">elasticsearch_util.go</a>
 			
 		</td>
-		<td class="text-right">7KB</td>
+		<td class="text-right">6KB</td>
 		<td class="text-right">247</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -881,7 +881,7 @@
 			<a href="mongodb-util.go">mongodb-util.go</a>
 			
 		</td>
-		<td class="text-right">5KB</td>
+		<td class="text-right">4KB</td>
 		<td class="text-right">162</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -937,7 +937,7 @@
 			<a href="sql_test.go">sql_test.go</a>
 			
 		</td>
-		<td class="text-right">30KB</td>
+		<td class="text-right">29KB</td>
 		<td class="text-right">998</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>

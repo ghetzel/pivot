@@ -7,8 +7,8 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 2188,
-    "LineCount": 4667,
-    "SourceLineCount": 3507,
+    "LineCount": 4668,
+    "SourceLineCount": 3509,
     "FunctionCount": 126,
     "TypeCount": 24,
     "ConstantCount": 27,
@@ -55,8 +55,8 @@
                     "Alias": "typeutil"
                 }
             ],
-            "Size": 25587,
-            "LineCount": 863,
+            "Size": 25468,
+            "LineCount": 862,
             "SourceLineCount": 590,
             "FunctionCount": 33,
             "TypeCount": 3,
@@ -83,7 +83,7 @@
                     "Alias": "require"
                 }
             ],
-            "Size": 7006,
+            "Size": 6982,
             "LineCount": 302,
             "SourceLineCount": 245,
             "FunctionCount": 0,
@@ -135,9 +135,9 @@
                     "Alias": "netrc"
                 }
             ],
-            "Size": 6844,
-            "LineCount": 299,
-            "SourceLineCount": 239,
+            "Size": 6854,
+            "LineCount": 301,
+            "SourceLineCount": 241,
             "FunctionCount": 22,
             "TypeCount": 1,
             "ConstantCount": 0,
@@ -155,7 +155,7 @@
                     "Alias": "reflect"
                 }
             ],
-            "Size": 1346,
+            "Size": 1330,
             "LineCount": 55,
             "SourceLineCount": 35,
             "FunctionCount": 2,
@@ -219,7 +219,7 @@
                     "Alias": "typeutil"
                 }
             ],
-            "Size": 13668,
+            "Size": 13508,
             "LineCount": 491,
             "SourceLineCount": 360,
             "FunctionCount": 9,
@@ -243,15 +243,15 @@
                     "Alias": "time"
                 },
                 {
-                    "PackageName": "github.com/ghetzel/go-stockutil/utils",
-                    "Alias": "utils"
+                    "PackageName": "github.com/ghetzel/go-stockutil/timeutil",
+                    "Alias": "timeutil"
                 },
                 {
                     "PackageName": "github.com/stretchr/testify/require",
                     "Alias": "require"
                 }
             ],
-            "Size": 12523,
+            "Size": 12307,
             "LineCount": 546,
             "SourceLineCount": 406,
             "FunctionCount": 0,
@@ -307,7 +307,7 @@
                     "Alias": "go-base58"
                 }
             ],
-            "Size": 7043,
+            "Size": 6819,
             "LineCount": 288,
             "SourceLineCount": 225,
             "FunctionCount": 13,
@@ -355,7 +355,7 @@
                     "Alias": "typeutil"
                 }
             ],
-            "Size": 12862,
+            "Size": 12558,
             "LineCount": 495,
             "SourceLineCount": 379,
             "FunctionCount": 18,
@@ -399,7 +399,7 @@
                     "Alias": "util"
                 }
             ],
-            "Size": 5283,
+            "Size": 5227,
             "LineCount": 205,
             "SourceLineCount": 160,
             "FunctionCount": 0,
@@ -447,7 +447,7 @@
                     "Alias": "require"
                 }
             ],
-            "Size": 10479,
+            "Size": 10261,
             "LineCount": 443,
             "SourceLineCount": 344,
             "FunctionCount": 0,
@@ -471,7 +471,7 @@
                     "Alias": "typeutil"
                 }
             ],
-            "Size": 3615,
+            "Size": 3503,
             "LineCount": 142,
             "SourceLineCount": 102,
             "FunctionCount": 9,
@@ -495,7 +495,7 @@
                     "Alias": "require"
                 }
             ],
-            "Size": 1820,
+            "Size": 1788,
             "LineCount": 81,
             "SourceLineCount": 69,
             "FunctionCount": 0,
@@ -533,7 +533,7 @@
                     "Alias": "maputil"
                 }
             ],
-            "Size": 2338,
+            "Size": 2298,
             "LineCount": 127,
             "SourceLineCount": 102,
             "FunctionCount": 4,
@@ -573,7 +573,7 @@
                     "Alias": "typeutil"
                 }
             ],
-            "Size": 5214,
+            "Size": 5110,
             "LineCount": 204,
             "SourceLineCount": 153,
             "FunctionCount": 11,
@@ -585,18 +585,21 @@
     "Constants": [
         {
             "Name": "ArrayType",
+            "Type": "Type",
             "Immutable": true,
             "Expression": "`array`",
             "Value": "array"
         },
         {
             "Name": "AutoType",
+            "Type": "Type",
             "Immutable": true,
             "Expression": "`auto`",
             "Value": "auto"
         },
         {
             "Name": "BooleanType",
+            "Type": "Type",
             "Immutable": true,
             "Expression": "`bool`",
             "Value": "bool"
@@ -622,6 +625,7 @@
         },
         {
             "Name": "FieldDelta",
+            "Type": "DeltaType",
             "Immutable": true,
             "Expression": "`field`",
             "Value": "field"
@@ -648,18 +652,21 @@
         },
         {
             "Name": "FloatType",
+            "Type": "Type",
             "Immutable": true,
             "Expression": "`float`",
             "Value": "float"
         },
         {
             "Name": "IntType",
+            "Type": "Type",
             "Immutable": true,
             "Expression": "`int`",
             "Value": "int"
         },
         {
             "Name": "ObjectType",
+            "Type": "Type",
             "Immutable": true,
             "Expression": "`object`",
             "Value": "object"
@@ -672,6 +679,7 @@
         },
         {
             "Name": "RawType",
+            "Type": "Type",
             "Immutable": true,
             "Expression": "`raw`",
             "Value": "raw"
@@ -711,6 +719,7 @@
         },
         {
             "Name": "TimeType",
+            "Type": "Type",
             "Immutable": true,
             "Expression": "`time`",
             "Value": "time"
@@ -802,7 +811,7 @@
             "Arguments": [
                 {
                     "Name": "value",
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Name": "op",
@@ -811,13 +820,13 @@
             ],
             "Returns": [
                 {
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Type": "error"
                 }
             ],
-            "Signature": "CurrentTime(value interface{}, op FieldOperation) (interface{}, error)",
+            "Signature": "CurrentTime(value any, op FieldOperation) (any, error)",
             "Source": "ewoJaWYgb3AgPT0gUGVyc2lzdE9wZXJhdGlvbiB7CgkJcmV0dXJuIHRpbWUuTm93KCksIG5pbAoJfSBlbHNlIHsKCQlyZXR1cm4gdmFsdWUsIG5pbAoJfQp9",
             "IsPackageLevel": true
         },
@@ -827,7 +836,7 @@
             "Arguments": [
                 {
                     "Name": "value",
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Name": "op",
@@ -836,14 +845,14 @@
             ],
             "Returns": [
                 {
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Type": "error"
                 }
             ],
-            "Signature": "CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error)",
-            "Source": "ewoJcmV0dXJuIElmVW5zZXQoZnVuYyh2IGludGVyZmFjZXt9LCBvIEZpZWxkT3BlcmF0aW9uKSAoaW50ZXJmYWNle30sIGVycm9yKSB7CgkJaWYgbyA9PSBQZXJzaXN0T3BlcmF0aW9uIHsKCQkJcmV0dXJuIHRpbWUuTm93KCksIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiB2LCBuaWwKCQl9Cgl9KSh2YWx1ZSwgb3ApCn0=",
+            "Signature": "CurrentTimeIfUnset(value any, op FieldOperation) (any, error)",
+            "Source": "ewoJcmV0dXJuIElmVW5zZXQoZnVuYyh2IGFueSwgbyBGaWVsZE9wZXJhdGlvbikgKGFueSwgZXJyb3IpIHsKCQlpZiBvID09IFBlcnNpc3RPcGVyYXRpb24gewoJCQlyZXR1cm4gdGltZS5Ob3coKSwgbmlsCgkJfSBlbHNlIHsKCQkJcmV0dXJuIHYsIG5pbAoJCX0KCX0pKHZhbHVlLCBvcCkKfQ==",
             "IsPackageLevel": true
         },
         {
@@ -852,7 +861,7 @@
             "Arguments": [
                 {
                     "Name": "value",
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Name": "_",
@@ -861,13 +870,13 @@
             ],
             "Returns": [
                 {
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Type": "error"
                 }
             ],
-            "Signature": "GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error)",
+            "Signature": "GenerateUUID(value any, _ FieldOperation) (any, error)",
             "Source": "ewoJaWYgcmVjb3JkLCBvayA6PSB2YWx1ZS4oKlJlY29yZCk7IG9rIHsKCQl2YWx1ZSA9IHJlY29yZC5JRAoJfQoJaWYgdHlwZXV0aWwuSXNaZXJvKHZhbHVlKSB7CgkJdmFsdWUgPSBzdHJpbmd1dGlsLlVVSUQoKS5TdHJpbmcoKQoJfQoJcmV0dXJuIHZhbHVlLCBuaWwKfQ==",
             "IsPackageLevel": true
         },
@@ -966,7 +975,7 @@
             "Arguments": [
                 {
                     "Name": "value",
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Name": "_",
@@ -975,13 +984,13 @@
             ],
             "Returns": [
                 {
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Type": "error"
                 }
             ],
-            "Signature": "TrimSpace(value interface{}, _ FieldOperation) (interface{}, error)",
+            "Signature": "TrimSpace(value any, _ FieldOperation) (any, error)",
             "Source": "ewoJaWYgcmVjb3JkLCBvayA6PSB2YWx1ZS4oKlJlY29yZCk7IG9rIHsKCQl2YWx1ZSA9IHJlY29yZC5JRAoJfQoJaWYgdlN0ciwgZXJyIDo9IHN0cmluZ3V0aWwuVG9TdHJpbmcodmFsdWUpOyBlcnIgPT0gbmlsIHsKCQlyZXR1cm4gc3RyaW5ncy5UcmltU3BhY2UodlN0ciksIG5pbAoJfSBlbHNlIHsKCQlyZXR1cm4gdmFsdWUsIGVycgoJfQp9",
             "IsPackageLevel": true
         },
@@ -991,7 +1000,7 @@
             "Arguments": [
                 {
                     "Name": "value",
-                    "Type": "interface{}"
+                    "Type": "any"
                 }
             ],
             "Returns": [
@@ -999,7 +1008,7 @@
                     "Type": "error"
                 }
             ],
-            "Signature": "ValidateIsURL(value interface{}) error",
+            "Signature": "ValidateIsURL(value any) error",
             "Source": "ewoJaWYgdSwgZXJyIDo9IHVybC5QYXJzZSh0eXBldXRpbC5TdHJpbmcodmFsdWUpKTsgZXJyID09IG5pbCB7CgkJaWYgdS5TY2hlbWUgPT0gYGAgfHwgdS5Ib3N0ID09IGBgIHx8IHUuUGF0aCA9PSBgYCB7CgkJCXJldHVybiBmbXQuRXJyb3JmKCJJbnZhbGlkIFVSTCIpCgkJfQoJfSBlbHNlIHsKCQlyZXR1cm4gZXJyCgl9CglyZXR1cm4gbmlsCn0=",
             "IsPackageLevel": true
         },
@@ -1009,7 +1018,7 @@
             "Arguments": [
                 {
                     "Name": "value",
-                    "Type": "interface{}"
+                    "Type": "any"
                 }
             ],
             "Returns": [
@@ -1017,7 +1026,7 @@
                     "Type": "error"
                 }
             ],
-            "Signature": "ValidateNonZero(value interface{}) error",
+            "Signature": "ValidateNonZero(value any) error",
             "Source": "ewoJaWYgdHlwZXV0aWwuSXNaZXJvKHZhbHVlKSB7CgkJcmV0dXJuIGZtdC5FcnJvcmYoImV4cGVjdGVkIG5vbi16ZXJvIHZhbHVlLCBnb3Q6ICV2IiwgdmFsdWUpCgl9CglyZXR1cm4gbmlsCn0=",
             "IsPackageLevel": true
         },
@@ -1027,7 +1036,7 @@
             "Arguments": [
                 {
                     "Name": "value",
-                    "Type": "interface{}"
+                    "Type": "any"
                 }
             ],
             "Returns": [
@@ -1035,7 +1044,7 @@
                     "Type": "error"
                 }
             ],
-            "Signature": "ValidateNotEmpty(value interface{}) error",
+            "Signature": "ValidateNotEmpty(value any) error",
             "Source": "ewoJaWYgdHlwZXV0aWwuSXNFbXB0eSh2YWx1ZSkgewoJCXJldHVybiBmbXQuRXJyb3JmKCJleHBlY3RlZCBub24tZW1wdHkgdmFsdWUsIGdvdDogJXYiLCB2YWx1ZSkKCX0KCXJldHVybiBuaWwKfQ==",
             "IsPackageLevel": true
         },
@@ -1045,7 +1054,7 @@
             "Arguments": [
                 {
                     "Name": "value",
-                    "Type": "interface{}"
+                    "Type": "any"
                 }
             ],
             "Returns": [
@@ -1053,7 +1062,7 @@
                     "Type": "error"
                 }
             ],
-            "Signature": "ValidatePositiveInteger(value interface{}) error",
+            "Signature": "ValidatePositiveInteger(value any) error",
             "Source": "ewoJaWYgdiwgZXJyIDo9IHN0cmluZ3V0aWwuQ29udmVydFRvSW50ZWdlcih2YWx1ZSk7IGVyciA9PSBuaWwgewoJCWlmIHYgPD0gMCB7CgkJCXJldHVybiBmbXQuRXJyb3JmKCJleHBlY3RlZCB2YWx1ZSA+IDAsIGdvdDogJXYiLCB2KQoJCX0KCX0gZWxzZSB7CgkJcmV0dXJuIGVycgoJfQoJcmV0dXJuIG5pbAp9",
             "IsPackageLevel": true
         },
@@ -1063,7 +1072,7 @@
             "Arguments": [
                 {
                     "Name": "value",
-                    "Type": "interface{}"
+                    "Type": "any"
                 }
             ],
             "Returns": [
@@ -1071,7 +1080,7 @@
                     "Type": "error"
                 }
             ],
-            "Signature": "ValidatePositiveOrZeroInteger(value interface{}) error",
+            "Signature": "ValidatePositiveOrZeroInteger(value any) error",
             "Source": "ewoJaWYgdiwgZXJyIDo9IHN0cmluZ3V0aWwuQ29udmVydFRvSW50ZWdlcih2YWx1ZSk7IGVyciA9PSBuaWwgewoJCWlmIHYgPCAwIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoImV4cGVjdGVkIHZhbHVlID49IDAsIGdvdDogJXYiLCB2KQoJCX0KCX0gZWxzZSB7CgkJcmV0dXJuIGVycgoJfQoJcmV0dXJuIG5pbAp9",
             "IsPackageLevel": true
         }
@@ -1110,7 +1119,7 @@
                 }
             ],
             "Signature": "TestCollectionMapFromRecord(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uIDo9IE5ld0NvbGxlY3Rpb24oYFRlc3RDb2xsZWN0aW9uU3RydWN0VG9SZWNvcmRgKQoJY29sbGVjdGlvbi5JZGVudGl0eUZpZWxkRm9ybWF0dGVyID0gZnVuYyhpZCBpbnRlcmZhY2V7fSwgb3AgRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiByZWNvcmQsIG9rIDo9IGlkLigqUmVjb3JkKTsgb2sgewoJCQlpZCA9IHJlY29yZC5JRAoJCX0KCQlyZXR1cm4gZm10LlNwcmludGYoIklEPCV2PiIsIGlkKSwgbmlsCgl9Cgljb2xsZWN0aW9uLkFkZEZpZWxkcyhbXUZpZWxke3tOYW1lOiBgbmFtZWAsIFR5cGU6IFN0cmluZ1R5cGV9LCB7TmFtZTogYGVuYWJsZWRgLCBUeXBlOiBCb29sZWFuVHlwZSwgRGVmYXVsdFZhbHVlOiB0cnVlfSwge05hbWU6IGBhZ2VgLCBUeXBlOiBJbnRUeXBlfX0uLi4pCglydiwgZXJyIDo9IGNvbGxlY3Rpb24uTWFwRnJvbVJlY29yZChOZXdSZWNvcmQoYHRlc3RgKS5TZXQoYG5hbWVgLCBgdGVzdGVyYCkuU2V0KGBhZ2VgLCA0MikpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWxWYWx1ZXMobWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgaWRgOiBgSUQ8dGVzdD5gLCBgbmFtZWA6IGB0ZXN0ZXJgLCBgZW5hYmxlZGA6IHRydWUsIGBhZ2VgOiA0Mn0sIHJ2KQp9",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uIDo9IE5ld0NvbGxlY3Rpb24oYFRlc3RDb2xsZWN0aW9uU3RydWN0VG9SZWNvcmRgKQoJY29sbGVjdGlvbi5JZGVudGl0eUZpZWxkRm9ybWF0dGVyID0gZnVuYyhpZCBhbnksIG9wIEZpZWxkT3BlcmF0aW9uKSAoYW55LCBlcnJvcikgewoJCWlmIHJlY29yZCwgb2sgOj0gaWQuKCpSZWNvcmQpOyBvayB7CgkJCWlkID0gcmVjb3JkLklECgkJfQoJCXJldHVybiBmbXQuU3ByaW50ZigiSUQ8JXY+IiwgaWQpLCBuaWwKCX0KCWNvbGxlY3Rpb24uQWRkRmllbGRzKFtdRmllbGR7e05hbWU6IGBuYW1lYCwgVHlwZTogU3RyaW5nVHlwZX0sIHtOYW1lOiBgZW5hYmxlZGAsIFR5cGU6IEJvb2xlYW5UeXBlLCBEZWZhdWx0VmFsdWU6IHRydWV9LCB7TmFtZTogYGFnZWAsIFR5cGU6IEludFR5cGV9fS4uLikKCXJ2LCBlcnIgOj0gY29sbGVjdGlvbi5NYXBGcm9tUmVjb3JkKE5ld1JlY29yZChgdGVzdGApLlNldChgbmFtZWAsIGB0ZXN0ZXJgKS5TZXQoYGFnZWAsIDQyKSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbFZhbHVlcyhtYXBbc3RyaW5nXWFueXtgaWRgOiBgSUQ8dGVzdD5gLCBgbmFtZWA6IGB0ZXN0ZXJgLCBgZW5hYmxlZGA6IHRydWUsIGBhZ2VgOiA0Mn0sIHJ2KQp9",
             "IsPackageLevel": true
         },
         {
@@ -1170,7 +1179,7 @@
                 }
             ],
             "Signature": "TestFieldConvertValueArray(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgaW50ZXJmYWNle30KCXZhciBlcnIgZXJyb3IKCWZpZWxkID0gJkZpZWxke1R5cGU6IEFycmF5VHlwZX0KCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoW11pbnRlcmZhY2V7fXt9KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKG1ha2UoW11pbnRlcmZhY2V7fSwgMCksIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuTmlsKHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShbXWludGVyZmFjZXt9ezEsIDIsIDN9KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317MSwgMiwgM30sIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShbXXN0cmluZ3tgMWAsIGAyYCwgYDNgfSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2AxYCwgYDJgLCBgM2B9LCB2YWx1ZSkKCWZpZWxkLlJlcXVpcmVkID0gdHJ1ZQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShbXWludGVyZmFjZXt9e30pCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwobWFrZShbXWludGVyZmFjZXt9LCAwKSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChtYWtlKFtdaW50ZXJmYWNle30sIDApLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoW11ib29se3RydWUsIHRydWUsIGZhbHNlfSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e3RydWUsIHRydWUsIGZhbHNlfSwgdmFsdWUpCglmaWVsZC5EZWZhdWx0VmFsdWUgPSBbXXN0cmluZ3tgYWAsIGBiYCwgYGNgfQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoW11pbnRlcmZhY2V7fXtgYWAsIGBiYCwgYGNgfSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2BhYCwgYGJgLCBgY2B9LCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoW11pbnQ2NHs5LCA4LCA3fSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2ludDY0KDkpLCBpbnQ2NCg4KSwgaW50NjQoNyl9LCB2YWx1ZSkKfQ==",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgYW55Cgl2YXIgZXJyIGVycm9yCglmaWVsZCA9ICZGaWVsZHtUeXBlOiBBcnJheVR5cGV9Cgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKFtdYW55e30pCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWxWYWx1ZXMobWFrZShbXWFueSwgMCksIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuTmlsKHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShbXWFueXsxLCAyLCAzfSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChbXWFueXsxLCAyLCAzfSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKFtdc3RyaW5ne2AxYCwgYDJgLCBgM2B9KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKFtdYW55e2AxYCwgYDJgLCBgM2B9LCB2YWx1ZSkKCWZpZWxkLlJlcXVpcmVkID0gdHJ1ZQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShbXWFueXt9KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKG1ha2UoW11hbnksIDApLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKG1ha2UoW11hbnksIDApLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoW11ib29se3RydWUsIHRydWUsIGZhbHNlfSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChbXWFueXt0cnVlLCB0cnVlLCBmYWxzZX0sIHZhbHVlKQoJZmllbGQuRGVmYXVsdFZhbHVlID0gW11zdHJpbmd7YGFgLCBgYmAsIGBjYH0KCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKFtdYW55e2BhYCwgYGJgLCBgY2B9LCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKFtdYW55e2BhYCwgYGJgLCBgY2B9LCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoW11pbnQ2NHs5LCA4LCA3fSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChbXWFueXtpbnQ2NCg5KSwgaW50NjQoOCksIGludDY0KDcpfSwgdmFsdWUpCn0=",
             "IsPackageLevel": true
         },
         {
@@ -1182,7 +1191,7 @@
                 }
             ],
             "Signature": "TestFieldConvertValueBool(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgaW50ZXJmYWNle30KCXZhciBlcnIgZXJyb3IKCWZpZWxkID0gJkZpZWxke1R5cGU6IEJvb2xlYW5UeXBlfQoJZm9yIF8sIHYgOj0gcmFuZ2UgW11pbnRlcmZhY2V7fXt0cnVlLCBgdHJ1ZWAsIGBUcnVlYCwgYFRSVUVgLCBgeWVzYCwgYG9uYCwgYFlFU2AsIGBPTmAsIDEsIC00LCAzLjE0LCA0MiwgYGRlbm5pc2B9IHsKCQl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKHYpCgkJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJCWFzc2VydC5FcXVhbCh0cnVlLCB2YWx1ZSwgZm10LlNwcmludGYoIm91dHB1dDogJVQoJXYpIC0+ICVUKCV2KSIsIHYsIHYsIHZhbHVlLCB2YWx1ZSkpCgl9Cglmb3IgXywgdiA6PSByYW5nZSBbXWludGVyZmFjZXt9e2ZhbHNlLCBgZmFsc2VgLCBgRmFsc2VgLCBgRkFMU0VgLCBgbm9gLCBgb2ZmYCwgYE5PYCwgYE9GRmAsIDB9IHsKCQl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKHYpCgkJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJCWFzc2VydC5FcXVhbChmYWxzZSwgdmFsdWUsIGZtdC5TcHJpbnRmKCJvdXRwdXQ6ICVUKCV2KSAtPiAlVCgldikiLCB2LCB2LCB2YWx1ZSwgdmFsdWUpKQoJfQoJZmllbGQuUmVxdWlyZWQgPSB0cnVlCglmb3IgXywgdiA6PSByYW5nZSBbXWludGVyZmFjZXt9e3RydWUsIGB0cnVlYCwgYFRydWVgLCBgVFJVRWAsIGB5ZXNgLCBgb25gLCBgWUVTYCwgYE9OYCwgMSwgLTQsIDMuMTQsIDQyLCBgZGVubmlzYH0gewoJCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUodikKCQlhc3NlcnQuTm9FcnJvcihlcnIpCgkJYXNzZXJ0LkVxdWFsKHRydWUsIHZhbHVlLCBmbXQuU3ByaW50Zigib3V0cHV0OiAlVCgldikgLT4gJVQoJXYpIiwgdiwgdiwgdmFsdWUsIHZhbHVlKSkKCX0KCWZvciBfLCB2IDo9IHJhbmdlIFtdaW50ZXJmYWNle317ZmFsc2UsIGBmYWxzZWAsIGBGYWxzZWAsIGBGQUxTRWAsIGBub2AsIGBvZmZgLCBgTk9gLCBgT0ZGYCwgbmlsLCAwfSB7CgkJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZSh2KQoJCWFzc2VydC5Ob0Vycm9yKGVycikKCQlhc3NlcnQuRXF1YWwoZmFsc2UsIHZhbHVlLCBmbXQuU3ByaW50Zigib3V0cHV0OiAlVCgldikgLT4gJVQoJXYpIiwgdiwgdiwgdmFsdWUsIHZhbHVlKSkKCX0KCWZpZWxkLkRlZmF1bHRWYWx1ZSA9IHRydWUKCWZvciBfLCB2IDo9IHJhbmdlIFtdaW50ZXJmYWNle317dHJ1ZSwgYHRydWVgLCBgVHJ1ZWAsIGBUUlVFYCwgYHllc2AsIGBvbmAsIGBZRVNgLCBgT05gLCAxLCAtNCwgMy4xNCwgNDIsIGBkZW5uaXNgfSB7CgkJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZSh2KQoJCWFzc2VydC5Ob0Vycm9yKGVycikKCQlhc3NlcnQuRXF1YWwodHJ1ZSwgdmFsdWUsIGZtdC5TcHJpbnRmKCJvdXRwdXQ6ICVUKCV2KSAtPiAlVCgldikiLCB2LCB2LCB2YWx1ZSwgdmFsdWUpKQoJfQoJZm9yIF8sIHYgOj0gcmFuZ2UgW11pbnRlcmZhY2V7fXtmYWxzZSwgYGZhbHNlYCwgYEZhbHNlYCwgYEZBTFNFYCwgYG5vYCwgYG9mZmAsIGBOT2AsIGBPRkZgLCBuaWwsIDB9IHsKCQl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKHYpCgkJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJCWFzc2VydC5FcXVhbCh0cnVlLCB2YWx1ZSwgZm10LlNwcmludGYoIm91dHB1dDogJVQoJXYpIC0+ICVUKCV2KSIsIHYsIHYsIHZhbHVlLCB2YWx1ZSkpCgl9Cgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbCh0cnVlLCB2YWx1ZSwgZm10LlNwcmludGYoIm91dHB1dDogbmlsIC0+ICVUKCV2KSIsIHZhbHVlLCB2YWx1ZSkpCn0=",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgYW55Cgl2YXIgZXJyIGVycm9yCglmaWVsZCA9ICZGaWVsZHtUeXBlOiBCb29sZWFuVHlwZX0KCWZvciBfLCB2IDo9IHJhbmdlIFtdYW55e3RydWUsIGB0cnVlYCwgYFRydWVgLCBgVFJVRWAsIGB5ZXNgLCBgb25gLCBgWUVTYCwgYE9OYCwgMSwgLTQsIDMuMTQsIDQyLCBgZGVubmlzYH0gewoJCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUodikKCQlhc3NlcnQuTm9FcnJvcihlcnIpCgkJYXNzZXJ0LkVxdWFsKHRydWUsIHZhbHVlLCBmbXQuU3ByaW50Zigib3V0cHV0OiAlVCgldikgLT4gJVQoJXYpIiwgdiwgdiwgdmFsdWUsIHZhbHVlKSkKCX0KCWZvciBfLCB2IDo9IHJhbmdlIFtdYW55e2ZhbHNlLCBgZmFsc2VgLCBgRmFsc2VgLCBgRkFMU0VgLCBgbm9gLCBgb2ZmYCwgYE5PYCwgYE9GRmAsIDB9IHsKCQl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKHYpCgkJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJCWFzc2VydC5FcXVhbChmYWxzZSwgdmFsdWUsIGZtdC5TcHJpbnRmKCJvdXRwdXQ6ICVUKCV2KSAtPiAlVCgldikiLCB2LCB2LCB2YWx1ZSwgdmFsdWUpKQoJfQoJZmllbGQuUmVxdWlyZWQgPSB0cnVlCglmb3IgXywgdiA6PSByYW5nZSBbXWFueXt0cnVlLCBgdHJ1ZWAsIGBUcnVlYCwgYFRSVUVgLCBgeWVzYCwgYG9uYCwgYFlFU2AsIGBPTmAsIDEsIC00LCAzLjE0LCA0MiwgYGRlbm5pc2B9IHsKCQl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKHYpCgkJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJCWFzc2VydC5FcXVhbCh0cnVlLCB2YWx1ZSwgZm10LlNwcmludGYoIm91dHB1dDogJVQoJXYpIC0+ICVUKCV2KSIsIHYsIHYsIHZhbHVlLCB2YWx1ZSkpCgl9Cglmb3IgXywgdiA6PSByYW5nZSBbXWFueXtmYWxzZSwgYGZhbHNlYCwgYEZhbHNlYCwgYEZBTFNFYCwgYG5vYCwgYG9mZmAsIGBOT2AsIGBPRkZgLCBuaWwsIDB9IHsKCQl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKHYpCgkJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJCWFzc2VydC5FcXVhbChmYWxzZSwgdmFsdWUsIGZtdC5TcHJpbnRmKCJvdXRwdXQ6ICVUKCV2KSAtPiAlVCgldikiLCB2LCB2LCB2YWx1ZSwgdmFsdWUpKQoJfQoJZmllbGQuRGVmYXVsdFZhbHVlID0gdHJ1ZQoJZm9yIF8sIHYgOj0gcmFuZ2UgW11hbnl7dHJ1ZSwgYHRydWVgLCBgVHJ1ZWAsIGBUUlVFYCwgYHllc2AsIGBvbmAsIGBZRVNgLCBgT05gLCAxLCAtNCwgMy4xNCwgNDIsIGBkZW5uaXNgfSB7CgkJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZSh2KQoJCWFzc2VydC5Ob0Vycm9yKGVycikKCQlhc3NlcnQuRXF1YWwodHJ1ZSwgdmFsdWUsIGZtdC5TcHJpbnRmKCJvdXRwdXQ6ICVUKCV2KSAtPiAlVCgldikiLCB2LCB2LCB2YWx1ZSwgdmFsdWUpKQoJfQoJZm9yIF8sIHYgOj0gcmFuZ2UgW11hbnl7ZmFsc2UsIGBmYWxzZWAsIGBGYWxzZWAsIGBGQUxTRWAsIGBub2AsIGBvZmZgLCBgTk9gLCBgT0ZGYCwgbmlsLCAwfSB7CgkJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZSh2KQoJCWFzc2VydC5Ob0Vycm9yKGVycikKCQlhc3NlcnQuRXF1YWwodHJ1ZSwgdmFsdWUsIGZtdC5TcHJpbnRmKCJvdXRwdXQ6ICVUKCV2KSAtPiAlVCgldikiLCB2LCB2LCB2YWx1ZSwgdmFsdWUpKQoJfQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwodHJ1ZSwgdmFsdWUsIGZtdC5TcHJpbnRmKCJvdXRwdXQ6IG5pbCAtPiAlVCgldikiLCB2YWx1ZSwgdmFsdWUpKQp9",
             "IsPackageLevel": true
         },
         {
@@ -1194,7 +1203,7 @@
                 }
             ],
             "Signature": "TestFieldConvertValueFloat(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgaW50ZXJmYWNle30KCXZhciBlcnIgZXJyb3IKCWZpZWxkID0gJkZpZWxke1R5cGU6IEZsb2F0VHlwZX0KCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYGApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWxWYWx1ZXMoZmxvYXQ2NCgwKSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChmbG9hdDY0KDApLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYDMuMTQxNTk3YCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChmbG9hdDY0KDMuMTQxNTk3KSwgdmFsdWUpCglmaWVsZC5SZXF1aXJlZCA9IHRydWUKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYGApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoZmxvYXQ2NCgwKSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChmbG9hdDY0KDApLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYDIuNzE4MjhgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGZsb2F0NjQoMi43MTgyOCksIHZhbHVlKQoJZmllbGQuRGVmYXVsdFZhbHVlID0gaW50MzIoNjkpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGBgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGZsb2F0NjQoNjkpLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGZsb2F0NjQoNjkpLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoMC4wMDAwMDAwMDAwMDEpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoZmxvYXQ2NCgwLjAwMDAwMDAwMDAwMSksIHZhbHVlKQp9",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgYW55Cgl2YXIgZXJyIGVycm9yCglmaWVsZCA9ICZGaWVsZHtUeXBlOiBGbG9hdFR5cGV9Cgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGBgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKGZsb2F0NjQoMCksIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoZmxvYXQ2NCgwKSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGAzLjE0MTU5N2ApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoZmxvYXQ2NCgzLjE0MTU5NyksIHZhbHVlKQoJZmllbGQuUmVxdWlyZWQgPSB0cnVlCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGBgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGZsb2F0NjQoMCksIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoZmxvYXQ2NCgwKSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGAyLjcxODI4YCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChmbG9hdDY0KDIuNzE4MjgpLCB2YWx1ZSkKCWZpZWxkLkRlZmF1bHRWYWx1ZSA9IGludDMyKDY5KQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChmbG9hdDY0KDY5KSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChmbG9hdDY0KDY5KSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKDAuMDAwMDAwMDAwMDAxKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGZsb2F0NjQoMC4wMDAwMDAwMDAwMDEpLCB2YWx1ZSkKfQ==",
             "IsPackageLevel": true
         },
         {
@@ -1206,7 +1215,7 @@
                 }
             ],
             "Signature": "TestFieldConvertValueInteger(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgaW50ZXJmYWNle30KCXZhciBlcnIgZXJyb3IKCWZpZWxkID0gJkZpZWxke1R5cGU6IEludFR5cGV9Cgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGBgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKGludDY0KDApLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGludDY0KDApLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYDEyMzRgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGludDY0KDEyMzQpLCB2YWx1ZSkKCWZpZWxkLlJlcXVpcmVkID0gdHJ1ZQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChpbnQ2NCgwKSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChpbnQ2NCgwKSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGA5ODc2YCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChpbnQ2NCg5ODc2KSwgdmFsdWUpCglmaWVsZC5EZWZhdWx0VmFsdWUgPSBpbnQzMig2OSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYGApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoaW50NjQoNjkpLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGludDY0KDY5KSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKDQyKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGludDY0KDQyKSwgdmFsdWUpCn0=",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgYW55Cgl2YXIgZXJyIGVycm9yCglmaWVsZCA9ICZGaWVsZHtUeXBlOiBJbnRUeXBlfQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbFZhbHVlcyhpbnQ2NCgwKSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChpbnQ2NCgwKSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGAxMjM0YCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChpbnQ2NCgxMjM0KSwgdmFsdWUpCglmaWVsZC5SZXF1aXJlZCA9IHRydWUKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYGApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoaW50NjQoMCksIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoaW50NjQoMCksIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgOTg3NmApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoaW50NjQoOTg3NiksIHZhbHVlKQoJZmllbGQuRGVmYXVsdFZhbHVlID0gaW50MzIoNjkpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGBgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGludDY0KDY5KSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChpbnQ2NCg2OSksIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZSg0MikKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChpbnQ2NCg0MiksIHZhbHVlKQp9",
             "IsPackageLevel": true
         },
         {
@@ -1218,7 +1227,7 @@
                 }
             ],
             "Signature": "TestFieldConvertValueObject(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgaW50ZXJmYWNle30KCXZhciBlcnIgZXJyb3IKCWZpZWxkID0gJkZpZWxke1R5cGU6IE9iamVjdFR5cGV9Cgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG1hcFtzdHJpbmddaW50ZXJmYWNle317fSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbFZhbHVlcyhtYWtlKG1hcFtzdHJpbmddaW50ZXJmYWNle30pLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0Lk5pbCh2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgdmFsdWVgOiAxMjN9KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKG1hcFtzdHJpbmddaW50ZXJmYWNle317YHZhbHVlYDogMTIzfSwgdmFsdWUpCgl0eXBlIGZpZWxkQ29udmVydFN0cnVjdCBzdHJ1Y3QgewoJCU5hbWUgIHN0cmluZwoJCVZhbHVlIGludAoJfQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShmaWVsZENvbnZlcnRTdHJ1Y3R7TmFtZTogYHRlc3RgLCBWYWx1ZTogMTIzfSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BOYW1lYDogYHRlc3RgLCBgVmFsdWVgOiBmbG9hdDY0KDEyMyl9LCB2YWx1ZSkKCWZpZWxkLlJlcXVpcmVkID0gdHJ1ZQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShtYXBbc3RyaW5nXWludGVyZmFjZXt9e30pCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwobWFrZShtYXBbc3RyaW5nXWludGVyZmFjZXt9KSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChtYWtlKG1hcFtzdHJpbmddaW50ZXJmYWNle30pLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgdmFsdWVgOiA0NTZ9KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKG1hcFtzdHJpbmddaW50ZXJmYWNle317YHZhbHVlYDogNDU2fSwgdmFsdWUpCglmaWVsZC5EZWZhdWx0VmFsdWUgPSBtYXBbc3RyaW5nXXN0cmluZ3tgdmFsdWVgOiBgeWF5YCwgYG90aGVyYDogYDEyMzQuNWB9Cgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChtYXBbc3RyaW5nXWludGVyZmFjZXt9e2B2YWx1ZWA6IGB5YXlgLCBgb3RoZXJgOiBgMTIzNC41YH0sIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwobWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgdmFsdWVgOiBgeWF5YCwgYG90aGVyYDogYDEyMzQuNWB9LCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgdmFsdWVgOiBgb2hoaGB9KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKG1hcFtzdHJpbmddaW50ZXJmYWNle317YHZhbHVlYDogYG9oaGhgfSwgdmFsdWUpCn0=",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgYW55Cgl2YXIgZXJyIGVycm9yCglmaWVsZCA9ICZGaWVsZHtUeXBlOiBPYmplY3RUeXBlfQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShtYXBbc3RyaW5nXWFueXt9KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKG1ha2UobWFwW3N0cmluZ11hbnkpLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0Lk5pbCh2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobWFwW3N0cmluZ11hbnl7YHZhbHVlYDogMTIzfSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChtYXBbc3RyaW5nXWFueXtgdmFsdWVgOiAxMjN9LCB2YWx1ZSkKCXR5cGUgZmllbGRDb252ZXJ0U3RydWN0IHN0cnVjdCB7CgkJTmFtZSAgc3RyaW5nCgkJVmFsdWUgaW50Cgl9Cgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGZpZWxkQ29udmVydFN0cnVjdHtOYW1lOiBgdGVzdGAsIFZhbHVlOiAxMjN9KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKG1hcFtzdHJpbmddYW55e2BOYW1lYDogYHRlc3RgLCBgVmFsdWVgOiBmbG9hdDY0KDEyMyl9LCB2YWx1ZSkKCWZpZWxkLlJlcXVpcmVkID0gdHJ1ZQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShtYXBbc3RyaW5nXWFueXt9KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKG1ha2UobWFwW3N0cmluZ11hbnkpLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKG1ha2UobWFwW3N0cmluZ11hbnkpLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobWFwW3N0cmluZ11hbnl7YHZhbHVlYDogNDU2fSkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChtYXBbc3RyaW5nXWFueXtgdmFsdWVgOiA0NTZ9LCB2YWx1ZSkKCWZpZWxkLkRlZmF1bHRWYWx1ZSA9IG1hcFtzdHJpbmddc3RyaW5ne2B2YWx1ZWA6IGB5YXlgLCBgb3RoZXJgOiBgMTIzNC41YH0KCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKG1hcFtzdHJpbmddYW55e2B2YWx1ZWA6IGB5YXlgLCBgb3RoZXJgOiBgMTIzNC41YH0sIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwobWFwW3N0cmluZ11hbnl7YHZhbHVlYDogYHlheWAsIGBvdGhlcmA6IGAxMjM0LjVgfSwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG1hcFtzdHJpbmddYW55e2B2YWx1ZWA6IGBvaGhoYH0pCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwobWFwW3N0cmluZ11hbnl7YHZhbHVlYDogYG9oaGhgfSwgdmFsdWUpCn0=",
             "IsPackageLevel": true
         },
         {
@@ -1230,7 +1239,7 @@
                 }
             ],
             "Signature": "TestFieldConvertValueString(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgaW50ZXJmYWNle30KCXZhciBlcnIgZXJyb3IKCWZpZWxkID0gJkZpZWxke1R5cGU6IFN0cmluZ1R5cGV9Cgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGBgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0Lk5pbCh2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0Lk5pbCh2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYHRoaW5nc2ApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoYHRoaW5nc2AsIHZhbHVlKQoJZmllbGQuUmVxdWlyZWQgPSB0cnVlCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGBgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGBgLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGBgLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYHRoaW5nc2ApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoYHRoaW5nc2AsIHZhbHVlKQoJZmllbGQuRGVmYXVsdFZhbHVlID0gYHRlc3RgCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGBgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0YCwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChgdGVzdGAsIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgdGhpbmdzYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChgdGhpbmdzYCwgdmFsdWUpCn0=",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgYW55Cgl2YXIgZXJyIGVycm9yCglmaWVsZCA9ICZGaWVsZHtUeXBlOiBTdHJpbmdUeXBlfQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5OaWwodmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5OaWwodmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGB0aGluZ3NgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGB0aGluZ3NgLCB2YWx1ZSkKCWZpZWxkLlJlcXVpcmVkID0gdHJ1ZQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChgYCwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKG5pbCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChgYCwgdmFsdWUpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGB0aGluZ3NgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGB0aGluZ3NgLCB2YWx1ZSkKCWZpZWxkLkRlZmF1bHRWYWx1ZSA9IGB0ZXN0YAoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChgdGVzdGAsIHZhbHVlKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoYHRlc3RgLCB2YWx1ZSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYHRoaW5nc2ApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoYHRoaW5nc2AsIHZhbHVlKQp9",
             "IsPackageLevel": true
         },
         {
@@ -1242,7 +1251,7 @@
                 }
             ],
             "Signature": "TestFieldConvertValueTime(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgaW50ZXJmYWNle30KCXZhciBlcnIgZXJyb3IKCWZpZWxkID0gJkZpZWxke1R5cGU6IFRpbWVUeXBlfQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5UcnVlKHZhbHVlLih0aW1lLlRpbWUpLklzWmVybygpKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuVHJ1ZSh2YWx1ZS4odGltZS5UaW1lKS5Jc1plcm8oKSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYDIwMDYtMDEtMDJUMTU6MDQ6MDUtMDc6MDBgKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LlRydWUodXRpbHMuUmVmZXJlbmNlVGltZS5FcXVhbCh2YWx1ZS4odGltZS5UaW1lKSkpCglmaWVsZC5SZXF1aXJlZCA9IHRydWUKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYGApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuVHJ1ZSh2YWx1ZS4odGltZS5UaW1lKS5Jc1plcm8oKSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LlRydWUodmFsdWUuKHRpbWUuVGltZSkuSXNaZXJvKCkpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKDExMzYyMzk0NDUpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuVHJ1ZSh1dGlscy5SZWZlcmVuY2VUaW1lLkVxdWFsKHZhbHVlLih0aW1lLlRpbWUpKSkKCWZpZWxkLkRlZmF1bHRWYWx1ZSA9IHRpbWUuVW5peCgxMTM2MjM5NDQ1LCAwKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5UcnVlKHV0aWxzLlJlZmVyZW5jZVRpbWUuRXF1YWwodmFsdWUuKHRpbWUuVGltZSkpKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuVHJ1ZSh1dGlscy5SZWZlcmVuY2VUaW1lLkVxdWFsKHZhbHVlLih0aW1lLlRpbWUpKSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoMTUwMDAwMDAwMCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5UcnVlKHRpbWUuRGF0ZSgyMDE3LCA3LCAxNCwgMiwgNDAsIDAsIDAsIHRpbWUuVVRDKS5FcXVhbCh2YWx1ZS4odGltZS5UaW1lKSkpCn0=",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl2YXIgZmllbGQgKkZpZWxkCgl2YXIgdmFsdWUgYW55Cgl2YXIgZXJyIGVycm9yCglmaWVsZCA9ICZGaWVsZHtUeXBlOiBUaW1lVHlwZX0KCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoYGApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuVHJ1ZSh2YWx1ZS4odGltZS5UaW1lKS5Jc1plcm8oKSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUobmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LlRydWUodmFsdWUuKHRpbWUuVGltZSkuSXNaZXJvKCkpCgl2YWx1ZSwgZXJyID0gZmllbGQuQ29udmVydFZhbHVlKGAyMDA2LTAxLTAyVDE1OjA0OjA1Ljk5OTk5OTk5OS0wNzowMGApCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuVHJ1ZSh0aW1ldXRpbC5SZWZlcmVuY2VUaW1lKCkuRXF1YWwodmFsdWUuKHRpbWUuVGltZSkpLCB2YWx1ZSkKCWZpZWxkLlJlcXVpcmVkID0gdHJ1ZQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5UcnVlKHZhbHVlLih0aW1lLlRpbWUpLklzWmVybygpKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuVHJ1ZSh2YWx1ZS4odGltZS5UaW1lKS5Jc1plcm8oKSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoMTEzNjIzOTQ0NikKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5UcnVlKHRpbWV1dGlsLlJlZmVyZW5jZVRpbWUoKS5Sb3VuZCh0aW1lLlNlY29uZCkuRXF1YWwodmFsdWUuKHRpbWUuVGltZSkpLCB2YWx1ZSkKCWZpZWxkLkRlZmF1bHRWYWx1ZSA9IHRpbWUuVW5peCgxMTM2MjM5NDQ2LCAwKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShgYCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5UcnVlKHRpbWV1dGlsLlJlZmVyZW5jZVRpbWUoKS5Sb3VuZCh0aW1lLlNlY29uZCkuRXF1YWwodmFsdWUuKHRpbWUuVGltZSkpKQoJdmFsdWUsIGVyciA9IGZpZWxkLkNvbnZlcnRWYWx1ZShuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuVHJ1ZSh0aW1ldXRpbC5SZWZlcmVuY2VUaW1lKCkuUm91bmQodGltZS5TZWNvbmQpLkVxdWFsKHZhbHVlLih0aW1lLlRpbWUpKSkKCXZhbHVlLCBlcnIgPSBmaWVsZC5Db252ZXJ0VmFsdWUoMTUwMDAwMDAwMCkKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5UcnVlKHRpbWUuRGF0ZSgyMDE3LCA3LCAxNCwgMiwgNDAsIDAsIDAsIHRpbWUuVVRDKS5FcXVhbCh2YWx1ZS4odGltZS5UaW1lKSkpCn0=",
             "IsPackageLevel": true
         },
         {
@@ -1254,7 +1263,7 @@
                 }
             ],
             "Signature": "TestFieldValidators(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmaWVsZDEgOj0gRmllbGR7TmFtZTogYGZpZWxkMWAsIFZhbGlkYXRvcjogZnVuYyh2IGludGVyZmFjZXt9KSBlcnJvciB7CgkJaWYgZm10LlNwcmludGYoIiV2IiwgdikgPT0gYHRlc3RgIHsKCQkJcmV0dXJuIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBmbXQuRXJyb3JmKCJWYWx1ZSBpcyBub3QgJ3Rlc3QnIikKCQl9Cgl9fQoJYXNzZXJ0Lk5pbChmaWVsZDEuVmFsaWRhdGUoYHRlc3RgKSkKCWFzc2VydC5FcnJvcihmaWVsZDEuVmFsaWRhdGUoYG5vdC10ZXN0YCkpCn0=",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglmaWVsZDEgOj0gRmllbGR7TmFtZTogYGZpZWxkMWAsIFZhbGlkYXRvcjogZnVuYyh2IGFueSkgZXJyb3IgewoJCWlmIGZtdC5TcHJpbnRmKCIldiIsIHYpID09IGB0ZXN0YCB7CgkJCXJldHVybiBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gZm10LkVycm9yZigiVmFsdWUgaXMgbm90ICd0ZXN0JyIpCgkJfQoJfX0KCWFzc2VydC5OaWwoZmllbGQxLlZhbGlkYXRlKGB0ZXN0YCkpCglhc3NlcnQuRXJyb3IoZmllbGQxLlZhbGlkYXRlKGBub3QtdGVzdGApKQp9",
             "IsPackageLevel": true
         },
         {
@@ -1278,7 +1287,7 @@
                 }
             ],
             "Signature": "TestRecordAppend(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQgOj0gTmV3UmVjb3JkKGAyYCkuQXBwZW5kKGBmaXJzdGAsIDEpCglhc3NlcnQuRXF1YWwoW11pbnRlcmZhY2V7fXsxfSwgcmVjb3JkLkdldChgZmlyc3RgKSkKCXJlY29yZCA9IE5ld1JlY29yZChgMmFgKS5TZXQoYHNlY29uZGAsIDQpCglhc3NlcnQuRXF1YWwoNCwgcmVjb3JkLkdldChgc2Vjb25kYCkpCglyZWNvcmQuQXBwZW5kKGBzZWNvbmRgLCA1KQoJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317NCwgNX0sIHJlY29yZC5HZXQoYHNlY29uZGApKQoJcmVjb3JkID0gTmV3UmVjb3JkKGAyYmApLlNldChgdGhpcmRgLCBbXXN0cmluZ3tgNmAsIGA3YH0pCglyZWNvcmQuQXBwZW5kKGB0aGlyZGAsIDgpCglhc3NlcnQuRXF1YWwoW11pbnRlcmZhY2V7fXtgNmAsIGA3YCwgOH0sIHJlY29yZC5HZXQoYHRoaXJkYCkpCglyZWNvcmQgPSBOZXdSZWNvcmQoYDJjYCkuU2V0KGBmb3VydGhgLCBbXWludGVyZmFjZXt9e2A2YCwgYDdgfSkKCXJlY29yZC5BcHBlbmQoYGZvdXJ0aGAsIDgpCglyZWNvcmQuQXBwZW5kKGBmb3VydGhgLCA5KQoJcmVjb3JkLkFwcGVuZChgZm91cnRoYCwgYDEwYCkKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9e2A2YCwgYDdgLCA4LCA5LCBgMTBgfSwgcmVjb3JkLkdldChgZm91cnRoYCkpCn0=",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQgOj0gTmV3UmVjb3JkKGAyYCkuQXBwZW5kKGBmaXJzdGAsIDEpCglhc3NlcnQuRXF1YWwoW11hbnl7MX0sIHJlY29yZC5HZXQoYGZpcnN0YCkpCglyZWNvcmQgPSBOZXdSZWNvcmQoYDJhYCkuU2V0KGBzZWNvbmRgLCA0KQoJYXNzZXJ0LkVxdWFsKDQsIHJlY29yZC5HZXQoYHNlY29uZGApKQoJcmVjb3JkLkFwcGVuZChgc2Vjb25kYCwgNSkKCWFzc2VydC5FcXVhbChbXWFueXs0LCA1fSwgcmVjb3JkLkdldChgc2Vjb25kYCkpCglyZWNvcmQgPSBOZXdSZWNvcmQoYDJiYCkuU2V0KGB0aGlyZGAsIFtdc3RyaW5ne2A2YCwgYDdgfSkKCXJlY29yZC5BcHBlbmQoYHRoaXJkYCwgOCkKCWFzc2VydC5FcXVhbChbXWFueXtgNmAsIGA3YCwgOH0sIHJlY29yZC5HZXQoYHRoaXJkYCkpCglyZWNvcmQgPSBOZXdSZWNvcmQoYDJjYCkuU2V0KGBmb3VydGhgLCBbXWFueXtgNmAsIGA3YH0pCglyZWNvcmQuQXBwZW5kKGBmb3VydGhgLCA4KQoJcmVjb3JkLkFwcGVuZChgZm91cnRoYCwgOSkKCXJlY29yZC5BcHBlbmQoYGZvdXJ0aGAsIGAxMGApCglhc3NlcnQuRXF1YWwoW11hbnl7YDZgLCBgN2AsIDgsIDksIGAxMGB9LCByZWNvcmQuR2V0KGBmb3VydGhgKSkKfQ==",
             "IsPackageLevel": true
         },
         {
@@ -1290,7 +1299,7 @@
                 }
             ],
             "Signature": "TestRecordAppendNested(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQgOj0gTmV3UmVjb3JkKGAyYCkuQXBwZW5kTmVzdGVkKGB0LmZpcnN0YCwgMSkKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9ezF9LCByZWNvcmQuR2V0KGB0LmZpcnN0YCkpCglyZWNvcmQgPSBOZXdSZWNvcmQoYDJhYCkuU2V0TmVzdGVkKGB0LnNlY29uZGAsIDQpCglhc3NlcnQuRXF1YWwoNCwgcmVjb3JkLkdldChgdC5zZWNvbmRgKSkKCXJlY29yZC5BcHBlbmQoYHQuc2Vjb25kYCwgNSkKCWFzc2VydC5FcXVhbChbXWludGVyZmFjZXt9ezQsIDV9LCByZWNvcmQuR2V0KGB0LnNlY29uZGApKQoJcmVjb3JkID0gTmV3UmVjb3JkKGAyYmApLlNldE5lc3RlZChgdC50aGlyZGAsIFtdc3RyaW5ne2A2YCwgYDdgfSkKCXJlY29yZC5BcHBlbmQoYHQudGhpcmRgLCA4KQoJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317YDZgLCBgN2AsIDh9LCByZWNvcmQuR2V0KGB0LnRoaXJkYCkpCglyZWNvcmQgPSBOZXdSZWNvcmQoYDJjYCkuU2V0TmVzdGVkKGB0LmZvdXJ0aGAsIFtdaW50ZXJmYWNle317YDZgLCBgN2B9KQoJcmVjb3JkLkFwcGVuZE5lc3RlZChgdC5mb3VydGhgLCA4KQoJcmVjb3JkLkFwcGVuZE5lc3RlZChgdC5mb3VydGhgLCA5KQoJcmVjb3JkLkFwcGVuZE5lc3RlZChgdC5mb3VydGhgLCBgMTBgKQoJYXNzZXJ0LkVxdWFsKFtdaW50ZXJmYWNle317YDZgLCBgN2AsIDgsIDksIGAxMGB9LCByZWNvcmQuR2V0KGB0LmZvdXJ0aGApKQp9",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQgOj0gTmV3UmVjb3JkKGAyYCkuQXBwZW5kTmVzdGVkKGB0LmZpcnN0YCwgMSkKCWFzc2VydC5FcXVhbChbXWFueXsxfSwgcmVjb3JkLkdldChgdC5maXJzdGApKQoJcmVjb3JkID0gTmV3UmVjb3JkKGAyYWApLlNldE5lc3RlZChgdC5zZWNvbmRgLCA0KQoJYXNzZXJ0LkVxdWFsKDQsIHJlY29yZC5HZXQoYHQuc2Vjb25kYCkpCglyZWNvcmQuQXBwZW5kKGB0LnNlY29uZGAsIDUpCglhc3NlcnQuRXF1YWwoW11hbnl7NCwgNX0sIHJlY29yZC5HZXQoYHQuc2Vjb25kYCkpCglyZWNvcmQgPSBOZXdSZWNvcmQoYDJiYCkuU2V0TmVzdGVkKGB0LnRoaXJkYCwgW11zdHJpbmd7YDZgLCBgN2B9KQoJcmVjb3JkLkFwcGVuZChgdC50aGlyZGAsIDgpCglhc3NlcnQuRXF1YWwoW11hbnl7YDZgLCBgN2AsIDh9LCByZWNvcmQuR2V0KGB0LnRoaXJkYCkpCglyZWNvcmQgPSBOZXdSZWNvcmQoYDJjYCkuU2V0TmVzdGVkKGB0LmZvdXJ0aGAsIFtdYW55e2A2YCwgYDdgfSkKCXJlY29yZC5BcHBlbmROZXN0ZWQoYHQuZm91cnRoYCwgOCkKCXJlY29yZC5BcHBlbmROZXN0ZWQoYHQuZm91cnRoYCwgOSkKCXJlY29yZC5BcHBlbmROZXN0ZWQoYHQuZm91cnRoYCwgYDEwYCkKCWFzc2VydC5FcXVhbChbXWFueXtgNmAsIGA3YCwgOCwgOSwgYDEwYH0sIHJlY29yZC5HZXQoYHQuZm91cnRoYCkpCn0=",
             "IsPackageLevel": true
         },
         {
@@ -1314,7 +1323,7 @@
                 }
             ],
             "Signature": "TestRecordGet(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQgOj0gTmV3UmVjb3JkKGAxYCkuU2V0KGB0aGlzLmlzLmEudGVzdGAsIHRydWUpCglyZWNvcmQuU2V0TmVzdGVkKGB0aGlzLmlzLmEudGVzdGAsIGBjb3JyZWN0YCkKCWFzc2VydC5FcXVhbChgMWAsIHJlY29yZC5JRCkKCWFzc2VydC5FcXVhbChtYXBbc3RyaW5nXWludGVyZmFjZXt9e2B0aGlzLmlzLmEudGVzdGA6IHRydWUsIGB0aGlzYDogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgaXNgOiBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BhYDogbWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgdGVzdGA6IGBjb3JyZWN0YH19fX0sIHJlY29yZC5GaWVsZHMpCglhc3NlcnQuRXF1YWwoYGNvcnJlY3RgLCByZWNvcmQuR2V0TmVzdGVkKGB0aGlzLmlzLmEudGVzdGApKQoJYXNzZXJ0LkVxdWFsKHRydWUsIHJlY29yZC5HZXQoYHRoaXMuaXMuYS50ZXN0YCkpCn0=",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQgOj0gTmV3UmVjb3JkKGAxYCkuU2V0KGB0aGlzLmlzLmEudGVzdGAsIHRydWUpCglyZWNvcmQuU2V0TmVzdGVkKGB0aGlzLmlzLmEudGVzdGAsIGBjb3JyZWN0YCkKCWFzc2VydC5FcXVhbChgMWAsIHJlY29yZC5JRCkKCWFzc2VydC5FcXVhbChtYXBbc3RyaW5nXWFueXtgdGhpcy5pcy5hLnRlc3RgOiB0cnVlLCBgdGhpc2A6IG1hcFtzdHJpbmddYW55e2Bpc2A6IG1hcFtzdHJpbmddYW55e2BhYDogbWFwW3N0cmluZ11hbnl7YHRlc3RgOiBgY29ycmVjdGB9fX19LCByZWNvcmQuRmllbGRzKQoJYXNzZXJ0LkVxdWFsKGBjb3JyZWN0YCwgcmVjb3JkLkdldE5lc3RlZChgdGhpcy5pcy5hLnRlc3RgKSkKCWFzc2VydC5FcXVhbCh0cnVlLCByZWNvcmQuR2V0KGB0aGlzLmlzLmEudGVzdGApKQp9",
             "IsPackageLevel": true
         },
         {
@@ -1326,7 +1335,7 @@
                 }
             ],
             "Signature": "TestRecordKeys(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uIDo9ICZDb2xsZWN0aW9ue05hbWU6IGBUZXN0UmVjb3JkS2V5c2AsIEZpZWxkczogW11GaWVsZHt7TmFtZTogYG90aGVyYCwgVHlwZTogU3RyaW5nVHlwZSwgS2V5OiB0cnVlfSwge05hbWU6IGB0aGluZ2AsIFR5cGU6IFN0cmluZ1R5cGV9fX0KCWFzc2VydC5FcXVhbFZhbHVlcyhbXWludGVyZmFjZXt9ezEsIGBmaXJzdGB9LCBOZXdSZWNvcmQoW11pbnRlcmZhY2V7fXsxLCBgZmlyc3RgfSkuS2V5cyhjb2xsZWN0aW9uKSkKCWFzc2VydC5FcXVhbFZhbHVlcyhbXWludGVyZmFjZXt9ezIsIGBzZWNvbmRgfSwgTmV3UmVjb3JkKFtdaW50ZXJmYWNle317Mn0pLlNldChgb3RoZXJgLCBgc2Vjb25kYCkuS2V5cyhjb2xsZWN0aW9uKSkKCWFzc2VydC5FcXVhbFZhbHVlcyhbXWludGVyZmFjZXt9ezJ9LCBOZXdSZWNvcmQoW11pbnRlcmZhY2V7fXsyfSkuS2V5cyhjb2xsZWN0aW9uKSkKCWFzc2VydC5FbXB0eShOZXdSZWNvcmQobmlsKS5LZXlzKGNvbGxlY3Rpb24pKQp9",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uIDo9ICZDb2xsZWN0aW9ue05hbWU6IGBUZXN0UmVjb3JkS2V5c2AsIEZpZWxkczogW11GaWVsZHt7TmFtZTogYG90aGVyYCwgVHlwZTogU3RyaW5nVHlwZSwgS2V5OiB0cnVlfSwge05hbWU6IGB0aGluZ2AsIFR5cGU6IFN0cmluZ1R5cGV9fX0KCWFzc2VydC5FcXVhbFZhbHVlcyhbXWFueXsxLCBgZmlyc3RgfSwgTmV3UmVjb3JkKFtdYW55ezEsIGBmaXJzdGB9KS5LZXlzKGNvbGxlY3Rpb24pKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKFtdYW55ezIsIGBzZWNvbmRgfSwgTmV3UmVjb3JkKFtdYW55ezJ9KS5TZXQoYG90aGVyYCwgYHNlY29uZGApLktleXMoY29sbGVjdGlvbikpCglhc3NlcnQuRXF1YWxWYWx1ZXMoW11hbnl7Mn0sIE5ld1JlY29yZChbXWFueXsyfSkuS2V5cyhjb2xsZWN0aW9uKSkKCWFzc2VydC5FbXB0eShOZXdSZWNvcmQobmlsKS5LZXlzKGNvbGxlY3Rpb24pKQp9",
             "IsPackageLevel": true
         },
         {
@@ -1338,7 +1347,7 @@
                 }
             ],
             "Signature": "TestRecordPopulateStruct(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl0eXBlIHRlc3RUaGluZyBzdHJ1Y3QgewoJCUlEICAgIGludAoJCU5hbWUgIHN0cmluZyBgcGl2b3Q6Im5hbWUiYAoJCUdyb3VwIHN0cmluZyBgcGl2b3Q6Ikdyb3VwLG9taXRlbXB0eSJgCgkJU2l6ZSAgaW50Cgl9Cgl0aGluZyA6PSB0ZXN0VGhpbmd7fQoJcmVjb3JkIDo9IE5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgdGVzdC1uYW1lYCkuU2V0KGBTaXplYCwgNDIpCgllcnIgOj0gcmVjb3JkLlBvcHVsYXRlKCZ0aGluZywgbmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0LW5hbWVgLCB0aGluZy5OYW1lKQoJYXNzZXJ0Llplcm8odGhpbmcuR3JvdXApCglhc3NlcnQuRXF1YWwoNDIsIHRoaW5nLlNpemUpCgl0aGluZyA9IHRlc3RUaGluZ3tHcm91cDogYHRlc3RzYH0KCXJlY29yZCA9IE5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgdGVzdC1uYW1lYCkuU2V0KGBTaXplYCwgNDIpCgllcnIgPSByZWNvcmQuUG9wdWxhdGUoJnRoaW5nLCBuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoYHRlc3QtbmFtZWAsIHRoaW5nLk5hbWUpCglhc3NlcnQuRXF1YWwoYHRlc3RzYCwgdGhpbmcuR3JvdXApCglhc3NlcnQuRXF1YWwoNDIsIHRoaW5nLlNpemUpCgl0eXBlIEtWIHN0cnVjdCB7CgkJS2V5ICAgc3RyaW5nICAgICAgYHBpdm90OiJrZXksaWRlbnRpdHkiYAoJCVZhbHVlIGludGVyZmFjZXt9IGBwaXZvdDoidmFsdWUsb21pdGVtcHR5ImAKCX0KCXJlY29yZCA9IE5ld1JlY29yZChgdGhpcy5pcy5hbi5pZGApLlNldChgdmFsdWVgLCA0MikKCWt2IDo9IG5ldyhLVikKCWVyciA9IHJlY29yZC5Qb3B1bGF0ZShrdiwgbmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGB0aGlzLmlzLmFuLmlkYCwga3YuS2V5KQoJYXNzZXJ0LkVxdWFsKDQyLCBrdi5WYWx1ZSkKfQ==",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgl0eXBlIHRlc3RUaGluZyBzdHJ1Y3QgewoJCUlEICAgIGludAoJCU5hbWUgIHN0cmluZyBgcGl2b3Q6Im5hbWUiYAoJCUdyb3VwIHN0cmluZyBgcGl2b3Q6Ikdyb3VwLG9taXRlbXB0eSJgCgkJU2l6ZSAgaW50Cgl9Cgl0aGluZyA6PSB0ZXN0VGhpbmd7fQoJcmVjb3JkIDo9IE5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgdGVzdC1uYW1lYCkuU2V0KGBTaXplYCwgNDIpCgllcnIgOj0gcmVjb3JkLlBvcHVsYXRlKCZ0aGluZywgbmlsKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0LW5hbWVgLCB0aGluZy5OYW1lKQoJYXNzZXJ0Llplcm8odGhpbmcuR3JvdXApCglhc3NlcnQuRXF1YWwoNDIsIHRoaW5nLlNpemUpCgl0aGluZyA9IHRlc3RUaGluZ3tHcm91cDogYHRlc3RzYH0KCXJlY29yZCA9IE5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgdGVzdC1uYW1lYCkuU2V0KGBTaXplYCwgNDIpCgllcnIgPSByZWNvcmQuUG9wdWxhdGUoJnRoaW5nLCBuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoYHRlc3QtbmFtZWAsIHRoaW5nLk5hbWUpCglhc3NlcnQuRXF1YWwoYHRlc3RzYCwgdGhpbmcuR3JvdXApCglhc3NlcnQuRXF1YWwoNDIsIHRoaW5nLlNpemUpCgl0eXBlIEtWIHN0cnVjdCB7CgkJS2V5ICAgc3RyaW5nIGBwaXZvdDoia2V5LGlkZW50aXR5ImAKCQlWYWx1ZSBhbnkgICAgYHBpdm90OiJ2YWx1ZSxvbWl0ZW1wdHkiYAoJfQoJcmVjb3JkID0gTmV3UmVjb3JkKGB0aGlzLmlzLmFuLmlkYCkuU2V0KGB2YWx1ZWAsIDQyKQoJa3YgOj0gbmV3KEtWKQoJZXJyID0gcmVjb3JkLlBvcHVsYXRlKGt2LCBuaWwpCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoYHRoaXMuaXMuYW4uaWRgLCBrdi5LZXkpCglhc3NlcnQuRXF1YWwoNDIsIGt2LlZhbHVlKQp9",
             "IsPackageLevel": true
         },
         {
@@ -1362,7 +1371,7 @@
                 }
             ],
             "Signature": "TestRecordPopulateStructWithFormatter(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uIDo9ICZDb2xsZWN0aW9ue05hbWU6IGBUZXN0UmVjb3JkUG9wdWxhdGVTdHJ1Y3RXaXRoRm9ybWF0dGVyYCwgRmllbGRzOiBbXUZpZWxke3tOYW1lOiBgbmFtZWAsIFR5cGU6IFN0cmluZ1R5cGUsIEZvcm1hdHRlcjogZnVuYyh2IGludGVyZmFjZXt9LCBvcCBGaWVsZE9wZXJhdGlvbikgKGludGVyZmFjZXt9LCBlcnJvcikgewoJCXJldHVybiBzdHJpbmd1dGlsLlVuZGVyc2NvcmUoZm10LlNwcmludGYoIiV2IiwgdikpLCBuaWwKCX19fX0KCXR5cGUgdGVzdFRoaW5nIHN0cnVjdCB7CgkJSUQgICAgaW50CgkJTmFtZSAgc3RyaW5nIGBwaXZvdDoibmFtZSJgCgkJR3JvdXAgc3RyaW5nIGBwaXZvdDoiR3JvdXAsb21pdGVtcHR5ImAKCQlTaXplICBpbnQKCX0KCXRoaW5nIDo9IHRlc3RUaGluZ3t9CglyZWNvcmQgOj0gTmV3UmVjb3JkKDEpLlNldChgbmFtZWAsIGBUZXN0TmFtZWApLlNldChgU2l6ZWAsIDQyKQoJZXJyIDo9IHJlY29yZC5Qb3B1bGF0ZSgmdGhpbmcsIGNvbGxlY3Rpb24pCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoYHRlc3RfbmFtZWAsIHRoaW5nLk5hbWUpCglhc3NlcnQuWmVybyh0aGluZy5Hcm91cCkKCWFzc2VydC5aZXJvKHRoaW5nLlNpemUpCgl0aGluZyA9IHRlc3RUaGluZ3tOYW1lOiBgQm9vYmVycnlgLCBHcm91cDogYHRlc3RzYH0KCXJlY29yZCA9IE5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgdGVzdC1uYW1lYCkuU2V0KGBTaXplYCwgNDIpCgllcnIgPSByZWNvcmQuUG9wdWxhdGUoJnRoaW5nLCBjb2xsZWN0aW9uKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0X25hbWVgLCB0aGluZy5OYW1lKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0c2AsIHRoaW5nLkdyb3VwKQoJYXNzZXJ0Llplcm8odGhpbmcuU2l6ZSkKfQ==",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uIDo9ICZDb2xsZWN0aW9ue05hbWU6IGBUZXN0UmVjb3JkUG9wdWxhdGVTdHJ1Y3RXaXRoRm9ybWF0dGVyYCwgRmllbGRzOiBbXUZpZWxke3tOYW1lOiBgbmFtZWAsIFR5cGU6IFN0cmluZ1R5cGUsIEZvcm1hdHRlcjogZnVuYyh2IGFueSwgb3AgRmllbGRPcGVyYXRpb24pIChhbnksIGVycm9yKSB7CgkJcmV0dXJuIHN0cmluZ3V0aWwuVW5kZXJzY29yZShmbXQuU3ByaW50ZigiJXYiLCB2KSksIG5pbAoJfX19fQoJdHlwZSB0ZXN0VGhpbmcgc3RydWN0IHsKCQlJRCAgICBpbnQKCQlOYW1lICBzdHJpbmcgYHBpdm90OiJuYW1lImAKCQlHcm91cCBzdHJpbmcgYHBpdm90OiJHcm91cCxvbWl0ZW1wdHkiYAoJCVNpemUgIGludAoJfQoJdGhpbmcgOj0gdGVzdFRoaW5ne30KCXJlY29yZCA6PSBOZXdSZWNvcmQoMSkuU2V0KGBuYW1lYCwgYFRlc3ROYW1lYCkuU2V0KGBTaXplYCwgNDIpCgllcnIgOj0gcmVjb3JkLlBvcHVsYXRlKCZ0aGluZywgY29sbGVjdGlvbikKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChgdGVzdF9uYW1lYCwgdGhpbmcuTmFtZSkKCWFzc2VydC5aZXJvKHRoaW5nLkdyb3VwKQoJYXNzZXJ0Llplcm8odGhpbmcuU2l6ZSkKCXRoaW5nID0gdGVzdFRoaW5ne05hbWU6IGBCb29iZXJyeWAsIEdyb3VwOiBgdGVzdHNgfQoJcmVjb3JkID0gTmV3UmVjb3JkKDEpLlNldChgbmFtZWAsIGB0ZXN0LW5hbWVgKS5TZXQoYFNpemVgLCA0MikKCWVyciA9IHJlY29yZC5Qb3B1bGF0ZSgmdGhpbmcsIGNvbGxlY3Rpb24pCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoYHRlc3RfbmFtZWAsIHRoaW5nLk5hbWUpCglhc3NlcnQuRXF1YWwoYHRlc3RzYCwgdGhpbmcuR3JvdXApCglhc3NlcnQuWmVybyh0aGluZy5TaXplKQp9",
             "IsPackageLevel": true
         },
         {
@@ -1374,7 +1383,7 @@
                 }
             ],
             "Signature": "TestRecordPopulateStructWithFormatterValidator(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uIDo9ICZDb2xsZWN0aW9ue05hbWU6IGBUZXN0UmVjb3JkUG9wdWxhdGVTdHJ1Y3RXaXRoRm9ybWF0dGVyVmFsaWRhdG9yYCwgRmllbGRzOiBbXUZpZWxke3tOYW1lOiBgbmFtZWAsIFR5cGU6IFN0cmluZ1R5cGUsIFZhbGlkYXRvcjogZnVuYyh2IGludGVyZmFjZXt9KSBlcnJvciB7CgkJaWYgZm10LlNwcmludGYoIiV2IiwgdikgPT0gYFRlc3RWYWx1ZWAgewoJCQlyZXR1cm4gZm10LkVycm9yZigiU2hvdWxkbid0IGJlIFRlc3RWYWx1ZSIpCgkJfQoJCXJldHVybiBuaWwKCX0sIEZvcm1hdHRlcjogZnVuYyh2IGludGVyZmFjZXt9LCBvcCBGaWVsZE9wZXJhdGlvbikgKGludGVyZmFjZXt9LCBlcnJvcikgewoJCXJldHVybiBzdHJpbmd1dGlsLlVuZGVyc2NvcmUoZm10LlNwcmludGYoIiV2IiwgdikpLCBuaWwKCX19fX0KCXR5cGUgdGVzdFRoaW5nIHN0cnVjdCB7CgkJSUQgICAgaW50CgkJTmFtZSAgc3RyaW5nIGBwaXZvdDoibmFtZSJgCgkJR3JvdXAgc3RyaW5nIGBwaXZvdDoiR3JvdXAsb21pdGVtcHR5ImAKCQlTaXplICBpbnQKCX0KCXRoaW5nIDo9IHRlc3RUaGluZ3t9CglyZWNvcmQgOj0gTmV3UmVjb3JkKDEpLlNldChgbmFtZWAsIGBUZXN0VmFsdWVgKS5TZXQoYFNpemVgLCA0MikKCWVyciA6PSByZWNvcmQuUG9wdWxhdGUoJnRoaW5nLCBjb2xsZWN0aW9uKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0X3ZhbHVlYCwgdGhpbmcuTmFtZSkKfQ==",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uIDo9ICZDb2xsZWN0aW9ue05hbWU6IGBUZXN0UmVjb3JkUG9wdWxhdGVTdHJ1Y3RXaXRoRm9ybWF0dGVyVmFsaWRhdG9yYCwgRmllbGRzOiBbXUZpZWxke3tOYW1lOiBgbmFtZWAsIFR5cGU6IFN0cmluZ1R5cGUsIFZhbGlkYXRvcjogZnVuYyh2IGFueSkgZXJyb3IgewoJCWlmIGZtdC5TcHJpbnRmKCIldiIsIHYpID09IGBUZXN0VmFsdWVgIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoIlNob3VsZG4ndCBiZSBUZXN0VmFsdWUiKQoJCX0KCQlyZXR1cm4gbmlsCgl9LCBGb3JtYXR0ZXI6IGZ1bmModiBhbnksIG9wIEZpZWxkT3BlcmF0aW9uKSAoYW55LCBlcnJvcikgewoJCXJldHVybiBzdHJpbmd1dGlsLlVuZGVyc2NvcmUoZm10LlNwcmludGYoIiV2IiwgdikpLCBuaWwKCX19fX0KCXR5cGUgdGVzdFRoaW5nIHN0cnVjdCB7CgkJSUQgICAgaW50CgkJTmFtZSAgc3RyaW5nIGBwaXZvdDoibmFtZSJgCgkJR3JvdXAgc3RyaW5nIGBwaXZvdDoiR3JvdXAsb21pdGVtcHR5ImAKCQlTaXplICBpbnQKCX0KCXRoaW5nIDo9IHRlc3RUaGluZ3t9CglyZWNvcmQgOj0gTmV3UmVjb3JkKDEpLlNldChgbmFtZWAsIGBUZXN0VmFsdWVgKS5TZXQoYFNpemVgLCA0MikKCWVyciA6PSByZWNvcmQuUG9wdWxhdGUoJnRoaW5nLCBjb2xsZWN0aW9uKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKGB0ZXN0X3ZhbHVlYCwgdGhpbmcuTmFtZSkKfQ==",
             "IsPackageLevel": true
         },
         {
@@ -1398,7 +1407,7 @@
                 }
             ],
             "Signature": "TestRecordPopulateStructWithValidator(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uIDo9ICZDb2xsZWN0aW9ue05hbWU6IGBUZXN0UmVjb3JkUG9wdWxhdGVTdHJ1Y3RXaXRoVmFsaWRhdG9yYCwgRmllbGRzOiBbXUZpZWxke3tOYW1lOiBgbmFtZWAsIFR5cGU6IFN0cmluZ1R5cGUsIFZhbGlkYXRvcjogZnVuYyh2IGludGVyZmFjZXt9KSBlcnJvciB7CgkJaWYgZm10LlNwcmludGYoIiV2IiwgdikgPT0gYHRlc3RgIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoIlNob3VsZG4ndCBiZSB0ZXN0IikKCQl9CgkJcmV0dXJuIG5pbAoJfSwgVmFsaWRhdGVPblBvcHVsYXRlOiB0cnVlfX19Cgl0eXBlIHRlc3RUaGluZyBzdHJ1Y3QgewoJCUlEICAgIGludAoJCU5hbWUgIHN0cmluZyBgcGl2b3Q6Im5hbWUiYAoJCUdyb3VwIHN0cmluZyBgcGl2b3Q6Ikdyb3VwLG9taXRlbXB0eSJgCgkJU2l6ZSAgaW50Cgl9Cgl0aGluZyA6PSB0ZXN0VGhpbmd7fQoJcmVjb3JkIDo9IE5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgdGVzdGApLlNldChgU2l6ZWAsIDQyKQoJYXNzZXJ0LkVycm9yKHJlY29yZC5Qb3B1bGF0ZSgmdGhpbmcsIGNvbGxlY3Rpb24pKQoJY29sbGVjdGlvbi5GaWVsZHNbMF0uVmFsaWRhdGVPblBvcHVsYXRlID0gZmFsc2UKCWFzc2VydC5OaWwocmVjb3JkLlBvcHVsYXRlKCZ0aGluZywgY29sbGVjdGlvbikpCgljb2xsZWN0aW9uLkZpZWxkc1swXS5WYWxpZGF0ZU9uUG9wdWxhdGUgPSB0cnVlCgl0aGluZyA9IHRlc3RUaGluZ3tOYW1lOiBgQm9vYmVycnlgLCBHcm91cDogYHRlc3RzYH0KCXJlY29yZCA9IE5ld1JlY29yZCgxKS5TZXQoYG5hbWVgLCBgdGVzdC1uYW1lYCkuU2V0KGBTaXplYCwgNDIpCgllcnIgOj0gcmVjb3JkLlBvcHVsYXRlKCZ0aGluZywgY29sbGVjdGlvbikKCWFzc2VydC5Ob0Vycm9yKGVycikKCWFzc2VydC5FcXVhbChgdGVzdC1uYW1lYCwgdGhpbmcuTmFtZSkKCWFzc2VydC5FcXVhbChgdGVzdHNgLCB0aGluZy5Hcm91cCkKCWFzc2VydC5aZXJvKHRoaW5nLlNpemUpCn0=",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCgljb2xsZWN0aW9uIDo9ICZDb2xsZWN0aW9ue05hbWU6IGBUZXN0UmVjb3JkUG9wdWxhdGVTdHJ1Y3RXaXRoVmFsaWRhdG9yYCwgRmllbGRzOiBbXUZpZWxke3tOYW1lOiBgbmFtZWAsIFR5cGU6IFN0cmluZ1R5cGUsIFZhbGlkYXRvcjogZnVuYyh2IGFueSkgZXJyb3IgewoJCWlmIGZtdC5TcHJpbnRmKCIldiIsIHYpID09IGB0ZXN0YCB7CgkJCXJldHVybiBmbXQuRXJyb3JmKCJTaG91bGRuJ3QgYmUgdGVzdCIpCgkJfQoJCXJldHVybiBuaWwKCX0sIFZhbGlkYXRlT25Qb3B1bGF0ZTogdHJ1ZX19fQoJdHlwZSB0ZXN0VGhpbmcgc3RydWN0IHsKCQlJRCAgICBpbnQKCQlOYW1lICBzdHJpbmcgYHBpdm90OiJuYW1lImAKCQlHcm91cCBzdHJpbmcgYHBpdm90OiJHcm91cCxvbWl0ZW1wdHkiYAoJCVNpemUgIGludAoJfQoJdGhpbmcgOj0gdGVzdFRoaW5ne30KCXJlY29yZCA6PSBOZXdSZWNvcmQoMSkuU2V0KGBuYW1lYCwgYHRlc3RgKS5TZXQoYFNpemVgLCA0MikKCWFzc2VydC5FcnJvcihyZWNvcmQuUG9wdWxhdGUoJnRoaW5nLCBjb2xsZWN0aW9uKSkKCWNvbGxlY3Rpb24uRmllbGRzWzBdLlZhbGlkYXRlT25Qb3B1bGF0ZSA9IGZhbHNlCglhc3NlcnQuTmlsKHJlY29yZC5Qb3B1bGF0ZSgmdGhpbmcsIGNvbGxlY3Rpb24pKQoJY29sbGVjdGlvbi5GaWVsZHNbMF0uVmFsaWRhdGVPblBvcHVsYXRlID0gdHJ1ZQoJdGhpbmcgPSB0ZXN0VGhpbmd7TmFtZTogYEJvb2JlcnJ5YCwgR3JvdXA6IGB0ZXN0c2B9CglyZWNvcmQgPSBOZXdSZWNvcmQoMSkuU2V0KGBuYW1lYCwgYHRlc3QtbmFtZWApLlNldChgU2l6ZWAsIDQyKQoJZXJyIDo9IHJlY29yZC5Qb3B1bGF0ZSgmdGhpbmcsIGNvbGxlY3Rpb24pCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWwoYHRlc3QtbmFtZWAsIHRoaW5nLk5hbWUpCglhc3NlcnQuRXF1YWwoYHRlc3RzYCwgdGhpbmcuR3JvdXApCglhc3NlcnQuWmVybyh0aGluZy5TaXplKQp9",
             "IsPackageLevel": true
         },
         {
@@ -1410,7 +1419,7 @@
                 }
             ],
             "Signature": "TestRecordSet(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglkZW1vIDo9ICZDb2xsZWN0aW9ue0ZpZWxkczogW11GaWVsZHt7TmFtZTogYG5hbWVgLCBUeXBlOiBTdHJpbmdUeXBlfSwge05hbWU6IGBmYWN0b3JgLCBUeXBlOiBGbG9hdFR5cGUsIFJlcXVpcmVkOiB0cnVlLCBEZWZhdWx0VmFsdWU6IDAuMn0sIHtOYW1lOiBgY3JlYXRlZF9hdGAsIFR5cGU6IFRpbWVUeXBlLCBSZXF1aXJlZDogdHJ1ZSwgRGVmYXVsdFZhbHVlOiBmdW5jKCkgaW50ZXJmYWNle30gewoJCXJldHVybiBkZWZ0aW1lCgl9fX19CglyZWNvcmRzZXQgOj0gTmV3UmVjb3JkU2V0KE5ld1JlY29yZCgxKS5TZXRGaWVsZHMobWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgbmFtZWA6IGBGaXJzdGAsIGBmYWN0b3JgOiAwLjEsIGBjcmVhdGVkX2F0YDogbmlsfSksIE5ld1JlY29yZCgzKS5TZXRGaWVsZHMobWFwW3N0cmluZ11pbnRlcmZhY2V7fXtgbmFtZWA6IGBTZWNvbmRgLCBgZmFjdG9yYDogbmlsLCBgY3JlYXRlZF9hdGA6IG90aHRpbWV9KSwgTmV3UmVjb3JkKDUpLlNldEZpZWxkcyhtYXBbc3RyaW5nXWludGVyZmFjZXt9e2BuYW1lYDogYFRoaXJkYCwgYGZhY3RvcmA6IDAuMywgYGNyZWF0ZWRfYXRgOiBuaWx9KSkKCWRlc3QgOj0gbWFrZShbXSp0ZXN0UmVjb3JkU2V0UmVjb3JkRGVzdCwgMCkKCWFzc2VydC5Ob0Vycm9yKHJlY29yZHNldC5Qb3B1bGF0ZUZyb21SZWNvcmRzKCZkZXN0LCBkZW1vKSkKCWFzc2VydC5MZW4oZGVzdCwgMykKCWFzc2VydC5FcXVhbCgxLCBkZXN0WzBdLklEKQoJYXNzZXJ0LkVxdWFsKGBGaXJzdGAsIGRlc3RbMF0uTmFtZSkKCWFzc2VydC5FcXVhbCgwLjEsIGRlc3RbMF0uRmFjdG9yKQoJYXNzZXJ0LkVxdWFsKGRlZnRpbWUsIGRlc3RbMF0uQ3JlYXRlZEF0KQoJYXNzZXJ0LkVxdWFsKDMsIGRlc3RbMV0uSUQpCglhc3NlcnQuRXF1YWwoYFNlY29uZGAsIGRlc3RbMV0uTmFtZSkKCWFzc2VydC5FcXVhbCgwLjIsIGRlc3RbMV0uRmFjdG9yKQoJYXNzZXJ0LkVxdWFsKG90aHRpbWUsIGRlc3RbMV0uQ3JlYXRlZEF0KQoJYXNzZXJ0LkVxdWFsKDUsIGRlc3RbMl0uSUQpCglhc3NlcnQuRXF1YWwoYFRoaXJkYCwgZGVzdFsyXS5OYW1lKQoJYXNzZXJ0LkVxdWFsKDAuMywgZGVzdFsyXS5GYWN0b3IpCglhc3NlcnQuRXF1YWwoZGVmdGltZSwgZGVzdFsyXS5DcmVhdGVkQXQpCn0=",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglkZW1vIDo9ICZDb2xsZWN0aW9ue0ZpZWxkczogW11GaWVsZHt7TmFtZTogYG5hbWVgLCBUeXBlOiBTdHJpbmdUeXBlfSwge05hbWU6IGBmYWN0b3JgLCBUeXBlOiBGbG9hdFR5cGUsIFJlcXVpcmVkOiB0cnVlLCBEZWZhdWx0VmFsdWU6IDAuMn0sIHtOYW1lOiBgY3JlYXRlZF9hdGAsIFR5cGU6IFRpbWVUeXBlLCBSZXF1aXJlZDogdHJ1ZSwgRGVmYXVsdFZhbHVlOiBmdW5jKCkgYW55IHsKCQlyZXR1cm4gZGVmdGltZQoJfX19fQoJcmVjb3Jkc2V0IDo9IE5ld1JlY29yZFNldChOZXdSZWNvcmQoMSkuU2V0RmllbGRzKG1hcFtzdHJpbmddYW55e2BuYW1lYDogYEZpcnN0YCwgYGZhY3RvcmA6IDAuMSwgYGNyZWF0ZWRfYXRgOiBuaWx9KSwgTmV3UmVjb3JkKDMpLlNldEZpZWxkcyhtYXBbc3RyaW5nXWFueXtgbmFtZWA6IGBTZWNvbmRgLCBgZmFjdG9yYDogbmlsLCBgY3JlYXRlZF9hdGA6IG90aHRpbWV9KSwgTmV3UmVjb3JkKDUpLlNldEZpZWxkcyhtYXBbc3RyaW5nXWFueXtgbmFtZWA6IGBUaGlyZGAsIGBmYWN0b3JgOiAwLjMsIGBjcmVhdGVkX2F0YDogbmlsfSkpCglkZXN0IDo9IG1ha2UoW10qdGVzdFJlY29yZFNldFJlY29yZERlc3QsIDApCglhc3NlcnQuTm9FcnJvcihyZWNvcmRzZXQuUG9wdWxhdGVGcm9tUmVjb3JkcygmZGVzdCwgZGVtbykpCglhc3NlcnQuTGVuKGRlc3QsIDMpCglhc3NlcnQuRXF1YWwoMSwgZGVzdFswXS5JRCkKCWFzc2VydC5FcXVhbChgRmlyc3RgLCBkZXN0WzBdLk5hbWUpCglhc3NlcnQuRXF1YWwoMC4xLCBkZXN0WzBdLkZhY3RvcikKCWFzc2VydC5FcXVhbChkZWZ0aW1lLCBkZXN0WzBdLkNyZWF0ZWRBdCkKCWFzc2VydC5FcXVhbCgzLCBkZXN0WzFdLklEKQoJYXNzZXJ0LkVxdWFsKGBTZWNvbmRgLCBkZXN0WzFdLk5hbWUpCglhc3NlcnQuRXF1YWwoMC4yLCBkZXN0WzFdLkZhY3RvcikKCWFzc2VydC5FcXVhbChvdGh0aW1lLCBkZXN0WzFdLkNyZWF0ZWRBdCkKCWFzc2VydC5FcXVhbCg1LCBkZXN0WzJdLklEKQoJYXNzZXJ0LkVxdWFsKGBUaGlyZGAsIGRlc3RbMl0uTmFtZSkKCWFzc2VydC5FcXVhbCgwLjMsIGRlc3RbMl0uRmFjdG9yKQoJYXNzZXJ0LkVxdWFsKGRlZnRpbWUsIGRlc3RbMl0uQ3JlYXRlZEF0KQp9",
             "IsPackageLevel": true
         },
         {
@@ -1498,15 +1507,15 @@
                         },
                         {
                             "Name": "value",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
                         {
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
-                    "Signature": "ConvertValue(name string, value interface{}) interface{}",
+                    "Signature": "ConvertValue(name string, value any) any",
                     "IsPackageLevel": false
                 },
                 {
@@ -1806,7 +1815,7 @@
                     "Arguments": [
                         {
                             "Name": "in",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "ops",
@@ -1821,7 +1830,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "MakeRecord(in interface{}, ops ...FieldOperation) (*Record, error)",
+                    "Signature": "MakeRecord(in any, ops ...FieldOperation) (*Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -1841,13 +1850,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string]interface{}"
+                            "Type": "map[string]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "MapFromRecord(record *Record, fields ...string) (map[string]interface{}, error)",
+                    "Signature": "MapFromRecord(record *Record, fields ...string) (map[string]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -1925,7 +1934,7 @@
                     "Arguments": [
                         {
                             "Name": "in",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -1933,7 +1942,7 @@
                             "Type": "*Collection"
                         }
                     ],
-                    "Signature": "SetRecordType(in interface{}) *Collection",
+                    "Signature": "SetRecordType(in any) *Collection",
                     "IsPackageLevel": false
                 },
                 {
@@ -1944,7 +1953,7 @@
                     "Arguments": [
                         {
                             "Name": "in",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -1955,7 +1964,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "StructToRecord(in interface{}) (*Record, error)",
+                    "Signature": "StructToRecord(in any) (*Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -2012,7 +2021,7 @@
                         },
                         {
                             "Name": "value",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "op",
@@ -2021,13 +2030,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ValueForField(name string, value interface{}, op FieldOperation) (interface{}, error)",
+                    "Signature": "ValueForField(name string, value any, op FieldOperation) (any, error)",
                     "IsPackageLevel": false
                 }
             ],
@@ -2149,7 +2158,7 @@
                 },
                 {
                     "Name": "ViewQuery",
-                    "Type": "interface{}",
+                    "Type": "any",
                     "Comment": "A query object that is passed to the underlying database engine."
                 },
                 {
@@ -2163,7 +2172,7 @@
                     "Comment": "Specifies that the collection is fully ready to be used"
                 }
             ],
-            "Source": "dHlwZSBDb2xsZWN0aW9uIHN0cnVjdCB7CglOYW1lICAgICAgICAgICAgICAgIHN0cmluZyBganNvbjoibmFtZSJgCglJbmRleE5hbWUgICAgICAgICAgIHN0cmluZyBganNvbjoiaW5kZXhfbmFtZSxvbWl0ZW1wdHkiYAoJSW5kZXhDb21wb3VuZEZpZWxkcyBbIC8vIFRoZSBuYW1lIG9mIHRoZSBjb2xsZWN0aW9uCgkvLyBMaXN0cyB0aGUgZmllbGQgbmFtZXMgdGhhdCBtYWtlIHVwIGEgY29tcG9zaXRlIGtleSBvbiB0aGlzIENvbGxlY3Rpb24gdGhhdCBzaG91bGQgYmUgam9pbmVkCgkvLyB0b2dldGhlciB3aGVuIGRldGVybWluaW5nIGluZGV4IHJlY29yZCBJRHMuICBPZnRlbiBpdCBpcyB0aGUgY2FzZSB0aGF0IGV4dGVybmFsIGluZGljZXMgZG8KCS8vIG5vdCBzdXBwb3J0IGNvbXBvc2l0ZSBrZXlzIHRoZSB3YXkgZGF0YWJhc2VzIGRvLCBzbyB0aGlzIGFsbG93cyBDb2xsZWN0aW9ucyB3aXRoIGNvbXBvc2l0ZQoJLy8ga2V5cyB0byBiZSBpbmRleGVkIGluIHRob3NlIHN5c3RlbXMgYnkgam9pbmluZyBzZXZlcmFsIHZhbHVlcyB0b2dldGhlciB0byBmb3JtIGEgdW5pcXVlIGtleS4KCV1zdHJpbmcgYGpzb246ImluZGV4X2NvbXBvdW5kX2ZpZWxkcyxvbWl0ZW1wdHkiYAoJSW5kZXhDb21wb3VuZEZpZWxkSm9pbmVyIHN0cmluZyBganNvbjoiaW5kZXhfY29tcG91bmRfZmllbGRfam9pbmVyLG9taXRlbXB0eSJgCglTa2lwSW5kZXhQZXJzaXN0ZW5jZSAgICAgYm9vbCAgIGBqc29uOiJza2lwX2luZGV4X3BlcnNpc3RlbmNlLG9taXRlbXB0eSJgCglGaWVsZHMgICAgICAgICAgICAgICAgICAgWyAvLyBUaGUgc3RyaW5nIHVzZWQgdG8gam9pbiBhbmQgc3BsaXQgSUQgdmFsdWVzIHRoYXQgZ28gaW50byAvIGNvbWUgb3V0IG9mIGV4dGVybmFsIGluZGljZXMuCgkvLyBUaGUgZmllbGRzIHRoYXQgYmVsb25nIHRvIHRoaXMgY29sbGVjdGlvbiAoYWxsIGV4Y2VwdCB0aGUgcHJpbWFyeSBrZXkvaWRlbnRpdHkgZmllbGQvZmlyc3QKCS8vIGZpZWxkIGluIGEgY29tcG9zaXRlIGtleSkKCV1GaWVsZCBganNvbjoiZmllbGRzImAKCUlkZW50aXR5RmllbGQgICAgICAgc3RyaW5nIGBqc29uOiJpZGVudGl0eV9maWVsZCxvbWl0ZW1wdHkiYAoJSWRlbnRpdHlGaWVsZFR5cGUgICBUeXBlICAgYGpzb246ImlkZW50aXR5X2ZpZWxkX3R5cGUsb21pdGVtcHR5ImAKCUlkZW50aXR5RmllbGRJbmRleCAgaW50ICAgIGBqc29uOiJpZGVudGl0eV9maWVsZF9pbmRleCJgCglFbWJlZGRlZENvbGxlY3Rpb25zIFsgLy8gVGhlIG5hbWUgb2YgdGhlIGlkZW50aXR5IGZpZWxkIGZvciB0aGlzIENvbGxlY3Rpb24uICBEZWZhdWx0cyB0byAiaWQiLgoJLy8gU3BlY2lmaWVzIGhvdyBmaWVsZHMgaW4gdGhpcyBDb2xsZWN0aW9uIHJlbGF0ZSB0byByZWNvcmRzIGZyb20gb3RoZXIgY29sbGVjdGlvbnMuICBUaGlzIGlzCgkvLyBhIHBhcnRpYWwgaW1wbGVtZW50YXRpb24gb2YgYSByZWxhdGlvbmFsIG1vZGVsLCBzcGVjaWZpY2FsbHkgY2FwdHVyaW5nIG9uZS10by1vbmUgb3IKCS8vIG9uZS10by1tYW55IHJlbGF0aW9uc2hpcHMuICBUaGUgZGVmaW5pdGlvbnMgaGVyZSB3aWxsIHJldHJpZXZlIHRoZSBhc3NvY2lhdGVkIHJlY29yZHMgZnJvbQoJLy8gYW5vdGhlciwgYW5kIHRob3NlIHZhbHVlcyB3aWxsIHJlcGxhY2UgdGhlIHZhbHVlIHRoYXQgaXMgYWN0dWFsbHkgaW4gdGhpcyBDb2xsZWN0aW9uJ3MgZmllbGQuCgldUmVsYXRpb25zaGlwIGBqc29uOiJlbWJlZCxvbWl0ZW1wdHkiYAoJQ29uc3RyYWludHMgWyAvLyBBbGxvd3MgZm9yIGNvbnN0cmFpbnRzIHRvIGJlIGFwcGxpZWQgdG8gYSBjb2xsZWN0aW9uLiAgSW4gYWRkaXRpb24gdG8gaW5mb3JtaW5nIFBpdm90IGFib3V0IHRoZQoJLy8gcmVsYXRpb25zaGlwcyBiZXR3ZWVuIGNvbGxlY3Rpb25zLCB0aGlzIGRhdGEgaXMgYWxzbyB1c2VkIHRvIGVuZm9yY2UgcmVmZXJlbnRpYWwgaW50ZWdyaXR5IGZvcgoJLy8gYmFja2VuZHMgdGhhdCBzdXBwb3J0IHN1Y2ggZ3VhcmFudGVlcyAoZS5nLjogQUNJRC1jb21wbGlhbnQgUkRCTVMnKS4KCV1Db25zdHJhaW50IGBqc29uOiJjb25zdHJhaW50cyxvbWl0ZW1wdHkiYAoJRXhwb3J0ZWRGaWVsZHMgWyAvLyBTcGVjaWZpZXMgd2hpY2ggZmllbGRzIGNhbiBiZSBzZWVuIHdoZW4gcmVjb3JkcyBhcmUgZnJvbSByZWxhdGlvbnNoaXBzIGRlZmluZWQgb24gb3RoZXIKCS8vIENvbGxlY3Rpb25zLiAgVGhpcyBjYW4gYmUgdXNlZCB0byByZXN0cmljdCB0aGUgZXhwb3N1cmUpIG9mIHNlbnNpdGl2ZSBkYXRhIGluIHRoaXMgQ29sbGVjdGlvbgoJLy8gYmUgYmVpbmcgYW4gZW1iZWRkZWQgZmllbGQgaW4gYW5vdGhlciBDb2xsZWN0aW9uLgoJXXN0cmluZyBganNvbjoiZXhwb3J0LG9taXRlbXB0eSJgCglBbGxvd01pc3NpbmdFbWJlZGRlZFJlY29yZHMgYm9vbCAgICAgICAgICAgICAgICAgICAgYGpzb246ImFsbG93X21pc3NpbmdfZW1iZWRkZWRfcmVjb3JkcyJgCglUb3RhbFJlY29yZHMgICAgICAgICAgICAgICAgaW50NjQgICAgICAgICAgICAgICAgICAgYGpzb246InRvdGFsX3JlY29yZHMsb21pdGVtcHR5ImAKCVRvdGFsUmVjb3Jkc0V4YWN0ICAgICAgICAgICBib29sICAgICAgICAgICAgICAgICAgICBganNvbjoidG90YWxfcmVjb3Jkc19leGFjdCxvbWl0ZW1wdHkiYAoJVGltZVRvTGl2ZUZpZWxkICAgICAgICAgICAgIHN0cmluZyAgICAgICAgICAgICAgICAgIGBqc29uOiJ0aW1lX3RvX2xpdmVfZmllbGQiYAoJSWRlbnRpdHlGaWVsZEZvcm1hdHRlciAgICAgIEZpZWxkRm9ybWF0dGVyRnVuYyAgICAgIGBqc29uOiItImAKCUF1dG9JZGVudGl0eSAgICAgICAgICAgICAgICBzdHJpbmcgICAgICAgICAgICAgICAgICBganNvbjoiYXV0b2lkZW50aXR5ImAKCUlkZW50aXR5RmllbGRWYWxpZGF0b3IgICAgICBGaWVsZFZhbGlkYXRvckZ1bmMgICAgICBganNvbjoiLSJgCglTb3VyY2VVUkkgICAgICAgICAgICAgICAgICAgc3RyaW5nICAgICAgICAgICAgICAgICAgYGpzb246Ii0iYAoJUHJlU2F2ZVZhbGlkYXRvciAgICAgICAgICAgIENvbGxlY3Rpb25WYWxpZGF0b3JGdW5jIGBqc29uOiItImAKCVZpZXcgICAgICAgICAgICAgICAgICAgICAgICBib29sICAgICAgICAgICAgICAgICAgICBganNvbjoidmlldyxvbWl0ZW1wdHkiYAoJVmlld0tleXdvcmRzICAgICAgICAgICAgICAgIHN0cmluZyAgICAgICAgICAgICAgICAgIGBqc29uOiJ2aWV3X2tleXdvcmRzLG9taXRlbXB0eSJgCglWaWV3UXVlcnkgICAgICAgICAgICAgICAgICAgaW50ZXJmYWNle30gICAgICAgICAgICAgYGpzb246InZpZXdfcXVlcnksb21pdGVtcHR5ImAKCUFsd2F5c0NyZWF0ZSAgICAgICAgICAgICAgICBib29sICAgICAgICAgICAgICAgICAgICBganNvbjoiY3JlYXRlLG9taXRlbXB0eSJgCglSZWFkeSAgICAgICAgICAgICAgICAgICAgICAgYm9vbCAgICAgICAgICAgICAgICAgICAgYGpzb246InJlYWR5LG9taXRlbXB0eSJgCgp9Ly8gU3BlY2lmeSB3aGV0aGVyIG1pc3NpbmcgcmVsYXRlZCBmaWVsZHMgZ2VuZXJhdGUgYW4gZXJyb3Igd2hlbiByZXRyaWV2aW5nIGEgcmVjb3JkLgoK",
+            "Source": "dHlwZSBDb2xsZWN0aW9uIHN0cnVjdCB7CglOYW1lICAgICAgICAgICAgICAgIHN0cmluZyBganNvbjoibmFtZSJgCglJbmRleE5hbWUgICAgICAgICAgIHN0cmluZyBganNvbjoiaW5kZXhfbmFtZSxvbWl0ZW1wdHkiYAoJSW5kZXhDb21wb3VuZEZpZWxkcyBbIC8vIFRoZSBuYW1lIG9mIHRoZSBjb2xsZWN0aW9uCgkvLyBMaXN0cyB0aGUgZmllbGQgbmFtZXMgdGhhdCBtYWtlIHVwIGEgY29tcG9zaXRlIGtleSBvbiB0aGlzIENvbGxlY3Rpb24gdGhhdCBzaG91bGQgYmUgam9pbmVkCgkvLyB0b2dldGhlciB3aGVuIGRldGVybWluaW5nIGluZGV4IHJlY29yZCBJRHMuICBPZnRlbiBpdCBpcyB0aGUgY2FzZSB0aGF0IGV4dGVybmFsIGluZGljZXMgZG8KCS8vIG5vdCBzdXBwb3J0IGNvbXBvc2l0ZSBrZXlzIHRoZSB3YXkgZGF0YWJhc2VzIGRvLCBzbyB0aGlzIGFsbG93cyBDb2xsZWN0aW9ucyB3aXRoIGNvbXBvc2l0ZQoJLy8ga2V5cyB0byBiZSBpbmRleGVkIGluIHRob3NlIHN5c3RlbXMgYnkgam9pbmluZyBzZXZlcmFsIHZhbHVlcyB0b2dldGhlciB0byBmb3JtIGEgdW5pcXVlIGtleS4KCV1zdHJpbmcgYGpzb246ImluZGV4X2NvbXBvdW5kX2ZpZWxkcyxvbWl0ZW1wdHkiYAoJSW5kZXhDb21wb3VuZEZpZWxkSm9pbmVyIHN0cmluZyBganNvbjoiaW5kZXhfY29tcG91bmRfZmllbGRfam9pbmVyLG9taXRlbXB0eSJgCglTa2lwSW5kZXhQZXJzaXN0ZW5jZSAgICAgYm9vbCAgIGBqc29uOiJza2lwX2luZGV4X3BlcnNpc3RlbmNlLG9taXRlbXB0eSJgCglGaWVsZHMgICAgICAgICAgICAgICAgICAgWyAvLyBUaGUgc3RyaW5nIHVzZWQgdG8gam9pbiBhbmQgc3BsaXQgSUQgdmFsdWVzIHRoYXQgZ28gaW50byAvIGNvbWUgb3V0IG9mIGV4dGVybmFsIGluZGljZXMuCgkvLyBUaGUgZmllbGRzIHRoYXQgYmVsb25nIHRvIHRoaXMgY29sbGVjdGlvbiAoYWxsIGV4Y2VwdCB0aGUgcHJpbWFyeSBrZXkvaWRlbnRpdHkgZmllbGQvZmlyc3QKCS8vIGZpZWxkIGluIGEgY29tcG9zaXRlIGtleSkKCV1GaWVsZCBganNvbjoiZmllbGRzImAKCUlkZW50aXR5RmllbGQgICAgICAgc3RyaW5nIGBqc29uOiJpZGVudGl0eV9maWVsZCxvbWl0ZW1wdHkiYAoJSWRlbnRpdHlGaWVsZFR5cGUgICBUeXBlICAgYGpzb246ImlkZW50aXR5X2ZpZWxkX3R5cGUsb21pdGVtcHR5ImAKCUlkZW50aXR5RmllbGRJbmRleCAgaW50ICAgIGBqc29uOiJpZGVudGl0eV9maWVsZF9pbmRleCJgCglFbWJlZGRlZENvbGxlY3Rpb25zIFsgLy8gVGhlIG5hbWUgb2YgdGhlIGlkZW50aXR5IGZpZWxkIGZvciB0aGlzIENvbGxlY3Rpb24uICBEZWZhdWx0cyB0byAiaWQiLgoJLy8gU3BlY2lmaWVzIGhvdyBmaWVsZHMgaW4gdGhpcyBDb2xsZWN0aW9uIHJlbGF0ZSB0byByZWNvcmRzIGZyb20gb3RoZXIgY29sbGVjdGlvbnMuICBUaGlzIGlzCgkvLyBhIHBhcnRpYWwgaW1wbGVtZW50YXRpb24gb2YgYSByZWxhdGlvbmFsIG1vZGVsLCBzcGVjaWZpY2FsbHkgY2FwdHVyaW5nIG9uZS10by1vbmUgb3IKCS8vIG9uZS10by1tYW55IHJlbGF0aW9uc2hpcHMuICBUaGUgZGVmaW5pdGlvbnMgaGVyZSB3aWxsIHJldHJpZXZlIHRoZSBhc3NvY2lhdGVkIHJlY29yZHMgZnJvbQoJLy8gYW5vdGhlciwgYW5kIHRob3NlIHZhbHVlcyB3aWxsIHJlcGxhY2UgdGhlIHZhbHVlIHRoYXQgaXMgYWN0dWFsbHkgaW4gdGhpcyBDb2xsZWN0aW9uJ3MgZmllbGQuCgldUmVsYXRpb25zaGlwIGBqc29uOiJlbWJlZCxvbWl0ZW1wdHkiYAoJQ29uc3RyYWludHMgWyAvLyBBbGxvd3MgZm9yIGNvbnN0cmFpbnRzIHRvIGJlIGFwcGxpZWQgdG8gYSBjb2xsZWN0aW9uLiAgSW4gYWRkaXRpb24gdG8gaW5mb3JtaW5nIFBpdm90IGFib3V0IHRoZQoJLy8gcmVsYXRpb25zaGlwcyBiZXR3ZWVuIGNvbGxlY3Rpb25zLCB0aGlzIGRhdGEgaXMgYWxzbyB1c2VkIHRvIGVuZm9yY2UgcmVmZXJlbnRpYWwgaW50ZWdyaXR5IGZvcgoJLy8gYmFja2VuZHMgdGhhdCBzdXBwb3J0IHN1Y2ggZ3VhcmFudGVlcyAoZS5nLjogQUNJRC1jb21wbGlhbnQgUkRCTVMnKS4KCV1Db25zdHJhaW50IGBqc29uOiJjb25zdHJhaW50cyxvbWl0ZW1wdHkiYAoJRXhwb3J0ZWRGaWVsZHMgWyAvLyBTcGVjaWZpZXMgd2hpY2ggZmllbGRzIGNhbiBiZSBzZWVuIHdoZW4gcmVjb3JkcyBhcmUgZnJvbSByZWxhdGlvbnNoaXBzIGRlZmluZWQgb24gb3RoZXIKCS8vIENvbGxlY3Rpb25zLiAgVGhpcyBjYW4gYmUgdXNlZCB0byByZXN0cmljdCB0aGUgZXhwb3N1cmUpIG9mIHNlbnNpdGl2ZSBkYXRhIGluIHRoaXMgQ29sbGVjdGlvbgoJLy8gYmUgYmVpbmcgYW4gZW1iZWRkZWQgZmllbGQgaW4gYW5vdGhlciBDb2xsZWN0aW9uLgoJXXN0cmluZyBganNvbjoiZXhwb3J0LG9taXRlbXB0eSJgCglBbGxvd01pc3NpbmdFbWJlZGRlZFJlY29yZHMgYm9vbCAgICAgICAgICAgICAgICAgICAgYGpzb246ImFsbG93X21pc3NpbmdfZW1iZWRkZWRfcmVjb3JkcyJgCglUb3RhbFJlY29yZHMgICAgICAgICAgICAgICAgaW50NjQgICAgICAgICAgICAgICAgICAgYGpzb246InRvdGFsX3JlY29yZHMsb21pdGVtcHR5ImAKCVRvdGFsUmVjb3Jkc0V4YWN0ICAgICAgICAgICBib29sICAgICAgICAgICAgICAgICAgICBganNvbjoidG90YWxfcmVjb3Jkc19leGFjdCxvbWl0ZW1wdHkiYAoJVGltZVRvTGl2ZUZpZWxkICAgICAgICAgICAgIHN0cmluZyAgICAgICAgICAgICAgICAgIGBqc29uOiJ0aW1lX3RvX2xpdmVfZmllbGQiYAoJSWRlbnRpdHlGaWVsZEZvcm1hdHRlciAgICAgIEZpZWxkRm9ybWF0dGVyRnVuYyAgICAgIGBqc29uOiItImAKCUF1dG9JZGVudGl0eSAgICAgICAgICAgICAgICBzdHJpbmcgICAgICAgICAgICAgICAgICBganNvbjoiYXV0b2lkZW50aXR5ImAKCUlkZW50aXR5RmllbGRWYWxpZGF0b3IgICAgICBGaWVsZFZhbGlkYXRvckZ1bmMgICAgICBganNvbjoiLSJgCglTb3VyY2VVUkkgICAgICAgICAgICAgICAgICAgc3RyaW5nICAgICAgICAgICAgICAgICAgYGpzb246Ii0iYAoJUHJlU2F2ZVZhbGlkYXRvciAgICAgICAgICAgIENvbGxlY3Rpb25WYWxpZGF0b3JGdW5jIGBqc29uOiItImAKCVZpZXcgICAgICAgICAgICAgICAgICAgICAgICBib29sICAgICAgICAgICAgICAgICAgICBganNvbjoidmlldyxvbWl0ZW1wdHkiYAoJVmlld0tleXdvcmRzICAgICAgICAgICAgICAgIHN0cmluZyAgICAgICAgICAgICAgICAgIGBqc29uOiJ2aWV3X2tleXdvcmRzLG9taXRlbXB0eSJgCglWaWV3UXVlcnkgICAgICAgICAgICAgICAgICAgYW55ICAgICAgICAgICAgICAgICAgICAgYGpzb246InZpZXdfcXVlcnksb21pdGVtcHR5ImAKCUFsd2F5c0NyZWF0ZSAgICAgICAgICAgICAgICBib29sICAgICAgICAgICAgICAgICAgICBganNvbjoiY3JlYXRlLG9taXRlbXB0eSJgCglSZWFkeSAgICAgICAgICAgICAgICAgICAgICAgYm9vbCAgICAgICAgICAgICAgICAgICAgYGpzb246InJlYWR5LG9taXRlbXB0eSJgCgp9Ly8gU3BlY2lmeSB3aGV0aGVyIG1pc3NpbmcgcmVsYXRlZCBmaWVsZHMgZ2VuZXJhdGUgYW4gZXJyb3Igd2hlbiByZXRyaWV2aW5nIGEgcmVjb3JkLgoK",
             "HasUnexportedFields": true
         },
         "CollectionAction": {
@@ -2202,7 +2211,12 @@
                             "Type": "string"
                         }
                     ],
-                    "Signature": "ClearOpt(key string)",
+                    "Returns": [
+                        {
+                            "Type": "typeutil.Variant"
+                        }
+                    ],
+                    "Signature": "ClearOpt(key string) typeutil.Variant",
                     "IsPackageLevel": false
                 },
                 {
@@ -2562,7 +2576,7 @@
                         },
                         {
                             "Name": "options",
-                            "Type": "map[string]interface{}"
+                            "Type": "map[string]any"
                         }
                     ],
                     "Returns": [
@@ -2573,7 +2587,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "MakeConnectionString(scheme string, host string, dataset string, options map[string]interface{}) (ConnectionString, error)",
+                    "Signature": "MakeConnectionString(scheme string, host string, dataset string, options map[string]any) (ConnectionString, error)",
                     "Source": "ewoJcXMgOj0gdXJsLlZhbHVlc3t9Cglmb3IgaywgdiA6PSByYW5nZSBvcHRpb25zIHsKCQlpZiBzdHJ2YWx1ZSwgZXJyIDo9IHN0cmluZ3V0aWwuVG9TdHJpbmcodik7IGVyciA9PSBuaWwgewoJCQl2YWx1ZXMgOj0gc3RyaW5ncy5TcGxpdChzdHJ2YWx1ZSwgYCxgKQoJCQlmb3IgXywgdnYgOj0gcmFuZ2UgdmFsdWVzIHsKCQkJCXFzLkFkZChrLCB2dikKCQkJfQoJCX0gZWxzZSB7CgkJCXJldHVybiBDb25uZWN0aW9uU3RyaW5ne30sIGVycgoJCX0KCX0KCXVyaSA6PSAmdXJsLlVSTHtTY2hlbWU6IHNjaGVtZSwgSG9zdDogaG9zdCwgUGF0aDogZGF0YXNldCwgUmF3UXVlcnk6IHFzLkVuY29kZSgpfQoJaWYgZXJyIDo9IHByZXBhcmVVUkkodXJpKTsgZXJyID09IG5pbCB7CgkJcmV0dXJuIENvbm5lY3Rpb25TdHJpbmd7VVJJOiB1cmksIE9wdGlvbnM6IG9wdGlvbnNGcm9tVVJJKHVyaSl9LCBuaWwKCX0gZWxzZSB7CgkJcmV0dXJuIENvbm5lY3Rpb25TdHJpbmd7fSwgZXJyCgl9Cn0=",
                     "IsPackageLevel": true
                 }
@@ -2585,10 +2599,10 @@
                 },
                 {
                     "Name": "Options",
-                    "Type": "map[string]interface{}"
+                    "Type": "map[string]any"
                 }
             ],
-            "Source": "dHlwZSBDb25uZWN0aW9uU3RyaW5nIHN0cnVjdCB7CglVUkkgICAgICp1cmwuVVJMCglPcHRpb25zIG1hcFtzdHJpbmddaW50ZXJmYWNle30KfQ=="
+            "Source": "dHlwZSBDb25uZWN0aW9uU3RyaW5nIHN0cnVjdCB7CglVUkkgICAgICp1cmwuVVJMCglPcHRpb25zIG1hcFtzdHJpbmddYW55Cn0="
         },
         "Constraint": {
             "Name": "Constraint",
@@ -2626,7 +2640,7 @@
             "Fields": [
                 {
                     "Name": "On",
-                    "Type": "interface{}",
+                    "Type": "any",
                     "Comment": "Represents the name (or array of names) of the local field the constraint is being applied to."
                 },
                 {
@@ -2636,7 +2650,7 @@
                 },
                 {
                     "Name": "Field",
-                    "Type": "interface{}",
+                    "Type": "any",
                     "Comment": "The remote field (or fields) in the remote collection the constraint applies to."
                 },
                 {
@@ -2655,7 +2669,7 @@
                     "Comment": "Whether to omit this constraint when determining embedded collections."
                 }
             ],
-            "Source": "dHlwZSBDb25zdHJhaW50IHN0cnVjdCB7CglPbiAgICAgICAgIGludGVyZmFjZXt9IGBqc29uOiJvbiJgCglDb2xsZWN0aW9uIHN0cmluZyAgICAgIGBqc29uOiJjb2xsZWN0aW9uImAKCUZpZWxkICAgICAgaW50ZXJmYWNle30gYGpzb246ImZpZWxkImAKCU9wdGlvbnMgICAgc3RyaW5nICAgICAgYGpzb246Im9wdGlvbnMsb21pdGVtcHR5ImAKCUludG8gICAgICAgc3RyaW5nICAgICAgYGpzb246ImludG8sb21pdGVtcHR5ImAKCU5vRW1iZWQgICAgYm9vbCAgICAgICAgYGpzb246Im5vZW1iZWQsb21pdGVtcHR5ImAKfS8vIFJlcHJlc2VudHMgdGhlIG5hbWUgKG9yIGFycmF5IG9mIG5hbWVzKSBvZiB0aGUgbG9jYWwgZmllbGQgdGhlIGNvbnN0cmFpbnQgaXMgYmVpbmcgYXBwbGllZCB0by4KLy8gV2hldGhlciB0byBvbWl0IHRoaXMgY29uc3RyYWludCB3aGVuIGRldGVybWluaW5nIGVtYmVkZGVkIGNvbGxlY3Rpb25zLgo="
+            "Source": "dHlwZSBDb25zdHJhaW50IHN0cnVjdCB7CglPbiAgICAgICAgIGFueSAgICBganNvbjoib24iYAoJQ29sbGVjdGlvbiBzdHJpbmcgYGpzb246ImNvbGxlY3Rpb24iYAoJRmllbGQgICAgICBhbnkgICAgYGpzb246ImZpZWxkImAKCU9wdGlvbnMgICAgc3RyaW5nIGBqc29uOiJvcHRpb25zLG9taXRlbXB0eSJgCglJbnRvICAgICAgIHN0cmluZyBganNvbjoiaW50byxvbWl0ZW1wdHkiYAoJTm9FbWJlZCAgICBib29sICAgYGpzb246Im5vZW1iZWQsb21pdGVtcHR5ImAKfS8vIFJlcHJlc2VudHMgdGhlIG5hbWUgKG9yIGFycmF5IG9mIG5hbWVzKSBvZiB0aGUgbG9jYWwgZmllbGQgdGhlIGNvbnN0cmFpbnQgaXMgYmVpbmcgYXBwbGllZCB0by4KLy8gV2hldGhlciB0byBvbWl0IHRoaXMgY29uc3RyYWludCB3aGVuIGRldGVybWluaW5nIGVtYmVkZGVkIGNvbGxlY3Rpb25zLgo="
         },
         "DeltaIssue": {
             "Name": "DeltaIssue",
@@ -2695,18 +2709,18 @@
                     "Arguments": [
                         {
                             "Name": "in",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
                         {
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ConvertValue(in interface{}) (interface{}, error)",
+                    "Signature": "ConvertValue(in any) (any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -2734,7 +2748,7 @@
                     "Arguments": [
                         {
                             "Name": "value",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "op",
@@ -2743,13 +2757,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Format(value interface{}, op FieldOperation) (interface{}, error)",
+                    "Signature": "Format(value any, op FieldOperation) (any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -2758,10 +2772,10 @@
                     "ReceiverName": "self",
                     "Returns": [
                         {
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
-                    "Signature": "GetDefaultValue() interface{}",
+                    "Signature": "GetDefaultValue() any",
                     "IsPackageLevel": false
                 },
                 {
@@ -2770,10 +2784,10 @@
                     "ReceiverName": "self",
                     "Returns": [
                         {
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
-                    "Signature": "GetTypeInstance() interface{}",
+                    "Signature": "GetTypeInstance() any",
                     "IsPackageLevel": false
                 },
                 {
@@ -2816,7 +2830,7 @@
                     "Arguments": [
                         {
                             "Name": "value",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -2824,7 +2838,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Validate(value interface{}) error",
+                    "Signature": "Validate(value any) error",
                     "IsPackageLevel": false
                 }
             ],
@@ -2891,7 +2905,7 @@
                 },
                 {
                     "Name": "DefaultValue",
-                    "Type": "interface{}",
+                    "Type": "any",
                     "Comment": "The default value of the field is one is not explicitly specified.  Can be any type or a\nfunction that takes zero arguments and returns a single value."
                 },
                 {
@@ -2921,12 +2935,12 @@
                 },
                 {
                     "Name": "ValidatorConfig",
-                    "Type": "map[string]interface{}",
+                    "Type": "map[string]any",
                     "Comment": "A declarative form of the Validator configuration that uses pre-defined validators. Primarily\nused when storing schema declarations in external JSON files."
                 },
                 {
                     "Name": "FormatterConfig",
-                    "Type": "map[string]interface{}",
+                    "Type": "map[string]any",
                     "Comment": "A declarative form of the Formatter configuration that uses pre-defined validators. Primarily\nused when storing schema declarations in external JSON files."
                 },
                 {
@@ -2936,7 +2950,7 @@
                 },
                 {
                     "Name": "BelongsTo",
-                    "Type": "interface{}",
+                    "Type": "any",
                     "Comment": "Specify a relationship between this field and another collection.\n\nIf given a string, it will be interpreted as a collection name and a\nconstaint against that collection's identity field will be created.\n\nIf given a *Collection, the same behavior as above will occur, but using\nthe Collection.Name from the given struct.\n\nIf given a Constraint, the constraint will be added to this field's\nparent collection with the \"On\" field set to this field's name."
                 },
                 {
@@ -2945,7 +2959,7 @@
                     "Comment": "Specifies that the field may not be updated, only read.  Attempts to update the field will be silently discarded."
                 }
             ],
-            "Source": "dHlwZSBGaWVsZCBzdHJ1Y3QgewoJTmFtZSAgICAgICAgICAgICAgIHN0cmluZyAgICAgICAgICAgICBganNvbjoibmFtZSJgCglEZXNjcmlwdGlvbiAgICAgICAgc3RyaW5nICAgICAgICAgICAgIGBqc29uOiJkZXNjcmlwdGlvbixvbWl0ZW1wdHkiYAoJVHlwZSAgICAgICAgICAgICAgIFR5cGUgICAgICAgICAgICAgICBganNvbjoidHlwZSJgCglLZXlUeXBlICAgICAgICAgICAgVHlwZSAgICAgICAgICAgICAgIGBqc29uOiJrZXl0eXBlLG9taXRlbXB0eSJgCglTdWJ0eXBlICAgICAgICAgICAgVHlwZSAgICAgICAgICAgICAgIGBqc29uOiJzdWJ0eXBlLG9taXRlbXB0eSJgCglMZW5ndGggICAgICAgICAgICAgaW50ICAgICAgICAgICAgICAgIGBqc29uOiJsZW5ndGgsb21pdGVtcHR5ImAKCVByZWNpc2lvbiAgICAgICAgICBpbnQgICAgICAgICAgICAgICAgYGpzb246InByZWNpc2lvbixvbWl0ZW1wdHkiYAoJSWRlbnRpdHkgICAgICAgICAgIGJvb2wgICAgICAgICAgICAgICBganNvbjoiaWRlbnRpdHksb21pdGVtcHR5ImAKCUtleSAgICAgICAgICAgICAgICBib29sICAgICAgICAgICAgICAgYGpzb246ImtleSxvbWl0ZW1wdHkiYAoJUmVxdWlyZWQgICAgICAgICAgIGJvb2wgICAgICAgICAgICAgICBganNvbjoicmVxdWlyZWQsb21pdGVtcHR5ImAKCVVuaXF1ZSAgICAgICAgICAgICBib29sICAgICAgICAgICAgICAgYGpzb246InVuaXF1ZSxvbWl0ZW1wdHkiYAoJVW5pcXVlR3JvdXAgICAgICAgIHN0cmluZyAgICAgICAgICAgICBganNvbjoidW5pcXVlX2dyb3VwLG9taXRlbXB0eSJgCglEZWZhdWx0VmFsdWUgICAgICAgaW50ZXJmYWNle30gICAgICAgIGBqc29uOiJkZWZhdWx0LG9taXRlbXB0eSJgCglOYXRpdmVUeXBlICAgICAgICAgc3RyaW5nICAgICAgICAgICAgIGBqc29uOiJuYXRpdmVfdHlwZSxvbWl0ZW1wdHkiYAoJTm90VXNlckVkaXRhYmxlICAgIGJvb2wgICAgICAgICAgICAgICBganNvbjoibm90X3VzZXJfZWRpdGFibGUiYAoJVmFsaWRhdGVPblBvcHVsYXRlIGJvb2wgICAgICAgICAgICAgICBganNvbjoidmFsaWRhdGVfb25fcG9wdWxhdGUsb21pdGVtcHR5ImAKCVZhbGlkYXRvciAgICAgICAgICBGaWVsZFZhbGlkYXRvckZ1bmMgYGpzb246Ii0iYAoJRm9ybWF0dGVyICAgICAgICAgIEZpZWxkRm9ybWF0dGVyRnVuYyBganNvbjoiLSJgCglWYWxpZGF0b3JDb25maWcgICAgbWFwIC8vIFRoZSBuYW1lIG9mIHRoZSBmaWVsZAoJLy8gQSBkZWNsYXJhdGl2ZSBmb3JtIG9mIHRoZSBWYWxpZGF0b3IgY29uZmlndXJhdGlvbiB0aGF0IHVzZXMgcHJlLWRlZmluZWQgdmFsaWRhdG9ycy4gUHJpbWFyaWx5CgkvLyB1c2VkIHdoZW4gc3RvcmluZyBzY2hlbWEgZGVjbGFyYXRpb25zIGluIGV4dGVybmFsIEpTT04gZmlsZXMuCglbc3RyaW5nXWludGVyZmFjZXt9IGBqc29uOiJ2YWxpZGF0b3JzLG9taXRlbXB0eSJgCglGb3JtYXR0ZXJDb25maWcgbWFwIC8vIEEgZGVjbGFyYXRpdmUgZm9ybSBvZiB0aGUgRm9ybWF0dGVyIGNvbmZpZ3VyYXRpb24gdGhhdCB1c2VzIHByZS1kZWZpbmVkIHZhbGlkYXRvcnMuIFByaW1hcmlseQoJLy8gdXNlZCB3aGVuIHN0b3Jpbmcgc2NoZW1hIGRlY2xhcmF0aW9ucyBpbiBleHRlcm5hbCBKU09OIGZpbGVzLgoJW3N0cmluZ11pbnRlcmZhY2V7fSBganNvbjoiZm9ybWF0dGVycyxvbWl0ZW1wdHkiYAoJSW5kZXggICAgIGludCAgICAgICAgIGBqc29uOiJpbmRleCxvbWl0ZW1wdHkiYAoJQmVsb25nc1RvIGludGVyZmFjZXt9IGBqc29uOiJiZWxvbmdzX3RvLG9taXRlbXB0eSJgCglSZWFkT25seSAgYm9vbCAgICAgICAgYGpzb246InJlYWRvbmx5LG9taXRlbXB0eSJgCn0vLyBVc2VkIHRvIHN0b3JlIHRoZSBvcmRlciB0aGlzIGZpZWxkIGFwcGVhcnMgaW4gdGhlIHNvdXJjZSBkYXRhYmFzZS4KLy8gU3BlY2lmaWVzIHRoYXQgdGhlIGZpZWxkIG1heSBub3QgYmUgdXBkYXRlZCwgb25seSByZWFkLiAgQXR0ZW1wdHMgdG8gdXBkYXRlIHRoZSBmaWVsZCB3aWxsIGJlIHNpbGVudGx5IGRpc2NhcmRlZC4K"
+            "Source": "dHlwZSBGaWVsZCBzdHJ1Y3QgewoJTmFtZSAgICAgICAgICAgICAgIHN0cmluZyAgICAgICAgICAgICBganNvbjoibmFtZSJgCglEZXNjcmlwdGlvbiAgICAgICAgc3RyaW5nICAgICAgICAgICAgIGBqc29uOiJkZXNjcmlwdGlvbixvbWl0ZW1wdHkiYAoJVHlwZSAgICAgICAgICAgICAgIFR5cGUgICAgICAgICAgICAgICBganNvbjoidHlwZSJgCglLZXlUeXBlICAgICAgICAgICAgVHlwZSAgICAgICAgICAgICAgIGBqc29uOiJrZXl0eXBlLG9taXRlbXB0eSJgCglTdWJ0eXBlICAgICAgICAgICAgVHlwZSAgICAgICAgICAgICAgIGBqc29uOiJzdWJ0eXBlLG9taXRlbXB0eSJgCglMZW5ndGggICAgICAgICAgICAgaW50ICAgICAgICAgICAgICAgIGBqc29uOiJsZW5ndGgsb21pdGVtcHR5ImAKCVByZWNpc2lvbiAgICAgICAgICBpbnQgICAgICAgICAgICAgICAgYGpzb246InByZWNpc2lvbixvbWl0ZW1wdHkiYAoJSWRlbnRpdHkgICAgICAgICAgIGJvb2wgICAgICAgICAgICAgICBganNvbjoiaWRlbnRpdHksb21pdGVtcHR5ImAKCUtleSAgICAgICAgICAgICAgICBib29sICAgICAgICAgICAgICAgYGpzb246ImtleSxvbWl0ZW1wdHkiYAoJUmVxdWlyZWQgICAgICAgICAgIGJvb2wgICAgICAgICAgICAgICBganNvbjoicmVxdWlyZWQsb21pdGVtcHR5ImAKCVVuaXF1ZSAgICAgICAgICAgICBib29sICAgICAgICAgICAgICAgYGpzb246InVuaXF1ZSxvbWl0ZW1wdHkiYAoJVW5pcXVlR3JvdXAgICAgICAgIHN0cmluZyAgICAgICAgICAgICBganNvbjoidW5pcXVlX2dyb3VwLG9taXRlbXB0eSJgCglEZWZhdWx0VmFsdWUgICAgICAgYW55ICAgICAgICAgICAgICAgIGBqc29uOiJkZWZhdWx0LG9taXRlbXB0eSJgCglOYXRpdmVUeXBlICAgICAgICAgc3RyaW5nICAgICAgICAgICAgIGBqc29uOiJuYXRpdmVfdHlwZSxvbWl0ZW1wdHkiYAoJTm90VXNlckVkaXRhYmxlICAgIGJvb2wgICAgICAgICAgICAgICBganNvbjoibm90X3VzZXJfZWRpdGFibGUiYAoJVmFsaWRhdGVPblBvcHVsYXRlIGJvb2wgICAgICAgICAgICAgICBganNvbjoidmFsaWRhdGVfb25fcG9wdWxhdGUsb21pdGVtcHR5ImAKCVZhbGlkYXRvciAgICAgICAgICBGaWVsZFZhbGlkYXRvckZ1bmMgYGpzb246Ii0iYAoJRm9ybWF0dGVyICAgICAgICAgIEZpZWxkRm9ybWF0dGVyRnVuYyBganNvbjoiLSJgCglWYWxpZGF0b3JDb25maWcgICAgbWFwIC8vIFRoZSBuYW1lIG9mIHRoZSBmaWVsZAoJLy8gQSBkZWNsYXJhdGl2ZSBmb3JtIG9mIHRoZSBWYWxpZGF0b3IgY29uZmlndXJhdGlvbiB0aGF0IHVzZXMgcHJlLWRlZmluZWQgdmFsaWRhdG9ycy4gUHJpbWFyaWx5CgkvLyB1c2VkIHdoZW4gc3RvcmluZyBzY2hlbWEgZGVjbGFyYXRpb25zIGluIGV4dGVybmFsIEpTT04gZmlsZXMuCglbc3RyaW5nXWFueSBganNvbjoidmFsaWRhdG9ycyxvbWl0ZW1wdHkiYAoJRm9ybWF0dGVyQ29uZmlnIG1hcCAvLyBBIGRlY2xhcmF0aXZlIGZvcm0gb2YgdGhlIEZvcm1hdHRlciBjb25maWd1cmF0aW9uIHRoYXQgdXNlcyBwcmUtZGVmaW5lZCB2YWxpZGF0b3JzLiBQcmltYXJpbHkKCS8vIHVzZWQgd2hlbiBzdG9yaW5nIHNjaGVtYSBkZWNsYXJhdGlvbnMgaW4gZXh0ZXJuYWwgSlNPTiBmaWxlcy4KCVtzdHJpbmddYW55IGBqc29uOiJmb3JtYXR0ZXJzLG9taXRlbXB0eSJgCglJbmRleCAgICAgaW50ICBganNvbjoiaW5kZXgsb21pdGVtcHR5ImAKCUJlbG9uZ3NUbyBhbnkgIGBqc29uOiJiZWxvbmdzX3RvLG9taXRlbXB0eSJgCglSZWFkT25seSAgYm9vbCBganNvbjoicmVhZG9ubHksb21pdGVtcHR5ImAKfS8vIFVzZWQgdG8gc3RvcmUgdGhlIG9yZGVyIHRoaXMgZmllbGQgYXBwZWFycyBpbiB0aGUgc291cmNlIGRhdGFiYXNlLgovLyBTcGVjaWZpZXMgdGhhdCB0aGUgZmllbGQgbWF5IG5vdCBiZSB1cGRhdGVkLCBvbmx5IHJlYWQuICBBdHRlbXB0cyB0byB1cGRhdGUgdGhlIGZpZWxkIHdpbGwgYmUgc2lsZW50bHkgZGlzY2FyZGVkLgo="
         },
         "FieldFormatterFunc": {
             "Name": "FieldFormatterFunc",
@@ -2955,7 +2969,7 @@
                     "Arguments": [
                         {
                             "Name": "in",
-                            "Type": "map[string]interface{}"
+                            "Type": "map[string]any"
                         }
                     ],
                     "Returns": [
@@ -2966,7 +2980,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)",
+                    "Signature": "FormatterFromMap(in map[string]any) (FieldFormatterFunc, error)",
                     "Source": "ewoJZm9ybWF0dGVycyA6PSBtYWtlKFtdRmllbGRGb3JtYXR0ZXJGdW5jLCAwKQoJZm9yIG5hbWUsIGRlZm4gOj0gcmFuZ2UgaW4gewoJCWlmIGZvcm1hdHRlciwgZXJyIDo9IEdldEZvcm1hdHRlcihuYW1lLCBkZWZuKTsgZXJyID09IG5pbCB7CgkJCWZvcm1hdHRlcnMgPSBhcHBlbmQoZm9ybWF0dGVycywgZm9ybWF0dGVyKQoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkludmFsaWQgZm9ybWF0dGVyIGNvbmZpZ3VyYXRpb24gJXY6ICV2IiwgbmFtZSwgZXJyKQoJCX0KCX0KCXJldHVybiBGb3JtYXRBbGwoZm9ybWF0dGVycy4uLiksIG5pbAp9",
                     "IsPackageLevel": true
                 },
@@ -2979,7 +2993,7 @@
                         },
                         {
                             "Name": "args",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -2990,7 +3004,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)",
+                    "Signature": "GetFormatter(name string, args any) (FieldFormatterFunc, error)",
                     "Source": "ewoJc3dpdGNoIG5hbWUgewoJY2FzZSBgdXVpZGA6CgkJcmV0dXJuIEdlbmVyYXRlVVVJRCwgbmlsCgljYXNlIGBlbmNvZGVkLXV1aWRgOgoJCXZhciBlbmNvZGVyIEVuY29kZXJGdW5jCgkJc3dpdGNoIGZtdC5TcHJpbnRmKCIldiIsIGFyZ3MpIHsKCQljYXNlIGBiYXNlMzJgOgoJCQllbmNvZGVyID0gQmFzZTMyRW5jb2RlcgoJCWNhc2UgYGJhc2U1OGA6CgkJCWVuY29kZXIgPSBCYXNlNThFbmNvZGVyCgkJY2FzZSBgYmFzZTY0YDoKCQkJZW5jb2RlciA9IEJhc2U2NEVuY29kZXIKCQlkZWZhdWx0OgoJCQllbmNvZGVyID0gSGV4RW5jb2RlcgoJCX0KCQlyZXR1cm4gR2VuZXJhdGVFbmNvZGVkVVVJRChlbmNvZGVyKSwgbmlsCgljYXNlIGB0cmltLXNwYWNlYDoKCQlyZXR1cm4gVHJpbVNwYWNlLCBuaWwKCWNhc2UgYGNoYW5nZS1jYXNlYDoKCQlyZXR1cm4gQ2hhbmdlQ2FzZShzbGljZXV0aWwuU3RyaW5naWZ5KGFyZ3MpLi4uKSwgbmlsCgljYXNlIGByZXBsYWNlYDoKCQlyZXR1cm4gUmVwbGFjZShzbGljZXV0aWwuU2xpY2VpZnkoYXJncykpLCBuaWwKCWNhc2UgYGN1cnJlbnQtdGltZWA6CgkJcmV0dXJuIEN1cnJlbnRUaW1lLCBuaWwKCWNhc2UgYGN1cnJlbnQtdGltZS1pZi11bnNldGA6CgkJcmV0dXJuIEN1cnJlbnRUaW1lSWZVbnNldCwgbmlsCgljYXNlIGBub3ctcGx1cy1kdXJhdGlvbmA6CgkJcmV0dXJuIE5vd1BsdXNEdXJhdGlvbih0eXBldXRpbC5WKGFyZ3MpLkR1cmF0aW9uKCkpLCBuaWwKCWRlZmF1bHQ6CgkJcmV0dXJuIG5pbCwgZm10LkVycm9yZigiVW5rbm93biBmb3JtYXR0ZXIgJXEiLCBuYW1lKQoJfQp9",
                     "IsPackageLevel": true
                 },
@@ -3008,7 +3022,7 @@
                         }
                     ],
                     "Signature": "FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc",
-                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIG9wIEZpZWxkT3BlcmF0aW9uKSAoaW50ZXJmYWNle30sIGVycm9yKSB7CgkJZm9yIF8sIGZvcm1hdHRlciA6PSByYW5nZSBmb3JtYXR0ZXJzIHsKCQkJaWYgdiwgZXJyIDo9IGZvcm1hdHRlcih2YWx1ZSwgb3ApOyBlcnIgPT0gbmlsIHsKCQkJCXZhbHVlID0gdgoJCQl9IGVsc2UgewoJCQkJcmV0dXJuIG5pbCwgZXJyCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgYW55LCBvcCBGaWVsZE9wZXJhdGlvbikgKGFueSwgZXJyb3IpIHsKCQlmb3IgXywgZm9ybWF0dGVyIDo9IHJhbmdlIGZvcm1hdHRlcnMgewoJCQlpZiB2LCBlcnIgOj0gZm9ybWF0dGVyKHZhbHVlLCBvcCk7IGVyciA9PSBuaWwgewoJCQkJdmFsdWUgPSB2CgkJCX0gZWxzZSB7CgkJCQlyZXR1cm4gbmlsLCBlcnIKCQkJfQoJCX0KCQlyZXR1cm4gdmFsdWUsIG5pbAoJfQp9",
                     "IsPackageLevel": true
                 },
                 {
@@ -3025,7 +3039,7 @@
                         }
                     ],
                     "Signature": "ChangeCase(cases ...string) FieldFormatterFunc",
-                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiByZWNvcmQsIG9rIDo9IHZhbHVlLigqUmVjb3JkKTsgb2sgewoJCQl2YWx1ZSA9IHJlY29yZC5JRAoJCX0KCQlpZiB2U3RyLCBlcnIgOj0gc3RyaW5ndXRpbC5Ub1N0cmluZyh2YWx1ZSk7IGVyciA9PSBuaWwgewoJCQlmb3IgXywgYyA6PSByYW5nZSBjYXNlcyB7CgkJCQlzd2l0Y2ggYyB7CgkJCQljYXNlIGB1cHBlcmA6CgkJCQkJdlN0ciA9IHN0cmluZ3MuVG9VcHBlcih2U3RyKQoJCQkJY2FzZSBgbG93ZXJgOgoJCQkJCXZTdHIgPSBzdHJpbmdzLlRvTG93ZXIodlN0cikKCQkJCWNhc2UgYGNhbWVsaXplYDoKCQkJCQl2U3RyID0gc3RyaW5ndXRpbC5DYW1lbGl6ZSh2U3RyKQoJCQkJY2FzZSBgaHlwaGVuYXRlYDoKCQkJCQl2U3RyID0gc3RyaW5ndXRpbC5IeXBoZW5hdGUodlN0cikKCQkJCWNhc2UgYHVuZGVyc2NvcmVgOgoJCQkJCXZTdHIgPSBzdHJpbmd1dGlsLlVuZGVyc2NvcmUodlN0cikKCQkJCWNhc2UgYHRpdGxlYDoKCQkJCQl2U3RyID0gc3RyaW5ncy5UaXRsZSh2U3RyKQoJCQkJZGVmYXVsdDoKCQkJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCJVbnN1cHBvcnRlZCBjYXNlICclcyciLCBjKQoJCQkJfQoJCQl9CgkJCXJldHVybiB2U3RyLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gdmFsdWUsIGVycgoJCX0KCX0KfQ==",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgYW55LCBfIEZpZWxkT3BlcmF0aW9uKSAoYW55LCBlcnJvcikgewoJCWlmIHJlY29yZCwgb2sgOj0gdmFsdWUuKCpSZWNvcmQpOyBvayB7CgkJCXZhbHVlID0gcmVjb3JkLklECgkJfQoJCWlmIHZTdHIsIGVyciA6PSBzdHJpbmd1dGlsLlRvU3RyaW5nKHZhbHVlKTsgZXJyID09IG5pbCB7CgkJCWZvciBfLCBjIDo9IHJhbmdlIGNhc2VzIHsKCQkJCXN3aXRjaCBjIHsKCQkJCWNhc2UgYHVwcGVyYDoKCQkJCQl2U3RyID0gc3RyaW5ncy5Ub1VwcGVyKHZTdHIpCgkJCQljYXNlIGBsb3dlcmA6CgkJCQkJdlN0ciA9IHN0cmluZ3MuVG9Mb3dlcih2U3RyKQoJCQkJY2FzZSBgY2FtZWxpemVgOgoJCQkJCXZTdHIgPSBzdHJpbmd1dGlsLkNhbWVsaXplKHZTdHIpCgkJCQljYXNlIGBoeXBoZW5hdGVgOgoJCQkJCXZTdHIgPSBzdHJpbmd1dGlsLkh5cGhlbmF0ZSh2U3RyKQoJCQkJY2FzZSBgdW5kZXJzY29yZWA6CgkJCQkJdlN0ciA9IHN0cmluZ3V0aWwuVW5kZXJzY29yZSh2U3RyKQoJCQkJY2FzZSBgdGl0bGVgOgoJCQkJCXZTdHIgPSBzdHJpbmdzLlRpdGxlKHZTdHIpCgkJCQlkZWZhdWx0OgoJCQkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIlVuc3VwcG9ydGVkIGNhc2UgJyVzJyIsIGMpCgkJCQl9CgkJCX0KCQkJcmV0dXJuIHZTdHIsIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiB2YWx1ZSwgZXJyCgkJfQoJfQp9",
                     "IsPackageLevel": true
                 },
                 {
@@ -3033,7 +3047,7 @@
                     "Arguments": [
                         {
                             "Name": "pairs",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -3041,8 +3055,8 @@
                             "Type": "FieldFormatterFunc"
                         }
                     ],
-                    "Signature": "Replace(pairs []interface{}) FieldFormatterFunc",
-                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiB2U3RyLCBlcnIgOj0gc3RyaW5ndXRpbC5Ub1N0cmluZyh2YWx1ZSk7IGVyciA9PSBuaWwgewoJCQlmb3IgXywgcGFpciA6PSByYW5nZSBwYWlycyB7CgkJCQlwIDo9IHNsaWNldXRpbC5TdHJpbmdpZnkocGFpcikKCQkJCWlmIGxlbihwKSAhPSAyIHsKCQkJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCIncmVwbGFjZScgZm9ybWF0dGVyIHJlcXVpcmVzIGFuIGFyZ3VtZW50IG9mIFtbRklORFBBVFRFUk4sIFJFUExBQ0VXSVRIXSwgLi5dIikKCQkJCX0gZWxzZSB7CgkJCQkJZmluZCA6PSBwWzBdCgkJCQkJcmVwbGFjZSA6PSBwWzFdCgkJCQkJaWYgcmVjb3JkLCBvayA6PSB2YWx1ZS4oKlJlY29yZCk7IG9rIHsKCQkJCQkJdmFsdWUgPSByZWNvcmQuSUQKCQkJCQl9CgkJCQkJaWYgcngsIGVyciA6PSByZWdleHAuQ29tcGlsZShmaW5kKTsgZXJyID09IG5pbCB7CgkJCQkJCXZTdHIgPSByeC5SZXBsYWNlQWxsU3RyaW5nKHZTdHIsIHJlcGxhY2UpCgkJCQkJfSBlbHNlIHsKCQkJCQkJcmV0dXJuIHZhbHVlLCBmbXQuRXJyb3JmKCJpbnZhbGlkIGZpbmQgcGF0dGVybjogJXYiLCBlcnIpCgkJCQkJfQoJCQkJfQoJCQl9CgkJCXJldHVybiB2U3RyLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gdmFsdWUsIGVycgoJCX0KCX0KfQ==",
+                    "Signature": "Replace(pairs []any) FieldFormatterFunc",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgYW55LCBfIEZpZWxkT3BlcmF0aW9uKSAoYW55LCBlcnJvcikgewoJCWlmIHZTdHIsIGVyciA6PSBzdHJpbmd1dGlsLlRvU3RyaW5nKHZhbHVlKTsgZXJyID09IG5pbCB7CgkJCWZvciBfLCBwYWlyIDo9IHJhbmdlIHBhaXJzIHsKCQkJCXAgOj0gc2xpY2V1dGlsLlN0cmluZ2lmeShwYWlyKQoJCQkJaWYgbGVuKHApICE9IDIgewoJCQkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIidyZXBsYWNlJyBmb3JtYXR0ZXIgcmVxdWlyZXMgYW4gYXJndW1lbnQgb2YgW1tGSU5EUEFUVEVSTiwgUkVQTEFDRVdJVEhdLCAuLl0iKQoJCQkJfSBlbHNlIHsKCQkJCQlmaW5kIDo9IHBbMF0KCQkJCQlyZXBsYWNlIDo9IHBbMV0KCQkJCQlpZiByZWNvcmQsIG9rIDo9IHZhbHVlLigqUmVjb3JkKTsgb2sgewoJCQkJCQl2YWx1ZSA9IHJlY29yZC5JRAoJCQkJCX0KCQkJCQlpZiByeCwgZXJyIDo9IHJlZ2V4cC5Db21waWxlKGZpbmQpOyBlcnIgPT0gbmlsIHsKCQkJCQkJdlN0ciA9IHJ4LlJlcGxhY2VBbGxTdHJpbmcodlN0ciwgcmVwbGFjZSkKCQkJCQl9IGVsc2UgewoJCQkJCQlyZXR1cm4gdmFsdWUsIGZtdC5FcnJvcmYoImludmFsaWQgZmluZCBwYXR0ZXJuOiAldiIsIGVycikKCQkJCQl9CgkJCQl9CgkJCX0KCQkJcmV0dXJuIHZTdHIsIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiB2YWx1ZSwgZXJyCgkJfQoJfQp9",
                     "IsPackageLevel": true
                 },
                 {
@@ -3060,7 +3074,7 @@
                         }
                     ],
                     "Signature": "GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc",
-                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiByZWNvcmQsIG9rIDo9IHZhbHVlLigqUmVjb3JkKTsgb2sgewoJCQl2YWx1ZSA9IHJlY29yZC5JRAoJCX0KCQlpZiB0eXBldXRpbC5Jc1plcm8odmFsdWUpIHsKCQkJaWYgdiwgZXJyIDo9IGVuY29kZXIoc3RyaW5ndXRpbC5VVUlEKCkuQnl0ZXMoKSk7IGVyciA9PSBuaWwgewoJCQkJaWYgdHlwZXV0aWwuSXNaZXJvKHYpIHsKCQkJCQlyZXR1cm4gdmFsdWUsIGZtdC5FcnJvcmYoIlVVSUQgZW5jb2RlciBwcm9kdWNlZCBhIHplcm8tbGVuZ3RoIHJlc3VsdCIpCgkJCQl9CgkJCQl2YWx1ZSA9IHYKCQkJfSBlbHNlIHsKCQkJCXJldHVybiB2YWx1ZSwgZXJyCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgYW55LCBfIEZpZWxkT3BlcmF0aW9uKSAoYW55LCBlcnJvcikgewoJCWlmIHJlY29yZCwgb2sgOj0gdmFsdWUuKCpSZWNvcmQpOyBvayB7CgkJCXZhbHVlID0gcmVjb3JkLklECgkJfQoJCWlmIHR5cGV1dGlsLklzWmVybyh2YWx1ZSkgewoJCQlpZiB2LCBlcnIgOj0gZW5jb2RlcihzdHJpbmd1dGlsLlVVSUQoKS5CeXRlcygpKTsgZXJyID09IG5pbCB7CgkJCQlpZiB0eXBldXRpbC5Jc1plcm8odikgewoJCQkJCXJldHVybiB2YWx1ZSwgZm10LkVycm9yZigiVVVJRCBlbmNvZGVyIHByb2R1Y2VkIGEgemVyby1sZW5ndGggcmVzdWx0IikKCQkJCX0KCQkJCXZhbHVlID0gdgoJCQl9IGVsc2UgewoJCQkJcmV0dXJuIHZhbHVlLCBlcnIKCQkJfQoJCX0KCQlyZXR1cm4gdmFsdWUsIG5pbAoJfQp9",
                     "IsPackageLevel": true
                 },
                 {
@@ -3078,7 +3092,7 @@
                         }
                     ],
                     "Signature": "IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc",
-                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIG9wIEZpZWxkT3BlcmF0aW9uKSAoaW50ZXJmYWNle30sIGVycm9yKSB7CgkJaWYgb25seUlmICE9IG5pbCB7CgkJCWlmIHR5cGV1dGlsLklzWmVybyh2YWx1ZSkgewoJCQkJcmV0dXJuIG9ubHlJZih2YWx1ZSwgb3ApCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgYW55LCBvcCBGaWVsZE9wZXJhdGlvbikgKGFueSwgZXJyb3IpIHsKCQlpZiBvbmx5SWYgIT0gbmlsIHsKCQkJaWYgdHlwZXV0aWwuSXNaZXJvKHZhbHVlKSB7CgkJCQlyZXR1cm4gb25seUlmKHZhbHVlLCBvcCkKCQkJfQoJCX0KCQlyZXR1cm4gdmFsdWUsIG5pbAoJfQp9",
                     "IsPackageLevel": true
                 },
                 {
@@ -3100,7 +3114,7 @@
                         }
                     ],
                     "Signature": "DeriveFromFields(format string, fields ...string) FieldFormatterFunc",
-                    "Source": "ewoJcmV0dXJuIGZ1bmMoaW5wdXQgaW50ZXJmYWNle30sIF8gRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3IpIHsKCQlpZiByZWNvcmQsIG9rIDo9IGlucHV0LigqUmVjb3JkKTsgb2sgewoJCQl2YWx1ZXMgOj0gbWFrZShbXWludGVyZmFjZXt9LCBsZW4oZmllbGRzKSkKCQkJZm9yIGksIGZpZWxkIDo9IHJhbmdlIGZpZWxkcyB7CgkJCQl2YWx1ZXNbaV0gPSByZWNvcmQuR2V0KGZpZWxkKQoJCQl9CgkJCXJldHVybiBmbXQuU3ByaW50Zihmb3JtYXQsIHZhbHVlcy4uLiksIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkRlcml2ZUZyb21GaWVsZHMgZm9ybWF0dGVyIHJlcXVpcmVzIGEgKmRhbC5SZWNvcmQgYXJndW1lbnQsIGdvdCAlVCIsIGlucHV0KQoJCX0KCX0KfQ==",
+                    "Source": "ewoJcmV0dXJuIGZ1bmMoaW5wdXQgYW55LCBfIEZpZWxkT3BlcmF0aW9uKSAoYW55LCBlcnJvcikgewoJCWlmIHJlY29yZCwgb2sgOj0gaW5wdXQuKCpSZWNvcmQpOyBvayB7CgkJCXZhbHVlcyA6PSBtYWtlKFtdYW55LCBsZW4oZmllbGRzKSkKCQkJZm9yIGksIGZpZWxkIDo9IHJhbmdlIGZpZWxkcyB7CgkJCQl2YWx1ZXNbaV0gPSByZWNvcmQuR2V0KGZpZWxkKQoJCQl9CgkJCXJldHVybiBmbXQuU3ByaW50Zihmb3JtYXQsIHZhbHVlcy4uLiksIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkRlcml2ZUZyb21GaWVsZHMgZm9ybWF0dGVyIHJlcXVpcmVzIGEgKmRhbC5SZWNvcmQgYXJndW1lbnQsIGdvdCAlVCIsIGlucHV0KQoJCX0KCX0KfQ==",
                     "IsPackageLevel": true
                 },
                 {
@@ -3118,11 +3132,11 @@
                         }
                     ],
                     "Signature": "NowPlusDuration(duration time.Duration) FieldFormatterFunc",
-                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIG9wIEZpZWxkT3BlcmF0aW9uKSAoaW50ZXJmYWNle30sIGVycm9yKSB7CgkJaWYgb3AgPT0gUGVyc2lzdE9wZXJhdGlvbiB7CgkJCWlmIGR1cmF0aW9uICE9IDAgewoJCQkJcmV0dXJuIHRpbWUuTm93KCkuQWRkKGR1cmF0aW9uKSwgbmlsCgkJCX0KCQl9CgkJcmV0dXJuIHZhbHVlLCBuaWwKCX0KfQ==",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgYW55LCBvcCBGaWVsZE9wZXJhdGlvbikgKGFueSwgZXJyb3IpIHsKCQlpZiBvcCA9PSBQZXJzaXN0T3BlcmF0aW9uIHsKCQkJaWYgZHVyYXRpb24gIT0gMCB7CgkJCQlyZXR1cm4gdGltZS5Ob3coKS5BZGQoZHVyYXRpb24pLCBuaWwKCQkJfQoJCX0KCQlyZXR1cm4gdmFsdWUsIG5pbAoJfQp9",
                     "IsPackageLevel": true
                 }
             ],
-            "Source": "dHlwZSBGaWVsZEZvcm1hdHRlckZ1bmMgZnVuYyhpbnRlcmZhY2V7fSwgRmllbGRPcGVyYXRpb24pIChpbnRlcmZhY2V7fSwgZXJyb3Ip"
+            "Source": "dHlwZSBGaWVsZEZvcm1hdHRlckZ1bmMgZnVuYyhhbnksIEZpZWxkT3BlcmF0aW9uKSAoYW55LCBlcnJvcik="
         },
         "FieldOperation": {
             "Name": "FieldOperation",
@@ -3138,7 +3152,7 @@
                     "Arguments": [
                         {
                             "Name": "in",
-                            "Type": "map[string]interface{}"
+                            "Type": "map[string]any"
                         }
                     ],
                     "Returns": [
@@ -3149,7 +3163,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)",
+                    "Signature": "ValidatorFromMap(in map[string]any) (FieldValidatorFunc, error)",
                     "Source": "ewoJdmFsaWRhdG9ycyA6PSBtYWtlKFtdRmllbGRWYWxpZGF0b3JGdW5jLCAwKQoJZm9yIG5hbWUsIGRlZm4gOj0gcmFuZ2UgaW4gewoJCWlmIHZhbGlkYXRvciwgZXJyIDo9IEdldFZhbGlkYXRvcihuYW1lLCBkZWZuKTsgZXJyID09IG5pbCB7CgkJCXZhbGlkYXRvcnMgPSBhcHBlbmQodmFsaWRhdG9ycywgdmFsaWRhdG9yKQoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkludmFsaWQgdmFsaWRhdG9yIGNvbmZpZ3VyYXRpb24gJXY6ICV2IiwgbmFtZSwgZXJyKQoJCX0KCX0KCXJldHVybiBWYWxpZGF0ZUFsbCh2YWxpZGF0b3JzLi4uKSwgbmlsCn0=",
                     "IsPackageLevel": true
                 },
@@ -3163,7 +3177,7 @@
                         },
                         {
                             "Name": "args",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -3174,8 +3188,8 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "GetValidator(name string, args interface{}) (FieldValidatorFunc, error)",
-                    "Source": "ewoJc3dpdGNoIG5hbWUgewoJY2FzZSBgb25lLW9mYDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJdmFyIHZhbHVlcyBbXWludGVyZmFjZXt9ID0gc2xpY2V1dGlsLlNsaWNlaWZ5KGFyZ3MpCgkJCWZvciBpLCB2IDo9IHJhbmdlIHZhbHVlcyB7CgkJCQlpZiB2QXRLZXkgOj0gbWFwdXRpbC5NKHYpLkdldChgdmFsdWVgKTsgIXZBdEtleS5Jc05pbCgpIHsKCQkJCQl2YWx1ZXNbaV0gPSB2QXRLZXkuVmFsdWUKCQkJCX0KCQkJfQoJCQlyZXR1cm4gVmFsaWRhdGVJc09uZU9mKHZhbHVlcy4uLiksIG5pbAoJCX0gZWxzZSBpZiB0eXBldXRpbC5Jc01hcChhcmdzKSB7CgkJCXJldHVybiBWYWxpZGF0ZUlzT25lT2YobWFwdXRpbC5NYXBWYWx1ZXMoYXJncykuLi4pLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCJNdXN0IHNwZWNpZnkgYW4gYXJyYXkgb2YgdmFsdWVzIGZvciB2YWxpZGF0b3IgJ29uZS1vZiciKQoJCX0KCWNhc2UgYG5vdC16ZXJvYDoKCQlyZXR1cm4gVmFsaWRhdGVOb25aZXJvLCBuaWwKCWNhc2UgYG5vdC1lbXB0eWA6CgkJcmV0dXJuIFZhbGlkYXRlTm90RW1wdHksIG5pbAoJY2FzZSBgcG9zaXRpdmUtaW50ZWdlcmA6CgkJcmV0dXJuIFZhbGlkYXRlUG9zaXRpdmVJbnRlZ2VyLCBuaWwKCWNhc2UgYHBvc2l0aXZlLW9yLXplcm8taW50ZWdlcmA6CgkJcmV0dXJuIFZhbGlkYXRlUG9zaXRpdmVPclplcm9JbnRlZ2VyLCBuaWwKCWNhc2UgYHVybGA6CgkJcmV0dXJuIFZhbGlkYXRlSXNVUkwsIG5pbAoJY2FzZSBgbWF0Y2hgLCBgbWF0Y2gtYWxsYDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJcmV0dXJuIFZhbGlkYXRlTWF0Y2hBbGwoc2xpY2V1dGlsLlN0cmluZ2lmeShhcmdzKS4uLiksIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIk11c3Qgc3BlY2lmeSBhbiBhcnJheSBvZiB2YWx1ZXMgZm9yIHZhbGlkYXRvciAnbWF0Y2gnIikKCQl9CgljYXNlIGBtYXRjaC1hbnlgOgoJCWlmIHR5cGV1dGlsLklzQXJyYXkoYXJncykgewoJCQlyZXR1cm4gVmFsaWRhdGVNYXRjaEFueShzbGljZXV0aWwuU3RyaW5naWZ5KGFyZ3MpLi4uKSwgbmlsCgkJfSBlbHNlIHsKCQkJcmV0dXJuIG5pbCwgZm10LkVycm9yZigiTXVzdCBzcGVjaWZ5IGFuIGFycmF5IG9mIHZhbHVlcyBmb3IgdmFsaWRhdG9yICdtYXRjaC1hbnknIikKCQl9CglkZWZhdWx0OgoJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIlVua25vd24gdmFsaWRhdG9yICVxIiwgbmFtZSkKCX0KfQ==",
+                    "Signature": "GetValidator(name string, args any) (FieldValidatorFunc, error)",
+                    "Source": "ewoJc3dpdGNoIG5hbWUgewoJY2FzZSBgb25lLW9mYDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJdmFyIHZhbHVlcyBbXWFueSA9IHNsaWNldXRpbC5TbGljZWlmeShhcmdzKQoJCQlmb3IgaSwgdiA6PSByYW5nZSB2YWx1ZXMgewoJCQkJaWYgdkF0S2V5IDo9IG1hcHV0aWwuTSh2KS5HZXQoYHZhbHVlYCk7ICF2QXRLZXkuSXNOaWwoKSB7CgkJCQkJdmFsdWVzW2ldID0gdkF0S2V5LlZhbHVlCgkJCQl9CgkJCX0KCQkJcmV0dXJuIFZhbGlkYXRlSXNPbmVPZih2YWx1ZXMuLi4pLCBuaWwKCQl9IGVsc2UgaWYgdHlwZXV0aWwuSXNNYXAoYXJncykgewoJCQlyZXR1cm4gVmFsaWRhdGVJc09uZU9mKG1hcHV0aWwuTWFwVmFsdWVzKGFyZ3MpLi4uKSwgbmlsCgkJfSBlbHNlIHsKCQkJcmV0dXJuIG5pbCwgZm10LkVycm9yZigiTXVzdCBzcGVjaWZ5IGFuIGFycmF5IG9mIHZhbHVlcyBmb3IgdmFsaWRhdG9yICdvbmUtb2YnIikKCQl9CgljYXNlIGBub3QtemVyb2A6CgkJcmV0dXJuIFZhbGlkYXRlTm9uWmVybywgbmlsCgljYXNlIGBub3QtZW1wdHlgOgoJCXJldHVybiBWYWxpZGF0ZU5vdEVtcHR5LCBuaWwKCWNhc2UgYHBvc2l0aXZlLWludGVnZXJgOgoJCXJldHVybiBWYWxpZGF0ZVBvc2l0aXZlSW50ZWdlciwgbmlsCgljYXNlIGBwb3NpdGl2ZS1vci16ZXJvLWludGVnZXJgOgoJCXJldHVybiBWYWxpZGF0ZVBvc2l0aXZlT3JaZXJvSW50ZWdlciwgbmlsCgljYXNlIGB1cmxgOgoJCXJldHVybiBWYWxpZGF0ZUlzVVJMLCBuaWwKCWNhc2UgYG1hdGNoYCwgYG1hdGNoLWFsbGA6CgkJaWYgdHlwZXV0aWwuSXNBcnJheShhcmdzKSB7CgkJCXJldHVybiBWYWxpZGF0ZU1hdGNoQWxsKHNsaWNldXRpbC5TdHJpbmdpZnkoYXJncykuLi4pLCBuaWwKCQl9IGVsc2UgewoJCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCJNdXN0IHNwZWNpZnkgYW4gYXJyYXkgb2YgdmFsdWVzIGZvciB2YWxpZGF0b3IgJ21hdGNoJyIpCgkJfQoJY2FzZSBgbWF0Y2gtYW55YDoKCQlpZiB0eXBldXRpbC5Jc0FycmF5KGFyZ3MpIHsKCQkJcmV0dXJuIFZhbGlkYXRlTWF0Y2hBbnkoc2xpY2V1dGlsLlN0cmluZ2lmeShhcmdzKS4uLiksIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIk11c3Qgc3BlY2lmeSBhbiBhcnJheSBvZiB2YWx1ZXMgZm9yIHZhbGlkYXRvciAnbWF0Y2gtYW55JyIpCgkJfQoJZGVmYXVsdDoKCQlyZXR1cm4gbmlsLCBmbXQuRXJyb3JmKCJVbmtub3duIHZhbGlkYXRvciAlcSIsIG5hbWUpCgl9Cn0=",
                     "IsPackageLevel": true
                 },
                 {
@@ -3193,7 +3207,7 @@
                         }
                     ],
                     "Signature": "ValidateMatchAll(patterns ...string) FieldValidatorFunc",
-                    "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBpbnRlcmZhY2V7fSkgZXJyb3IgewoJCWZvciBfLCByeCA6PSByYW5nZSBwcnggewoJCQlpZiAhcnguTWF0Y2hTdHJpbmcodHlwZXV0aWwuU3RyaW5nKHZhbHVlKSkgewoJCQkJcmV0dXJuIGZtdC5FcnJvcmYoIlZhbHVlIGRvZXMgbm90IG1hdGNoIHBhdHRlcm4gJXEiLCByeC5TdHJpbmcoKSkKCQkJfQoJCX0KCQlyZXR1cm4gbmlsCgl9Cn0=",
+                    "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBhbnkpIGVycm9yIHsKCQlmb3IgXywgcnggOj0gcmFuZ2UgcHJ4IHsKCQkJaWYgIXJ4Lk1hdGNoU3RyaW5nKHR5cGV1dGlsLlN0cmluZyh2YWx1ZSkpIHsKCQkJCXJldHVybiBmbXQuRXJyb3JmKCJWYWx1ZSBkb2VzIG5vdCBtYXRjaCBwYXR0ZXJuICVxIiwgcnguU3RyaW5nKCkpCgkJCX0KCQl9CgkJcmV0dXJuIG5pbAoJfQp9",
                     "IsPackageLevel": true
                 },
                 {
@@ -3211,7 +3225,7 @@
                         }
                     ],
                     "Signature": "ValidateMatchAny(patterns ...string) FieldValidatorFunc",
-                    "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBpbnRlcmZhY2V7fSkgZXJyb3IgewoJCWZvciBfLCByeCA6PSByYW5nZSBwcnggewoJCQlpZiByeC5NYXRjaFN0cmluZyh0eXBldXRpbC5TdHJpbmcodmFsdWUpKSB7CgkJCQlyZXR1cm4gbmlsCgkJCX0KCQl9CgkJcmV0dXJuIGZtdC5FcnJvcmYoIlZhbHVlIGRvZXMgbm90IG1hdGNoIGFueSB2YWxpZCBwYXR0ZXJuIikKCX0KfQ==",
+                    "Source": "ewoJcHJ4IDo9IG1ha2UoW10qcmVnZXhwLlJlZ2V4cCwgbGVuKHBhdHRlcm5zKSkKCWZvciBpLCByeHMgOj0gcmFuZ2UgcGF0dGVybnMgewoJCXByeFtpXSA9IHJlZ2V4cC5NdXN0Q29tcGlsZShyeHMpCgl9CglyZXR1cm4gZnVuYyh2YWx1ZSBhbnkpIGVycm9yIHsKCQlmb3IgXywgcnggOj0gcmFuZ2UgcHJ4IHsKCQkJaWYgcnguTWF0Y2hTdHJpbmcodHlwZXV0aWwuU3RyaW5nKHZhbHVlKSkgewoJCQkJcmV0dXJuIG5pbAoJCQl9CgkJfQoJCXJldHVybiBmbXQuRXJyb3JmKCJWYWx1ZSBkb2VzIG5vdCBtYXRjaCBhbnkgdmFsaWQgcGF0dGVybiIpCgl9Cn0=",
                     "IsPackageLevel": true
                 },
                 {
@@ -3229,7 +3243,7 @@
                         }
                     ],
                     "Signature": "ValidateAll(validators ...FieldValidatorFunc) FieldValidatorFunc",
-                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30pIGVycm9yIHsKCQlmb3IgXywgdmFsaWRhdG9yIDo9IHJhbmdlIHZhbGlkYXRvcnMgewoJCQlpZiBlcnIgOj0gdmFsaWRhdG9yKHZhbHVlKTsgZXJyICE9IG5pbCB7CgkJCQlyZXR1cm4gZXJyCgkJCX0KCQl9CgkJcmV0dXJuIG5pbAoJfQp9",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgYW55KSBlcnJvciB7CgkJZm9yIF8sIHZhbGlkYXRvciA6PSByYW5nZSB2YWxpZGF0b3JzIHsKCQkJaWYgZXJyIDo9IHZhbGlkYXRvcih2YWx1ZSk7IGVyciAhPSBuaWwgewoJCQkJcmV0dXJuIGVycgoJCQl9CgkJfQoJCXJldHVybiBuaWwKCX0KfQ==",
                     "IsPackageLevel": true
                 },
                 {
@@ -3238,7 +3252,7 @@
                     "Arguments": [
                         {
                             "Name": "choices",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -3246,12 +3260,12 @@
                             "Type": "FieldValidatorFunc"
                         }
                     ],
-                    "Signature": "ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc",
-                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgaW50ZXJmYWNle30pIGVycm9yIHsKCQlmb3IgXywgY2hvaWNlIDo9IHJhbmdlIGNob2ljZXMgewoJCQlpZiBvaywgZXJyIDo9IHN0cmluZ3V0aWwuUmVsYXhlZEVxdWFsKGNob2ljZSwgdmFsdWUpOyBlcnIgPT0gbmlsICYmIG9rIHsKCQkJCXJldHVybiBuaWwKCQkJfQoJCX0KCQlyZXR1cm4gZm10LkVycm9yZigidmFsdWUgbXVzdCBiZSBvbmUgb2Y6ICUrdiIsIGNob2ljZXMpCgl9Cn0=",
+                    "Signature": "ValidateIsOneOf(choices ...any) FieldValidatorFunc",
+                    "Source": "ewoJcmV0dXJuIGZ1bmModmFsdWUgYW55KSBlcnJvciB7CgkJZm9yIF8sIGNob2ljZSA6PSByYW5nZSBjaG9pY2VzIHsKCQkJaWYgb2ssIGVyciA6PSBzdHJpbmd1dGlsLlJlbGF4ZWRFcXVhbChjaG9pY2UsIHZhbHVlKTsgZXJyID09IG5pbCAmJiBvayB7CgkJCQlyZXR1cm4gbmlsCgkJCX0KCQl9CgkJcmV0dXJuIGZtdC5FcnJvcmYoInZhbHVlIG11c3QgYmUgb25lIG9mOiAlK3YiLCBjaG9pY2VzKQoJfQp9",
                     "IsPackageLevel": true
                 }
             ],
-            "Source": "dHlwZSBGaWVsZFZhbGlkYXRvckZ1bmMgZnVuYyhpbnRlcmZhY2V7fSkgZXJyb3I="
+            "Source": "dHlwZSBGaWVsZFZhbGlkYXRvckZ1bmMgZnVuYyhhbnkpIGVycm9y"
         },
         "Migratable": {
             "Name": "Migratable",
@@ -3259,7 +3273,8 @@
         },
         "Model": {
             "Name": "Model",
-            "Source": "dHlwZSBNb2RlbCBpbnRlcmZhY2V7fQ=="
+            "MetaType": "any",
+            "Source": "dHlwZSBNb2RlbCBhbnk="
         },
         "Record": {
             "Name": "Record",
@@ -3276,7 +3291,7 @@
                         },
                         {
                             "Name": "value",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -3284,7 +3299,7 @@
                             "Type": "*Record"
                         }
                     ],
-                    "Signature": "Append(key string, value ...interface{}) *Record",
+                    "Signature": "Append(key string, value ...any) *Record",
                     "IsPackageLevel": false
                 },
                 {
@@ -3298,7 +3313,7 @@
                         },
                         {
                             "Name": "value",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -3306,7 +3321,7 @@
                             "Type": "*Record"
                         }
                     ],
-                    "Signature": "AppendNested(key string, value ...interface{}) *Record",
+                    "Signature": "AppendNested(key string, value ...any) *Record",
                     "IsPackageLevel": false
                 },
                 {
@@ -3342,15 +3357,15 @@
                         },
                         {
                             "Name": "fallback",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
                         {
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
-                    "Signature": "Get(key string, fallback ...interface{}) interface{}",
+                    "Signature": "Get(key string, fallback ...any) any",
                     "IsPackageLevel": false
                 },
                 {
@@ -3364,15 +3379,15 @@
                         },
                         {
                             "Name": "fallback",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
                         {
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
-                    "Signature": "GetNested(key string, fallback ...interface{}) interface{}",
+                    "Signature": "GetNested(key string, fallback ...any) any",
                     "IsPackageLevel": false
                 },
                 {
@@ -3409,10 +3424,10 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
-                    "Signature": "Keys(collection *Collection) []interface{}",
+                    "Signature": "Keys(collection *Collection) []any",
                     "IsPackageLevel": false
                 },
                 {
@@ -3427,10 +3442,10 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string]interface{}"
+                            "Type": "map[string]any"
                         }
                     ],
-                    "Signature": "Map(fields ...string) map[string]interface{}",
+                    "Signature": "Map(fields ...string) map[string]any",
                     "IsPackageLevel": false
                 },
                 {
@@ -3438,11 +3453,11 @@
                     "Arguments": [
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "data",
-                            "Type": "...map[string]interface{}"
+                            "Type": "...map[string]any"
                         }
                     ],
                     "Returns": [
@@ -3450,8 +3465,8 @@
                             "Type": "*Record"
                         }
                     ],
-                    "Signature": "NewRecord(id interface{}, data ...map[string]interface{}) *Record",
-                    "Source": "ewoJcmVjb3JkIDo9ICZSZWNvcmR7SUQ6IGlkfQoJaWYgbGVuKGRhdGEpID4gMCAmJiBsZW4oZGF0YVswXSkgPiAwIHsKCQlyZWNvcmQuRmllbGRzID0gZGF0YVswXQoJfSBlbHNlIHsKCQlyZWNvcmQuRmllbGRzID0gbWFrZShtYXBbc3RyaW5nXWludGVyZmFjZXt9KQoJfQoJcmV0dXJuIHJlY29yZAp9",
+                    "Signature": "NewRecord(id any, data ...map[string]any) *Record",
+                    "Source": "ewoJcmVjb3JkIDo9ICZSZWNvcmR7SUQ6IGlkfQoJaWYgbGVuKGRhdGEpID4gMCAmJiBsZW4oZGF0YVswXSkgPiAwIHsKCQlyZWNvcmQuRmllbGRzID0gZGF0YVswXQoJfSBlbHNlIHsKCQlyZWNvcmQuRmllbGRzID0gbWFrZShtYXBbc3RyaW5nXWFueSkKCX0KCXJldHVybiByZWNvcmQKfQ==",
                     "IsPackageLevel": true
                 },
                 {
@@ -3459,7 +3474,7 @@
                     "Arguments": [
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "err",
@@ -3471,8 +3486,8 @@
                             "Type": "*Record"
                         }
                     ],
-                    "Signature": "NewRecordErr(id interface{}, err error) *Record",
-                    "Source": "ewoJcmV0dXJuICZSZWNvcmR7SUQ6IGlkLCBGaWVsZHM6IG1ha2UobWFwW3N0cmluZ11pbnRlcmZhY2V7fSksIEVycm9yOiBlcnJ9Cn0=",
+                    "Signature": "NewRecordErr(id any, err error) *Record",
+                    "Source": "ewoJcmV0dXJuICZSZWNvcmR7SUQ6IGlkLCBGaWVsZHM6IG1ha2UobWFwW3N0cmluZ11hbnkpLCBFcnJvcjogZXJyfQp9",
                     "IsPackageLevel": true
                 },
                 {
@@ -3501,7 +3516,7 @@
                     "Arguments": [
                         {
                             "Name": "into",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "collection",
@@ -3513,7 +3528,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Populate(into interface{}, collection *Collection) error",
+                    "Signature": "Populate(into any, collection *Collection) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -3527,7 +3542,7 @@
                         },
                         {
                             "Name": "value",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -3535,7 +3550,7 @@
                             "Type": "*Record"
                         }
                     ],
-                    "Signature": "Set(key string, value interface{}) *Record",
+                    "Signature": "Set(key string, value any) *Record",
                     "IsPackageLevel": false
                 },
                 {
@@ -3563,7 +3578,7 @@
                     "Arguments": [
                         {
                             "Name": "values",
-                            "Type": "map[string]interface{}"
+                            "Type": "map[string]any"
                         }
                     ],
                     "Returns": [
@@ -3571,7 +3586,7 @@
                             "Type": "*Record"
                         }
                     ],
-                    "Signature": "SetFields(values map[string]interface{}) *Record",
+                    "Signature": "SetFields(values map[string]any) *Record",
                     "IsPackageLevel": false
                 },
                 {
@@ -3589,7 +3604,7 @@
                         },
                         {
                             "Name": "keys",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -3597,7 +3612,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "SetKeys(collection *Collection, op FieldOperation, keys ...interface{}) error",
+                    "Signature": "SetKeys(collection *Collection, op FieldOperation, keys ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -3611,7 +3626,7 @@
                         },
                         {
                             "Name": "value",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -3619,7 +3634,7 @@
                             "Type": "*Record"
                         }
                     ],
-                    "Signature": "SetNested(key string, value interface{}) *Record",
+                    "Signature": "SetNested(key string, value any) *Record",
                     "IsPackageLevel": false
                 },
                 {
@@ -3638,11 +3653,11 @@
             "Fields": [
                 {
                     "Name": "ID",
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Name": "Fields",
-                    "Type": "map[string]interface{}"
+                    "Type": "map[string]any"
                 },
                 {
                     "Name": "Data",
@@ -3665,7 +3680,7 @@
                     "Type": "bool"
                 }
             ],
-            "Source": "dHlwZSBSZWNvcmQgc3RydWN0IHsKCUlEICAgICAgICAgICAgIGludGVyZmFjZXt9ICAgICAgICAgICAgYGpzb246ImlkImAKCUZpZWxkcyAgICAgICAgIG1hcFtzdHJpbmddaW50ZXJmYWNle30gYGpzb246ImZpZWxkcyxvbWl0ZW1wdHkiYAoJRGF0YSAgICAgICAgICAgW11ieXRlICAgICAgICAgICAgICAgICBganNvbjoiZGF0YSxvbWl0ZW1wdHkiYAoJRXJyb3IgICAgICAgICAgZXJyb3IgICAgICAgICAgICAgICAgICBganNvbjoiZXJyb3Isb21pdGVtcHR5ImAKCUNvbGxlY3Rpb25OYW1lIHN0cmluZyAgICAgICAgICAgICAgICAgYGpzb246ImNvbGxlY3Rpb24sb21pdGVtcHR5ImAKCU9wZXJhdGlvbiAgICAgIHN0cmluZyAgICAgICAgICAgICAgICAgYGpzb246Im9wZXJhdGlvbixvbWl0ZW1wdHkiYAoJT3B0aW9uYWwgICAgICAgYm9vbCAgICAgICAgICAgICAgICAgICBganNvbjoib3B0aW9uYWwsb21pdGVtcHR5ImAKfS8vIFNwZWNpZmllcyB0aGF0IHRoZSByZWNvcmQgaXMgIm9wdGlvbmFsIiwgd2hpY2ggaXMgbmFtZWx5IHVzZWQgaW4gZml4dHVyZXMgdG8gaW5kaWNhdGUgdGhhdCBhIG1pc3NpbmcgY29sbGVjdGlvbiBzaG91bGQgbm90IGJlIGNvbnNpZGVyZWQgZmF0YWwuCg=="
+            "Source": "dHlwZSBSZWNvcmQgc3RydWN0IHsKCUlEICAgICAgICAgICAgIGFueSAgICAgICAgICAgIGBqc29uOiJpZCJgCglGaWVsZHMgICAgICAgICBtYXBbc3RyaW5nXWFueSBganNvbjoiZmllbGRzLG9taXRlbXB0eSJgCglEYXRhICAgICAgICAgICBbXWJ5dGUgICAgICAgICBganNvbjoiZGF0YSxvbWl0ZW1wdHkiYAoJRXJyb3IgICAgICAgICAgZXJyb3IgICAgICAgICAgYGpzb246ImVycm9yLG9taXRlbXB0eSJgCglDb2xsZWN0aW9uTmFtZSBzdHJpbmcgICAgICAgICBganNvbjoiY29sbGVjdGlvbixvbWl0ZW1wdHkiYAoJT3BlcmF0aW9uICAgICAgc3RyaW5nICAgICAgICAgYGpzb246Im9wZXJhdGlvbixvbWl0ZW1wdHkiYAoJT3B0aW9uYWwgICAgICAgYm9vbCAgICAgICAgICAgYGpzb246Im9wdGlvbmFsLG9taXRlbXB0eSJgCn0vLyBTcGVjaWZpZXMgdGhhdCB0aGUgcmVjb3JkIGlzICJvcHRpb25hbCIsIHdoaWNoIGlzIG5hbWVseSB1c2VkIGluIGZpeHR1cmVzIHRvIGluZGljYXRlIHRoYXQgYSBtaXNzaW5nIGNvbGxlY3Rpb24gc2hvdWxkIG5vdCBiZSBjb25zaWRlcmVkIGZhdGFsLgo="
         },
         "RecordSet": {
             "Name": "RecordSet",
@@ -3717,7 +3732,7 @@
                     "Arguments": [
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -3728,7 +3743,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "GetRecordByID(id interface{}) (*Record, bool)",
+                    "Signature": "GetRecordByID(id any) (*Record, bool)",
                     "IsPackageLevel": false
                 },
                 {
@@ -3738,10 +3753,10 @@
                     "Returns": [
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
-                    "Signature": "IDs() ids []interface{}",
+                    "Signature": "IDs() ids []any",
                     "IsPackageLevel": false
                 },
                 {
@@ -3770,7 +3785,7 @@
                         }
                     ],
                     "Signature": "NewRecordSet(records ...*Record) *RecordSet",
-                    "Source": "ewoJcmV0dXJuICZSZWNvcmRTZXR7UmVjb3JkczogcmVjb3JkcywgT3B0aW9uczogbWFrZShtYXBbc3RyaW5nXWludGVyZmFjZXt9KX0KfQ==",
+                    "Source": "ewoJcmV0dXJuICZSZWNvcmRTZXR7UmVjb3JkczogcmVjb3JkcywgT3B0aW9uczogbWFrZShtYXBbc3RyaW5nXWFueSl9Cn0=",
                     "IsPackageLevel": true
                 },
                 {
@@ -3784,15 +3799,15 @@
                         },
                         {
                             "Name": "fallback",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
                         {
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
-                    "Signature": "Pluck(field string, fallback ...interface{}) []interface{}",
+                    "Signature": "Pluck(field string, fallback ...any) []any",
                     "IsPackageLevel": false
                 },
                 {
@@ -3803,7 +3818,7 @@
                     "Arguments": [
                         {
                             "Name": "into",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "schema",
@@ -3815,7 +3830,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "PopulateFromRecords(into interface{}, schema *Collection) error",
+                    "Signature": "PopulateFromRecords(into any, schema *Collection) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -3860,14 +3875,14 @@
                 },
                 {
                     "Name": "Options",
-                    "Type": "map[string]interface{}"
+                    "Type": "map[string]any"
                 },
                 {
                     "Name": "KnownSize",
                     "Type": "bool"
                 }
             ],
-            "Source": "dHlwZSBSZWNvcmRTZXQgc3RydWN0IHsKCVJlc3VsdENvdW50ICAgIGludDY0ICAgICAgICAgICAgICAgICAgYGpzb246InJlc3VsdF9jb3VudCJgCglQYWdlICAgICAgICAgICBpbnQgICAgICAgICAgICAgICAgICAgIGBqc29uOiJwYWdlLG9taXRlbXB0eSJgCglUb3RhbFBhZ2VzICAgICBpbnQgICAgICAgICAgICAgICAgICAgIGBqc29uOiJ0b3RhbF9wYWdlcyxvbWl0ZW1wdHkiYAoJUmVjb3Jkc1BlclBhZ2UgaW50ICAgICAgICAgICAgICAgICAgICBganNvbjoicmVjb3Jkc19wZXJfcGFnZSxvbWl0ZW1wdHkiYAoJUmVjb3JkcyAgICAgICAgW10qUmVjb3JkICAgICAgICAgICAgICBganNvbjoicmVjb3JkcyJgCglPcHRpb25zICAgICAgICBtYXBbc3RyaW5nXWludGVyZmFjZXt9IGBqc29uOiJvcHRpb25zImAKCUtub3duU2l6ZSAgICAgIGJvb2wgICAgICAgICAgICAgICAgICAgYGpzb246Imtub3duX3NpemUiYAp9"
+            "Source": "dHlwZSBSZWNvcmRTZXQgc3RydWN0IHsKCVJlc3VsdENvdW50ICAgIGludDY0ICAgICAgICAgIGBqc29uOiJyZXN1bHRfY291bnQiYAoJUGFnZSAgICAgICAgICAgaW50ICAgICAgICAgICAgYGpzb246InBhZ2Usb21pdGVtcHR5ImAKCVRvdGFsUGFnZXMgICAgIGludCAgICAgICAgICAgIGBqc29uOiJ0b3RhbF9wYWdlcyxvbWl0ZW1wdHkiYAoJUmVjb3Jkc1BlclBhZ2UgaW50ICAgICAgICAgICAgYGpzb246InJlY29yZHNfcGVyX3BhZ2Usb21pdGVtcHR5ImAKCVJlY29yZHMgICAgICAgIFtdKlJlY29yZCAgICAgIGBqc29uOiJyZWNvcmRzImAKCU9wdGlvbnMgICAgICAgIG1hcFtzdHJpbmddYW55IGBqc29uOiJvcHRpb25zImAKCUtub3duU2l6ZSAgICAgIGJvb2wgICAgICAgICAgIGBqc29uOiJrbm93bl9zaXplImAKfQ=="
         },
         "Relationship": {
             "Name": "Relationship",
@@ -3889,7 +3904,7 @@
             "Fields": [
                 {
                     "Name": "Keys",
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Name": "Collection",
@@ -3908,7 +3923,7 @@
                     "Type": "bool"
                 }
             ],
-            "Source": "dHlwZSBSZWxhdGlvbnNoaXAgc3RydWN0IHsKCUtleXMgICAgICAgICAgIGludGVyZmFjZXt9IGBqc29uOiJrZXkiYAoJQ29sbGVjdGlvbiAgICAgKkNvbGxlY3Rpb24gYGpzb246Ii0iYAoJQ29sbGVjdGlvbk5hbWUgc3RyaW5nICAgICAgYGpzb246ImNvbGxlY3Rpb24sb21pdGVtcHR5ImAKCUZpZWxkcyAgICAgICAgIFtdc3RyaW5nICAgIGBqc29uOiJmaWVsZHMsb21pdGVtcHR5ImAKCUZvcmNlICAgICAgICAgIGJvb2wgICAgICAgIGBqc29uOiJmb3JjZSxvbWl0ZW1wdHkiYAp9"
+            "Source": "dHlwZSBSZWxhdGlvbnNoaXAgc3RydWN0IHsKCUtleXMgICAgICAgICAgIGFueSAgICAgICAgIGBqc29uOiJrZXkiYAoJQ29sbGVjdGlvbiAgICAgKkNvbGxlY3Rpb24gYGpzb246Ii0iYAoJQ29sbGVjdGlvbk5hbWUgc3RyaW5nICAgICAgYGpzb246ImNvbGxlY3Rpb24sb21pdGVtcHR5ImAKCUZpZWxkcyAgICAgICAgIFtdc3RyaW5nICAgIGBqc29uOiJmaWVsZHMsb21pdGVtcHR5ImAKCUZvcmNlICAgICAgICAgIGJvb2wgICAgICAgIGBqc29uOiJmb3JjZSxvbWl0ZW1wdHkiYAp9"
         },
         "SchemaDelta": {
             "Name": "SchemaDelta",
@@ -3970,18 +3985,18 @@
                 },
                 {
                     "Name": "Desired",
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Name": "Actual",
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Name": "ReferenceField",
                     "Type": "*Field"
                 }
             ],
-            "Source": "dHlwZSBTY2hlbWFEZWx0YSBzdHJ1Y3QgewoJVHlwZSAgICAgICAgICAgRGVsdGFUeXBlCglJc3N1ZSAgICAgICAgICBEZWx0YUlzc3VlCglNZXNzYWdlICAgICAgICBzdHJpbmcKCUNvbGxlY3Rpb24gICAgIHN0cmluZwoJTmFtZSAgICAgICAgICAgc3RyaW5nCglQYXJhbWV0ZXIgICAgICBzdHJpbmcKCURlc2lyZWQgICAgICAgIGludGVyZmFjZXt9CglBY3R1YWwgICAgICAgICBpbnRlcmZhY2V7fQoJUmVmZXJlbmNlRmllbGQgKkZpZWxkCn0="
+            "Source": "dHlwZSBTY2hlbWFEZWx0YSBzdHJ1Y3QgewoJVHlwZSAgICAgICAgICAgRGVsdGFUeXBlCglJc3N1ZSAgICAgICAgICBEZWx0YUlzc3VlCglNZXNzYWdlICAgICAgICBzdHJpbmcKCUNvbGxlY3Rpb24gICAgIHN0cmluZwoJTmFtZSAgICAgICAgICAgc3RyaW5nCglQYXJhbWV0ZXIgICAgICBzdHJpbmcKCURlc2lyZWQgICAgICAgIGFueQoJQWN0dWFsICAgICAgICAgYW55CglSZWZlcmVuY2VGaWVsZCAqRmllbGQKfQ=="
         },
         "TestRecord": {
             "Name": "TestRecord",

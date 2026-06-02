@@ -7,8 +7,8 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 250,
-    "LineCount": 9974,
-    "SourceLineCount": 7795,
+    "LineCount": 9998,
+    "SourceLineCount": 7805,
     "FunctionCount": 360,
     "TypeCount": 32,
     "ConstantCount": 17,
@@ -75,7 +75,7 @@
                     "Alias": "util"
                 }
             ],
-            "Size": 3288,
+            "Size": 3264,
             "LineCount": 115,
             "SourceLineCount": 91,
             "FunctionCount": 2,
@@ -160,12 +160,12 @@
                 },
                 {
                     "PackageName": "github.com/orcaman/concurrent-map",
-                    "Alias": "concurrent-map"
+                    "Alias": "cmap"
                 }
             ],
-            "Size": 15771,
-            "LineCount": 616,
-            "SourceLineCount": 471,
+            "Size": 15667,
+            "LineCount": 615,
+            "SourceLineCount": 470,
             "FunctionCount": 13,
             "TypeCount": 1,
             "ConstantCount": 0,
@@ -195,7 +195,7 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 3278,
+            "Size": 3222,
             "LineCount": 121,
             "SourceLineCount": 91,
             "FunctionCount": 21,
@@ -206,6 +206,10 @@
         {
             "Name": "dynamo-indexer.go",
             "Imports": [
+                {
+                    "PackageName": "context",
+                    "Alias": "context"
+                },
                 {
                     "PackageName": "fmt",
                     "Alias": "fmt"
@@ -227,6 +231,10 @@
                     "Alias": "dynamodb"
                 },
                 {
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/service/dynamodb/types",
+                    "Alias": "dynamodb_types"
+                },
+                {
                     "PackageName": "github.com/ghetzel/go-stockutil/sliceutil",
                     "Alias": "sliceutil"
                 },
@@ -239,9 +247,9 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 7185,
-            "LineCount": 275,
-            "SourceLineCount": 219,
+            "Size": 7485,
+            "LineCount": 302,
+            "SourceLineCount": 243,
             "FunctionCount": 12,
             "TypeCount": 0,
             "ConstantCount": 0,
@@ -251,12 +259,12 @@
             "Name": "dynamo.go",
             "Imports": [
                 {
-                    "PackageName": "fmt",
-                    "Alias": "fmt"
+                    "PackageName": "context",
+                    "Alias": "context"
                 },
                 {
-                    "PackageName": "os",
-                    "Alias": "os"
+                    "PackageName": "fmt",
+                    "Alias": "fmt"
                 },
                 {
                     "PackageName": "strings",
@@ -275,28 +283,20 @@
                     "Alias": "aws"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go-v2/aws/awserr",
-                    "Alias": "awserr"
-                },
-                {
-                    "PackageName": "github.com/aws/aws-sdk-go-v2/aws/credentials",
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/credentials",
                     "Alias": "credentials"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go-v2/aws/session",
-                    "Alias": "session"
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue",
+                    "Alias": "attributevalue"
                 },
                 {
                     "PackageName": "github.com/aws/aws-sdk-go-v2/service/dynamodb",
                     "Alias": "dynamodb"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbattribute",
-                    "Alias": "dynamodbattribute"
-                },
-                {
-                    "PackageName": "github.com/ghetzel/go-stockutil/fileutil",
-                    "Alias": "fileutil"
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/service/dynamodb/types",
+                    "Alias": "dynamodb_types"
                 },
                 {
                     "PackageName": "github.com/ghetzel/go-stockutil/log",
@@ -327,9 +327,9 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 16457,
-            "LineCount": 619,
-            "SourceLineCount": 510,
+            "Size": 16920,
+            "LineCount": 633,
+            "SourceLineCount": 512,
             "FunctionCount": 20,
             "TypeCount": 1,
             "ConstantCount": 0,
@@ -343,12 +343,8 @@
                     "Alias": "testing"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go-v2/aws",
-                    "Alias": "aws"
-                },
-                {
-                    "PackageName": "github.com/aws/aws-sdk-go-v2/service/dynamodb",
-                    "Alias": "dynamodb"
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/service/dynamodb/types",
+                    "Alias": "dynamodb_types"
                 },
                 {
                     "PackageName": "github.com/ghetzel/pivot/v3/dal",
@@ -359,9 +355,9 @@
                     "Alias": "require"
                 }
             ],
-            "Size": 1326,
-            "LineCount": 72,
-            "SourceLineCount": 64,
+            "Size": 1453,
+            "LineCount": 59,
+            "SourceLineCount": 51,
             "FunctionCount": 0,
             "TypeCount": 0,
             "ConstantCount": 0,
@@ -403,7 +399,7 @@
                     "Alias": "generators"
                 }
             ],
-            "Size": 5180,
+            "Size": 5132,
             "LineCount": 192,
             "SourceLineCount": 158,
             "FunctionCount": 8,
@@ -471,7 +467,7 @@
                     "Alias": "generators"
                 }
             ],
-            "Size": 18254,
+            "Size": 17982,
             "LineCount": 691,
             "SourceLineCount": 555,
             "FunctionCount": 13,
@@ -547,7 +543,7 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 13359,
+            "Size": 13159,
             "LineCount": 554,
             "SourceLineCount": 467,
             "FunctionCount": 20,
@@ -575,7 +571,7 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 6589,
+            "Size": 6517,
             "LineCount": 218,
             "SourceLineCount": 170,
             "FunctionCount": 34,
@@ -659,7 +655,7 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 10040,
+            "Size": 10000,
             "LineCount": 418,
             "SourceLineCount": 341,
             "FunctionCount": 20,
@@ -687,7 +683,7 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 5066,
+            "Size": 4994,
             "LineCount": 193,
             "SourceLineCount": 158,
             "FunctionCount": 12,
@@ -755,7 +751,7 @@
                     "Alias": "lru"
                 }
             ],
-            "Size": 15728,
+            "Size": 15672,
             "LineCount": 622,
             "SourceLineCount": 503,
             "FunctionCount": 20,
@@ -783,9 +779,9 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 10252,
-            "LineCount": 438,
-            "SourceLineCount": 353,
+            "Size": 10177,
+            "LineCount": 434,
+            "SourceLineCount": 350,
             "FunctionCount": 18,
             "TypeCount": 5,
             "ConstantCount": 9,
@@ -803,7 +799,7 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 1559,
+            "Size": 1527,
             "LineCount": 58,
             "SourceLineCount": 43,
             "FunctionCount": 12,
@@ -843,7 +839,7 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 5617,
+            "Size": 5585,
             "LineCount": 185,
             "SourceLineCount": 147,
             "FunctionCount": 3,
@@ -863,7 +859,7 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 1265,
+            "Size": 1065,
             "LineCount": 35,
             "SourceLineCount": 31,
             "FunctionCount": 0,
@@ -884,7 +880,7 @@
                 },
                 {
                     "PackageName": "github.com/deckarep/golang-set",
-                    "Alias": "golang-set"
+                    "Alias": "mapset"
                 },
                 {
                     "PackageName": "github.com/ghetzel/go-stockutil/log",
@@ -903,7 +899,7 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 5766,
+            "Size": 5709,
             "LineCount": 200,
             "SourceLineCount": 153,
             "FunctionCount": 13,
@@ -939,11 +935,11 @@
                     "Alias": "filter"
                 },
                 {
-                    "PackageName": "gopkg.in/mgo.v2/bson",
+                    "PackageName": "github.com/globalsign/mgo/bson",
                     "Alias": "bson"
                 }
             ],
-            "Size": 4386,
+            "Size": 4380,
             "LineCount": 168,
             "SourceLineCount": 136,
             "FunctionCount": 8,
@@ -991,11 +987,11 @@
                     "Alias": "generators"
                 },
                 {
-                    "PackageName": "gopkg.in/mgo.v2/bson",
+                    "PackageName": "github.com/globalsign/mgo/bson",
                     "Alias": "bson"
                 }
             ],
-            "Size": 4838,
+            "Size": 4776,
             "LineCount": 191,
             "SourceLineCount": 147,
             "FunctionCount": 12,
@@ -1019,6 +1015,10 @@
                     "Alias": "time"
                 },
                 {
+                    "PackageName": "github.com/ghetzel/go-stockutil/executil",
+                    "Alias": "executil"
+                },
+                {
                     "PackageName": "github.com/ghetzel/go-stockutil/maputil",
                     "Alias": "maputil"
                 },
@@ -1039,17 +1039,17 @@
                     "Alias": "filter"
                 },
                 {
-                    "PackageName": "gopkg.in/mgo.v2",
-                    "Alias": "mgo.v2"
+                    "PackageName": "github.com/globalsign/mgo",
+                    "Alias": "mgo"
                 },
                 {
-                    "PackageName": "gopkg.in/mgo.v2/bson",
+                    "PackageName": "github.com/globalsign/mgo/bson",
                     "Alias": "bson"
                 }
             ],
-            "Size": 9728,
-            "LineCount": 398,
-            "SourceLineCount": 324,
+            "Size": 9662,
+            "LineCount": 399,
+            "SourceLineCount": 325,
             "FunctionCount": 20,
             "TypeCount": 1,
             "ConstantCount": 0,
@@ -1089,7 +1089,7 @@
                     "Alias": "redis"
                 }
             ],
-            "Size": 4690,
+            "Size": 4632,
             "LineCount": 179,
             "SourceLineCount": 117,
             "FunctionCount": 12,
@@ -1149,7 +1149,7 @@
                     "Alias": "redis"
                 }
             ],
-            "Size": 13499,
+            "Size": 13395,
             "LineCount": 524,
             "SourceLineCount": 428,
             "FunctionCount": 20,
@@ -1217,7 +1217,7 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 10775,
+            "Size": 10655,
             "LineCount": 376,
             "SourceLineCount": 280,
             "FunctionCount": 4,
@@ -1253,7 +1253,7 @@
                     "Alias": "generators"
                 }
             ],
-            "Size": 4171,
+            "Size": 4139,
             "LineCount": 141,
             "SourceLineCount": 112,
             "FunctionCount": 8,
@@ -1297,7 +1297,7 @@
                     "Alias": "_"
                 }
             ],
-            "Size": 5073,
+            "Size": 5065,
             "LineCount": 173,
             "SourceLineCount": 129,
             "FunctionCount": 0,
@@ -1349,7 +1349,7 @@
                     "Alias": "_"
                 }
             ],
-            "Size": 7873,
+            "Size": 7865,
             "LineCount": 253,
             "SourceLineCount": 188,
             "FunctionCount": 0,
@@ -1405,7 +1405,7 @@
                     "Alias": "_"
                 }
             ],
-            "Size": 5970,
+            "Size": 5962,
             "LineCount": 232,
             "SourceLineCount": 180,
             "FunctionCount": 0,
@@ -1441,7 +1441,7 @@
                     "Alias": "generators"
                 }
             ],
-            "Size": 6949,
+            "Size": 6893,
             "LineCount": 272,
             "SourceLineCount": 198,
             "FunctionCount": 12,
@@ -1517,7 +1517,7 @@
                     "Alias": "util"
                 }
             ],
-            "Size": 35200,
+            "Size": 35064,
             "LineCount": 1312,
             "SourceLineCount": 979,
             "FunctionCount": 23,
@@ -1574,12 +1574,14 @@
         },
         {
             "Name": "FormatCSV",
+            "Type": "SerializationFormat",
             "Immutable": true,
             "Expression": "`csv`",
             "Value": "csv"
         },
         {
             "Name": "FormatJSON",
+            "Type": "SerializationFormat",
             "Immutable": true,
             "Expression": "`json`",
             "Value": "json"
@@ -1848,23 +1850,6 @@
             "IsPackageLevel": true
         },
         {
-            "Name": "NewDynamoBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
-            "IsPackageLevel": true
-        },
-        {
             "Name": "NewElasticsearchBackend",
             "Arguments": [
                 {
@@ -1879,40 +1864,6 @@
             ],
             "Signature": "NewElasticsearchBackend(connection dal.ConnectionString) Backend",
             "Source": "ewoJcmV0dXJuICZFbGFzdGljc2VhcmNoQmFja2VuZHtjczogY29ubmVjdGlvbiwgc2hhcmRzOiBFbGFzdGljc2VhcmNoRGVmYXVsdFNoYXJkcywgcmVwbGljYXM6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVwbGljYXMsIHJlZnJlc2g6IEVsYXN0aWNzZWFyY2hEZWZhdWx0UmVmcmVzaH0KfQ==",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewFileBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewFilesystemBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
             "IsPackageLevel": true
         },
         {
@@ -1947,23 +1898,6 @@
             ],
             "Signature": "NewRedisBackend(connection dal.ConnectionString) Backend",
             "Source": "ewoJcmV0dXJuICZSZWRpc0JhY2tlbmR7Y3M6IGNvbm5lY3Rpb24sIGtleVByZWZpeDogcmVkaXNEZWZhdWx0S2V5UHJlZml4LCB0aW1lb3V0OiByZWRpc0RlZmF1bHRQaW5nVGltZW91dH0KfQ==",
-            "IsPackageLevel": true
-        },
-        {
-            "Name": "NewSqlBackend",
-            "Arguments": [
-                {
-                    "Name": "connection",
-                    "Type": "dal.ConnectionString"
-                }
-            ],
-            "Returns": [
-                {
-                    "Type": "Backend"
-                }
-            ],
-            "Signature": "NewSqlBackend(connection dal.ConnectionString) Backend",
-            "Source": "ewoJYmFja2VuZCA6PSAmU3FsQmFja2VuZHtjb25uOiAmY29ubmVjdGlvbiwgcXVlcnlHZW5UeXBlTWFwcGluZzogZ2VuZXJhdG9ycy5EZWZhdWx0U3FsVHlwZU1hcHBpbmcsIGRyb3BUYWJsZVF1ZXJ5OiBgRFJPUCBUQUJMRSAlc2AsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwga25vd25Db2xsZWN0aW9uczogbWFrZShtYXBbc3RyaW5nXWJvb2wpLCBkZXRlY3RlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKX0KCWlmIGZuLCBvayA6PSBzcWxQcmVJbml0RnVuY3NbY29ubmVjdGlvbi5CYWNrZW5kKCldOyBvayAmJiBmbiAhPSBuaWwgewoJCWZuKGJhY2tlbmQpCgl9CgliYWNrZW5kLmluZGV4ZXIgPSBiYWNrZW5kCglyZXR1cm4gYmFja2VuZAp9",
             "IsPackageLevel": true
         },
         {
@@ -2016,7 +1950,7 @@
                 }
             ],
             "Signature": "PopulateRelationships(backend Backend, parent *dal.Collection, record *dal.Record, prepId , requestedFields ...string) error",
-            "Source": "ewoJc2tpcEtleXMgOj0gbWFrZShbXXN0cmluZywgMCkKCWlmIGVtYmVkLCBvayA6PSBiYWNrZW5kLigqRW1iZWRkZWRSZWNvcmRCYWNrZW5kKTsgb2sgewoJCXNraXBLZXlzID0gZW1iZWQuU2tpcEtleXMKCX0KCWVtYmVkcyA6PSBwYXJlbnQuRW1iZWRkZWRDb2xsZWN0aW9ucwpDb25zdHJhaW50c0xvb3A6Cglmb3IgXywgY29uc3RyYWludCA6PSByYW5nZSBwYXJlbnQuR2V0QWxsQ29uc3RyYWludHMoKSB7CgkJaWYgY29uc3RyYWludC5Ob0VtYmVkIHsKCQkJY29udGludWUKCQl9CgkJaWYgZXJyIDo9IGNvbnN0cmFpbnQuVmFsaWRhdGUoKTsgZXJyID09IG5pbCB7CgkJCWZvciBfLCBlbWJlZCA6PSByYW5nZSBlbWJlZHMgewoJCQkJaWYgZW1iZWQuUmVsYXRlZENvbGxlY3Rpb25OYW1lKCkgPT0gY29uc3RyYWludC5Db2xsZWN0aW9uIHsKCQkJCQljb250aW51ZSBDb25zdHJhaW50c0xvb3AKCQkJCX0KCQkJfQoJCQllbWJlZHMgPSBhcHBlbmQoZW1iZWRzLCBkYWwuUmVsYXRpb25zaGlwe0tleXM6IGNvbnN0cmFpbnQuT24sIENvbGxlY3Rpb25OYW1lOiBjb25zdHJhaW50LkNvbGxlY3Rpb259KQoJCX0gZWxzZSB7CgkJCXJldHVybiBmbXQuRXJyb3JmKCJDYW5ub3QgZW1iZWQgY29sbGVjdGlvbjogJXYiLCBlcnIpCgkJfQoJfQoJZm9yIF8sIHJlbGF0aW9uc2hpcCA6PSByYW5nZSBlbWJlZHMgewoJCWtleXMgOj0gc2xpY2V1dGlsLkNvbXBhY3RTdHJpbmcoc2xpY2V1dGlsLlN0cmluZ2lmeShzbGljZXV0aWwuU2xpY2VpZnkocmVsYXRpb25zaGlwLktleXMpKSkKCQlpZiBsZW4oc2tpcEtleXMpID4gMCAmJiBzbGljZXV0aWwuQ29udGFpbnNBbnlTdHJpbmcoc2tpcEtleXMsIGtleXMuLi4pIHsKCQkJbG9nLkRlYnVnZigiZXhwbGljaXRseSBza2lwcGluZyAlK3YiLCBrZXlzKQoJCQljb250aW51ZQoJCX0KCQl2YXIgcmVsYXRlZCAqZGFsLkNvbGxlY3Rpb24KCQlpZiByZWxhdGlvbnNoaXAuQ29sbGVjdGlvbiAhPSBuaWwgewoJCQlyZWxhdGVkID0gcmVsYXRpb25zaGlwLkNvbGxlY3Rpb24KCQl9IGVsc2UgaWYgYywgZXJyIDo9IGJhY2tlbmQuR2V0Q29sbGVjdGlvbihyZWxhdGlvbnNoaXAuQ29sbGVjdGlvbk5hbWUpOyBjICE9IG5pbCB7CgkJCXJlbGF0ZWQgPSBjCgkJfSBlbHNlIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoImVycm9yIGluIHJlbGF0aW9uc2hpcCAldjogJXYiLCBrZXlzLCBlcnIpCgkJfQoJCWlmIHJlbGF0ZWQuTmFtZSA9PSBwYXJlbnQuTmFtZSAmJiAhcmVsYXRpb25zaGlwLkZvcmNlIHsKCQkJbG9nLldhcm5pbmdmKCJub3QgZW1iZWRkaW5nIHJlY29yZHMgZnJvbSAlcSB0byBhdm9pZCBsb29wIiwgcmVsYXRlZC5OYW1lKQoJCQljb250aW51ZQoJCX0KCQl2YXIgbmVzdGVkRmllbGRzIFtdc3RyaW5nCgkJcmVsZmllbGRzIDo9IHJlbGF0aW9uc2hpcC5GaWVsZHMKCQlleHBvcnRlZCA6PSByZWxhdGVkLkV4cG9ydGVkRmllbGRzCgkJcmVxZmllbGRzIDo9IG1ha2UoW11zdHJpbmcsIGxlbihyZXF1ZXN0ZWRGaWVsZHMpKQoJCWNvcHkocmVxZmllbGRzLCByZXF1ZXN0ZWRGaWVsZHMpCgkJaWYgbGVuKGV4cG9ydGVkKSA9PSAwIHsKCQkJbmVzdGVkRmllbGRzID0gcmVsZmllbGRzCgkJfSBlbHNlIGlmIGxlbihyZWxmaWVsZHMpID09IDAgewoJCQluZXN0ZWRGaWVsZHMgPSBleHBvcnRlZAoJCX0gZWxzZSB7CgkJCW5lc3RlZEZpZWxkcyA9IHNsaWNldXRpbC5JbnRlcnNlY3RTdHJpbmdzKHJlbGZpZWxkcywgZXhwb3J0ZWQpCgkJfQoJCWZvciBpLCByZWwgOj0gcmFuZ2UgcmVxZmllbGRzIHsKCQkJaWYgZmlyc3QsIGxhc3QgOj0gc3RyaW5ndXRpbC5TcGxpdFBhaXIocmVsLCBgOmApOyBzbGljZXV0aWwuQ29udGFpbnNTdHJpbmcoa2V5cywgZmlyc3QpIHsKCQkJCXJlcWZpZWxkc1tpXSA9IGxhc3QKCQkJfSBlbHNlIHsKCQkJCXJlcWZpZWxkc1tpXSA9IGBgCgkJCX0KCQl9CgkJcmVxZmllbGRzID0gc2xpY2V1dGlsLkNvbXBhY3RTdHJpbmcocmVxZmllbGRzKQoJCWlmIGxlbihuZXN0ZWRGaWVsZHMpID09IDAgewoJCQluZXN0ZWRGaWVsZHMgPSByZXFmaWVsZHMKCQl9IGVsc2UgaWYgbGVuKHJlcWZpZWxkcykgPiAwIHsKCQkJbmVzdGVkRmllbGRzID0gc2xpY2V1dGlsLkludGVyc2VjdFN0cmluZ3MobmVzdGVkRmllbGRzLCByZXFmaWVsZHMpCgkJfQoJCWZvciBfLCBrZXkgOj0gcmFuZ2Uga2V5cyB7CgkJCWtleUJlZm9yZSwgXyA6PSBzdHJpbmd1dGlsLlNwbGl0UGFpcihrZXksIGAuKmApCgkJCWlmIG5lc3RlZElkIDo9IHJlY29yZC5HZXQoa2V5KTsgbmVzdGVkSWQgIT0gbmlsIHsKCQkJCWlmIHR5cGV1dGlsLklzQXJyYXkobmVzdGVkSWQpIHsKCQkJCQlyZXN1bHRzIDo9IG1ha2UoW11pbnRlcmZhY2V7fSwgMCkKCQkJCQlmb3IgXywgaWQgOj0gcmFuZ2Ugc2xpY2V1dGlsLlNsaWNlaWZ5KG5lc3RlZElkKSB7CgkJCQkJCWlmIHByZXBJZCAhPSBuaWwgewoJCQkJCQkJaWQgPSBwcmVwSWQoaWQpCgkJCQkJCX0KCQkJCQkJaWYgaWQgIT0gbmlsIHsKCQkJCQkJCXJlc3VsdHMgPSBhcHBlbmQocmVzdWx0cywgJkRlZmVycmVkUmVjb3Jke09yaWdpbmFsOiBuZXN0ZWRJZCwgQmFja2VuZDogYmFja2VuZCwgSWRlbnRpdHlGaWVsZE5hbWU6IHJlbGF0ZWQuR2V0SWRlbnRpdHlGaWVsZE5hbWUoKSwgQ29sbGVjdGlvbk5hbWU6IHJlbGF0ZWQuTmFtZSwgSUQ6IGlkLCBLZXlzOiBuZXN0ZWRGaWVsZHN9KQoJCQkJCQl9IGVsc2UgaWYgcGFyZW50LkFsbG93TWlzc2luZ0VtYmVkZGVkUmVjb3JkcyB7CgkJCQkJCQlyZXN1bHRzID0gYXBwZW5kKHJlc3VsdHMsICZEZWZlcnJlZFJlY29yZHtPcmlnaW5hbDogbmVzdGVkSWQsIEJhY2tlbmQ6IGJhY2tlbmQsIElkZW50aXR5RmllbGROYW1lOiByZWxhdGVkLkdldElkZW50aXR5RmllbGROYW1lKCksIENvbGxlY3Rpb25OYW1lOiByZWxhdGVkLk5hbWUsIElEOiBpZCwgS2V5czogbmVzdGVkRmllbGRzfSkKCQkJCQkJfSBlbHNlIHsKCQkJCQkJCXJldHVybiBmbXQuRXJyb3JmKCIldi4ldltdOiBSZWxhdGVkIHJlY29yZCAldi4ldiBpcyBtaXNzaW5nIiwgcGFyZW50Lk5hbWUsIGtleUJlZm9yZSwgcmVsYXRlZC5OYW1lLCBuZXN0ZWRJZCkKCQkJCQkJfQoJCQkJCX0KCQkJCQlmb3IgaSwgcmVzdWx0IDo9IHJhbmdlIHJlc3VsdHMgewoJCQkJCQluZXN0S2V5IDo9IHN0cmluZ3MuUmVwbGFjZShrZXksIGAqYCwgZm10LlNwcmludGYoIiVkIiwgaSksIDEpCgkJCQkJCXJlY29yZC5TZXROZXN0ZWQobmVzdEtleSwgcmVzdWx0KQoJCQkJCX0KCQkJCX0gZWxzZSB7CgkJCQkJb3JpZ2luYWwgOj0gbmVzdGVkSWQKCQkJCQlpZiBwcmVwSWQgIT0gbmlsIHsKCQkJCQkJbmVzdGVkSWQgPSBwcmVwSWQobmVzdGVkSWQpCgkJCQkJfQoJCQkJCWlmIG5lc3RlZElkID09IG5pbCAmJiAhcGFyZW50LkFsbG93TWlzc2luZ0VtYmVkZGVkUmVjb3JkcyB7CgkJCQkJCXJldHVybiBmbXQuRXJyb3JmKCIldi4ldjogUmVsYXRlZCByZWNvcmQgcmVmZXJyZWQgdG8gaW4gJXYuJXYgaXMgbWlzc2luZyIsIHBhcmVudC5OYW1lLCBrZXlCZWZvcmUsIHJlbGF0ZWQuTmFtZSwgb3JpZ2luYWwpCgkJCQkJfQoJCQkJCWRlZmVycmVkIDo9ICZEZWZlcnJlZFJlY29yZHtPcmlnaW5hbDogbmVzdGVkSWQsIEJhY2tlbmQ6IGJhY2tlbmQsIElkZW50aXR5RmllbGROYW1lOiByZWxhdGVkLkdldElkZW50aXR5RmllbGROYW1lKCksIENvbGxlY3Rpb25OYW1lOiByZWxhdGVkLk5hbWUsIElEOiBuZXN0ZWRJZCwgS2V5czogbmVzdGVkRmllbGRzfQoJCQkJCXJlY29yZC5TZXROZXN0ZWQoa2V5QmVmb3JlLCBkZWZlcnJlZCkKCQkJCX0KCQkJfQoJCX0KCX0KCXJldHVybiBuaWwKfQ==",
+            "Source": "ewoJc2tpcEtleXMgOj0gbWFrZShbXXN0cmluZywgMCkKCWlmIGVtYmVkLCBvayA6PSBiYWNrZW5kLigqRW1iZWRkZWRSZWNvcmRCYWNrZW5kKTsgb2sgewoJCXNraXBLZXlzID0gZW1iZWQuU2tpcEtleXMKCX0KCWVtYmVkcyA6PSBwYXJlbnQuRW1iZWRkZWRDb2xsZWN0aW9ucwpDb25zdHJhaW50c0xvb3A6Cglmb3IgXywgY29uc3RyYWludCA6PSByYW5nZSBwYXJlbnQuR2V0QWxsQ29uc3RyYWludHMoKSB7CgkJaWYgY29uc3RyYWludC5Ob0VtYmVkIHsKCQkJY29udGludWUKCQl9CgkJaWYgZXJyIDo9IGNvbnN0cmFpbnQuVmFsaWRhdGUoKTsgZXJyID09IG5pbCB7CgkJCWZvciBfLCBlbWJlZCA6PSByYW5nZSBlbWJlZHMgewoJCQkJaWYgZW1iZWQuUmVsYXRlZENvbGxlY3Rpb25OYW1lKCkgPT0gY29uc3RyYWludC5Db2xsZWN0aW9uIHsKCQkJCQljb250aW51ZSBDb25zdHJhaW50c0xvb3AKCQkJCX0KCQkJfQoJCQllbWJlZHMgPSBhcHBlbmQoZW1iZWRzLCBkYWwuUmVsYXRpb25zaGlwe0tleXM6IGNvbnN0cmFpbnQuT24sIENvbGxlY3Rpb25OYW1lOiBjb25zdHJhaW50LkNvbGxlY3Rpb259KQoJCX0gZWxzZSB7CgkJCXJldHVybiBmbXQuRXJyb3JmKCJDYW5ub3QgZW1iZWQgY29sbGVjdGlvbjogJXYiLCBlcnIpCgkJfQoJfQoJZm9yIF8sIHJlbGF0aW9uc2hpcCA6PSByYW5nZSBlbWJlZHMgewoJCWtleXMgOj0gc2xpY2V1dGlsLkNvbXBhY3RTdHJpbmcoc2xpY2V1dGlsLlN0cmluZ2lmeShzbGljZXV0aWwuU2xpY2VpZnkocmVsYXRpb25zaGlwLktleXMpKSkKCQlpZiBsZW4oc2tpcEtleXMpID4gMCAmJiBzbGljZXV0aWwuQ29udGFpbnNBbnlTdHJpbmcoc2tpcEtleXMsIGtleXMuLi4pIHsKCQkJbG9nLkRlYnVnZigiZXhwbGljaXRseSBza2lwcGluZyAlK3YiLCBrZXlzKQoJCQljb250aW51ZQoJCX0KCQl2YXIgcmVsYXRlZCAqZGFsLkNvbGxlY3Rpb24KCQlpZiByZWxhdGlvbnNoaXAuQ29sbGVjdGlvbiAhPSBuaWwgewoJCQlyZWxhdGVkID0gcmVsYXRpb25zaGlwLkNvbGxlY3Rpb24KCQl9IGVsc2UgaWYgYywgZXJyIDo9IGJhY2tlbmQuR2V0Q29sbGVjdGlvbihyZWxhdGlvbnNoaXAuQ29sbGVjdGlvbk5hbWUpOyBjICE9IG5pbCB7CgkJCXJlbGF0ZWQgPSBjCgkJfSBlbHNlIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoImVycm9yIGluIHJlbGF0aW9uc2hpcCAldjogJXYiLCBrZXlzLCBlcnIpCgkJfQoJCWlmIHJlbGF0ZWQuTmFtZSA9PSBwYXJlbnQuTmFtZSAmJiAhcmVsYXRpb25zaGlwLkZvcmNlIHsKCQkJbG9nLldhcm5pbmdmKCJub3QgZW1iZWRkaW5nIHJlY29yZHMgZnJvbSAlcSB0byBhdm9pZCBsb29wIiwgcmVsYXRlZC5OYW1lKQoJCQljb250aW51ZQoJCX0KCQl2YXIgbmVzdGVkRmllbGRzIFtdc3RyaW5nCgkJcmVsZmllbGRzIDo9IHJlbGF0aW9uc2hpcC5GaWVsZHMKCQlleHBvcnRlZCA6PSByZWxhdGVkLkV4cG9ydGVkRmllbGRzCgkJcmVxZmllbGRzIDo9IG1ha2UoW11zdHJpbmcsIGxlbihyZXF1ZXN0ZWRGaWVsZHMpKQoJCWNvcHkocmVxZmllbGRzLCByZXF1ZXN0ZWRGaWVsZHMpCgkJaWYgbGVuKGV4cG9ydGVkKSA9PSAwIHsKCQkJbmVzdGVkRmllbGRzID0gcmVsZmllbGRzCgkJfSBlbHNlIGlmIGxlbihyZWxmaWVsZHMpID09IDAgewoJCQluZXN0ZWRGaWVsZHMgPSBleHBvcnRlZAoJCX0gZWxzZSB7CgkJCW5lc3RlZEZpZWxkcyA9IHNsaWNldXRpbC5JbnRlcnNlY3RTdHJpbmdzKHJlbGZpZWxkcywgZXhwb3J0ZWQpCgkJfQoJCWZvciBpLCByZWwgOj0gcmFuZ2UgcmVxZmllbGRzIHsKCQkJaWYgZmlyc3QsIGxhc3QgOj0gc3RyaW5ndXRpbC5TcGxpdFBhaXIocmVsLCBgOmApOyBzbGljZXV0aWwuQ29udGFpbnNTdHJpbmcoa2V5cywgZmlyc3QpIHsKCQkJCXJlcWZpZWxkc1tpXSA9IGxhc3QKCQkJfSBlbHNlIHsKCQkJCXJlcWZpZWxkc1tpXSA9IGBgCgkJCX0KCQl9CgkJcmVxZmllbGRzID0gc2xpY2V1dGlsLkNvbXBhY3RTdHJpbmcocmVxZmllbGRzKQoJCWlmIGxlbihuZXN0ZWRGaWVsZHMpID09IDAgewoJCQluZXN0ZWRGaWVsZHMgPSByZXFmaWVsZHMKCQl9IGVsc2UgaWYgbGVuKHJlcWZpZWxkcykgPiAwIHsKCQkJbmVzdGVkRmllbGRzID0gc2xpY2V1dGlsLkludGVyc2VjdFN0cmluZ3MobmVzdGVkRmllbGRzLCByZXFmaWVsZHMpCgkJfQoJCWZvciBfLCBrZXkgOj0gcmFuZ2Uga2V5cyB7CgkJCWtleUJlZm9yZSwgXyA6PSBzdHJpbmd1dGlsLlNwbGl0UGFpcihrZXksIGAuKmApCgkJCWlmIG5lc3RlZElkIDo9IHJlY29yZC5HZXQoa2V5KTsgbmVzdGVkSWQgIT0gbmlsIHsKCQkJCWlmIHR5cGV1dGlsLklzQXJyYXkobmVzdGVkSWQpIHsKCQkJCQlyZXN1bHRzIDo9IG1ha2UoW11hbnksIDApCgkJCQkJZm9yIF8sIGlkIDo9IHJhbmdlIHNsaWNldXRpbC5TbGljZWlmeShuZXN0ZWRJZCkgewoJCQkJCQlpZiBwcmVwSWQgIT0gbmlsIHsKCQkJCQkJCWlkID0gcHJlcElkKGlkKQoJCQkJCQl9CgkJCQkJCWlmIGlkICE9IG5pbCB7CgkJCQkJCQlyZXN1bHRzID0gYXBwZW5kKHJlc3VsdHMsICZEZWZlcnJlZFJlY29yZHtPcmlnaW5hbDogbmVzdGVkSWQsIEJhY2tlbmQ6IGJhY2tlbmQsIElkZW50aXR5RmllbGROYW1lOiByZWxhdGVkLkdldElkZW50aXR5RmllbGROYW1lKCksIENvbGxlY3Rpb25OYW1lOiByZWxhdGVkLk5hbWUsIElEOiBpZCwgS2V5czogbmVzdGVkRmllbGRzfSkKCQkJCQkJfSBlbHNlIGlmIHBhcmVudC5BbGxvd01pc3NpbmdFbWJlZGRlZFJlY29yZHMgewoJCQkJCQkJcmVzdWx0cyA9IGFwcGVuZChyZXN1bHRzLCAmRGVmZXJyZWRSZWNvcmR7T3JpZ2luYWw6IG5lc3RlZElkLCBCYWNrZW5kOiBiYWNrZW5kLCBJZGVudGl0eUZpZWxkTmFtZTogcmVsYXRlZC5HZXRJZGVudGl0eUZpZWxkTmFtZSgpLCBDb2xsZWN0aW9uTmFtZTogcmVsYXRlZC5OYW1lLCBJRDogaWQsIEtleXM6IG5lc3RlZEZpZWxkc30pCgkJCQkJCX0gZWxzZSB7CgkJCQkJCQlyZXR1cm4gZm10LkVycm9yZigiJXYuJXZbXTogUmVsYXRlZCByZWNvcmQgJXYuJXYgaXMgbWlzc2luZyIsIHBhcmVudC5OYW1lLCBrZXlCZWZvcmUsIHJlbGF0ZWQuTmFtZSwgbmVzdGVkSWQpCgkJCQkJCX0KCQkJCQl9CgkJCQkJZm9yIGksIHJlc3VsdCA6PSByYW5nZSByZXN1bHRzIHsKCQkJCQkJbmVzdEtleSA6PSBzdHJpbmdzLlJlcGxhY2Uoa2V5LCBgKmAsIGZtdC5TcHJpbnRmKCIlZCIsIGkpLCAxKQoJCQkJCQlyZWNvcmQuU2V0TmVzdGVkKG5lc3RLZXksIHJlc3VsdCkKCQkJCQl9CgkJCQl9IGVsc2UgewoJCQkJCW9yaWdpbmFsIDo9IG5lc3RlZElkCgkJCQkJaWYgcHJlcElkICE9IG5pbCB7CgkJCQkJCW5lc3RlZElkID0gcHJlcElkKG5lc3RlZElkKQoJCQkJCX0KCQkJCQlpZiBuZXN0ZWRJZCA9PSBuaWwgJiYgIXBhcmVudC5BbGxvd01pc3NpbmdFbWJlZGRlZFJlY29yZHMgewoJCQkJCQlyZXR1cm4gZm10LkVycm9yZigiJXYuJXY6IFJlbGF0ZWQgcmVjb3JkIHJlZmVycmVkIHRvIGluICV2LiV2IGlzIG1pc3NpbmciLCBwYXJlbnQuTmFtZSwga2V5QmVmb3JlLCByZWxhdGVkLk5hbWUsIG9yaWdpbmFsKQoJCQkJCX0KCQkJCQlkZWZlcnJlZCA6PSAmRGVmZXJyZWRSZWNvcmR7T3JpZ2luYWw6IG5lc3RlZElkLCBCYWNrZW5kOiBiYWNrZW5kLCBJZGVudGl0eUZpZWxkTmFtZTogcmVsYXRlZC5HZXRJZGVudGl0eUZpZWxkTmFtZSgpLCBDb2xsZWN0aW9uTmFtZTogcmVsYXRlZC5OYW1lLCBJRDogbmVzdGVkSWQsIEtleXM6IG5lc3RlZEZpZWxkc30KCQkJCQlyZWNvcmQuU2V0TmVzdGVkKGtleUJlZm9yZSwgZGVmZXJyZWQpCgkJCQl9CgkJCX0KCQl9Cgl9CglyZXR1cm4gbmlsCn0=",
             "IsPackageLevel": true
         },
         {
@@ -2073,7 +2007,7 @@
             "Arguments": [
                 {
                     "Name": "cache",
-                    "Type": "map[string]interface{}"
+                    "Type": "map[string]any"
                 },
                 {
                     "Name": "records",
@@ -2085,8 +2019,8 @@
                     "Type": "error"
                 }
             ],
-            "Signature": "ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record) error",
-            "Source": "ewoJZGVmZXJyZWRSZWNvcmRzIDo9IG1ha2UobWFwW3N0cmluZ10qRGVmZXJyZWRSZWNvcmQpCglyZXNvbHZlZFZhbHVlcyA6PSBtYWtlKFtdKnJlY29yZEZpZWxkVmFsdWUsIDApCglpZiBjYWNoZSA9PSBuaWwgewoJCWNhY2hlID0gbWFrZShtYXBbc3RyaW5nXWludGVyZmFjZXt9KQoJfQoJZm9yIF8sIHJlY29yZCA6PSByYW5nZSByZWNvcmRzIHsKCQlpZiBlcnIgOj0gbWFwdXRpbC5XYWxrU3RydWN0KHJlY29yZC5GaWVsZHMsIGZ1bmModmFsdWUgaW50ZXJmYWNle30sIGtleSBbXXN0cmluZywgaXNMZWFmIGJvb2wpIGVycm9yIHsKCQkJaWYgZGVmZXJyZWQsIG9rIDo9IHZhbHVlLihEZWZlcnJlZFJlY29yZCk7IG9rIHsKCQkJCWRwdHIgOj0gJmRlZmVycmVkCgkJCQlkZWZlcnJlZFJlY29yZHNbZGVmZXJyZWQuU3RyaW5nKCldID0gZHB0cgoJCQkJcmVzb2x2ZWRWYWx1ZXMgPSBhcHBlbmQocmVzb2x2ZWRWYWx1ZXMsICZyZWNvcmRGaWVsZFZhbHVle1JlY29yZDogcmVjb3JkLCBLZXk6IGtleSwgVmFsdWU6IGRlZmVycmVkLklELCBEZWZlcnJlZDogZHB0cn0pCgkJCQltYXB1dGlsLkRlZXBTZXQocmVjb3JkLkZpZWxkcywga2V5LCBuaWwpCgkJCQlyZXR1cm4gbWFwdXRpbC5Ta2lwRGVzY2VuZGFudHMKCQkJfQoJCQlyZXR1cm4gbmlsCgkJfSk7IGVyciAhPSBuaWwgewoJCQlyZXR1cm4gZXJyCgkJfQoJfQoJZm9yIHJlbGF0ZWRDb2xsZWN0aW9uTmFtZSwgY29sbGVjdGlvbkRlZmVycyA6PSByYW5nZSBkZWZlcnJlZEdyb3VwQnlDb2xsZWN0aW9uKGRlZmVycmVkUmVjb3JkcykgewoJCWlmIGxlbihjb2xsZWN0aW9uRGVmZXJzKSA+IDAgewoJCQl2YXIga2V5Rm4gPSBjb2xsZWN0aW9uRGVmZXJzWzBdLkdyb3VwS2V5CgkJCXZhciBiYWNrZW5kID0gY29sbGVjdGlvbkRlZmVyc1swXS5CYWNrZW5kCgkJCXZhciBmaWVsZHMgPSBjb2xsZWN0aW9uRGVmZXJzWzBdLktleXMKCQkJdmFyIGlkcyBbXWludGVyZmFjZXt9CgkJCWZvciBfLCBkZWZlcnJlZCA6PSByYW5nZSBjb2xsZWN0aW9uRGVmZXJzIHsKCQkJCWlkcyA9IGFwcGVuZChpZHMsIGRlZmVycmVkLklEKQoJCQl9CgkJCWZvdW5kSWRzIDo9IG1ha2UoW11pbnRlcmZhY2V7fSwgMCkKCQkJaWYgbGVuKGlkcykgPiAwIHsKCQkJCWlmIHJlbGF0ZWQsIGVyciA6PSBiYWNrZW5kLkdldENvbGxlY3Rpb24ocmVsYXRlZENvbGxlY3Rpb25OYW1lKTsgZXJyID09IG5pbCB7CgkJCQkJaW5kZXhlciA6PSBiYWNrZW5kLldpdGhTZWFyY2gocmVsYXRlZCkKCQkJCQlpZiBpbmRleGVyID09IG5pbCB7CgkJCQkJCWZvciBfLCBpZCA6PSByYW5nZSBpZHMgewoJCQkJCQkJa2V5IDo9IGtleUZuKGlkKQoJCQkJCQkJaWYgXywgb2sgOj0gY2FjaGVba2V5XTsgb2sgewoJCQkJCQkJCWNvbnRpbnVlCgkJCQkJCQl9IGVsc2UgaWYgcmVjb3JkLCBlcnIgOj0gYmFja2VuZC5SZXRyaWV2ZShyZWxhdGVkQ29sbGVjdGlvbk5hbWUsIGlkLCBmaWVsZHMuLi4pOyBlcnIgPT0gbmlsIHsKCQkJCQkJCQlyZWNvcmQuRmllbGRzW3JlbGF0ZWQuSWRlbnRpdHlGaWVsZF0gPSByZWNvcmQuSUQKCQkJCQkJCQljYWNoZVtrZXldID0gcmVjb3JkLkZpZWxkcwoJCQkJCQkJCWZvdW5kSWRzID0gYXBwZW5kKGZvdW5kSWRzLCByZWNvcmQuSUQpCgkJCQkJCQl9IGVsc2UgewoJCQkJCQkJCXJldHVybiBlcnIKCQkJCQkJCX0KCQkJCQkJfQoJCQkJCX0gZWxzZSB7CgkJCQkJCWJ1bGtRdWVyeSA6PSBmaWx0ZXIuTmV3KCkuQWRkQ3JpdGVyaWEoZmlsdGVyLkNyaXRlcmlvbntGaWVsZDogcmVsYXRlZC5HZXRJZGVudGl0eUZpZWxkTmFtZSgpLCBWYWx1ZXM6IGlkc30pCgkJCQkJCWJ1bGtRdWVyeS5GaWVsZHMgPSBmaWVsZHMKCQkJCQkJYnVsa1F1ZXJ5LkxpbWl0ID0gMTA0ODU3NgoJCQkJCQlpZiByZWNvcmRzZXQsIGVyciA6PSBpbmRleGVyLlF1ZXJ5KHJlbGF0ZWQsIGJ1bGtRdWVyeSk7IGVyciA9PSBuaWwgewoJCQkJCQkJZm9yIF8sIHJlY29yZCA6PSByYW5nZSByZWNvcmRzZXQuUmVjb3JkcyB7CgkJCQkJCQkJa2V5IDo9IGtleUZuKHJlY29yZC5JRCkKCQkJCQkJCQlpZiBfLCBvayA6PSBjYWNoZVtrZXldOyBvayB7CgkJCQkJCQkJCWNvbnRpbnVlCgkJCQkJCQkJfSBlbHNlIHsKCQkJCQkJCQkJcmVjb3JkLkZpZWxkc1tyZWxhdGVkLklkZW50aXR5RmllbGRdID0gcmVjb3JkLklECgkJCQkJCQkJCWNhY2hlW2tleV0gPSByZWNvcmQuRmllbGRzCgkJCQkJCQkJCWZvdW5kSWRzID0gYXBwZW5kKGZvdW5kSWRzLCByZWNvcmQuSUQpCgkJCQkJCQkJfQoJCQkJCQkJfQoJCQkJCQl9IGVsc2UgewoJCQkJCQkJcmV0dXJuIGVycgoJCQkJCQl9CgkJCQkJfQoJCQkJfSBlbHNlIHsKCQkJCQlyZXR1cm4gZXJyCgkJCQl9CgkJCQlmb3IgXywgZGVmZXJyZWQgOj0gcmFuZ2UgY29sbGVjdGlvbkRlZmVycyB7CgkJCQkJaWYgc2xpY2V1dGlsLkNvbnRhaW5zKGZvdW5kSWRzLCBkZWZlcnJlZC5JRCkgewoJCQkJCQljb250aW51ZQoJCQkJCX0gZWxzZSB7CgkJCQkJCWtleSA6PSBrZXlGbihkZWZlcnJlZC5JRCkKCQkJCQkJaWYgXywgb2sgOj0gY2FjaGVba2V5XTsgb2sgewoJCQkJCQkJY29udGludWUKCQkJCQkJfSBlbHNlIHsKCQkJCQkJCWNhY2hlW2tleV0gPSBtYXBbc3RyaW5nXWludGVyZmFjZXt9e2RlZmVycmVkLklkZW50aXR5RmllbGROYW1lOiBkZWZlcnJlZC5JRCwgYF9taXNzaW5nYDogdHJ1ZSwgYF9jb2xsZWN0aW9uYDogZGVmZXJyZWQuQ29sbGVjdGlvbk5hbWV9CgkJCQkJCX0KCQkJCQl9CgkJCQl9CgkJCQlmb3IgXywgZmllbGQgOj0gcmFuZ2UgcmVzb2x2ZWRWYWx1ZXMgewoJCQkJCWtleSA6PSBrZXlGbihmaWVsZC5WYWx1ZSkKCQkJCQlpZiBkYXRhLCBvayA6PSBjYWNoZVtrZXldLihtYXBbc3RyaW5nXWludGVyZmFjZXt9KTsgb2sgewoJCQkJCQltYXB1dGlsLkRlZXBTZXQoZmllbGQuUmVjb3JkLkZpZWxkcywgZmllbGQuS2V5LCBkYXRhKQoJCQkJCX0KCQkJCX0KCQkJfQoJCX0KCX0KCXJldHVybiBuaWwKfQ==",
+            "Signature": "ResolveDeferredRecords(cache map[string]any, records ...*dal.Record) error",
+            "Source": "ewoJZGVmZXJyZWRSZWNvcmRzIDo9IG1ha2UobWFwW3N0cmluZ10qRGVmZXJyZWRSZWNvcmQpCglyZXNvbHZlZFZhbHVlcyA6PSBtYWtlKFtdKnJlY29yZEZpZWxkVmFsdWUsIDApCglpZiBjYWNoZSA9PSBuaWwgewoJCWNhY2hlID0gbWFrZShtYXBbc3RyaW5nXWFueSkKCX0KCWZvciBfLCByZWNvcmQgOj0gcmFuZ2UgcmVjb3JkcyB7CgkJaWYgZXJyIDo9IG1hcHV0aWwuV2Fsa1N0cnVjdChyZWNvcmQuRmllbGRzLCBmdW5jKHZhbHVlIGFueSwga2V5IFtdc3RyaW5nLCBpc0xlYWYgYm9vbCkgZXJyb3IgewoJCQlpZiBkZWZlcnJlZCwgb2sgOj0gdmFsdWUuKERlZmVycmVkUmVjb3JkKTsgb2sgewoJCQkJZHB0ciA6PSAmZGVmZXJyZWQKCQkJCWRlZmVycmVkUmVjb3Jkc1tkZWZlcnJlZC5TdHJpbmcoKV0gPSBkcHRyCgkJCQlyZXNvbHZlZFZhbHVlcyA9IGFwcGVuZChyZXNvbHZlZFZhbHVlcywgJnJlY29yZEZpZWxkVmFsdWV7UmVjb3JkOiByZWNvcmQsIEtleToga2V5LCBWYWx1ZTogZGVmZXJyZWQuSUQsIERlZmVycmVkOiBkcHRyfSkKCQkJCW1hcHV0aWwuRGVlcFNldChyZWNvcmQuRmllbGRzLCBrZXksIG5pbCkKCQkJCXJldHVybiBtYXB1dGlsLlNraXBEZXNjZW5kYW50cwoJCQl9CgkJCXJldHVybiBuaWwKCQl9KTsgZXJyICE9IG5pbCB7CgkJCXJldHVybiBlcnIKCQl9Cgl9Cglmb3IgcmVsYXRlZENvbGxlY3Rpb25OYW1lLCBjb2xsZWN0aW9uRGVmZXJzIDo9IHJhbmdlIGRlZmVycmVkR3JvdXBCeUNvbGxlY3Rpb24oZGVmZXJyZWRSZWNvcmRzKSB7CgkJaWYgbGVuKGNvbGxlY3Rpb25EZWZlcnMpID4gMCB7CgkJCXZhciBrZXlGbiA9IGNvbGxlY3Rpb25EZWZlcnNbMF0uR3JvdXBLZXkKCQkJdmFyIGJhY2tlbmQgPSBjb2xsZWN0aW9uRGVmZXJzWzBdLkJhY2tlbmQKCQkJdmFyIGZpZWxkcyA9IGNvbGxlY3Rpb25EZWZlcnNbMF0uS2V5cwoJCQl2YXIgaWRzIFtdYW55CgkJCWZvciBfLCBkZWZlcnJlZCA6PSByYW5nZSBjb2xsZWN0aW9uRGVmZXJzIHsKCQkJCWlkcyA9IGFwcGVuZChpZHMsIGRlZmVycmVkLklEKQoJCQl9CgkJCWZvdW5kSWRzIDo9IG1ha2UoW11hbnksIDApCgkJCWlmIGxlbihpZHMpID4gMCB7CgkJCQlpZiByZWxhdGVkLCBlcnIgOj0gYmFja2VuZC5HZXRDb2xsZWN0aW9uKHJlbGF0ZWRDb2xsZWN0aW9uTmFtZSk7IGVyciA9PSBuaWwgewoJCQkJCWluZGV4ZXIgOj0gYmFja2VuZC5XaXRoU2VhcmNoKHJlbGF0ZWQpCgkJCQkJaWYgaW5kZXhlciA9PSBuaWwgewoJCQkJCQlmb3IgXywgaWQgOj0gcmFuZ2UgaWRzIHsKCQkJCQkJCWtleSA6PSBrZXlGbihpZCkKCQkJCQkJCWlmIF8sIG9rIDo9IGNhY2hlW2tleV07IG9rIHsKCQkJCQkJCQljb250aW51ZQoJCQkJCQkJfSBlbHNlIGlmIHJlY29yZCwgZXJyIDo9IGJhY2tlbmQuUmV0cmlldmUocmVsYXRlZENvbGxlY3Rpb25OYW1lLCBpZCwgZmllbGRzLi4uKTsgZXJyID09IG5pbCB7CgkJCQkJCQkJcmVjb3JkLkZpZWxkc1tyZWxhdGVkLklkZW50aXR5RmllbGRdID0gcmVjb3JkLklECgkJCQkJCQkJY2FjaGVba2V5XSA9IHJlY29yZC5GaWVsZHMKCQkJCQkJCQlmb3VuZElkcyA9IGFwcGVuZChmb3VuZElkcywgcmVjb3JkLklEKQoJCQkJCQkJfSBlbHNlIHsKCQkJCQkJCQlyZXR1cm4gZXJyCgkJCQkJCQl9CgkJCQkJCX0KCQkJCQl9IGVsc2UgewoJCQkJCQlidWxrUXVlcnkgOj0gZmlsdGVyLk5ldygpLkFkZENyaXRlcmlhKGZpbHRlci5Dcml0ZXJpb257RmllbGQ6IHJlbGF0ZWQuR2V0SWRlbnRpdHlGaWVsZE5hbWUoKSwgVmFsdWVzOiBpZHN9KQoJCQkJCQlidWxrUXVlcnkuRmllbGRzID0gZmllbGRzCgkJCQkJCWJ1bGtRdWVyeS5MaW1pdCA9IDEwNDg1NzYKCQkJCQkJaWYgcmVjb3Jkc2V0LCBlcnIgOj0gaW5kZXhlci5RdWVyeShyZWxhdGVkLCBidWxrUXVlcnkpOyBlcnIgPT0gbmlsIHsKCQkJCQkJCWZvciBfLCByZWNvcmQgOj0gcmFuZ2UgcmVjb3Jkc2V0LlJlY29yZHMgewoJCQkJCQkJCWtleSA6PSBrZXlGbihyZWNvcmQuSUQpCgkJCQkJCQkJaWYgXywgb2sgOj0gY2FjaGVba2V5XTsgb2sgewoJCQkJCQkJCQljb250aW51ZQoJCQkJCQkJCX0gZWxzZSB7CgkJCQkJCQkJCXJlY29yZC5GaWVsZHNbcmVsYXRlZC5JZGVudGl0eUZpZWxkXSA9IHJlY29yZC5JRAoJCQkJCQkJCQljYWNoZVtrZXldID0gcmVjb3JkLkZpZWxkcwoJCQkJCQkJCQlmb3VuZElkcyA9IGFwcGVuZChmb3VuZElkcywgcmVjb3JkLklEKQoJCQkJCQkJCX0KCQkJCQkJCX0KCQkJCQkJfSBlbHNlIHsKCQkJCQkJCXJldHVybiBlcnIKCQkJCQkJfQoJCQkJCX0KCQkJCX0gZWxzZSB7CgkJCQkJcmV0dXJuIGVycgoJCQkJfQoJCQkJZm9yIF8sIGRlZmVycmVkIDo9IHJhbmdlIGNvbGxlY3Rpb25EZWZlcnMgewoJCQkJCWlmIHNsaWNldXRpbC5Db250YWlucyhmb3VuZElkcywgZGVmZXJyZWQuSUQpIHsKCQkJCQkJY29udGludWUKCQkJCQl9IGVsc2UgewoJCQkJCQlrZXkgOj0ga2V5Rm4oZGVmZXJyZWQuSUQpCgkJCQkJCWlmIF8sIG9rIDo9IGNhY2hlW2tleV07IG9rIHsKCQkJCQkJCWNvbnRpbnVlCgkJCQkJCX0gZWxzZSB7CgkJCQkJCQljYWNoZVtrZXldID0gbWFwW3N0cmluZ11hbnl7ZGVmZXJyZWQuSWRlbnRpdHlGaWVsZE5hbWU6IGRlZmVycmVkLklELCBgX21pc3NpbmdgOiB0cnVlLCBgX2NvbGxlY3Rpb25gOiBkZWZlcnJlZC5Db2xsZWN0aW9uTmFtZX0KCQkJCQkJfQoJCQkJCX0KCQkJCX0KCQkJCWZvciBfLCBmaWVsZCA6PSByYW5nZSByZXNvbHZlZFZhbHVlcyB7CgkJCQkJa2V5IDo9IGtleUZuKGZpZWxkLlZhbHVlKQoJCQkJCWlmIGRhdGEsIG9rIDo9IGNhY2hlW2tleV0uKG1hcFtzdHJpbmddYW55KTsgb2sgewoJCQkJCQltYXB1dGlsLkRlZXBTZXQoZmllbGQuUmVjb3JkLkZpZWxkcywgZmllbGQuS2V5LCBkYXRhKQoJCQkJCX0KCQkJCX0KCQkJfQoJCX0KCX0KCXJldHVybiBuaWwKfQ==",
             "IsPackageLevel": true
         }
     ],
@@ -2100,7 +2034,7 @@
                 }
             ],
             "Signature": "TestDynamoRecordFromItem(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQsIGVyciA6PSBkeW5hbW9SZWNvcmRGcm9tSXRlbShkeW5hbW9UZXN0Q29sbGVjdGlvbiwgMTIzLCBtYXBbc3RyaW5nXSpkeW5hbW9kYi5BdHRyaWJ1dGVWYWx1ZXtgaWRgOiB7TjogYXdzLlN0cmluZyhgMTIzYCl9LCBgbmFtZWA6IHtTOiBhd3MuU3RyaW5nKGB0ZXN0ZXJgKX0sIGBhZ2VgOiB7TjogYXdzLlN0cmluZyhgNDJgKX19KQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKDEyMywgcmVjb3JkLklEKQoJYXNzZXJ0LkVxdWFsVmFsdWVzKGB0ZXN0ZXJgLCByZWNvcmQuR2V0KGBuYW1lYCkpCglhc3NlcnQuRXF1YWxWYWx1ZXMoNDIsIHJlY29yZC5HZXQoYGFnZWApKQp9",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglyZWNvcmQsIGVyciA6PSBkeW5hbW9SZWNvcmRGcm9tSXRlbShkeW5hbW9UZXN0Q29sbGVjdGlvbiwgMTIzLCBtYXBbc3RyaW5nXWR5bmFtb2RiX3R5cGVzLkF0dHJpYnV0ZVZhbHVle2BpZGA6ICZkeW5hbW9kYl90eXBlcy5BdHRyaWJ1dGVWYWx1ZU1lbWJlck57VmFsdWU6IGAxMjNgfSwgYG5hbWVgOiAmZHluYW1vZGJfdHlwZXMuQXR0cmlidXRlVmFsdWVNZW1iZXJTe1ZhbHVlOiBgdGVzdGVyYH0sIGBhZ2VgOiAmZHluYW1vZGJfdHlwZXMuQXR0cmlidXRlVmFsdWVNZW1iZXJOe1ZhbHVlOiBgNDJgfX0pCglhc3NlcnQuTm9FcnJvcihlcnIpCglhc3NlcnQuRXF1YWxWYWx1ZXMoMTIzLCByZWNvcmQuSUQpCglhc3NlcnQuRXF1YWxWYWx1ZXMoYHRlc3RlcmAsIHJlY29yZC5HZXQoYG5hbWVgKSkKCWFzc2VydC5FcXVhbFZhbHVlcyg0MiwgcmVjb3JkLkdldChgYWdlYCkpCn0=",
             "IsPackageLevel": true
         },
         {
@@ -2112,7 +2046,7 @@
                 }
             ],
             "Signature": "TestDynamoRecordToItem(t *testing.T)",
-            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglhdHRyLCBlcnIgOj0gZHluYW1vUmVjb3JkVG9JdGVtKGR5bmFtb1Rlc3RDb2xsZWN0aW9uLCBkYWwuTmV3UmVjb3JkKDEyMykuU2V0KGBuYW1lYCwgYHRlc3RlcmApLlNldChgYWdlYCwgNDIpKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKG1hcFtzdHJpbmddKmR5bmFtb2RiLkF0dHJpYnV0ZVZhbHVle2BpZGA6IHtOOiBhd3MuU3RyaW5nKGAxMjNgKX0sIGBuYW1lYDoge1M6IGF3cy5TdHJpbmcoYHRlc3RlcmApfSwgYGFnZWA6IHtOOiBhd3MuU3RyaW5nKGA0MmApfX0sIGF0dHIpCn0=",
+            "Source": "ewoJYXNzZXJ0IDo9IHJlcXVpcmUuTmV3KHQpCglhdHRyLCBlcnIgOj0gZHluYW1vUmVjb3JkVG9JdGVtKGR5bmFtb1Rlc3RDb2xsZWN0aW9uLCBkYWwuTmV3UmVjb3JkKDEyMykuU2V0KGBuYW1lYCwgYHRlc3RlcmApLlNldChgYWdlYCwgNDIpKQoJYXNzZXJ0Lk5vRXJyb3IoZXJyKQoJYXNzZXJ0LkVxdWFsKG1hcFtzdHJpbmddZHluYW1vZGJfdHlwZXMuQXR0cmlidXRlVmFsdWV7YGlkYDogJmR5bmFtb2RiX3R5cGVzLkF0dHJpYnV0ZVZhbHVlTWVtYmVyTntWYWx1ZTogYDEyM2B9LCBgbmFtZWA6ICZkeW5hbW9kYl90eXBlcy5BdHRyaWJ1dGVWYWx1ZU1lbWJlclN7VmFsdWU6IGB0ZXN0ZXJgfSwgYGFnZWA6ICZkeW5hbW9kYl90eXBlcy5BdHRyaWJ1dGVWYWx1ZU1lbWJlck57VmFsdWU6IGA0MmB9fSwgYXR0cikKfQ==",
             "IsPackageLevel": true
         },
         {
@@ -2168,9 +2102,77 @@
                     "Signature": "MakeBackend(connection dal.ConnectionString) (Backend, error)",
                     "Source": "ewoJdmFyIGF1dG9waW5nSW50ZXJ2YWwgdGltZS5EdXJhdGlvbgoJYmFja2VuZE5hbWUgOj0gY29ubmVjdGlvbi5CYWNrZW5kKCkKCWxvZy5JbmZvZigiQ3JlYXRpbmcgYmFja2VuZDogJXYiLCBjb25uZWN0aW9uLlN0cmluZygpKQoJaWYgZm4sIG9rIDo9IGJhY2tlbmRNYXBbYmFja2VuZE5hbWVdOyBvayB7CgkJaWYgaSA6PSBjb25uZWN0aW9uLk9wdER1cmF0aW9uKGBwaW5nYCwgMCk7IGkgPiAwIHsKCQkJYXV0b3BpbmdJbnRlcnZhbCA9IGkKCQl9CgkJY29ubmVjdGlvbi5DbGVhck9wdChgcGluZ2ApCgkJaWYgYmFja2VuZCA6PSBmbihjb25uZWN0aW9uKTsgYmFja2VuZCAhPSBuaWwgewoJCQlpZiBhdXRvcGluZ0ludGVydmFsID4gMCB7CgkJCQlnbyBzdGFydFBlcmlvZGljUGluZ2VyKGF1dG9waW5nSW50ZXJ2YWwsIGJhY2tlbmQpCgkJCX0KCQkJcmV0dXJuIGJhY2tlbmQsIG5pbAoJCX0gZWxzZSB7CgkJCXJldHVybiBuaWwsIGZtdC5FcnJvcmYoIkVycm9yIG9jY3VycmVkIGluc3RhbnRpYXRpbmcgYmFja2VuZCAlcSIsIGJhY2tlbmROYW1lKQoJCX0KCX0gZWxzZSB7CgkJcmV0dXJuIG5pbCwgZm10LkVycm9yZigiVW5rbm93biBiYWNrZW5kIHR5cGUgJXEiLCBiYWNrZW5kTmFtZSkKCX0KfQ==",
                     "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewDynamoBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewDynamoBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZEeW5hbW9CYWNrZW5ke2NzOiBjb25uZWN0aW9uLCByZWdpb246IHNsaWNldXRpbC5PclN0cmluZyhjb25uZWN0aW9uLkhvc3QoKSwgRGVmYXVsdEFtYXpvblJlZ2lvbil9Cn0=",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewFileBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewFileBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZGaWxlQmFja2VuZHtjb25uOiBjb25uZWN0aW9ufQp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewSqlBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewSqlBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJYmFja2VuZCA6PSAmU3FsQmFja2VuZHtjb25uOiAmY29ubmVjdGlvbiwgcXVlcnlHZW5UeXBlTWFwcGluZzogZ2VuZXJhdG9ycy5EZWZhdWx0U3FsVHlwZU1hcHBpbmcsIGRyb3BUYWJsZVF1ZXJ5OiBgRFJPUCBUQUJMRSAlc2AsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwga25vd25Db2xsZWN0aW9uczogbWFrZShtYXBbc3RyaW5nXWJvb2wpLCBkZXRlY3RlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKX0KCWlmIGZuLCBvayA6PSBzcWxQcmVJbml0RnVuY3NbY29ubmVjdGlvbi5CYWNrZW5kKCldOyBvayAmJiBmbiAhPSBuaWwgewoJCWZuKGJhY2tlbmQpCgl9CgliYWNrZW5kLmluZGV4ZXIgPSBiYWNrZW5kCglyZXR1cm4gYmFja2VuZAp9",
+                    "IsPackageLevel": true
+                },
+                {
+                    "Name": "NewFilesystemBackend",
+                    "Arguments": [
+                        {
+                            "Name": "connection",
+                            "Type": "dal.ConnectionString"
+                        }
+                    ],
+                    "Returns": [
+                        {
+                            "Type": "Backend"
+                        }
+                    ],
+                    "Signature": "NewFilesystemBackend(connection dal.ConnectionString) Backend",
+                    "Source": "ewoJcmV0dXJuICZGaWxlc3lzdGVtQmFja2VuZHtjb25uOiBjb25uZWN0aW9uLCBmb3JtYXQ6IEZvcm1hdFlBTUwsIGFnZ3JlZ2F0b3I6IG1ha2UobWFwW3N0cmluZ11BZ2dyZWdhdG9yKSwgcmVnaXN0ZXJlZENvbGxlY3Rpb25zOiBtYWtlKG1hcFtzdHJpbmddKmRhbC5Db2xsZWN0aW9uKSwgcmVjb3JkU3ViZGlyOiBEZWZhdWx0RmlsZXN5c3RlbVJlY29yZFN1YmRpcmVjdG9yeX0KfQ==",
+                    "IsPackageLevel": true
                 }
             ],
-            "Source": "dHlwZSBCYWNrZW5kIGludGVyZmFjZSB7CglJbml0aWFsaXplKCkgZXJyb3IKCVNldEluZGV4ZXIoZGFsLkNvbm5lY3Rpb25TdHJpbmcpIGVycm9yCglSZWdpc3RlckNvbGxlY3Rpb24oKmRhbC5Db2xsZWN0aW9uKQoJR2V0Q29ubmVjdGlvblN0cmluZygpICpkYWwuQ29ubmVjdGlvblN0cmluZwoJRXhpc3RzKGNvbGxlY3Rpb24gc3RyaW5nLCBpZCBpbnRlcmZhY2V7fSkgYm9vbAoJUmV0cmlldmUoY29sbGVjdGlvbiBzdHJpbmcsIGlkIGludGVyZmFjZXt9LCBmaWVsZHMgLi4uc3RyaW5nKSAoKmRhbC5SZWNvcmQsIGVycm9yKQoJSW5zZXJ0KGNvbGxlY3Rpb24gc3RyaW5nLCByZWNvcmRzICpkYWwuUmVjb3JkU2V0KSBlcnJvcgoJVXBkYXRlKGNvbGxlY3Rpb24gc3RyaW5nLCByZWNvcmRzICpkYWwuUmVjb3JkU2V0LCB0YXJnZXQgLi4uc3RyaW5nKSBlcnJvcgoJRGVsZXRlKGNvbGxlY3Rpb24gc3RyaW5nLCBpZHMgLi4uaW50ZXJmYWNle30pIGVycm9yCglDcmVhdGVDb2xsZWN0aW9uKGRlZmluaXRpb24gKmRhbC5Db2xsZWN0aW9uKSBlcnJvcgoJRGVsZXRlQ29sbGVjdGlvbihjb2xsZWN0aW9uIHN0cmluZykgZXJyb3IKCUxpc3RDb2xsZWN0aW9ucygpIChbXXN0cmluZywgZXJyb3IpCglHZXRDb2xsZWN0aW9uKGNvbGxlY3Rpb24gc3RyaW5nKSAoKmRhbC5Db2xsZWN0aW9uLCBlcnJvcikKCVdpdGhTZWFyY2goY29sbGVjdGlvbiAqZGFsLkNvbGxlY3Rpb24sIGZpbHRlcnMgLi4uKmZpbHRlci5GaWx0ZXIpIEluZGV4ZXIKCVdpdGhBZ2dyZWdhdG9yKGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uKSBBZ2dyZWdhdG9yCglGbHVzaCgpIGVycm9yCglQaW5nKHRpbWUuRHVyYXRpb24pIGVycm9yCglTdHJpbmcoKSBzdHJpbmcKCVN1cHBvcnRzKGZlYXR1cmUgLi4uQmFja2VuZEZlYXR1cmUpIGJvb2wKfQ=="
+            "Source": "dHlwZSBCYWNrZW5kIGludGVyZmFjZSB7CglJbml0aWFsaXplKCkgZXJyb3IKCVNldEluZGV4ZXIoZGFsLkNvbm5lY3Rpb25TdHJpbmcpIGVycm9yCglSZWdpc3RlckNvbGxlY3Rpb24oKmRhbC5Db2xsZWN0aW9uKQoJR2V0Q29ubmVjdGlvblN0cmluZygpICpkYWwuQ29ubmVjdGlvblN0cmluZwoJRXhpc3RzKGNvbGxlY3Rpb24gc3RyaW5nLCBpZCBhbnkpIGJvb2wKCVJldHJpZXZlKGNvbGxlY3Rpb24gc3RyaW5nLCBpZCBhbnksIGZpZWxkcyAuLi5zdHJpbmcpICgqZGFsLlJlY29yZCwgZXJyb3IpCglJbnNlcnQoY29sbGVjdGlvbiBzdHJpbmcsIHJlY29yZHMgKmRhbC5SZWNvcmRTZXQpIGVycm9yCglVcGRhdGUoY29sbGVjdGlvbiBzdHJpbmcsIHJlY29yZHMgKmRhbC5SZWNvcmRTZXQsIHRhcmdldCAuLi5zdHJpbmcpIGVycm9yCglEZWxldGUoY29sbGVjdGlvbiBzdHJpbmcsIGlkcyAuLi5hbnkpIGVycm9yCglDcmVhdGVDb2xsZWN0aW9uKGRlZmluaXRpb24gKmRhbC5Db2xsZWN0aW9uKSBlcnJvcgoJRGVsZXRlQ29sbGVjdGlvbihjb2xsZWN0aW9uIHN0cmluZykgZXJyb3IKCUxpc3RDb2xsZWN0aW9ucygpIChbXXN0cmluZywgZXJyb3IpCglHZXRDb2xsZWN0aW9uKGNvbGxlY3Rpb24gc3RyaW5nKSAoKmRhbC5Db2xsZWN0aW9uLCBlcnJvcikKCVdpdGhTZWFyY2goY29sbGVjdGlvbiAqZGFsLkNvbGxlY3Rpb24sIGZpbHRlcnMgLi4uKmZpbHRlci5GaWx0ZXIpIEluZGV4ZXIKCVdpdGhBZ2dyZWdhdG9yKGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uKSBBZ2dyZWdhdG9yCglGbHVzaCgpIGVycm9yCglQaW5nKHRpbWUuRHVyYXRpb24pIGVycm9yCglTdHJpbmcoKSBzdHJpbmcKCVN1cHBvcnRzKGZlYXR1cmUgLi4uQmFja2VuZEZlYXR1cmUpIGJvb2wKfQ=="
         },
         "BackendFeature": {
             "Name": "BackendFeature",
@@ -2276,7 +2278,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -2284,7 +2286,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "IndexExists(collection *dal.Collection, id interface{}) bool",
+                    "Signature": "IndexExists(collection *dal.Collection, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -2316,7 +2318,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -2324,7 +2326,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRemove(collection *dal.Collection, ids []interface{}) error",
+                    "Signature": "IndexRemove(collection *dal.Collection, ids []any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -2338,7 +2340,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -2349,7 +2351,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)",
+                    "Signature": "IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -2372,13 +2374,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)",
+                    "Signature": "ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -2490,7 +2492,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -2498,7 +2500,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Delete(collection string, ids ...interface{}) error",
+                    "Signature": "Delete(collection string, ids ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -2531,7 +2533,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -2539,7 +2541,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "Exists(collection string, id interface{}) bool",
+                    "Signature": "Exists(collection string, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -2702,7 +2704,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "fields",
@@ -2717,7 +2719,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error)",
+                    "Signature": "Retrieve(collection string, id any, fields ...string) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -2872,7 +2874,7 @@
                     "Arguments": [
                         {
                             "Name": "id",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -2880,7 +2882,7 @@
                             "Type": "string"
                         }
                     ],
-                    "Signature": "GroupKey(id ...interface{}) string",
+                    "Signature": "GroupKey(id ...any) string",
                     "IsPackageLevel": false
                 },
                 {
@@ -2899,7 +2901,7 @@
             "Fields": [
                 {
                     "Name": "Original",
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Name": "Backend",
@@ -2915,14 +2917,14 @@
                 },
                 {
                     "Name": "ID",
-                    "Type": "interface{}"
+                    "Type": "any"
                 },
                 {
                     "Name": "Keys",
                     "Type": "[]string"
                 }
             ],
-            "Source": "dHlwZSBEZWZlcnJlZFJlY29yZCBzdHJ1Y3QgewoJT3JpZ2luYWwgICAgICAgICAgaW50ZXJmYWNle30KCUJhY2tlbmQgICAgICAgICAgIEJhY2tlbmQKCUlkZW50aXR5RmllbGROYW1lIHN0cmluZwoJQ29sbGVjdGlvbk5hbWUgICAgc3RyaW5nCglJRCAgICAgICAgICAgICAgICBpbnRlcmZhY2V7fQoJS2V5cyAgICAgICAgICAgICAgW11zdHJpbmcKfQ=="
+            "Source": "dHlwZSBEZWZlcnJlZFJlY29yZCBzdHJ1Y3QgewoJT3JpZ2luYWwgICAgICAgICAgYW55CglCYWNrZW5kICAgICAgICAgICBCYWNrZW5kCglJZGVudGl0eUZpZWxkTmFtZSBzdHJpbmcKCUNvbGxlY3Rpb25OYW1lICAgIHN0cmluZwoJSUQgICAgICAgICAgICAgICAgYW55CglLZXlzICAgICAgICAgICAgICBbXXN0cmluZwp9"
         },
         "DynamoBackend": {
             "Name": "DynamoBackend",
@@ -2957,7 +2959,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -2965,7 +2967,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Delete(name string, ids ...interface{}) error",
+                    "Signature": "Delete(name string, ids ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -3019,7 +3021,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -3027,7 +3029,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "Exists(name string, id interface{}) bool",
+                    "Signature": "Exists(name string, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -3144,7 +3146,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -3152,7 +3154,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "IndexExists(collection *dal.Collection, id interface{}) bool",
+                    "Signature": "IndexExists(collection *dal.Collection, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -3183,7 +3185,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -3191,7 +3193,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRemove(collection *dal.Collection, ids []interface{}) error",
+                    "Signature": "IndexRemove(collection *dal.Collection, ids []any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -3205,7 +3207,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -3216,7 +3218,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)",
+                    "Signature": "IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -3288,13 +3290,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)",
+                    "Signature": "ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -3394,7 +3396,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "fields",
@@ -3409,7 +3411,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)",
+                    "Signature": "Retrieve(name string, id any, fields ...string) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -3563,7 +3565,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -3571,7 +3573,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Delete(name string, ids ...interface{}) error",
+                    "Signature": "Delete(name string, ids ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -3603,7 +3605,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -3611,7 +3613,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "Exists(name string, id interface{}) bool",
+                    "Signature": "Exists(name string, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -3750,7 +3752,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "fields",
@@ -3765,7 +3767,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)",
+                    "Signature": "Retrieve(name string, id any, fields ...string) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -4098,7 +4100,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -4106,7 +4108,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "IndexExists(collection *dal.Collection, id interface{}) bool",
+                    "Signature": "IndexExists(collection *dal.Collection, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -4138,7 +4140,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -4146,7 +4148,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRemove(collection *dal.Collection, ids []interface{}) error",
+                    "Signature": "IndexRemove(collection *dal.Collection, ids []any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -4160,7 +4162,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -4171,7 +4173,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)",
+                    "Signature": "IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -4194,13 +4196,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)",
+                    "Signature": "ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -4399,7 +4401,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -4407,7 +4409,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Delete(collection string, ids ...interface{}) error",
+                    "Signature": "Delete(collection string, ids ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -4491,7 +4493,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -4499,7 +4501,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "Exists(collection string, id interface{}) bool",
+                    "Signature": "Exists(collection string, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -4617,7 +4619,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -4625,7 +4627,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "IndexExists(collection *dal.Collection, id interface{}) bool",
+                    "Signature": "IndexExists(collection *dal.Collection, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -4657,7 +4659,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -4665,7 +4667,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRemove(collection *dal.Collection, ids []interface{}) error",
+                    "Signature": "IndexRemove(collection *dal.Collection, ids []any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -4679,7 +4681,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -4690,7 +4692,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)",
+                    "Signature": "IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -4762,13 +4764,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)",
+                    "Signature": "ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -4901,7 +4903,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "fields",
@@ -4916,7 +4918,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)",
+                    "Signature": "Retrieve(name string, id any, fields ...string) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -5076,7 +5078,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -5084,7 +5086,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Delete(collection string, ids ...interface{}) error",
+                    "Signature": "Delete(collection string, ids ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -5116,7 +5118,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -5124,7 +5126,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "Exists(name string, id interface{}) bool",
+                    "Signature": "Exists(name string, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -5263,7 +5265,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "fields",
@@ -5278,7 +5280,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)",
+                    "Signature": "Retrieve(name string, id any, fields ...string) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -5431,7 +5433,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -5439,7 +5441,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Delete(name string, ids ...interface{}) error",
+                    "Signature": "Delete(name string, ids ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -5493,7 +5495,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -5501,7 +5503,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "Exists(name string, id interface{}) bool",
+                    "Signature": "Exists(name string, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -5618,7 +5620,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -5626,7 +5628,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "IndexExists(collection *dal.Collection, id interface{}) bool",
+                    "Signature": "IndexExists(collection *dal.Collection, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -5658,7 +5660,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -5666,7 +5668,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRemove(collection *dal.Collection, ids []interface{}) error",
+                    "Signature": "IndexRemove(collection *dal.Collection, ids []any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -5680,7 +5682,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -5691,7 +5693,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)",
+                    "Signature": "IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -5763,13 +5765,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)",
+                    "Signature": "ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -5869,7 +5871,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "fields",
@@ -5884,7 +5886,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)",
+                    "Signature": "Retrieve(name string, id any, fields ...string) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -6083,7 +6085,7 @@
                     "IsPackageLevel": true
                 }
             ],
-            "Source": "dHlwZSBJbmRleGVyIGludGVyZmFjZSB7CglJbmRleENvbm5lY3Rpb25TdHJpbmcoKSAqZGFsLkNvbm5lY3Rpb25TdHJpbmcKCUluZGV4SW5pdGlhbGl6ZShCYWNrZW5kKSBlcnJvcgoJSW5kZXhFeGlzdHMoY29sbGVjdGlvbiAqZGFsLkNvbGxlY3Rpb24sIGlkIGludGVyZmFjZXt9KSBib29sCglJbmRleFJldHJpZXZlKGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uLCBpZCBpbnRlcmZhY2V7fSkgKCpkYWwuUmVjb3JkLCBlcnJvcikKCUluZGV4UmVtb3ZlKGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uLCBpZHMgW11pbnRlcmZhY2V7fSkgZXJyb3IKCUluZGV4KGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uLCByZWNvcmRzICpkYWwuUmVjb3JkU2V0KSBlcnJvcgoJUXVlcnlGdW5jKGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uLCBmaWx0ZXIgKmZpbHRlci5GaWx0ZXIsIHJlc3VsdEZuIEluZGV4UmVzdWx0RnVuYykgZXJyb3IKCVF1ZXJ5KGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uLCBmaWx0ZXIgKmZpbHRlci5GaWx0ZXIsIHJlc3VsdEZucyAuLi5JbmRleFJlc3VsdEZ1bmMpICgqZGFsLlJlY29yZFNldCwgZXJyb3IpCglMaXN0VmFsdWVzKGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uLCBmaWVsZHMgW11zdHJpbmcsIGZpbHRlciAqZmlsdGVyLkZpbHRlcikgKG1hcFtzdHJpbmddW11pbnRlcmZhY2V7fSwgZXJyb3IpCglEZWxldGVRdWVyeShjb2xsZWN0aW9uICpkYWwuQ29sbGVjdGlvbiwgZiAqZmlsdGVyLkZpbHRlcikgZXJyb3IKCUZsdXNoSW5kZXgoKSBlcnJvcgoJR2V0QmFja2VuZCgpIEJhY2tlbmQKfQ=="
+            "Source": "dHlwZSBJbmRleGVyIGludGVyZmFjZSB7CglJbmRleENvbm5lY3Rpb25TdHJpbmcoKSAqZGFsLkNvbm5lY3Rpb25TdHJpbmcKCUluZGV4SW5pdGlhbGl6ZShCYWNrZW5kKSBlcnJvcgoJSW5kZXhFeGlzdHMoY29sbGVjdGlvbiAqZGFsLkNvbGxlY3Rpb24sIGlkIGFueSkgYm9vbAoJSW5kZXhSZXRyaWV2ZShjb2xsZWN0aW9uICpkYWwuQ29sbGVjdGlvbiwgaWQgYW55KSAoKmRhbC5SZWNvcmQsIGVycm9yKQoJSW5kZXhSZW1vdmUoY29sbGVjdGlvbiAqZGFsLkNvbGxlY3Rpb24sIGlkcyBbXWFueSkgZXJyb3IKCUluZGV4KGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uLCByZWNvcmRzICpkYWwuUmVjb3JkU2V0KSBlcnJvcgoJUXVlcnlGdW5jKGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uLCBmaWx0ZXIgKmZpbHRlci5GaWx0ZXIsIHJlc3VsdEZuIEluZGV4UmVzdWx0RnVuYykgZXJyb3IKCVF1ZXJ5KGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uLCBmaWx0ZXIgKmZpbHRlci5GaWx0ZXIsIHJlc3VsdEZucyAuLi5JbmRleFJlc3VsdEZ1bmMpICgqZGFsLlJlY29yZFNldCwgZXJyb3IpCglMaXN0VmFsdWVzKGNvbGxlY3Rpb24gKmRhbC5Db2xsZWN0aW9uLCBmaWVsZHMgW11zdHJpbmcsIGZpbHRlciAqZmlsdGVyLkZpbHRlcikgKG1hcFtzdHJpbmddW11hbnksIGVycm9yKQoJRGVsZXRlUXVlcnkoY29sbGVjdGlvbiAqZGFsLkNvbGxlY3Rpb24sIGYgKmZpbHRlci5GaWx0ZXIpIGVycm9yCglGbHVzaEluZGV4KCkgZXJyb3IKCUdldEJhY2tlbmQoKSBCYWNrZW5kCn0="
         },
         "IndexerResult": {
             "Name": "IndexerResult",
@@ -6106,7 +6108,7 @@
         },
         "Mapper": {
             "Name": "Mapper",
-            "Source": "dHlwZSBNYXBwZXIgaW50ZXJmYWNlIHsKCUdldEJhY2tlbmQoKSBCYWNrZW5kCglHZXRDb2xsZWN0aW9uKCkgKmRhbC5Db2xsZWN0aW9uCglNaWdyYXRlKCkgZXJyb3IKCURyb3AoKSBlcnJvcgoJRXhpc3RzKGlkIGludGVyZmFjZXt9KSBib29sCglDcmVhdGUoZnJvbSBpbnRlcmZhY2V7fSkgZXJyb3IKCUdldChpZCBpbnRlcmZhY2V7fSwgaW50byBpbnRlcmZhY2V7fSkgZXJyb3IKCVVwZGF0ZShmcm9tIGludGVyZmFjZXt9KSBlcnJvcgoJQ3JlYXRlT3JVcGRhdGUoaWQgaW50ZXJmYWNle30sIGZyb20gaW50ZXJmYWNle30pIGVycm9yCglEZWxldGUoaWRzIC4uLmludGVyZmFjZXt9KSBlcnJvcgoJRGVsZXRlUXVlcnkoZmx0IGludGVyZmFjZXt9KSBlcnJvcgoJRmluZChmbHQgaW50ZXJmYWNle30sIGludG8gaW50ZXJmYWNle30pIGVycm9yCglGaW5kRnVuYyhmbHQgaW50ZXJmYWNle30sIGRlc3RaZXJvVmFsdWUgaW50ZXJmYWNle30sIHJlc3VsdEZuIFJlc3VsdEZ1bmMpIGVycm9yCglBbGwoaW50byBpbnRlcmZhY2V7fSkgZXJyb3IKCUVhY2goZGVzdFplcm9WYWx1ZSBpbnRlcmZhY2V7fSwgcmVzdWx0Rm4gUmVzdWx0RnVuYykgZXJyb3IKCUxpc3QoZmllbGRzIFtdc3RyaW5nKSAobWFwW3N0cmluZ11bXWludGVyZmFjZXt9LCBlcnJvcikKCUxpc3RXaXRoRmlsdGVyKGZpZWxkcyBbXXN0cmluZywgZmx0IGludGVyZmFjZXt9KSAobWFwW3N0cmluZ11bXWludGVyZmFjZXt9LCBlcnJvcikKCVN1bShmaWVsZCBzdHJpbmcsIGZsdCBpbnRlcmZhY2V7fSkgKGZsb2F0NjQsIGVycm9yKQoJQ291bnQoZmx0IGludGVyZmFjZXt9KSAodWludDY0LCBlcnJvcikKCU1pbmltdW0oZmllbGQgc3RyaW5nLCBmbHQgaW50ZXJmYWNle30pIChmbG9hdDY0LCBlcnJvcikKCU1heGltdW0oZmllbGQgc3RyaW5nLCBmbHQgaW50ZXJmYWNle30pIChmbG9hdDY0LCBlcnJvcikKCUF2ZXJhZ2UoZmllbGQgc3RyaW5nLCBmbHQgaW50ZXJmYWNle30pIChmbG9hdDY0LCBlcnJvcikKCUdyb3VwQnkoZmllbGRzIFtdc3RyaW5nLCBhZ2dyZWdhdGVzIFtdZmlsdGVyLkFnZ3JlZ2F0ZSwgZmx0IGludGVyZmFjZXt9KSAoKmRhbC5SZWNvcmRTZXQsIGVycm9yKQp9"
+            "Source": "dHlwZSBNYXBwZXIgaW50ZXJmYWNlIHsKCUdldEJhY2tlbmQoKSBCYWNrZW5kCglHZXRDb2xsZWN0aW9uKCkgKmRhbC5Db2xsZWN0aW9uCglNaWdyYXRlKCkgZXJyb3IKCURyb3AoKSBlcnJvcgoJRXhpc3RzKGlkIGFueSkgYm9vbAoJQ3JlYXRlKGZyb20gYW55KSBlcnJvcgoJR2V0KGlkIGFueSwgaW50byBhbnkpIGVycm9yCglVcGRhdGUoZnJvbSBhbnkpIGVycm9yCglDcmVhdGVPclVwZGF0ZShpZCBhbnksIGZyb20gYW55KSBlcnJvcgoJRGVsZXRlKGlkcyAuLi5hbnkpIGVycm9yCglEZWxldGVRdWVyeShmbHQgYW55KSBlcnJvcgoJRmluZChmbHQgYW55LCBpbnRvIGFueSkgZXJyb3IKCUZpbmRGdW5jKGZsdCBhbnksIGRlc3RaZXJvVmFsdWUgYW55LCByZXN1bHRGbiBSZXN1bHRGdW5jKSBlcnJvcgoJQWxsKGludG8gYW55KSBlcnJvcgoJRWFjaChkZXN0WmVyb1ZhbHVlIGFueSwgcmVzdWx0Rm4gUmVzdWx0RnVuYykgZXJyb3IKCUxpc3QoZmllbGRzIFtdc3RyaW5nKSAobWFwW3N0cmluZ11bXWFueSwgZXJyb3IpCglMaXN0V2l0aEZpbHRlcihmaWVsZHMgW11zdHJpbmcsIGZsdCBhbnkpIChtYXBbc3RyaW5nXVtdYW55LCBlcnJvcikKCVN1bShmaWVsZCBzdHJpbmcsIGZsdCBhbnkpIChmbG9hdDY0LCBlcnJvcikKCUNvdW50KGZsdCBhbnkpICh1aW50NjQsIGVycm9yKQoJTWluaW11bShmaWVsZCBzdHJpbmcsIGZsdCBhbnkpIChmbG9hdDY0LCBlcnJvcikKCU1heGltdW0oZmllbGQgc3RyaW5nLCBmbHQgYW55KSAoZmxvYXQ2NCwgZXJyb3IpCglBdmVyYWdlKGZpZWxkIHN0cmluZywgZmx0IGFueSkgKGZsb2F0NjQsIGVycm9yKQoJR3JvdXBCeShmaWVsZHMgW11zdHJpbmcsIGFnZ3JlZ2F0ZXMgW11maWx0ZXIuQWdncmVnYXRlLCBmbHQgYW55KSAoKmRhbC5SZWNvcmRTZXQsIGVycm9yKQp9"
         },
         "MetaIndex": {
             "Name": "MetaIndex",
@@ -6203,7 +6205,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -6211,7 +6213,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "IndexExists(collection *dal.Collection, id interface{}) bool",
+                    "Signature": "IndexExists(collection *dal.Collection, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -6243,7 +6245,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -6251,7 +6253,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRemove(collection *dal.Collection, ids []interface{}) error",
+                    "Signature": "IndexRemove(collection *dal.Collection, ids []any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -6265,7 +6267,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -6276,7 +6278,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)",
+                    "Signature": "IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -6299,13 +6301,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)",
+                    "Signature": "ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -6521,7 +6523,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -6529,7 +6531,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Delete(name string, ids ...interface{}) error",
+                    "Signature": "Delete(name string, ids ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -6583,7 +6585,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -6591,7 +6593,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "Exists(name string, id interface{}) bool",
+                    "Signature": "Exists(name string, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -6741,7 +6743,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -6749,7 +6751,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "IndexExists(collection *dal.Collection, id interface{}) bool",
+                    "Signature": "IndexExists(collection *dal.Collection, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -6780,7 +6782,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -6788,7 +6790,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRemove(collection *dal.Collection, ids []interface{}) error",
+                    "Signature": "IndexRemove(collection *dal.Collection, ids []any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -6802,7 +6804,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -6813,7 +6815,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)",
+                    "Signature": "IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -6885,13 +6887,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)",
+                    "Signature": "ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -7049,7 +7051,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "fields",
@@ -7064,7 +7066,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)",
+                    "Signature": "Retrieve(name string, id any, fields ...string) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -7371,7 +7373,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -7379,7 +7381,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "IndexExists(collection *dal.Collection, id interface{}) bool",
+                    "Signature": "IndexExists(collection *dal.Collection, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -7411,7 +7413,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -7419,7 +7421,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRemove(collection *dal.Collection, ids []interface{}) error",
+                    "Signature": "IndexRemove(collection *dal.Collection, ids []any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -7433,7 +7435,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -7444,7 +7446,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)",
+                    "Signature": "IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -7467,13 +7469,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)",
+                    "Signature": "ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -7694,7 +7696,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -7702,7 +7704,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "IndexExists(collection *dal.Collection, id interface{}) bool",
+                    "Signature": "IndexExists(collection *dal.Collection, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -7733,7 +7735,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -7741,7 +7743,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRemove(collection *dal.Collection, ids []interface{}) error",
+                    "Signature": "IndexRemove(collection *dal.Collection, ids []any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -7755,7 +7757,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -7766,7 +7768,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)",
+                    "Signature": "IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -7789,13 +7791,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListValues(collection *dal.Collection, fields []string, filter filter.Filter) (map[string][]interface{}, error)",
+                    "Signature": "ListValues(collection *dal.Collection, fields []string, filter filter.Filter) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -7889,7 +7891,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -7897,7 +7899,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Delete(name string, ids ...interface{}) error",
+                    "Signature": "Delete(name string, ids ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -7951,7 +7953,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -7959,7 +7961,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "Exists(name string, id interface{}) bool",
+                    "Signature": "Exists(name string, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -8076,7 +8078,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -8084,7 +8086,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "IndexExists(collection *dal.Collection, id interface{}) bool",
+                    "Signature": "IndexExists(collection *dal.Collection, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -8115,7 +8117,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -8123,7 +8125,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRemove(collection *dal.Collection, ids []interface{}) error",
+                    "Signature": "IndexRemove(collection *dal.Collection, ids []any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -8137,7 +8139,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -8148,7 +8150,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)",
+                    "Signature": "IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -8220,13 +8222,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)",
+                    "Signature": "ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -8326,7 +8328,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "fields",
@@ -8341,7 +8343,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)",
+                    "Signature": "Retrieve(name string, id any, fields ...string) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -8464,7 +8466,7 @@
         },
         "ResultFunc": {
             "Name": "ResultFunc",
-            "Source": "dHlwZSBSZXN1bHRGdW5jIGZ1bmMocHRyVG9JbnN0YW5jZSBpbnRlcmZhY2V7fSwgZXJyIGVycm9yKSAvLyB7fQo="
+            "Source": "dHlwZSBSZXN1bHRGdW5jIGZ1bmMocHRyVG9JbnN0YW5jZSBhbnksIGVyciBlcnJvcikgLy8ge30K"
         },
         "SerializationFormat": {
             "Name": "SerializationFormat",
@@ -8588,7 +8590,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -8596,7 +8598,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Delete(name string, ids ...interface{}) error",
+                    "Signature": "Delete(name string, ids ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -8651,7 +8653,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -8659,7 +8661,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "Exists(name string, id interface{}) bool",
+                    "Signature": "Exists(name string, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -8810,7 +8812,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -8818,7 +8820,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "IndexExists(collection *dal.Collection, id interface{}) bool",
+                    "Signature": "IndexExists(collection *dal.Collection, id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -8851,7 +8853,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "[]interface{}"
+                            "Type": "[]any"
                         }
                     ],
                     "Returns": [
@@ -8859,7 +8861,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRemove(collection *dal.Collection, ids []interface{}) error",
+                    "Signature": "IndexRemove(collection *dal.Collection, ids []any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -8873,7 +8875,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -8884,7 +8886,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)",
+                    "Signature": "IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -8956,13 +8958,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)",
+                    "Signature": "ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -9132,7 +9134,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "fields",
@@ -9147,7 +9149,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)",
+                    "Signature": "Retrieve(name string, id any, fields ...string) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {

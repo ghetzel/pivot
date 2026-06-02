@@ -20,7 +20,7 @@ import (
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
-	"github.com/orcaman/concurrent-map"
+	cmap "github.com/orcaman/concurrent-map"
 )
 
 var BleveBatchFlushCount = 1
@@ -62,7 +62,7 @@ func (self *BleveIndexer) GetBackend() Backend {
 	return self.parent
 }
 
-func (self *BleveIndexer) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
+func (self *BleveIndexer) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error) {
 	defer stats.NewTiming().Send(`pivot.indexers.bleve.retrieve_time`)
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
@@ -83,7 +83,7 @@ func (self *BleveIndexer) IndexRetrieve(collection *dal.Collection, id interface
 	}
 }
 
-func (self *BleveIndexer) IndexExists(collection *dal.Collection, id interface{}) bool {
+func (self *BleveIndexer) IndexExists(collection *dal.Collection, id any) bool {
 	if _, err := self.IndexRetrieve(collection, id); err == nil {
 		return true
 	}
@@ -195,7 +195,7 @@ func (self *BleveIndexer) QueryFunc(collection *dal.Collection, f *filter.Filter
 				request := bleve.NewSearchRequestOptions(bq, limit, offset, false)
 
 				// apply sorting (if specified)
-				if f.Sort != nil && len(f.Sort) > 0 {
+				if len(f.Sort) > 0 {
 					request.SortBy(f.Sort)
 				}
 
@@ -269,7 +269,7 @@ func (self *BleveIndexer) Query(collection *dal.Collection, f *filter.Filter, re
 	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 
-func (self *BleveIndexer) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+func (self *BleveIndexer) IndexRemove(collection *dal.Collection, ids []any) error {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 
 		batch := index.NewBatch()
@@ -284,7 +284,7 @@ func (self *BleveIndexer) IndexRemove(collection *dal.Collection, ids []interfac
 	}
 }
 
-func (self *BleveIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
+func (self *BleveIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error) {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 
 		if bq, err := self.filterToBleveQuery(index, f); err == nil {
@@ -309,10 +309,10 @@ func (self *BleveIndexer) ListValues(collection *dal.Collection, fields []string
 			if results, err := index.Search(request); err == nil {
 				querylog.Debugf("[%T] %+v", self, results)
 
-				output := make(map[string][]interface{})
+				output := make(map[string][]any)
 
 				for name, facet := range results.Facets {
-					values := make([]interface{}, 0)
+					values := make([]any, 0)
 
 					for _, term := range facet.Terms {
 						values = append(values, term.Term)
@@ -323,7 +323,7 @@ func (self *BleveIndexer) ListValues(collection *dal.Collection, fields []string
 				}
 
 				if idQuery {
-					values := make([]interface{}, 0)
+					values := make([]any, 0)
 
 					for _, hit := range results.Hits {
 						values = append(values, stringutil.Autotype(hit.ID))
@@ -347,7 +347,7 @@ func (self *BleveIndexer) ListValues(collection *dal.Collection, fields []string
 
 func (self *BleveIndexer) DeleteQuery(collection *dal.Collection, f *filter.Filter) error {
 	f.Fields = []string{BleveIdentityField}
-	var ids []interface{}
+	var ids []any
 
 	if err := self.QueryFunc(collection, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
 		ids = append(ids, indexRecord.ID)
@@ -465,7 +465,6 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f *filter.Filter
 						}
 
 						skipNext = true
-						break
 					} else {
 						switch analyzedValue {
 						case `null`:
@@ -595,12 +594,12 @@ func (self *BleveIndexer) filterToBleveQuery(index bleve.Index, f *filter.Filter
 }
 
 func (self *BleveIndexer) useFilterMapping(mappingImpl *mapping.IndexMappingImpl) {
-	mappingImpl.AddCustomCharFilter(`remove_expression_tokens`, map[string]interface{}{
+	mappingImpl.AddCustomCharFilter(`remove_expression_tokens`, map[string]any{
 		`type`:   regexp.Name,
 		`regexp`: `[\:\[\]\*]+`,
 	})
 
-	mappingImpl.AddCustomAnalyzer(`pivot_filter`, map[string]interface{}{
+	mappingImpl.AddCustomAnalyzer(`pivot_filter`, map[string]any{
 		`type`: custom.Name,
 		`char_filters`: []string{
 			`remove_expression_tokens`,

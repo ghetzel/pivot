@@ -16,11 +16,11 @@ func TestRecordGet(t *testing.T) {
 
 	assert.Equal(`1`, record.ID)
 
-	assert.Equal(map[string]interface{}{
+	assert.Equal(map[string]any{
 		`this.is.a.test`: true,
-		`this`: map[string]interface{}{
-			`is`: map[string]interface{}{
-				`a`: map[string]interface{}{
+		`this`: map[string]any{
+			`is`: map[string]any{
+				`a`: map[string]any{
 					`test`: `correct`,
 				},
 			},
@@ -36,44 +36,44 @@ func TestRecordAppend(t *testing.T) {
 	assert := require.New(t)
 
 	record := NewRecord(`2`).Append(`first`, 1)
-	assert.Equal([]interface{}{1}, record.Get(`first`))
+	assert.Equal([]any{1}, record.Get(`first`))
 
 	record = NewRecord(`2a`).Set(`second`, 4)
 	assert.Equal(4, record.Get(`second`))
 	record.Append(`second`, 5)
-	assert.Equal([]interface{}{4, 5}, record.Get(`second`))
+	assert.Equal([]any{4, 5}, record.Get(`second`))
 
 	record = NewRecord(`2b`).Set(`third`, []string{`6`, `7`})
 	record.Append(`third`, 8)
-	assert.Equal([]interface{}{`6`, `7`, 8}, record.Get(`third`))
+	assert.Equal([]any{`6`, `7`, 8}, record.Get(`third`))
 
-	record = NewRecord(`2c`).Set(`fourth`, []interface{}{`6`, `7`})
+	record = NewRecord(`2c`).Set(`fourth`, []any{`6`, `7`})
 	record.Append(`fourth`, 8)
 	record.Append(`fourth`, 9)
 	record.Append(`fourth`, `10`)
-	assert.Equal([]interface{}{`6`, `7`, 8, 9, `10`}, record.Get(`fourth`))
+	assert.Equal([]any{`6`, `7`, 8, 9, `10`}, record.Get(`fourth`))
 }
 
 func TestRecordAppendNested(t *testing.T) {
 	assert := require.New(t)
 
 	record := NewRecord(`2`).AppendNested(`t.first`, 1)
-	assert.Equal([]interface{}{1}, record.Get(`t.first`))
+	assert.Equal([]any{1}, record.Get(`t.first`))
 
 	record = NewRecord(`2a`).SetNested(`t.second`, 4)
 	assert.Equal(4, record.Get(`t.second`))
 	record.Append(`t.second`, 5)
-	assert.Equal([]interface{}{4, 5}, record.Get(`t.second`))
+	assert.Equal([]any{4, 5}, record.Get(`t.second`))
 
 	record = NewRecord(`2b`).SetNested(`t.third`, []string{`6`, `7`})
 	record.Append(`t.third`, 8)
-	assert.Equal([]interface{}{`6`, `7`, 8}, record.Get(`t.third`))
+	assert.Equal([]any{`6`, `7`, 8}, record.Get(`t.third`))
 
-	record = NewRecord(`2c`).SetNested(`t.fourth`, []interface{}{`6`, `7`})
+	record = NewRecord(`2c`).SetNested(`t.fourth`, []any{`6`, `7`})
 	record.AppendNested(`t.fourth`, 8)
 	record.AppendNested(`t.fourth`, 9)
 	record.AppendNested(`t.fourth`, `10`)
-	assert.Equal([]interface{}{`6`, `7`, 8, 9, `10`}, record.Get(`t.fourth`))
+	assert.Equal([]any{`6`, `7`, 8, 9, `10`}, record.Get(`t.fourth`))
 }
 
 func TestRecordPopulateStruct(t *testing.T) {
@@ -108,8 +108,8 @@ func TestRecordPopulateStruct(t *testing.T) {
 	assert.Equal(42, thing.Size)
 
 	type KV struct {
-		Key   string      `pivot:"key,identity"`
-		Value interface{} `pivot:"value,omitempty"`
+		Key   string `pivot:"key,identity"`
+		Value any    `pivot:"value,omitempty"`
 	}
 
 	record = NewRecord(`this.is.an.id`).Set(`value`, 42)
@@ -130,7 +130,7 @@ func TestRecordPopulateStructWithValidator(t *testing.T) {
 			{
 				Name: `name`,
 				Type: StringType,
-				Validator: func(v interface{}) error {
+				Validator: func(v any) error {
 					if fmt.Sprintf("%v", v) == `test` {
 						return fmt.Errorf("Shouldn't be test")
 					}
@@ -184,7 +184,7 @@ func TestRecordPopulateStructWithFormatter(t *testing.T) {
 			{
 				Name: `name`,
 				Type: StringType,
-				Formatter: func(v interface{}, op FieldOperation) (interface{}, error) {
+				Formatter: func(v any, op FieldOperation) (any, error) {
 					return stringutil.Underscore(fmt.Sprintf("%v", v)), nil
 				},
 			},
@@ -232,14 +232,14 @@ func TestRecordPopulateStructWithFormatterValidator(t *testing.T) {
 			{
 				Name: `name`,
 				Type: StringType,
-				Validator: func(v interface{}) error {
+				Validator: func(v any) error {
 					if fmt.Sprintf("%v", v) == `TestValue` {
 						return fmt.Errorf("Shouldn't be TestValue")
 					}
 
 					return nil
 				},
-				Formatter: func(v interface{}, op FieldOperation) (interface{}, error) {
+				Formatter: func(v any, op FieldOperation) (any, error) {
 					return stringutil.Underscore(fmt.Sprintf("%v", v)), nil
 				},
 			},
@@ -279,18 +279,18 @@ func TestRecordKeys(t *testing.T) {
 	}
 
 	assert.EqualValues(
-		[]interface{}{1, `first`},
-		NewRecord([]interface{}{1, `first`}).Keys(collection),
+		[]any{1, `first`},
+		NewRecord([]any{1, `first`}).Keys(collection),
 	)
 
 	assert.EqualValues(
-		[]interface{}{2, `second`},
-		NewRecord([]interface{}{2}).Set(`other`, `second`).Keys(collection),
+		[]any{2, `second`},
+		NewRecord([]any{2}).Set(`other`, `second`).Keys(collection),
 	)
 
 	assert.EqualValues(
-		[]interface{}{2},
-		NewRecord([]interface{}{2}).Keys(collection),
+		[]any{2},
+		NewRecord([]any{2}).Keys(collection),
 	)
 
 	assert.Empty(NewRecord(nil).Keys(collection))

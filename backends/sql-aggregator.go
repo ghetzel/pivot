@@ -12,7 +12,7 @@ import (
 	"github.com/ghetzel/pivot/v3/filter/generators"
 )
 
-type sqlAggResultFunc func(*sql.Rows, *generators.Sql, *dal.Collection, *filter.Filter) (interface{}, error)
+type sqlAggResultFunc func(*sql.Rows, *generators.Sql, *dal.Collection, *filter.Filter) (any, error)
 
 func (self *SqlBackend) Sum(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error) {
 	return self.aggregateFloat(collection, filter.Sum, field, f)
@@ -62,7 +62,7 @@ func (self *SqlBackend) aggregateFloat(collection *dal.Collection, aggregation f
 	}
 }
 
-func (self *SqlBackend) aggregate(collection *dal.Collection, groupBy []string, aggregates []filter.Aggregate, f []*filter.Filter, resultFn sqlAggResultFunc) (interface{}, error) {
+func (self *SqlBackend) aggregate(collection *dal.Collection, groupBy []string, aggregates []filter.Aggregate, f []*filter.Filter, resultFn sqlAggResultFunc) (any, error) {
 	queryGen := self.makeQueryGen(collection)
 	var flt *filter.Filter
 
@@ -107,7 +107,7 @@ func (self *SqlBackend) AggregatorInitialize(parent Backend) error {
 	return nil
 }
 
-func (self *SqlBackend) extractSingleFloat64(rows *sql.Rows, _ *generators.Sql, _ *dal.Collection, _ *filter.Filter) (interface{}, error) {
+func (self *SqlBackend) extractSingleFloat64(rows *sql.Rows, _ *generators.Sql, _ *dal.Collection, _ *filter.Filter) (any, error) {
 	if rows.Next() {
 		var rv sql.NullFloat64
 
@@ -121,7 +121,7 @@ func (self *SqlBackend) extractSingleFloat64(rows *sql.Rows, _ *generators.Sql, 
 	}
 }
 
-func (self *SqlBackend) extractRecordSet(rows *sql.Rows, queryGen *generators.Sql, collection *dal.Collection, flt *filter.Filter) (interface{}, error) {
+func (self *SqlBackend) extractRecordSet(rows *sql.Rows, queryGen *generators.Sql, collection *dal.Collection, flt *filter.Filter) (any, error) {
 	recordset := dal.NewRecordSet()
 
 	if columns, err := rows.Columns(); err == nil {

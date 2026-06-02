@@ -309,7 +309,7 @@ func (self *FileBackend) GetConnectionString() *dal.ConnectionString {
 	return &self.conn
 }
 
-func (self *FileBackend) Exists(name string, id interface{}) bool {
+func (self *FileBackend) Exists(name string, id any) bool {
 	if collection, err := self.GetCollection(name); err == nil {
 		self.refresh(collection.SourceURI)
 
@@ -322,7 +322,7 @@ func (self *FileBackend) Exists(name string, id interface{}) bool {
 	return false
 }
 
-func (self *FileBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
+func (self *FileBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
 		if err := self.refresh(collection.SourceURI); err != nil {
 			return nil, err
@@ -348,7 +348,7 @@ func (self *FileBackend) Update(collection string, records *dal.RecordSet, targe
 	return fmt.Errorf("File backends are read-only")
 }
 
-func (self *FileBackend) Delete(collection string, ids ...interface{}) error {
+func (self *FileBackend) Delete(collection string, ids ...any) error {
 	return fmt.Errorf("File backends are read-only")
 }
 
@@ -363,7 +363,7 @@ func (self *FileBackend) DeleteCollection(collection string) error {
 func (self *FileBackend) ListCollections() ([]string, error) {
 	var names []string
 
-	self.collections.Range(func(key interface{}, value interface{}) bool {
+	self.collections.Range(func(key any, value any) bool {
 		names = append(names, typeutil.String(key))
 		return true
 	})

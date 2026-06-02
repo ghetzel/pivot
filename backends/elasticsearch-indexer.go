@@ -30,19 +30,19 @@ var ElasticsearchTLSTimeout = 10 * time.Second
 var ElasticsearchResponseHeaderTimeout = 10 * time.Second
 
 type elasticsearchIndex struct {
-	Name     string                 `json:"_index"`
-	Mappings map[string]interface{} `json:"mappings"`
-	Settings map[string]interface{} `json:"settings"`
+	Name     string         `json:"_index"`
+	Mappings map[string]any `json:"mappings"`
+	Settings map[string]any `json:"settings"`
 }
 
 type elasticsearchDocument struct {
-	Index   string                 `json:"_index"`
-	Type    string                 `json:"_type"`
-	ID      interface{}            `json:"_id"`
-	Version int                    `json:"_version"`
-	Score   float64                `json:"_score"`
-	Found   bool                   `json:"found"`
-	Source  map[string]interface{} `json:"_source"`
+	Index   string         `json:"_index"`
+	Type    string         `json:"_type"`
+	ID      any            `json:"_id"`
+	Version int            `json:"_version"`
+	Score   float64        `json:"_score"`
+	Found   bool           `json:"found"`
+	Source  map[string]any `json:"_source"`
 }
 
 func (self *elasticsearchDocument) record(collection *dal.Collection, sep string) (*dal.Record, error) {
@@ -90,21 +90,21 @@ type bulkOpType string
 
 const (
 	bulkIndex  bulkOpType = `index`
-	bulkCreate            = `create`
-	bulkDelete            = `delete`
-	bulkUpdate            = `update`
+	bulkCreate bulkOpType = `create`
+	bulkDelete bulkOpType = `delete`
+	bulkUpdate bulkOpType = `update`
 )
 
 type bulkOperation struct {
 	Type    bulkOpType
 	Index   string
 	DocType string
-	ID      interface{}
-	Payload map[string]interface{}
+	ID      any
+	Payload map[string]any
 }
 
-func (self *bulkOperation) GetBody() ([]map[string]interface{}, error) {
-	var rv []map[string]interface{}
+func (self *bulkOperation) GetBody() ([]map[string]any, error) {
+	var rv []map[string]any
 
 	if self.Index == `` {
 		return nil, fmt.Errorf("Index name is required for bulk operation")
@@ -119,8 +119,8 @@ func (self *bulkOperation) GetBody() ([]map[string]interface{}, error) {
 	}
 
 	// add the operation header, which is the same for all operation types
-	rv = append(rv, map[string]interface{}{
-		string(self.Type): map[string]interface{}{
+	rv = append(rv, map[string]any{
+		string(self.Type): map[string]any{
 			`_index`: self.Index,
 			`_type`:  self.DocType,
 			`_id`:    self.ID,
@@ -134,10 +134,10 @@ func (self *bulkOperation) GetBody() ([]map[string]interface{}, error) {
 			return nil, fmt.Errorf("Bulk %v operation requires a payload", self.Type)
 		}
 
-		var payload map[string]interface{}
+		var payload map[string]any
 
 		if self.Type == bulkUpdate {
-			payload = map[string]interface{}{
+			payload = map[string]any{
 				ElasticsearchDefaultType: self.Payload,
 			}
 		} else {
@@ -167,8 +167,8 @@ func (self *esDeferredBatch) Add(op bulkOperation) {
 	self.batch = append(self.batch, op)
 }
 
-func (self *esDeferredBatch) Flush() ([]map[string]interface{}, error) {
-	var rv []map[string]interface{}
+func (self *esDeferredBatch) Flush() ([]map[string]any, error) {
+	var rv []map[string]any
 
 	self.batchLock.Lock()
 
@@ -246,7 +246,7 @@ func (self *ElasticsearchIndexer) GetBackend() Backend {
 	return self.parent
 }
 
-func (self *ElasticsearchIndexer) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
+func (self *ElasticsearchIndexer) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error) {
 	defer stats.NewTiming().Send(`pivot.indexers.elasticsearch.retrieve_time`)
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
@@ -275,7 +275,7 @@ func (self *ElasticsearchIndexer) IndexRetrieve(collection *dal.Collection, id i
 	}
 }
 
-func (self *ElasticsearchIndexer) IndexExists(collection *dal.Collection, id interface{}) bool {
+func (self *ElasticsearchIndexer) IndexExists(collection *dal.Collection, id any) bool {
 	if _, err := self.IndexRetrieve(collection, id); err == nil {
 		return true
 	}
@@ -341,7 +341,7 @@ func (self *ElasticsearchIndexer) checkAndFlushBatches(forceFlush bool) {
 					httputil.Literal(
 						strings.Join(lines, "\n")+"\n",
 					),
-					map[string]interface{}{
+					map[string]any{
 						`refresh`: self.refresh,
 					},
 					nil,
@@ -422,7 +422,7 @@ func (self *ElasticsearchIndexer) QueryFunc(collection *dal.Collection, f *filte
 				f,
 			); err == nil {
 				var urlpath string
-				var body interface{}
+				var body any
 
 				// build the search request; either the initial Scroll API query, Scroll paging query,
 				// or just a regular old Search API query.
@@ -534,7 +534,7 @@ func (self *ElasticsearchIndexer) Query(collection *dal.Collection, f *filter.Fi
 	}
 }
 
-func (self *ElasticsearchIndexer) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+func (self *ElasticsearchIndexer) IndexRemove(collection *dal.Collection, ids []any) error {
 	if index, err := self.getIndexForCollection(collection); err == nil {
 		var merr error
 
@@ -554,23 +554,23 @@ func (self *ElasticsearchIndexer) IndexRemove(collection *dal.Collection, ids []
 	}
 }
 
-func (self *ElasticsearchIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
+func (self *ElasticsearchIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error) {
 	if f == nil {
 		f = filter.All()
 	}
 
 	if index, err := self.getIndexForCollection(collection); err == nil {
-		var aggs = make(map[string]interface{})
+		var aggs = make(map[string]any)
 
 		for _, field := range fields {
-			aggs[field] = map[string]interface{}{
-				`terms`: map[string]interface{}{
+			aggs[field] = map[string]any{
+				`terms`: map[string]any{
 					`field`: field,
 				},
 			}
 		}
 
-		f.Options = map[string]interface{}{
+		f.Options = map[string]any{
 			`aggs`: aggs,
 		}
 
@@ -585,10 +585,10 @@ func (self *ElasticsearchIndexer) ListValues(collection *dal.Collection, fields 
 				nil,
 				nil,
 			); err == nil {
-				var aggResponse = make(map[string]interface{})
+				var aggResponse = make(map[string]any)
 
 				if err := self.client.Decode(response.Body, &aggResponse); err == nil {
-					var out = make(map[string][]interface{})
+					var out = make(map[string][]any)
 
 					for k, v := range maputil.M(aggResponse).Get(`aggregations`).MapNative() {
 						var values = maputil.Pluck(
@@ -620,7 +620,7 @@ func (self *ElasticsearchIndexer) ListValues(collection *dal.Collection, fields 
 
 func (self *ElasticsearchIndexer) DeleteQuery(collection *dal.Collection, f *filter.Filter) error {
 	f.Fields = []string{ElasticsearchIdentityField}
-	var ids []interface{}
+	var ids []any
 
 	if err := self.QueryFunc(collection, f, func(indexRecord *dal.Record, err error, page IndexPage) error {
 		ids = append(ids, indexRecord.ID)
@@ -646,7 +646,7 @@ func (self *ElasticsearchIndexer) getIndexForCollection(collection *dal.Collecti
 	} else {
 		if response, err := self.client.Get(
 			fmt.Sprintf("/%s", name),
-			map[string]interface{}{
+			map[string]any{
 				`include_type_name`: false,
 			},
 			nil,

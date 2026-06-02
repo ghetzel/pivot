@@ -34,7 +34,7 @@ func TestRecordSet(t *testing.T) {
 				Name:     `created_at`,
 				Type:     TimeType,
 				Required: true,
-				DefaultValue: func() interface{} {
+				DefaultValue: func() any {
 					return deftime
 				},
 			},
@@ -42,17 +42,17 @@ func TestRecordSet(t *testing.T) {
 	}
 
 	recordset := NewRecordSet(
-		NewRecord(1).SetFields(map[string]interface{}{
+		NewRecord(1).SetFields(map[string]any{
 			`name`:       `First`,
 			`factor`:     0.1,
 			`created_at`: nil,
 		}),
-		NewRecord(3).SetFields(map[string]interface{}{
+		NewRecord(3).SetFields(map[string]any{
 			`name`:       `Second`,
 			`factor`:     nil,
 			`created_at`: othtime,
 		}),
-		NewRecord(5).SetFields(map[string]interface{}{
+		NewRecord(5).SetFields(map[string]any{
 			`name`:       `Third`,
 			`factor`:     0.3,
 			`created_at`: nil,

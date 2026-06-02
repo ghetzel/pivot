@@ -41,7 +41,7 @@
                     "Alias": "http"
                 }
             ],
-            "Size": 249,
+            "Size": 241,
             "LineCount": 15,
             "SourceLineCount": 11,
             "FunctionCount": 0,
@@ -61,7 +61,7 @@
         },
         {
             "Name": "version.go",
-            "Size": 38,
+            "Size": 39,
             "LineCount": 4,
             "SourceLineCount": 2,
             "FunctionCount": 0,
@@ -74,8 +74,8 @@
         {
             "Name": "Version",
             "Immutable": true,
-            "Expression": "`3.4.6`",
-            "Value": "3.4.6"
+            "Expression": "`3.4.10`",
+            "Value": "3.4.10"
         }
     ],
     "Variables": [
@@ -171,7 +171,7 @@
         },
         "EndpointResponseFunc": {
             "Name": "EndpointResponseFunc",
-            "Source": "dHlwZSBFbmRwb2ludFJlc3BvbnNlRnVuYyBmdW5jKCpodHRwLlJlcXVlc3QsIG1hcFtzdHJpbmddc3RyaW5nKSAoaW50LCBpbnRlcmZhY2V7fSwgZXJyb3Ip"
+            "Source": "dHlwZSBFbmRwb2ludFJlc3BvbnNlRnVuYyBmdW5jKCpodHRwLlJlcXVlc3QsIG1hcFtzdHJpbmddc3RyaW5nKSAoaW50LCBhbnksIGVycm9yKQ=="
         },
         "Status": {
             "Name": "Status",

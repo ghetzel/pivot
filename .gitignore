@@ -10,3 +10,4 @@
 *.egg-info/
 /lib/python/env
 .DS_Store
+/.vscode

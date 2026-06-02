@@ -139,19 +139,19 @@
 	
     <li>
 		<strong>
-		<a href="#CurrentTime">func CurrentTime(value interface{}, op FieldOperation) (interface{}, error)</a>
+		<a href="#CurrentTime">func CurrentTime(value any, op FieldOperation) (any, error)</a>
 		</strong>
 	</li>
 	
     <li>
 		<strong>
-		<a href="#CurrentTimeIfUnset">func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error)</a>
+		<a href="#CurrentTimeIfUnset">func CurrentTimeIfUnset(value any, op FieldOperation) (any, error)</a>
 		</strong>
 	</li>
 	
     <li>
 		<strong>
-		<a href="#GenerateUUID">func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error)</a>
+		<a href="#GenerateUUID">func GenerateUUID(value any, _ FieldOperation) (any, error)</a>
 		</strong>
 	</li>
 	
@@ -187,37 +187,37 @@
 	
     <li>
 		
-		<a href="#TrimSpace">func TrimSpace(value interface{}, _ FieldOperation) (interface{}, error)</a>
+		<a href="#TrimSpace">func TrimSpace(value any, _ FieldOperation) (any, error)</a>
 		
 	</li>
 	
     <li>
 		<strong>
-		<a href="#ValidateIsURL">func ValidateIsURL(value interface{}) error</a>
+		<a href="#ValidateIsURL">func ValidateIsURL(value any) error</a>
 		</strong>
 	</li>
 	
     <li>
 		<strong>
-		<a href="#ValidateNonZero">func ValidateNonZero(value interface{}) error</a>
+		<a href="#ValidateNonZero">func ValidateNonZero(value any) error</a>
 		</strong>
 	</li>
 	
     <li>
 		<strong>
-		<a href="#ValidateNotEmpty">func ValidateNotEmpty(value interface{}) error</a>
+		<a href="#ValidateNotEmpty">func ValidateNotEmpty(value any) error</a>
 		</strong>
 	</li>
 	
     <li>
 		<strong>
-		<a href="#ValidatePositiveInteger">func ValidatePositiveInteger(value interface{}) error</a>
+		<a href="#ValidatePositiveInteger">func ValidatePositiveInteger(value any) error</a>
 		</strong>
 	</li>
 	
     <li>
 		<strong>
-		<a href="#ValidatePositiveOrZeroInteger">func ValidatePositiveOrZeroInteger(value interface{}) error</a>
+		<a href="#ValidatePositiveOrZeroInteger">func ValidatePositiveOrZeroInteger(value any) error</a>
 		</strong>
 	</li>
 	
@@ -356,7 +356,7 @@
 				<a href="#Collection.ConvertValue">
 					func
 					(self *Collection)
-					ConvertValue(name string, value interface{}) interface{}
+					ConvertValue(name string, value any) any
 				</a>
 				</strong>
 			</li>
@@ -584,7 +584,7 @@
 				<a href="#Collection.MakeRecord">
 					func
 					(self *Collection)
-					MakeRecord(in interface{}, ops ...FieldOperation) (*Record, error)
+					MakeRecord(in any, ops ...FieldOperation) (*Record, error)
 				</a>
 				</strong>
 			</li>
@@ -596,7 +596,7 @@
 				<a href="#Collection.MapFromRecord">
 					func
 					(self *Collection)
-					MapFromRecord(record *Record, fields ...string) (map[string]interface{}, error)
+					MapFromRecord(record *Record, fields ...string) (map[string]any, error)
 				</a>
 				</strong>
 			</li>
@@ -634,7 +634,7 @@
 				<a href="#Collection.SetRecordType">
 					func
 					(self *Collection)
-					SetRecordType(in interface{}) *Collection
+					SetRecordType(in any) *Collection
 				</a>
 				</strong>
 			</li>
@@ -646,7 +646,7 @@
 				<a href="#Collection.StructToRecord">
 					func
 					(self *Collection)
-					StructToRecord(in interface{}) (*Record, error)
+					StructToRecord(in any) (*Record, error)
 				</a>
 				</strong>
 			</li>
@@ -682,7 +682,7 @@
 				<a href="#Collection.ValueForField">
 					func
 					(self *Collection)
-					ValueForField(name string, value interface{}, op FieldOperation) (interface{}, error)
+					ValueForField(name string, value any, op FieldOperation) (any, error)
 				</a>
 				</strong>
 			</li>
@@ -776,7 +776,7 @@
 			<li>
 				
 				<a href="#ConnectionString.MakeConnectionString">
-					func MakeConnectionString(scheme string, host string, dataset string, options map[string]interface{}) (ConnectionString, error)
+					func MakeConnectionString(scheme string, host string, dataset string, options map[string]any) (ConnectionString, error)
 				</a>
 				
 			</li>
@@ -803,7 +803,7 @@
 				<a href="#ConnectionString.ClearOpt">
 					func
 					(self *ConnectionString)
-					ClearOpt(key string)
+					ClearOpt(key string) typeutil.Variant
 				</a>
 				
 			</li>
@@ -1120,7 +1120,7 @@
 				<a href="#Field.ConvertValue">
 					func
 					(self *Field)
-					ConvertValue(in interface{}) (interface{}, error)
+					ConvertValue(in any) (any, error)
 				</a>
 				
 			</li>
@@ -1144,7 +1144,7 @@
 				<a href="#Field.Format">
 					func
 					(self *Field)
-					Format(value interface{}, op FieldOperation) (interface{}, error)
+					Format(value any, op FieldOperation) (any, error)
 				</a>
 				
 			</li>
@@ -1156,7 +1156,7 @@
 				<a href="#Field.GetDefaultValue">
 					func
 					(self *Field)
-					GetDefaultValue() interface{}
+					GetDefaultValue() any
 				</a>
 				
 			</li>
@@ -1168,7 +1168,7 @@
 				<a href="#Field.GetTypeInstance">
 					func
 					(self *Field)
-					GetTypeInstance() interface{}
+					GetTypeInstance() any
 				</a>
 				
 			</li>
@@ -1204,7 +1204,7 @@
 				<a href="#Field.Validate">
 					func
 					(self *Field)
-					Validate(value interface{}) error
+					Validate(value any) error
 				</a>
 				
 			</li>
@@ -1243,7 +1243,7 @@
 	</li>
 	
     <li>
-		<a href="#Model">type Model </a>
+		<a href="#Model">type Model any</a>
 
 		
 		
@@ -1277,7 +1277,7 @@
 			<li>
 				
 				<a href="#Record.NewRecord">
-					func NewRecord(id interface{}, data ...map[string]interface{}) *Record
+					func NewRecord(id any, data ...map[string]any) *Record
 				</a>
 				
 			</li>
@@ -1288,7 +1288,7 @@
 			<li>
 				
 				<a href="#Record.NewRecordErr">
-					func NewRecordErr(id interface{}, err error) *Record
+					func NewRecordErr(id any, err error) *Record
 				</a>
 				
 			</li>
@@ -1319,7 +1319,7 @@
 				<a href="#Record.Append">
 					func
 					(self *Record)
-					Append(key string, value ...interface{}) *Record
+					Append(key string, value ...any) *Record
 				</a>
 				
 			</li>
@@ -1331,7 +1331,7 @@
 				<a href="#Record.AppendNested">
 					func
 					(self *Record)
-					AppendNested(key string, value ...interface{}) *Record
+					AppendNested(key string, value ...any) *Record
 				</a>
 				
 			</li>
@@ -1355,7 +1355,7 @@
 				<a href="#Record.Get">
 					func
 					(self *Record)
-					Get(key string, fallback ...interface{}) interface{}
+					Get(key string, fallback ...any) any
 				</a>
 				
 			</li>
@@ -1367,7 +1367,7 @@
 				<a href="#Record.GetNested">
 					func
 					(self *Record)
-					GetNested(key string, fallback ...interface{}) interface{}
+					GetNested(key string, fallback ...any) any
 				</a>
 				
 			</li>
@@ -1391,7 +1391,7 @@
 				<a href="#Record.Keys">
 					func
 					(self *Record)
-					Keys(collection *Collection) []interface{}
+					Keys(collection *Collection) []any
 				</a>
 				
 			</li>
@@ -1403,7 +1403,7 @@
 				<a href="#Record.Map">
 					func
 					(self *Record)
-					Map(fields ...string) map[string]interface{}
+					Map(fields ...string) map[string]any
 				</a>
 				
 			</li>
@@ -1431,7 +1431,7 @@
 				<a href="#Record.Populate">
 					func
 					(self *Record)
-					Populate(into interface{}, collection *Collection) error
+					Populate(into any, collection *Collection) error
 				</a>
 				</strong>
 			</li>
@@ -1443,7 +1443,7 @@
 				<a href="#Record.Set">
 					func
 					(self *Record)
-					Set(key string, value interface{}) *Record
+					Set(key string, value any) *Record
 				</a>
 				
 			</li>
@@ -1467,7 +1467,7 @@
 				<a href="#Record.SetFields">
 					func
 					(self *Record)
-					SetFields(values map[string]interface{}) *Record
+					SetFields(values map[string]any) *Record
 				</a>
 				
 			</li>
@@ -1479,7 +1479,7 @@
 				<a href="#Record.SetKeys">
 					func
 					(self *Record)
-					SetKeys(collection *Collection, op FieldOperation, keys ...interface{}) error
+					SetKeys(collection *Collection, op FieldOperation, keys ...any) error
 				</a>
 				
 			</li>
@@ -1491,7 +1491,7 @@
 				<a href="#Record.SetNested">
 					func
 					(self *Record)
-					SetNested(key string, value interface{}) *Record
+					SetNested(key string, value any) *Record
 				</a>
 				
 			</li>
@@ -1580,7 +1580,7 @@
 				<a href="#RecordSet.GetRecordByID">
 					func
 					(self *RecordSet)
-					GetRecordByID(id interface{}) (*Record, bool)
+					GetRecordByID(id any) (*Record, bool)
 				</a>
 				
 			</li>
@@ -1592,7 +1592,7 @@
 				<a href="#RecordSet.IDs">
 					func
 					(self *RecordSet)
-					IDs() ids []interface{}
+					IDs() ids []any
 				</a>
 				
 			</li>
@@ -1618,7 +1618,7 @@
 				<a href="#RecordSet.Pluck">
 					func
 					(self *RecordSet)
-					Pluck(field string, fallback ...interface{}) []interface{}
+					Pluck(field string, fallback ...any) []any
 				</a>
 				
 			</li>
@@ -1630,7 +1630,7 @@
 				<a href="#RecordSet.PopulateFromRecords">
 					func
 					(self *RecordSet)
-					PopulateFromRecords(into interface{}, schema *Collection) error
+					PopulateFromRecords(into any, schema *Collection) error
 				</a>
 				</strong>
 			</li>
@@ -1844,7 +1844,7 @@
 			
 		</td>
 		<td class="text-right">7KB</td>
-		<td class="text-right">239</td>
+		<td class="text-right">241</td>
 		<td class="text-right">22</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -1927,7 +1927,7 @@
 			<a href="record.go">record.go</a>
 			
 		</td>
-		<td class="text-right">13KB</td>
+		<td class="text-right">12KB</td>
 		<td class="text-right">379</td>
 		<td class="text-right">18</td>
 		<td class="text-right">1</td>
@@ -1983,7 +1983,7 @@
 			<a href="recordset.go">recordset.go</a>
 			
 		</td>
-		<td class="text-right">4KB</td>
+		<td class="text-right">3KB</td>
 		<td class="text-right">102</td>
 		<td class="text-right">9</td>
 		<td class="text-right">1</td>
@@ -2139,7 +2139,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func CurrentTime(value interface{}, op FieldOperation) (interface{}, error)</pre>
+	<pre>func CurrentTime(value any, op FieldOperation) (any, error)</pre>
 </div>
 
 
@@ -2153,7 +2153,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error)</pre>
+	<pre>func CurrentTimeIfUnset(value any, op FieldOperation) (any, error)</pre>
 </div>
 
 
@@ -2167,7 +2167,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error)</pre>
+	<pre>func GenerateUUID(value any, _ FieldOperation) (any, error)</pre>
 </div>
 
 
@@ -2239,7 +2239,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func TrimSpace(value interface{}, _ FieldOperation) (interface{}, error)</pre>
+	<pre>func TrimSpace(value any, _ FieldOperation) (any, error)</pre>
 </div>
 
 
@@ -2250,7 +2250,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateIsURL(value interface{}) error</pre>
+	<pre>func ValidateIsURL(value any) error</pre>
 </div>
 
 
@@ -2264,7 +2264,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateNonZero(value interface{}) error</pre>
+	<pre>func ValidateNonZero(value any) error</pre>
 </div>
 
 
@@ -2278,7 +2278,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateNotEmpty(value interface{}) error</pre>
+	<pre>func ValidateNotEmpty(value any) error</pre>
 </div>
 
 
@@ -2292,7 +2292,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidatePositiveInteger(value interface{}) error</pre>
+	<pre>func ValidatePositiveInteger(value any) error</pre>
 </div>
 
 
@@ -2306,7 +2306,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidatePositiveOrZeroInteger(value interface{}) error</pre>
+	<pre>func ValidatePositiveOrZeroInteger(value any) error</pre>
 </div>
 
 
@@ -2393,7 +2393,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	PreSaveValidator            CollectionValidatorFunc `json:&#34;-&#34;`
 	View                        bool                    `json:&#34;view,omitempty&#34;`
 	ViewKeywords                string                  `json:&#34;view_keywords,omitempty&#34;`
-	ViewQuery                   interface{}             `json:&#34;view_query,omitempty&#34;`
+	ViewQuery                   any                     `json:&#34;view_query,omitempty&#34;`
 	AlwaysCreate                bool                    `json:&#34;create,omitempty&#34;`
 	Ready                       bool                    `json:&#34;ready,omitempty&#34;`
 
@@ -2549,7 +2549,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Collection) ConvertValue(name string, value interface{}) interface{}</pre>
+	<pre>func (self *Collection) ConvertValue(name string, value any) any</pre>
 </div>
 
 <p><p>Convert a given value according to the data type of a specific named field.</p>
@@ -2885,7 +2885,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Collection) MakeRecord(in interface{}, ops ...FieldOperation) (*Record, error)</pre>
+	<pre>func (self *Collection) MakeRecord(in any, ops ...FieldOperation) (*Record, error)</pre>
 </div>
 
 <p><p>Deprecated: use StructToRecord instead</p>
@@ -2903,7 +2903,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Collection) MapFromRecord(record *Record, fields ...string) (map[string]interface{}, error)</pre>
+	<pre>func (self *Collection) MapFromRecord(record *Record, fields ...string) (map[string]any, error)</pre>
 </div>
 
 <p><p>Convert the given record into a map.</p>
@@ -2959,7 +2959,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Collection) SetRecordType(in interface{}) *Collection</pre>
+	<pre>func (self *Collection) SetRecordType(in any) *Collection</pre>
 </div>
 
 <p><p>Deprecated: this functionality has been removed.</p>
@@ -2977,7 +2977,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Collection) StructToRecord(in interface{}) (*Record, error)</pre>
+	<pre>func (self *Collection) StructToRecord(in any) (*Record, error)</pre>
 </div>
 
 <p><p>Generates a Record suitable for persistence in a backend from the given struct.</p>
@@ -3031,7 +3031,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Collection) ValueForField(name string, value interface{}, op FieldOperation) (interface{}, error)</pre>
+	<pre>func (self *Collection) ValueForField(name string, value any, op FieldOperation) (any, error)</pre>
 </div>
 
 <p><p>Convert a given value into one that that can go into the backend database (for create/update operations), or that<br>should be returned to the user (for retrieval operations) in accordance with the named field’s data type and<br>formatters.  Invalid values (determined by Validators and the Required option in the Field) will return an error.</p>
@@ -3090,7 +3090,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	
 	<pre>type ConnectionString struct {
 	URI     *url.URL
-	Options map[string]interface{}
+	Options map[string]any
 }</pre>
 </div>
 
@@ -3166,7 +3166,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func MakeConnectionString(scheme string, host string, dataset string, options map[string]interface{}) (ConnectionString, error)</pre>
+	<pre>func MakeConnectionString(scheme string, host string, dataset string, options map[string]any) (ConnectionString, error)</pre>
 </div>
 
 
@@ -3202,7 +3202,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *ConnectionString) ClearOpt(key string)</pre>
+	<pre>func (self *ConnectionString) ClearOpt(key string) typeutil.Variant</pre>
 </div>
 
 
@@ -3486,12 +3486,12 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	
 	
 	<pre>type Constraint struct {
-	On         interface{} `json:&#34;on&#34;`
-	Collection string      `json:&#34;collection&#34;`
-	Field      interface{} `json:&#34;field&#34;`
-	Options    string      `json:&#34;options,omitempty&#34;`
-	Into       string      `json:&#34;into,omitempty&#34;`
-	NoEmbed    bool        `json:&#34;noembed,omitempty&#34;`
+	On         any    `json:&#34;on&#34;`
+	Collection string `json:&#34;collection&#34;`
+	Field      any    `json:&#34;field&#34;`
+	Options    string `json:&#34;options,omitempty&#34;`
+	Into       string `json:&#34;into,omitempty&#34;`
+	NoEmbed    bool   `json:&#34;noembed,omitempty&#34;`
 }// Represents the name (or array of names) of the local field the constraint is being applied to.
 // Whether to omit this constraint when determining embedded collections.
 </pre>
@@ -3618,7 +3618,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	Required           bool               `json:&#34;required,omitempty&#34;`
 	Unique             bool               `json:&#34;unique,omitempty&#34;`
 	UniqueGroup        string             `json:&#34;unique_group,omitempty&#34;`
-	DefaultValue       interface{}        `json:&#34;default,omitempty&#34;`
+	DefaultValue       any                `json:&#34;default,omitempty&#34;`
 	NativeType         string             `json:&#34;native_type,omitempty&#34;`
 	NotUserEditable    bool               `json:&#34;not_user_editable&#34;`
 	ValidateOnPopulate bool               `json:&#34;validate_on_populate,omitempty&#34;`
@@ -3627,13 +3627,13 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	ValidatorConfig    map // The name of the field
 	// A declarative form of the Validator configuration that uses pre-defined validators. Primarily
 	// used when storing schema declarations in external JSON files.
-	[string]interface{} `json:&#34;validators,omitempty&#34;`
+	[string]any `json:&#34;validators,omitempty&#34;`
 	FormatterConfig map // A declarative form of the Formatter configuration that uses pre-defined validators. Primarily
 	// used when storing schema declarations in external JSON files.
-	[string]interface{} `json:&#34;formatters,omitempty&#34;`
-	Index     int         `json:&#34;index,omitempty&#34;`
-	BelongsTo interface{} `json:&#34;belongs_to,omitempty&#34;`
-	ReadOnly  bool        `json:&#34;readonly,omitempty&#34;`
+	[string]any `json:&#34;formatters,omitempty&#34;`
+	Index     int  `json:&#34;index,omitempty&#34;`
+	BelongsTo any  `json:&#34;belongs_to,omitempty&#34;`
+	ReadOnly  bool `json:&#34;readonly,omitempty&#34;`
 }// Used to store the order this field appears in the source database.
 // Specifies that the field may not be updated, only read.  Attempts to update the field will be silently discarded.
 </pre>
@@ -3690,7 +3690,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Field) ConvertValue(in interface{}) (interface{}, error)</pre>
+	<pre>func (self *Field) ConvertValue(in any) (any, error)</pre>
 </div>
 
 
@@ -3720,7 +3720,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Field) Format(value interface{}, op FieldOperation) (interface{}, error)</pre>
+	<pre>func (self *Field) Format(value any, op FieldOperation) (any, error)</pre>
 </div>
 
 
@@ -3735,7 +3735,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Field) GetDefaultValue() interface{}</pre>
+	<pre>func (self *Field) GetDefaultValue() any</pre>
 </div>
 
 
@@ -3750,7 +3750,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Field) GetTypeInstance() interface{}</pre>
+	<pre>func (self *Field) GetTypeInstance() any</pre>
 </div>
 
 
@@ -3795,7 +3795,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Field) Validate(value interface{}) error</pre>
+	<pre>func (self *Field) Validate(value any) error</pre>
 </div>
 
 
@@ -3811,7 +3811,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	<a title="View Source" href="">&#182;</a>
 	
 	
-	<pre>type FieldFormatterFunc func(interface{}, FieldOperation) (interface{}, error)</pre>
+	<pre>type FieldFormatterFunc func(any, FieldOperation) (any, error)</pre>
 </div>
 
 
@@ -3824,7 +3824,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error)</pre>
+	<pre>func FormatterFromMap(in map[string]any) (FieldFormatterFunc, error)</pre>
 </div>
 
 
@@ -3837,7 +3837,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error)</pre>
+	<pre>func GetFormatter(name string, args any) (FieldFormatterFunc, error)</pre>
 </div>
 
 
@@ -3876,7 +3876,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func Replace(pairs []interface{}) FieldFormatterFunc</pre>
+	<pre>func Replace(pairs []any) FieldFormatterFunc</pre>
 </div>
 
 
@@ -3996,7 +3996,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	<a title="View Source" href="">&#182;</a>
 	
 	
-	<pre>type FieldValidatorFunc func(interface{}) error</pre>
+	<pre>type FieldValidatorFunc func(any) error</pre>
 </div>
 
 
@@ -4009,7 +4009,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidatorFromMap(in map[string]interface{}) (FieldValidatorFunc, error)</pre>
+	<pre>func ValidatorFromMap(in map[string]any) (FieldValidatorFunc, error)</pre>
 </div>
 
 <p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
@@ -4025,7 +4025,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func GetValidator(name string, args interface{}) (FieldValidatorFunc, error)</pre>
+	<pre>func GetValidator(name string, args any) (FieldValidatorFunc, error)</pre>
 </div>
 
 <p><p>Retrieve a validator by name.  Used by the ValidatorConfig configuration on Field.</p>
@@ -4089,7 +4089,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func ValidateIsOneOf(choices ...interface{}) FieldValidatorFunc</pre>
+	<pre>func ValidateIsOneOf(choices ...any) FieldValidatorFunc</pre>
 </div>
 
 <p><p>Validate that the given value is among the given choices.</p>
@@ -4142,7 +4142,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	<a title="View Source" href="">&#182;</a>
 	
 	
-	<pre>type Model interface{}</pre>
+	<pre>type Model any</pre>
 </div>
 
 
@@ -4162,13 +4162,13 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	
 	
 	<pre>type Record struct {
-	ID             interface{}            `json:&#34;id&#34;`
-	Fields         map[string]interface{} `json:&#34;fields,omitempty&#34;`
-	Data           []byte                 `json:&#34;data,omitempty&#34;`
-	Error          error                  `json:&#34;error,omitempty&#34;`
-	CollectionName string                 `json:&#34;collection,omitempty&#34;`
-	Operation      string                 `json:&#34;operation,omitempty&#34;`
-	Optional       bool                   `json:&#34;optional,omitempty&#34;`
+	ID             any            `json:&#34;id&#34;`
+	Fields         map[string]any `json:&#34;fields,omitempty&#34;`
+	Data           []byte         `json:&#34;data,omitempty&#34;`
+	Error          error          `json:&#34;error,omitempty&#34;`
+	CollectionName string         `json:&#34;collection,omitempty&#34;`
+	Operation      string         `json:&#34;operation,omitempty&#34;`
+	Optional       bool           `json:&#34;optional,omitempty&#34;`
 }// Specifies that the record is &#34;optional&#34;, which is namely used in fixtures to indicate that a missing collection should not be considered fatal.
 </pre>
 </div>
@@ -4199,7 +4199,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewRecord(id interface{}, data ...map[string]interface{}) *Record</pre>
+	<pre>func NewRecord(id any, data ...map[string]any) *Record</pre>
 </div>
 
 
@@ -4212,7 +4212,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewRecordErr(id interface{}, err error) *Record</pre>
+	<pre>func NewRecordErr(id any, err error) *Record</pre>
 </div>
 
 
@@ -4246,7 +4246,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Record) Append(key string, value ...interface{}) *Record</pre>
+	<pre>func (self *Record) Append(key string, value ...any) *Record</pre>
 </div>
 
 
@@ -4261,7 +4261,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Record) AppendNested(key string, value ...interface{}) *Record</pre>
+	<pre>func (self *Record) AppendNested(key string, value ...any) *Record</pre>
 </div>
 
 
@@ -4291,7 +4291,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Record) Get(key string, fallback ...interface{}) interface{}</pre>
+	<pre>func (self *Record) Get(key string, fallback ...any) any</pre>
 </div>
 
 
@@ -4306,7 +4306,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Record) GetNested(key string, fallback ...interface{}) interface{}</pre>
+	<pre>func (self *Record) GetNested(key string, fallback ...any) any</pre>
 </div>
 
 
@@ -4336,7 +4336,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Record) Keys(collection *Collection) []interface{}</pre>
+	<pre>func (self *Record) Keys(collection *Collection) []any</pre>
 </div>
 
 
@@ -4351,7 +4351,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Record) Map(fields ...string) map[string]interface{}</pre>
+	<pre>func (self *Record) Map(fields ...string) map[string]any</pre>
 </div>
 
 
@@ -4385,7 +4385,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Record) Populate(into interface{}, collection *Collection) error</pre>
+	<pre>func (self *Record) Populate(into any, collection *Collection) error</pre>
 </div>
 
 <p><p>Populates a given struct with with the values in this record.</p>
@@ -4403,7 +4403,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Record) Set(key string, value interface{}) *Record</pre>
+	<pre>func (self *Record) Set(key string, value any) *Record</pre>
 </div>
 
 
@@ -4433,7 +4433,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Record) SetFields(values map[string]interface{}) *Record</pre>
+	<pre>func (self *Record) SetFields(values map[string]any) *Record</pre>
 </div>
 
 
@@ -4448,7 +4448,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Record) SetKeys(collection *Collection, op FieldOperation, keys ...interface{}) error</pre>
+	<pre>func (self *Record) SetKeys(collection *Collection, op FieldOperation, keys ...any) error</pre>
 </div>
 
 
@@ -4463,7 +4463,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Record) SetNested(key string, value interface{}) *Record</pre>
+	<pre>func (self *Record) SetNested(key string, value any) *Record</pre>
 </div>
 
 
@@ -4495,13 +4495,13 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	
 	
 	<pre>type RecordSet struct {
-	ResultCount    int64                  `json:&#34;result_count&#34;`
-	Page           int                    `json:&#34;page,omitempty&#34;`
-	TotalPages     int                    `json:&#34;total_pages,omitempty&#34;`
-	RecordsPerPage int                    `json:&#34;records_per_page,omitempty&#34;`
-	Records        []*Record              `json:&#34;records&#34;`
-	Options        map[string]interface{} `json:&#34;options&#34;`
-	KnownSize      bool                   `json:&#34;known_size&#34;`
+	ResultCount    int64          `json:&#34;result_count&#34;`
+	Page           int            `json:&#34;page,omitempty&#34;`
+	TotalPages     int            `json:&#34;total_pages,omitempty&#34;`
+	RecordsPerPage int            `json:&#34;records_per_page,omitempty&#34;`
+	Records        []*Record      `json:&#34;records&#34;`
+	Options        map[string]any `json:&#34;options&#34;`
+	KnownSize      bool           `json:&#34;known_size&#34;`
 }</pre>
 </div>
 
@@ -4579,7 +4579,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *RecordSet) GetRecordByID(id interface{}) (*Record, bool)</pre>
+	<pre>func (self *RecordSet) GetRecordByID(id any) (*Record, bool)</pre>
 </div>
 
 
@@ -4594,7 +4594,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *RecordSet) IDs() ids []interface{}</pre>
+	<pre>func (self *RecordSet) IDs() ids []any</pre>
 </div>
 
 
@@ -4626,7 +4626,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *RecordSet) Pluck(field string, fallback ...interface{}) []interface{}</pre>
+	<pre>func (self *RecordSet) Pluck(field string, fallback ...any) []any</pre>
 </div>
 
 
@@ -4641,7 +4641,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *RecordSet) PopulateFromRecords(into interface{}, schema *Collection) error</pre>
+	<pre>func (self *RecordSet) PopulateFromRecords(into any, schema *Collection) error</pre>
 </div>
 
 <p><p>Takes a slice of structs or maps and fills it with instances populated by the records in this RecordSet<br>in accordance with the types specified in the given collection definition, as well as which<br>fields are available in the given struct.</p>
@@ -4676,7 +4676,7 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	
 	
 	<pre>type Relationship struct {
-	Keys           interface{} `json:&#34;key&#34;`
+	Keys           any         `json:&#34;key&#34;`
 	Collection     *Collection `json:&#34;-&#34;`
 	CollectionName string      `json:&#34;collection,omitempty&#34;`
 	Fields         []string    `json:&#34;fields,omitempty&#34;`
@@ -4724,8 +4724,8 @@ var <span id="RecordStructTag">RecordStructTag               </span> = util.Reco
 	Collection     string
 	Name           string
 	Parameter      string
-	Desired        interface{}
-	Actual         interface{}
+	Desired        any
+	Actual         any
 	ReferenceField *Field
 }</pre>
 </div>

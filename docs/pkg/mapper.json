@@ -7,7 +7,7 @@
     "Synopsis": "",
     "MainFunction": false,
     "CommentWordCount": 177,
-    "LineCount": 388,
+    "LineCount": 380,
     "SourceLineCount": 295,
     "FunctionCount": 25,
     "TypeCount": 3,
@@ -63,8 +63,8 @@
                     "Alias": "filter"
                 }
             ],
-            "Size": 10982,
-            "LineCount": 388,
+            "Size": 10758,
+            "LineCount": 380,
             "SourceLineCount": 295,
             "FunctionCount": 25,
             "TypeCount": 3,
@@ -88,7 +88,7 @@
                     "Arguments": [
                         {
                             "Name": "into",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -96,7 +96,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "All(into interface{}) error",
+                    "Signature": "All(into any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -110,7 +110,7 @@
                         },
                         {
                             "Name": "flt",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -121,7 +121,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Average(field string, flt interface{}) (float64, error)",
+                    "Signature": "Average(field string, flt any) (float64, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -131,7 +131,7 @@
                     "Arguments": [
                         {
                             "Name": "flt",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -142,7 +142,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Count(flt interface{}) (uint64, error)",
+                    "Signature": "Count(flt any) (uint64, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -153,7 +153,7 @@
                     "Arguments": [
                         {
                             "Name": "from",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -161,7 +161,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Create(from interface{}) error",
+                    "Signature": "Create(from any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -172,11 +172,11 @@
                     "Arguments": [
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "from",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -184,7 +184,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "CreateOrUpdate(id interface{}, from interface{}) error",
+                    "Signature": "CreateOrUpdate(id any, from any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -195,7 +195,7 @@
                     "Arguments": [
                         {
                             "Name": "ids",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -203,7 +203,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Delete(ids ...interface{}) error",
+                    "Signature": "Delete(ids ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -214,7 +214,7 @@
                     "Arguments": [
                         {
                             "Name": "flt",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -222,7 +222,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "DeleteQuery(flt interface{}) error",
+                    "Signature": "DeleteQuery(flt any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -244,7 +244,7 @@
                     "Arguments": [
                         {
                             "Name": "destZeroValue",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "resultFn",
@@ -256,7 +256,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Each(destZeroValue interface{}, resultFn ResultFunc) error",
+                    "Signature": "Each(destZeroValue any, resultFn ResultFunc) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -267,7 +267,7 @@
                     "Arguments": [
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -275,7 +275,7 @@
                             "Type": "bool"
                         }
                     ],
-                    "Signature": "Exists(id interface{}) bool",
+                    "Signature": "Exists(id any) bool",
                     "IsPackageLevel": false
                 },
                 {
@@ -286,11 +286,11 @@
                     "Arguments": [
                         {
                             "Name": "flt",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "into",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -298,7 +298,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Find(flt interface{}, into interface{}) error",
+                    "Signature": "Find(flt any, into any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -309,11 +309,11 @@
                     "Arguments": [
                         {
                             "Name": "flt",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "destZeroValue",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "resultFn",
@@ -325,7 +325,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error",
+                    "Signature": "FindFunc(flt any, destZeroValue any, resultFn ResultFunc) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -336,11 +336,11 @@
                     "Arguments": [
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "into",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -348,7 +348,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Get(id interface{}, into interface{}) error",
+                    "Signature": "Get(id any, into any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -390,7 +390,7 @@
                         },
                         {
                             "Name": "flt",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -401,7 +401,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "GroupBy(fields []string, aggregates []filter.Aggregate, flt interface{}) (*dal.RecordSet, error)",
+                    "Signature": "GroupBy(fields []string, aggregates []filter.Aggregate, flt any) (*dal.RecordSet, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -416,13 +416,13 @@
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "List(fields []string) (map[string][]interface{}, error)",
+                    "Signature": "List(fields []string) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -436,18 +436,18 @@
                         },
                         {
                             "Name": "flt",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
                         {
-                            "Type": "map[string][]interface{}"
+                            "Type": "map[string][]any"
                         },
                         {
                             "Type": "error"
                         }
                     ],
-                    "Signature": "ListWithFilter(fields []string, flt interface{}) (map[string][]interface{}, error)",
+                    "Signature": "ListWithFilter(fields []string, flt any) (map[string][]any, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -461,7 +461,7 @@
                         },
                         {
                             "Name": "flt",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -472,7 +472,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Maximum(field string, flt interface{}) (float64, error)",
+                    "Signature": "Maximum(field string, flt any) (float64, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -498,7 +498,7 @@
                         },
                         {
                             "Name": "flt",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -509,7 +509,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Minimum(field string, flt interface{}) (float64, error)",
+                    "Signature": "Minimum(field string, flt any) (float64, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -556,7 +556,7 @@
                         },
                         {
                             "Name": "flt",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -567,7 +567,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Sum(field string, flt interface{}) (float64, error)",
+                    "Signature": "Sum(field string, flt any) (float64, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -578,7 +578,7 @@
                     "Arguments": [
                         {
                             "Name": "from",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -586,7 +586,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Update(from interface{}) error",
+                    "Signature": "Update(from any) error",
                     "IsPackageLevel": false
                 }
             ],

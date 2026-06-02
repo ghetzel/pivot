@@ -21,15 +21,15 @@ func (self *RedisBackend) GetBackend() Backend {
 	return self
 }
 
-func (self *RedisBackend) IndexExists(collection *dal.Collection, id interface{}) bool {
+func (self *RedisBackend) IndexExists(collection *dal.Collection, id any) bool {
 	return self.Exists(collection.Name, id)
 }
 
-func (self *RedisBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
+func (self *RedisBackend) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error) {
 	return self.Retrieve(collection.Name, id)
 }
 
-func (self *RedisBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+func (self *RedisBackend) IndexRemove(collection *dal.Collection, ids []any) error {
 	return nil
 }
 
@@ -48,7 +48,7 @@ func (self *RedisBackend) QueryFunc(collection *dal.Collection, flt *filter.Filt
 	if flt == nil || flt.IsMatchAll() {
 		keyPattern = self.key(collection.Name, `*`)
 	} else {
-		placeholders := make([]interface{}, 0)
+		placeholders := make([]any, 0)
 
 		for i := 0; i < collection.KeyCount(); i++ {
 			placeholders = append(placeholders, `*`)
@@ -97,7 +97,7 @@ func (self *RedisBackend) QueryFunc(collection *dal.Collection, flt *filter.Filt
 					Page:         1,
 					TotalPages:   int(math.Ceil(float64(total) / float64(flt.Limit))),
 					Limit:        flt.Limit,
-					Offset:       (1 - 1) * flt.Limit,
+					Offset:       0,
 					TotalResults: total,
 				}); err != nil {
 					return err
@@ -119,7 +119,7 @@ func (self *RedisBackend) Query(collection *dal.Collection, f *filter.Filter, re
 	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 
-func (self *RedisBackend) ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error) {
+func (self *RedisBackend) ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]any, error) {
 	return nil, fmt.Errorf("%T.ListValues: Not Implemented", self)
 }
 

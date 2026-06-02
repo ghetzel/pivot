@@ -353,7 +353,7 @@ func (self *SqlBackend) Insert(name string, recordset *dal.RecordSet) error {
 	}
 }
 
-func (self *SqlBackend) Exists(name string, id interface{}) bool {
+func (self *SqlBackend) Exists(name string, id any) bool {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
 		if f, err := self.keyQuery(collection, id); err == nil {
 			if tx, err := self.db.Begin(); err == nil {
@@ -392,7 +392,7 @@ func (self *SqlBackend) Exists(name string, id interface{}) bool {
 	return false
 }
 
-func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
+func (self *SqlBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error) {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
 		if f, err := self.keyQuery(collection, id); err == nil {
 			f.Fields = fields
@@ -412,7 +412,7 @@ func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) 
 							} else {
 								// if it doesn't exist, make sure it's not indexed
 								if search := self.WithSearch(collection); search != nil {
-									defer search.IndexRemove(collection, []interface{}{id})
+									defer search.IndexRemove(collection, []any{id})
 								}
 
 								return nil, fmt.Errorf("Record %v does not exist", id)
@@ -530,7 +530,7 @@ func (self *SqlBackend) Update(name string, recordset *dal.RecordSet, target ...
 	}
 }
 
-func (self *SqlBackend) Delete(name string, ids ...interface{}) error {
+func (self *SqlBackend) Delete(name string, ids ...any) error {
 	if collection, err := self.getCollectionFromCache(name); err == nil {
 		// remove documents from index
 		if search := self.WithSearch(collection); search != nil {
@@ -677,7 +677,7 @@ func (self *SqlBackend) CreateCollection(definition *dal.Collection) error {
 	// );
 	gen := self.makeQueryGen(definition)
 	stmt := ``
-	values := make([]interface{}, 0)
+	values := make([]any, 0)
 
 	if definition.View {
 		vq := ``
@@ -893,7 +893,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 	// sql.Row.Scan is strict about how we call it (e.g.: won't return results as a map),
 	// so we hack...
 	//
-	output := make([]interface{}, len(columns))
+	output := make([]any, len(columns))
 
 	// put a zero-value instance of each column's type in the result array, which will
 	// serve as a hint to the sql.Scan function as to how to convert the data
@@ -954,8 +954,8 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 
 	// this is the actual error returned from calling Scan()
 	if err == nil {
-		var id interface{}
-		fields := make(map[string]interface{})
+		var id any
+		fields := make(map[string]any)
 
 		// for each column in the resultset
 
@@ -965,7 +965,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 			baseColumn := nestedPath[0]
 
 			if field, ok := collection.GetField(baseColumn); ok {
-				var value interface{}
+				var value any
 
 				// convert value types as needed
 				switch output[i].(type) {
@@ -1019,7 +1019,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 
 				// strings and raw bytes need a little love to determine exactly what they actually are
 				if asBytes, ok := value.([]byte); ok {
-					var dest map[string]interface{}
+					var dest map[string]any
 
 					switch field.Type {
 					case dal.ObjectType, dal.RawType:
@@ -1030,7 +1030,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 						}
 
 					case dal.ArrayType:
-						var destA []interface{}
+						var destA []any
 
 						if err := queryGen.ArrayTypeDecode(asBytes, &destA); err == nil {
 							value = destA
@@ -1080,7 +1080,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 
 						}
 
-						if newFields, ok := maputil.DeepSet(fields, nestedPath, v).(map[string]interface{}); ok {
+						if newFields, ok := maputil.DeepSet(fields, nestedPath, v).(map[string]any); ok {
 							fields = newFields
 						}
 					}
@@ -1101,7 +1101,7 @@ func (self *SqlBackend) scanFnValueToRecord(queryGen *generators.Sql, collection
 	}
 }
 
-func (self *SqlBackend) generateAlterStatement(delta *dal.SchemaDelta) (string, []interface{}, error) {
+func (self *SqlBackend) generateAlterStatement(delta *dal.SchemaDelta) (string, []any, error) {
 	var collection *dal.Collection
 
 	if detected, ok := self.detectedCollections[delta.Collection]; ok {
@@ -1163,7 +1163,7 @@ func (self *SqlBackend) Migrate() error {
 
 	var diff []*dal.SchemaDelta
 
-	self.registeredCollections.Range(func(key, value interface{}) bool {
+	self.registeredCollections.Range(func(key, value any) bool {
 		name := typeutil.String(key)
 		registered := value.(*dal.Collection)
 
@@ -1281,8 +1281,8 @@ func (self *SqlBackend) getCollectionFromCache(name string) (*dal.Collection, er
 	}
 }
 
-func (self *SqlBackend) keyQuery(collection *dal.Collection, id interface{}) (*filter.Filter, error) {
-	var ids []interface{}
+func (self *SqlBackend) keyQuery(collection *dal.Collection, id any) (*filter.Filter, error) {
+	var ids []any
 
 	keyFields := collection.KeyFields()
 
@@ -1302,7 +1302,7 @@ func (self *SqlBackend) keyQuery(collection *dal.Collection, id interface{}) (*f
 		f.AddCriteria(filter.Criterion{
 			Field:    keyField.Name,
 			Operator: `is`,
-			Values:   []interface{}{ids[i]},
+			Values:   []any{ids[i]},
 		})
 	}
 

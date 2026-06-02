@@ -69,8 +69,8 @@ type testRunnerFunc func(backends.Backend)
 var backend backends.Backend
 var TestData = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 
-var defaultTestCrudIdSet = []interface{}{`1`, `2`, `3`}
-var testCrudIdSet = []interface{}{`1`, `2`, `3`}
+var defaultTestCrudIdSet = []any{`1`, `2`, `3`}
+var testCrudIdSet = []any{`1`, `2`, `3`}
 
 func errpanic(err error) {
 	if err != nil {
@@ -187,7 +187,7 @@ func TestAll(t *testing.T) {
 	}
 }
 
-func docker(container string, tag string, env map[string]interface{}, pingFn func(res *dockertest.Resource) (backends.Backend, error), runFn testRunnerFunc) {
+func docker(container string, tag string, env map[string]any, pingFn func(res *dockertest.Resource) (backends.Backend, error), runFn testRunnerFunc) {
 	var ctx = context.Background()
 	var pool, err = dockertest.NewPool(ctx, "")
 	defer pool.Close(ctx)
@@ -297,7 +297,7 @@ func setupTestSqliteWithAdditionalBleveIndexer(run testRunnerFunc) {
 }
 
 func setupTestMysql(version string, run testRunnerFunc) {
-	docker(`mysql`, version, map[string]interface{}{
+	docker(`mysql`, version, map[string]any{
 		`MYSQL_ROOT_PASSWORD`: `pivot`,
 		`MYSQL_DATABASE`:      `pivot`,
 	}, func(res *dockertest.Resource) (backends.Backend, error) {
@@ -312,7 +312,7 @@ func setupTestMysql(version string, run testRunnerFunc) {
 }
 
 func setupTestPostgres(version string, run testRunnerFunc) {
-	docker(`postgres`, version, map[string]interface{}{
+	docker(`postgres`, version, map[string]any{
 		`POSTGRES_PASSWORD`: `pivot`,
 		`POSTGRES_USER`:     `pivot`,
 	}, func(res *dockertest.Resource) (backends.Backend, error) {
@@ -375,7 +375,7 @@ func setupTestDynamoDB(run testRunnerFunc) {
 		os.Getenv(`AWS_SECRET_ACCESS_KEY`),
 		`us-east-1`,
 	)); err == nil {
-		testCrudIdSet = []interface{}{nil, nil, nil}
+		testCrudIdSet = []any{nil, nil, nil}
 		run(b)
 		testCrudIdSet = defaultTestCrudIdSet
 	} else {
@@ -384,7 +384,7 @@ func setupTestDynamoDB(run testRunnerFunc) {
 }
 
 func setupTestMongo(version string, run testRunnerFunc) {
-	docker(`mongo`, version, map[string]interface{}{
+	docker(`mongo`, version, map[string]any{
 		`MONGO_INITDB_ROOT_USERNAME`: `pivot`,
 		`MONGO_INITDB_ROOT_PASSWORD`: `pivot`,
 		`MONGO_INITDB_DATABASE`:      `pivot`,
@@ -943,15 +943,15 @@ func testCompositeKeyQueries(t *testing.T, backend backends.Backend) {
 		assert.NoError(err)
 
 		assert.Nil(backend.Insert(nameCollectionTestCompositeKeyQueries, dal.NewRecordSet(
-			dal.NewRecord(`a`).SetFields(map[string]interface{}{
+			dal.NewRecord(`a`).SetFields(map[string]any{
 				`other_id`: 1,
 				`group`:    `first`,
 			}),
-			dal.NewRecord(`a`).SetFields(map[string]interface{}{
+			dal.NewRecord(`a`).SetFields(map[string]any{
 				`other_id`: 2,
 				`group`:    `second`,
 			}),
-			dal.NewRecord(`b`).SetFields(map[string]interface{}{
+			dal.NewRecord(`b`).SetFields(map[string]any{
 				`other_id`: 1,
 				`group`:    `third`,
 			}))))
@@ -981,7 +981,7 @@ func testCompositeKeyQueries(t *testing.T, backend backends.Backend) {
 		assert.NotNil(recordset)
 
 		assert.EqualValues(2, recordset.ResultCount, "%v", recordset.Records)
-		assert.ElementsMatch([]interface{}{int64(1), int64(2)}, recordset.Pluck(`other_id`))
+		assert.ElementsMatch([]any{int64(1), int64(2)}, recordset.Pluck(`other_id`))
 	}
 }
 
@@ -1006,15 +1006,15 @@ func testListValues(t *testing.T, backend backends.Backend) {
 		assert.NoError(err)
 
 		assert.Nil(backend.Insert(nameCollectionTestListValues, dal.NewRecordSet(
-			dal.NewRecord(`1`).SetFields(map[string]interface{}{
+			dal.NewRecord(`1`).SetFields(map[string]any{
 				`name`:  `first`,
 				`group`: `reds`,
 			}),
-			dal.NewRecord(`2`).SetFields(map[string]interface{}{
+			dal.NewRecord(`2`).SetFields(map[string]any{
 				`name`:  `second`,
 				`group`: `reds`,
 			}),
-			dal.NewRecord(`3`).SetFields(map[string]interface{}{
+			dal.NewRecord(`3`).SetFields(map[string]any{
 				`name`:  `third`,
 				`group`: `blues`,
 			}))))
@@ -1029,21 +1029,21 @@ func testListValues(t *testing.T, backend backends.Backend) {
 		assert.Equal(1, len(keyValues))
 		v, ok := keyValues[`name`]
 		assert.True(ok)
-		assert.ElementsMatch([]interface{}{`first`, `second`, `third`}, v)
+		assert.ElementsMatch([]any{`first`, `second`, `third`}, v)
 
 		keyValues, err = search.ListValues(collection, []string{`group`}, filter.All())
 		assert.NoError(err)
 		assert.Equal(1, len(keyValues))
 		v, ok = keyValues[`group`]
 		assert.True(ok)
-		assert.ElementsMatch([]interface{}{`reds`, `blues`}, v)
+		assert.ElementsMatch([]any{`reds`, `blues`}, v)
 
 		keyValues, err = search.ListValues(collection, []string{`id`}, filter.All())
 		assert.NoError(err)
 		assert.Equal(1, len(keyValues))
 		v, ok = keyValues[`id`]
 		assert.True(ok)
-		assert.ElementsMatch([]interface{}{
+		assert.ElementsMatch([]any{
 			int64(1),
 			int64(2),
 			int64(3),
@@ -1055,11 +1055,11 @@ func testListValues(t *testing.T, backend backends.Backend) {
 
 		v, ok = keyValues[`id`]
 		assert.True(ok)
-		assert.ElementsMatch([]interface{}{int64(1), int64(2), int64(3)}, v)
+		assert.ElementsMatch([]any{int64(1), int64(2), int64(3)}, v)
 
 		v, ok = keyValues[`group`]
 		assert.True(ok)
-		assert.ElementsMatch([]interface{}{`reds`, `blues`}, v)
+		assert.ElementsMatch([]any{`reds`, `blues`}, v)
 	}
 }
 
@@ -1084,15 +1084,15 @@ func testSearchAnalysis(t *testing.T, backend backends.Backend) {
 		assert.NoError(err)
 
 		assert.Nil(backend.Insert(nameCollectionTestSearchAnalysis, dal.NewRecordSet(
-			dal.NewRecord(`1`).SetFields(map[string]interface{}{
+			dal.NewRecord(`1`).SetFields(map[string]any{
 				`single`:           `first-result`,
 				`char_filter_test`: `this:resUlt`,
 			}),
-			dal.NewRecord(`2`).SetFields(map[string]interface{}{
+			dal.NewRecord(`2`).SetFields(map[string]any{
 				`single`:           `second-result`,
 				`char_filter_test`: `This[Result`,
 			}),
-			dal.NewRecord(`3`).SetFields(map[string]interface{}{
+			dal.NewRecord(`3`).SetFields(map[string]any{
 				`single`:           `third-result`,
 				`char_filter_test`: `this*result`,
 			}))))
@@ -1134,16 +1134,16 @@ func testObjectType(t *testing.T, backend backends.Backend) {
 	// Insert and Retrieve
 	// --------------------------------------------------------------------------------------------
 	recordset := dal.NewRecordSet(
-		dal.NewRecord(testCrudIdSet[0]).Set(`properties`, map[string]interface{}{
+		dal.NewRecord(testCrudIdSet[0]).Set(`properties`, map[string]any{
 			`name`:  `First`,
 			`count`: 1,
 		}),
-		dal.NewRecord(testCrudIdSet[1]).Set(`properties`, map[string]interface{}{
+		dal.NewRecord(testCrudIdSet[1]).Set(`properties`, map[string]any{
 			`name`:    `Second`,
 			`count`:   0,
 			`enabled`: false,
 		}),
-		dal.NewRecord(testCrudIdSet[2]).Set(`properties`, map[string]interface{}{
+		dal.NewRecord(testCrudIdSet[2]).Set(`properties`, map[string]any{
 			`name`:  `Third`,
 			`count`: 3,
 		}))
@@ -1246,7 +1246,7 @@ func testModelCRUD(t *testing.T, db backends.Backend) {
 			{
 				Name: `name`,
 				Type: dal.StringType,
-				Formatter: func(value interface{}, op dal.FieldOperation) (interface{}, error) {
+				Formatter: func(value any, op dal.FieldOperation) (any, error) {
 					return stringutil.Camelize(value), nil
 				},
 			}, {
@@ -1485,7 +1485,7 @@ func testModelList(t *testing.T, db backends.Backend) {
 	}
 
 	assert.NoError(err)
-	assert.EqualValues([]interface{}{
+	assert.EqualValues([]any{
 		`test-1`,
 		`test-2`,
 		`test-3`,
@@ -1493,14 +1493,14 @@ func testModelList(t *testing.T, db backends.Backend) {
 
 	values, err = model.List([]string{`name`, `size`})
 	assert.NoError(err)
-	assert.EqualValues([]interface{}{
+	assert.EqualValues([]any{
 		`test-1`,
 		`test-2`,
 		`test-3`,
 	}, values[`name`])
 
 	// FIXME: really need to work out where we come down on "0"
-	// assert.EqualValues([]interface{}{
+	// assert.EqualValues([]any{
 	// 	int64(0),
 	// 	int64(12345),
 	// 	int64(98765),
@@ -1517,7 +1517,7 @@ func testLoadFixtures(t *testing.T, db backends.Backend) {
 	assert.NoError(LoadFixtures(`./test/fixtures/`, db))
 
 	if db.Supports(backends.Constraints) {
-		assert.NotNil(db.Insert(`users`, dal.NewRecordSet(dal.NewRecord(`testXYZ`, map[string]interface{}{
+		assert.NotNil(db.Insert(`users`, dal.NewRecordSet(dal.NewRecord(`testXYZ`, map[string]any{
 			`FirstName`:      `ShouldNot`,
 			`LastName`:       `SeeMe`,
 			`PrimaryGroupID`: `nonexistent`,

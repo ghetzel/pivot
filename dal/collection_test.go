@@ -173,7 +173,7 @@ func TestCollectionMapFromRecord(t *testing.T) {
 	assert := require.New(t)
 
 	collection := NewCollection(`TestCollectionStructToRecord`)
-	collection.IdentityFieldFormatter = func(id interface{}, op FieldOperation) (interface{}, error) {
+	collection.IdentityFieldFormatter = func(id any, op FieldOperation) (any, error) {
 		if record, ok := id.(*Record); ok {
 			id = record.ID
 		}
@@ -200,7 +200,7 @@ func TestCollectionMapFromRecord(t *testing.T) {
 	)
 
 	assert.NoError(err)
-	assert.EqualValues(map[string]interface{}{
+	assert.EqualValues(map[string]any{
 		`id`:      `ID<test>`,
 		`name`:    `tester`,
 		`enabled`: true,

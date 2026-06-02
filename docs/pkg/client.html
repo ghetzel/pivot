@@ -181,7 +181,7 @@
 				<a href="#Pivot.Aggregate">
 					func
 					(self *Pivot)
-					Aggregate(collection string, query interface{}) (*dal.RecordSet, error)
+					Aggregate(collection string, query any) (*dal.RecordSet, error)
 				</a>
 				
 			</li>
@@ -253,7 +253,7 @@
 				<a href="#Pivot.DeleteRecords">
 					func
 					(self *Pivot)
-					DeleteRecords(collection string, ids ...interface{}) error
+					DeleteRecords(collection string, ids ...any) error
 				</a>
 				
 			</li>
@@ -265,7 +265,7 @@
 				<a href="#Pivot.GetRecord">
 					func
 					(self *Pivot)
-					GetRecord(collection string, id interface{}) (*dal.Record, error)
+					GetRecord(collection string, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -279,7 +279,7 @@
 				<a href="#Pivot.Query">
 					func
 					(self *Pivot)
-					Query(collection string, query interface{}, options *QueryOptions) (*dal.RecordSet, error)
+					Query(collection string, query any, options *QueryOptions) (*dal.RecordSet, error)
 				</a>
 				
 			</li>

@@ -1,9 +1,13 @@
 module github.com/ghetzel/pivot/v3
 
-go 1.25.5
+go 1.25.0
 
 require (
 	github.com/alexcesaro/statsd v2.0.0+incompatible
+	github.com/aws/aws-sdk-go-v2 v1.41.10
+	github.com/aws/aws-sdk-go-v2/credentials v1.19.20
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.20.43
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.57.7
 	github.com/blevesearch/bleve v1.0.14
 	github.com/deckarep/golang-set v1.8.0
 	github.com/fatih/structs v1.1.0
@@ -34,6 +38,13 @@ require (
 	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de // indirect
+	github.com/aws/aws-sdk-go v1.55.8 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.26 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.26 // indirect
+	github.com/aws/aws-sdk-go-v2/service/dynamodbstreams v1.32.19 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.10 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.12.3 // indirect
+	github.com/aws/smithy-go v1.26.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beevik/etree v1.6.0 // indirect
 	github.com/biessek/golang-ico v0.0.0-20250805151044-6d8ea19fb761 // indirect

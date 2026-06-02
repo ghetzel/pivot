@@ -12,14 +12,14 @@ type Type string
 
 const (
 	StringType  Type = `str`
-	AutoType         = `auto`
-	BooleanType      = `bool`
-	IntType          = `int`
-	FloatType        = `float`
-	TimeType         = `time`
-	ObjectType       = `object`
-	RawType          = `raw`
-	ArrayType        = `array`
+	AutoType    Type = `auto`
+	BooleanType Type = `bool`
+	IntType     Type = `int`
+	FloatType   Type = `float`
+	TimeType    Type = `time`
+	ObjectType  Type = `object`
+	RawType     Type = `raw`
+	ArrayType   Type = `array`
 )
 
 func (self Type) String() string {
@@ -56,15 +56,15 @@ const (
 	RetrieveOperation
 )
 
-type FieldValidatorFunc func(interface{}) error
-type FieldFormatterFunc func(interface{}, FieldOperation) (interface{}, error)
+type FieldValidatorFunc func(any) error
+type FieldFormatterFunc func(any, FieldOperation) (any, error)
 type CollectionValidatorFunc func(*Record) error
 
 type DeltaType string
 
 const (
 	CollectionDelta DeltaType = `collection`
-	FieldDelta                = `field`
+	FieldDelta      DeltaType = `field`
 )
 
 type DeltaIssue int
@@ -88,8 +88,8 @@ type SchemaDelta struct {
 	Collection     string
 	Name           string
 	Parameter      string
-	Desired        interface{}
-	Actual         interface{}
+	Desired        any
+	Actual         any
 	ReferenceField *Field
 }
 

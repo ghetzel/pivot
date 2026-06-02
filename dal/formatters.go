@@ -33,7 +33,7 @@ var HexEncoder = func(src []byte) (string, error) {
 	return hex.EncodeToString(src), nil
 }
 
-func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error) {
+func FormatterFromMap(in map[string]any) (FieldFormatterFunc, error) {
 	formatters := make([]FieldFormatterFunc, 0)
 
 	for name, defn := range in {
@@ -47,7 +47,7 @@ func FormatterFromMap(in map[string]interface{}) (FieldFormatterFunc, error) {
 	return FormatAll(formatters...), nil
 }
 
-func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error) {
+func GetFormatter(name string, args any) (FieldFormatterFunc, error) {
 	switch name {
 	case `uuid`:
 		return GenerateUUID, nil
@@ -98,7 +98,7 @@ func GetFormatter(name string, args interface{}) (FieldFormatterFunc, error) {
 }
 
 func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc {
-	return func(value interface{}, op FieldOperation) (interface{}, error) {
+	return func(value any, op FieldOperation) (any, error) {
 		for _, formatter := range formatters {
 			if v, err := formatter(value, op); err == nil {
 				value = v
@@ -112,7 +112,7 @@ func FormatAll(formatters ...FieldFormatterFunc) FieldFormatterFunc {
 }
 
 func ChangeCase(cases ...string) FieldFormatterFunc {
-	return func(value interface{}, _ FieldOperation) (interface{}, error) {
+	return func(value any, _ FieldOperation) (any, error) {
 		if record, ok := value.(*Record); ok {
 			value = record.ID
 		}
@@ -144,8 +144,8 @@ func ChangeCase(cases ...string) FieldFormatterFunc {
 	}
 }
 
-func Replace(pairs []interface{}) FieldFormatterFunc {
-	return func(value interface{}, _ FieldOperation) (interface{}, error) {
+func Replace(pairs []any) FieldFormatterFunc {
+	return func(value any, _ FieldOperation) (any, error) {
 		if vStr, err := stringutil.ToString(value); err == nil {
 			for _, pair := range pairs {
 				p := sliceutil.Stringify(pair)
@@ -175,7 +175,7 @@ func Replace(pairs []interface{}) FieldFormatterFunc {
 	}
 }
 
-func TrimSpace(value interface{}, _ FieldOperation) (interface{}, error) {
+func TrimSpace(value any, _ FieldOperation) (any, error) {
 	if record, ok := value.(*Record); ok {
 		value = record.ID
 	}
@@ -188,7 +188,7 @@ func TrimSpace(value interface{}, _ FieldOperation) (interface{}, error) {
 }
 
 // Generates a V4 UUID value if the existing value is empty.
-func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error) {
+func GenerateUUID(value any, _ FieldOperation) (any, error) {
 	if record, ok := value.(*Record); ok {
 		value = record.ID
 	}
@@ -202,7 +202,7 @@ func GenerateUUID(value interface{}, _ FieldOperation) (interface{}, error) {
 
 // Same as GenerateUUID, but allows for a custom representation of the underlying bytes.
 func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc {
-	return func(value interface{}, _ FieldOperation) (interface{}, error) {
+	return func(value any, _ FieldOperation) (any, error) {
 		if record, ok := value.(*Record); ok {
 			value = record.ID
 		}
@@ -225,7 +225,7 @@ func GenerateEncodedUUID(encoder EncoderFunc) FieldFormatterFunc {
 
 // Only evaluates the given formatter if the current value of the field is empty.
 func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc {
-	return func(value interface{}, op FieldOperation) (interface{}, error) {
+	return func(value any, op FieldOperation) (any, error) {
 		if onlyIf != nil {
 			if typeutil.IsZero(value) {
 				return onlyIf(value, op)
@@ -238,9 +238,9 @@ func IfUnset(onlyIf FieldFormatterFunc) FieldFormatterFunc {
 
 // Extracts values from the given Record and generates a deterministic output based on those values.
 func DeriveFromFields(format string, fields ...string) FieldFormatterFunc {
-	return func(input interface{}, _ FieldOperation) (interface{}, error) {
+	return func(input any, _ FieldOperation) (any, error) {
 		if record, ok := input.(*Record); ok {
-			values := make([]interface{}, len(fields))
+			values := make([]any, len(fields))
 
 			for i, field := range fields {
 				values[i] = record.Get(field)
@@ -254,7 +254,7 @@ func DeriveFromFields(format string, fields ...string) FieldFormatterFunc {
 }
 
 // Returns the current time every time the field is persisted.
-func CurrentTime(value interface{}, op FieldOperation) (interface{}, error) {
+func CurrentTime(value any, op FieldOperation) (any, error) {
 	if op == PersistOperation {
 		return time.Now(), nil
 	} else {
@@ -263,8 +263,8 @@ func CurrentTime(value interface{}, op FieldOperation) (interface{}, error) {
 }
 
 // Returns the current time when the field is persisted if the current value is empty.
-func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, error) {
-	return IfUnset(func(v interface{}, o FieldOperation) (interface{}, error) {
+func CurrentTimeIfUnset(value any, op FieldOperation) (any, error) {
+	return IfUnset(func(v any, o FieldOperation) (any, error) {
 		if o == PersistOperation {
 			return time.Now(), nil
 		} else {
@@ -275,7 +275,7 @@ func CurrentTimeIfUnset(value interface{}, op FieldOperation) (interface{}, erro
 
 // Returns the current time with an added offset when the field is persisted.
 func NowPlusDuration(duration time.Duration) FieldFormatterFunc {
-	return func(value interface{}, op FieldOperation) (interface{}, error) {
+	return func(value any, op FieldOperation) (any, error) {
 		if op == PersistOperation {
 			if duration != 0 {
 				return time.Now().Add(duration), nil

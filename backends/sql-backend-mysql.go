@@ -26,7 +26,7 @@ func preinitializeMysql(self *SqlBackend) {
 func initializeMysql(self *SqlBackend) (string, string, error) {
 	// the bespoke method for determining table information for sqlite3
 	self.refreshCollectionFunc = func(datasetName string, collectionName string) (*dal.Collection, error) {
-		if f, err := filter.FromMap(map[string]interface{}{
+		if f, err := filter.FromMap(map[string]any{
 			`TABLE_SCHEMA`: datasetName,
 			`TABLE_NAME`:   collectionName,
 		}); err == nil {

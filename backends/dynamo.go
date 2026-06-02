@@ -1,19 +1,17 @@
 package backends
 
 import (
+	"context"
 	"fmt"
-	"os"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/aws/awserr"
-	"github.com/aws/aws-sdk-go-v2/aws/credentials"
-	"github.com/aws/aws-sdk-go-v2/aws/session"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbattribute"
-	"github.com/ghetzel/go-stockutil/fileutil"
+	dynamodb_types "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/maputil"
 	"github.com/ghetzel/go-stockutil/sliceutil"
@@ -32,7 +30,7 @@ type DynamoBackend struct {
 	Backend
 	Indexer
 	cs         dal.ConnectionString
-	db         *dynamodb.DynamoDB
+	db         *dynamodb.Client
 	region     string
 	tableCache sync.Map
 	indexer    Indexer
@@ -66,6 +64,10 @@ func (self *DynamoBackend) Supports(features ...BackendFeature) bool {
 	return true
 }
 
+func (self *DynamoBackend) ctx() context.Context {
+	return context.Background()
+}
+
 func (self *DynamoBackend) String() string {
 	return `dynamodb`
 }
@@ -92,13 +94,12 @@ func (self *DynamoBackend) SetIndexer(indexConnString dal.ConnectionString) erro
 }
 
 func (self *DynamoBackend) Initialize() error {
-	var providers []credentials.Provider
-	var logLevel aws.LogLevelType
+	var providers []awsCredentialProvider
 
 	// specify explicitly-provided credentials first
 	if u, p, ok := self.cs.Credentials(); ok {
-		providers = append(providers, &credentials.StaticProvider{
-			Value: credentials.Value{
+		providers = append(providers, &credentials.StaticCredentialsProvider{
+			Value: aws.Credentials{
 				AccessKeyID:     u,
 				SecretAccessKey: p,
 				SessionToken:    self.cs.OptString(`token`, ``),
@@ -107,38 +108,27 @@ func (self *DynamoBackend) Initialize() error {
 	}
 
 	// if the shared credentials file exists, use it
-	shared := fileutil.MustExpandUser(DefaultSharedCredentialsFile)
+	// shared := fileutil.MustExpandUser(DefaultSharedCredentialsFile)
 
-	if fileutil.IsNonemptyFile(shared) {
-		providers = append(providers, &credentials.SharedCredentialsProvider{
-			Filename: shared,
-			Profile:  sliceutil.OrString(os.Getenv(`AWS_PROFILE`), DefaultSharedCredentialsProfile),
-		})
-	}
+	// if fileutil.IsNonemptyFile(shared) {
+	// 	providers = append(providers, &credentials.SharedCredentialsProvider{
+	// 		Filename: shared,
+	// 		Profile:  sliceutil.OrString(os.Getenv(`AWS_PROFILE`), DefaultSharedCredentialsProfile),
+	// 	})
+	// }
 
-	// add the environment variables provider last
-	providers = append(providers, &credentials.EnvProvider{})
-
-	if self.cs.OptBool(`debug`, false) {
-		logLevel = aws.LogDebugWithHTTPBody
-	}
-
-	self.db = dynamodb.New(
-		session.New(),
-		&aws.Config{
-			Region:      aws.String(self.region),
-			Credentials: credentials.NewChainCredentials(providers),
-			LogLevel:    &logLevel,
-		},
-	)
+	self.db = dynamodb.New(dynamodb.Options{
+		Region:      self.region,
+		Credentials: newAwsChainCredentials(providers...),
+	})
 
 	if self.cs.OptBool(`autoregister`, true) {
 		// retrieve each table once as a cache warming mechanism
-		if output, err := self.db.ListTables(&dynamodb.ListTablesInput{
-			Limit: aws.Int64(100),
+		if output, err := self.db.ListTables(self.ctx(), &dynamodb.ListTablesInput{
+			Limit: aws.Int32(int32(100)),
 		}); err == nil {
 			for _, tableName := range output.TableNames {
-				if _, err := self.GetCollection(*tableName); err != nil {
+				if _, err := self.GetCollection(tableName); err != nil {
 					return err
 				}
 			}
@@ -164,9 +154,9 @@ func (self *DynamoBackend) RegisterCollection(definition *dal.Collection) {
 	self.tableCache.Store(definition.Name, definition)
 }
 
-func (self *DynamoBackend) Exists(name string, id interface{}) bool {
+func (self *DynamoBackend) Exists(name string, id any) bool {
 	if _, keys, err := self.getKeyAttributes(name, id); err == nil {
-		if out, err := self.db.GetItem(&dynamodb.GetItemInput{
+		if out, err := self.db.GetItem(self.ctx(), &dynamodb.GetItemInput{
 			TableName:      aws.String(name),
 			ConsistentRead: aws.Bool(self.cs.OptBool(`readsConsistent`, true)),
 			Key:            keys,
@@ -180,27 +170,22 @@ func (self *DynamoBackend) Exists(name string, id interface{}) bool {
 	return false
 }
 
-func (self *DynamoBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
+func (self *DynamoBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
 		// get the key attributes that target this specific record
 		if _, keys, err := self.getKeyAttributes(name, id); err == nil {
 			// execute the GetItem request
-			if out, err := self.db.GetItem(&dynamodb.GetItemInput{
+			if out, err := self.db.GetItem(self.ctx(), &dynamodb.GetItemInput{
 				TableName:      aws.String(name),
 				ConsistentRead: aws.Bool(self.cs.OptBool(`readsConsistent`, true)),
 				Key:            keys,
 			}); err == nil {
 				// return the record
 				return dynamoRecordFromItem(collection, id, out.Item)
-			} else if aerr, ok := err.(awserr.Error); ok {
-				switch aerr.Code() {
-				case dynamodb.ErrCodeResourceNotFoundException:
-					return nil, fmt.Errorf("Record %v does not exist", id)
-				case dynamodb.ErrCodeProvisionedThroughputExceededException:
-					return nil, fmt.Errorf("Throughput exceeded")
-				default:
-					return nil, aerr
-				}
+			} else if _, ok := err.(*dynamodb_types.ResourceNotFoundException); ok {
+				return nil, fmt.Errorf("Record %v does not exist", id)
+			} else if _, ok := err.(*dynamodb_types.ProvisionedThroughputExceededException); ok {
+				return nil, fmt.Errorf("Throughput exceeded")
 			} else {
 				return nil, err
 			}
@@ -228,25 +213,20 @@ func (self *DynamoBackend) Update(name string, records *dal.RecordSet, target ..
 	}
 }
 
-func (self *DynamoBackend) Delete(name string, ids ...interface{}) error {
+func (self *DynamoBackend) Delete(name string, ids ...any) error {
 	if _, err := self.GetCollection(name); err == nil {
 		// for each id we're deleting...
 		for _, id := range ids {
 			// get the key attributes that target this specific record
 			if _, keys, err := self.getKeyAttributes(name, id); err == nil {
 				// execute the DeleteItem request
-				if _, err := self.db.DeleteItem(&dynamodb.DeleteItemInput{
+				if _, err := self.db.DeleteItem(self.ctx(), &dynamodb.DeleteItemInput{
 					TableName: aws.String(name),
 					Key:       keys,
 				}); err != nil {
 					// handle errors (if any)
-					if aerr, ok := err.(awserr.Error); ok {
-						switch aerr.Code() {
-						case dynamodb.ErrCodeProvisionedThroughputExceededException:
-							return fmt.Errorf("Throughput exceeded")
-						default:
-							return aerr
-						}
+					if _, ok := err.(*dynamodb_types.ProvisionedThroughputExceededException); ok {
+						return fmt.Errorf("Throughput exceeded")
 					} else {
 						return err
 					}
@@ -273,7 +253,7 @@ func (self *DynamoBackend) CreateCollection(definition *dal.Collection) error {
 
 func (self *DynamoBackend) DeleteCollection(name string) error {
 	if _, err := self.GetCollection(name); err == nil {
-		if _, err := self.db.DeleteTable(&dynamodb.DeleteTableInput{
+		if _, err := self.db.DeleteTable(self.ctx(), &dynamodb.DeleteTableInput{
 			TableName: aws.String(name),
 		}); err == nil {
 			self.tableCache.Delete(name)
@@ -339,13 +319,13 @@ func (self *DynamoBackend) toDalType(t string) dal.Type {
 func (self *DynamoBackend) cacheTable(name string) (*dal.Collection, error) {
 	if collectionI, ok := self.tableCache.Load(name); ok {
 		return collectionI.(*dal.Collection), nil
-	} else if table, err := self.db.DescribeTable(&dynamodb.DescribeTableInput{
+	} else if table, err := self.db.DescribeTable(self.ctx(), &dynamodb.DescribeTableInput{
 		TableName: aws.String(name),
 	}); err == nil {
 		typemap := make(map[string]string)
 
 		for _, def := range table.Table.AttributeDefinitions {
-			typemap[*def.AttributeName] = *def.AttributeType
+			typemap[*def.AttributeName] = string(def.AttributeType)
 		}
 
 		collection := &dal.Collection{
@@ -378,12 +358,12 @@ func (self *DynamoBackend) cacheTable(name string) (*dal.Collection, error) {
 	}
 }
 
-func dynamoRecordFromItem(collection *dal.Collection, id interface{}, item map[string]*dynamodb.AttributeValue) (*dal.Record, error) {
+func dynamoRecordFromItem(collection *dal.Collection, id any, item map[string]dynamodb_types.AttributeValue) (*dal.Record, error) {
 	// build the record we're returning
-	var data = make(map[string]interface{})
+	var data = make(map[string]any)
 	var record = dal.NewRecord(nil)
 
-	if err := dynamodbattribute.UnmarshalMap(item, &data); err == nil {
+	if err := attributevalue.UnmarshalMap(item, &data); err == nil {
 		for k, v := range data {
 			if field, ok := collection.GetField(k); ok {
 				if typed, err := field.ConvertValue(v); err == nil {
@@ -424,18 +404,18 @@ func dynamoRecordFromItem(collection *dal.Collection, id interface{}, item map[s
 	}
 }
 
-func dynamoRecordToItem(collection *dal.Collection, record *dal.Record) (map[string]*dynamodb.AttributeValue, error) {
+func dynamoRecordToItem(collection *dal.Collection, record *dal.Record) (map[string]dynamodb_types.AttributeValue, error) {
 	if data, err := collection.MapFromRecord(record); err == nil {
-		return dynamodbattribute.MarshalMap(data)
+		return attributevalue.MarshalMap(data)
 	} else {
 		return nil, err
 	}
 }
 
-func dynamoToRecordKeyFilter(collection *dal.Collection, id interface{}) (*filter.Filter, *dal.Field, error) {
+func dynamoToRecordKeyFilter(collection *dal.Collection, id any) (*filter.Filter, *dal.Field, error) {
 	var rangeKey *dal.Field
-	var hashValue interface{}
-	var rangeValue interface{}
+	var hashValue any
+	var rangeValue any
 	var allowMissingRangeKey bool
 
 	// detect if the collection has a range key (i.e.: sort key)
@@ -473,7 +453,7 @@ func dynamoToRecordKeyFilter(collection *dal.Collection, id interface{}) (*filte
 		flt.AddCriteria(filter.Criterion{
 			Field:  collection.IdentityField,
 			Type:   collection.IdentityFieldType,
-			Values: []interface{}{hashValue},
+			Values: []any{hashValue},
 		})
 
 		if rangeKey != nil {
@@ -485,7 +465,7 @@ func dynamoToRecordKeyFilter(collection *dal.Collection, id interface{}) (*filte
 				flt.AddCriteria(filter.Criterion{
 					Type:   rangeKey.Type,
 					Field:  rangeKey.Name,
-					Values: []interface{}{rangeValue},
+					Values: []any{rangeValue},
 				})
 
 			} else if !allowMissingRangeKey {
@@ -499,8 +479,8 @@ func dynamoToRecordKeyFilter(collection *dal.Collection, id interface{}) (*filte
 	}
 }
 
-func dynamoToDynamoAttributes(collection *dal.Collection, values map[string]interface{}, fieldMap map[string]string) map[string]*dynamodb.AttributeValue {
-	rv := make(map[string]*dynamodb.AttributeValue)
+func dynamoToDynamoAttributes(collection *dal.Collection, values map[string]any, fieldMap map[string]string) map[string]dynamodb_types.AttributeValue {
+	rv := make(map[string]dynamodb_types.AttributeValue)
 
 	for k, v := range values {
 		fieldName := k
@@ -512,15 +492,21 @@ func dynamoToDynamoAttributes(collection *dal.Collection, values map[string]inte
 		}
 
 		if field, ok := collection.GetField(fieldName); ok {
-			aval := new(dynamodb.AttributeValue)
+			var aval dynamodb_types.AttributeValue
 
 			switch field.Type {
 			case dal.BooleanType:
-				aval = aval.SetBOOL(typeutil.V(v).Bool())
+				aval = &dynamodb_types.AttributeValueMemberBOOL{
+					Value: typeutil.V(v).Bool(),
+				}
 			case dal.FloatType, dal.IntType:
-				aval = aval.SetN(typeutil.V(v).String())
+				aval = &dynamodb_types.AttributeValueMemberN{
+					Value: typeutil.V(v).String(),
+				}
 			default:
-				aval = aval.SetS(typeutil.V(v).String())
+				aval = &dynamodb_types.AttributeValueMemberS{
+					Value: typeutil.V(v).String(),
+				}
 			}
 
 			rv[k] = aval
@@ -530,11 +516,11 @@ func dynamoToDynamoAttributes(collection *dal.Collection, values map[string]inte
 	return rv
 }
 
-func (self *DynamoBackend) getKeyAttributes(name string, id interface{}) (*filter.Filter, map[string]*dynamodb.AttributeValue, error) {
+func (self *DynamoBackend) getKeyAttributes(name string, id any) (*filter.Filter, map[string]dynamodb_types.AttributeValue, error) {
 	if collection, err := self.GetCollection(name); err == nil {
 		if flt, rangeKey, err := dynamoToRecordKeyFilter(collection, id); err == nil {
 			if hashKeyValue, ok := flt.GetIdentityValue(); ok {
-				keys := map[string]interface{}{
+				keys := map[string]any{
 					flt.IdentityField: hashKeyValue,
 				}
 
@@ -572,31 +558,26 @@ func (self *DynamoBackend) upsertRecords(collection *dal.Collection, records *da
 			// ensures that an existing record with these id(s) doesn't exist.
 			if isCreate {
 				expr := []string{`attribute_not_exists(#HashKey)`}
-				attrNames := map[string]*string{
-					`#HashKey`: aws.String(collection.IdentityField),
+				attrNames := map[string]string{
+					`#HashKey`: collection.IdentityField,
 				}
 
 				// if there's a range key, we gotta add that to the conditional expression too
 				if rangeKey, ok := collection.GetFirstNonIdentityKeyField(); ok {
 					expr = append(expr, `attribute_not_exists(#RangeKey)`)
-					attrNames[`#RangeKey`] = aws.String(rangeKey.Name)
+					attrNames[`#RangeKey`] = rangeKey.Name
 				}
 
-				op = op.SetConditionExpression(strings.Join(expr, ` AND `))
-				op = op.SetExpressionAttributeNames(attrNames)
+				op.ConditionExpression = aws.String(strings.Join(expr, ` AND `))
+				op.ExpressionAttributeNames = attrNames
 			}
 
 			// perform the call
-			if _, err := self.db.PutItem(op); err != nil {
-				if aerr, ok := err.(awserr.Error); ok {
-					switch aerr.Code() {
-					case dynamodb.ErrCodeConditionalCheckFailedException:
-						return fmt.Errorf("Record already exists")
-					case dynamodb.ErrCodeProvisionedThroughputExceededException:
-						return fmt.Errorf("Throughput exceeded")
-					default:
-						return aerr
-					}
+			if _, err := self.db.PutItem(self.ctx(), op); err != nil {
+				if _, ok := err.(*dynamodb_types.ConditionalCheckFailedException); ok {
+					return fmt.Errorf("Record already exists")
+				} else if _, ok := err.(*dynamodb_types.ProvisionedThroughputExceededException); ok {
+					return fmt.Errorf("Throughput exceeded")
 				} else {
 					return err
 				}
@@ -615,4 +596,37 @@ func (self *DynamoBackend) upsertRecords(collection *dal.Collection, records *da
 	}
 
 	return nil
+}
+
+type awsCredentialProvider interface {
+	ProviderSources() []aws.CredentialSource
+	Retrieve(ctx context.Context) (aws.Credentials, error)
+}
+
+type awsChainCredentials struct {
+	providers []awsCredentialProvider
+}
+
+func newAwsChainCredentials(providers ...awsCredentialProvider) *awsChainCredentials {
+	return &awsChainCredentials{
+		providers: providers,
+	}
+}
+
+func (self *awsChainCredentials) ProviderSources() (src []aws.CredentialSource) {
+	for _, p := range self.providers {
+		src = append(src, p.ProviderSources()...)
+	}
+
+	return
+}
+
+func (self *awsChainCredentials) Retrieve(ctx context.Context) (aws.Credentials, error) {
+	for _, p := range self.providers {
+		if c, err := p.Retrieve(ctx); err == nil {
+			return c, nil
+		}
+	}
+
+	return aws.Credentials{}, fmt.Errorf("no credentials")
 }

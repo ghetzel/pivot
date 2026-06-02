@@ -16,13 +16,13 @@ import (
 
 type esAggregationQuery struct {
 	Aggregations map[string]esAggregation `json:"aggs"`
-	Query        map[string]interface{}   `json:"query,omitempty"`
+	Query        map[string]any           `json:"query,omitempty"`
 	Size         int                      `json:"size"`
 	From         int                      `json:"from"`
 	Sort         []string                 `json:"sort,omitempty"`
 }
 
-type esAggregation map[string]interface{}
+type esAggregation map[string]any
 
 func (self *ElasticsearchIndexer) Sum(collection *dal.Collection, field string, f ...*filter.Filter) (float64, error) {
 	return self.aggregateFloat(collection, filter.Sum, field, f)
@@ -52,7 +52,7 @@ func (self *ElasticsearchIndexer) Count(collection *dal.Collection, flt ...*filt
 			nil,
 			nil,
 		); err == nil {
-			var rv map[string]interface{}
+			var rv map[string]any
 
 			if err := self.client.Decode(res.Body, &rv); err == nil {
 				return uint64(typeutil.Int(rv[`count`])), nil
@@ -117,7 +117,7 @@ func (self *ElasticsearchIndexer) aggregateFloat(collection *dal.Collection, agg
 	}
 }
 
-func (self *ElasticsearchIndexer) aggregate(collection *dal.Collection, groupBy []string, aggregates []filter.Aggregate, flt []*filter.Filter, single bool) (interface{}, error) {
+func (self *ElasticsearchIndexer) aggregate(collection *dal.Collection, groupBy []string, aggregates []filter.Aggregate, flt []*filter.Filter, single bool) (any, error) {
 	var f *filter.Filter
 
 	if len(flt) > 0 {
@@ -129,7 +129,7 @@ func (self *ElasticsearchIndexer) aggregate(collection *dal.Collection, groupBy 
 		collection.GetAggregatorName(),
 		f,
 	); err == nil {
-		var esFilter map[string]interface{}
+		var esFilter map[string]any
 
 		if err := json.Unmarshal(query, &esFilter); err == nil {
 			var aggs = esAggregationQuery{
@@ -146,7 +146,7 @@ func (self *ElasticsearchIndexer) aggregate(collection *dal.Collection, groupBy 
 					statsField = make(esAggregation)
 				}
 
-				statsField[`stats`] = map[string]interface{}{
+				statsField[`stats`] = map[string]any{
 					`field`: aggregate.Field,
 				}
 
@@ -164,7 +164,7 @@ func (self *ElasticsearchIndexer) aggregate(collection *dal.Collection, groupBy 
 				nil,
 				nil,
 			); err == nil {
-				var output = make(map[string]interface{})
+				var output = make(map[string]any)
 
 				if err := self.client.Decode(response.Body, &output); err == nil {
 					return output, nil

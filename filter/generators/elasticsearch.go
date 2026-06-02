@@ -14,9 +14,9 @@ type Elasticsearch struct {
 	filter.Generator
 	collection  string
 	fields      []string
-	criteria    []map[string]interface{}
-	options     map[string]interface{}
-	values      []interface{}
+	criteria    []map[string]any
+	options     map[string]any
+	values      []any
 	facetFields []string
 	aggregateBy []filter.Aggregate
 	compat      float64
@@ -37,9 +37,9 @@ func (self *Elasticsearch) Initialize(collectionName string) error {
 	self.Reset()
 	self.collection = collectionName
 	self.fields = make([]string, 0)
-	self.criteria = make([]map[string]interface{}, 0)
-	self.options = make(map[string]interface{})
-	self.values = make([]interface{}, 0)
+	self.criteria = make([]map[string]any, 0)
+	self.options = make(map[string]any)
+	self.values = make([]any, 0)
 
 	return nil
 }
@@ -51,21 +51,21 @@ func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
 		conjunction = `should`
 	}
 
-	var query map[string]interface{}
+	var query map[string]any
 
 	if flt.Spec == `all` {
-		query = map[string]interface{}{
-			`match_all`: map[string]interface{}{},
+		query = map[string]any{
+			`match_all`: map[string]any{},
 		}
 	} else {
-		query = map[string]interface{}{
-			`bool`: map[string]interface{}{
+		query = map[string]any{
+			`bool`: map[string]any{
 				conjunction: self.criteria,
 			},
 		}
 	}
 
-	var payload = map[string]interface{}{
+	var payload = map[string]any{
 		`query`: query,
 		`size`:  flt.Limit,
 		`from`:  flt.Offset,
@@ -73,7 +73,7 @@ func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
 
 	if len(flt.Fields) > 0 {
 		if self.compat >= 5 {
-			payload[`_source`] = map[string]interface{}{
+			payload[`_source`] = map[string]any{
 				`include`: flt.Fields,
 			}
 		} else {
@@ -82,15 +82,15 @@ func (self *Elasticsearch) Finalize(flt *filter.Filter) error {
 	}
 
 	if len(flt.Sort) > 0 {
-		var sorts = make([]interface{}, 0)
+		var sorts = make([]any, 0)
 
 		for _, sort := range flt.Sort {
 			if len(sort) > 1 && sort[0] == '-' {
-				sorts = append(sorts, map[string]interface{}{
+				sorts = append(sorts, map[string]any{
 					sort[1:]: `desc`,
 				})
 			} else {
-				sorts = append(sorts, map[string]interface{}{
+				sorts = append(sorts, map[string]any{
 					sort: `asc`,
 				})
 			}
@@ -119,7 +119,7 @@ func (self *Elasticsearch) WithField(field string) error {
 	return nil
 }
 
-func (self *Elasticsearch) SetOption(key string, value interface{}) error {
+func (self *Elasticsearch) SetOption(key string, value any) error {
 	self.options[key] = value
 	return nil
 }
@@ -138,12 +138,12 @@ func (self *Elasticsearch) AggregateByField(agg filter.Aggregation, field string
 	return nil
 }
 
-func (self *Elasticsearch) GetValues() []interface{} {
+func (self *Elasticsearch) GetValues() []any {
 	return self.values
 }
 
 func (self *Elasticsearch) WithCriterion(criterion filter.Criterion) error {
-	var c map[string]interface{}
+	var c map[string]any
 	var err error
 
 	switch criterion.Operator {

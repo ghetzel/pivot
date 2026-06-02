@@ -212,7 +212,7 @@
 				<a href="#Model.All">
 					func
 					(self *Model)
-					All(into interface{}) error
+					All(into any) error
 				</a>
 				
 			</li>
@@ -224,7 +224,7 @@
 				<a href="#Model.Average">
 					func
 					(self *Model)
-					Average(field string, flt interface{}) (float64, error)
+					Average(field string, flt any) (float64, error)
 				</a>
 				
 			</li>
@@ -236,7 +236,7 @@
 				<a href="#Model.Count">
 					func
 					(self *Model)
-					Count(flt interface{}) (uint64, error)
+					Count(flt any) (uint64, error)
 				</a>
 				
 			</li>
@@ -248,7 +248,7 @@
 				<a href="#Model.Create">
 					func
 					(self *Model)
-					Create(from interface{}) error
+					Create(from any) error
 				</a>
 				</strong>
 			</li>
@@ -260,7 +260,7 @@
 				<a href="#Model.CreateOrUpdate">
 					func
 					(self *Model)
-					CreateOrUpdate(id interface{}, from interface{}) error
+					CreateOrUpdate(id any, from any) error
 				</a>
 				</strong>
 			</li>
@@ -272,7 +272,7 @@
 				<a href="#Model.Delete">
 					func
 					(self *Model)
-					Delete(ids ...interface{}) error
+					Delete(ids ...any) error
 				</a>
 				</strong>
 			</li>
@@ -284,7 +284,7 @@
 				<a href="#Model.DeleteQuery">
 					func
 					(self *Model)
-					DeleteQuery(flt interface{}) error
+					DeleteQuery(flt any) error
 				</a>
 				</strong>
 			</li>
@@ -308,7 +308,7 @@
 				<a href="#Model.Each">
 					func
 					(self *Model)
-					Each(destZeroValue interface{}, resultFn ResultFunc) error
+					Each(destZeroValue any, resultFn ResultFunc) error
 				</a>
 				
 			</li>
@@ -320,7 +320,7 @@
 				<a href="#Model.Exists">
 					func
 					(self *Model)
-					Exists(id interface{}) bool
+					Exists(id any) bool
 				</a>
 				</strong>
 			</li>
@@ -332,7 +332,7 @@
 				<a href="#Model.Find">
 					func
 					(self *Model)
-					Find(flt interface{}, into interface{}) error
+					Find(flt any, into any) error
 				</a>
 				</strong>
 			</li>
@@ -344,7 +344,7 @@
 				<a href="#Model.FindFunc">
 					func
 					(self *Model)
-					FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error
+					FindFunc(flt any, destZeroValue any, resultFn ResultFunc) error
 				</a>
 				</strong>
 			</li>
@@ -356,7 +356,7 @@
 				<a href="#Model.Get">
 					func
 					(self *Model)
-					Get(id interface{}, into interface{}) error
+					Get(id any, into any) error
 				</a>
 				</strong>
 			</li>
@@ -392,7 +392,7 @@
 				<a href="#Model.GroupBy">
 					func
 					(self *Model)
-					GroupBy(fields []string, aggregates []filter.Aggregate, flt interface{}) (*dal.RecordSet, error)
+					GroupBy(fields []string, aggregates []filter.Aggregate, flt any) (*dal.RecordSet, error)
 				</a>
 				
 			</li>
@@ -404,7 +404,7 @@
 				<a href="#Model.List">
 					func
 					(self *Model)
-					List(fields []string) (map[string][]interface{}, error)
+					List(fields []string) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -416,7 +416,7 @@
 				<a href="#Model.ListWithFilter">
 					func
 					(self *Model)
-					ListWithFilter(fields []string, flt interface{}) (map[string][]interface{}, error)
+					ListWithFilter(fields []string, flt any) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -428,7 +428,7 @@
 				<a href="#Model.Maximum">
 					func
 					(self *Model)
-					Maximum(field string, flt interface{}) (float64, error)
+					Maximum(field string, flt any) (float64, error)
 				</a>
 				
 			</li>
@@ -452,7 +452,7 @@
 				<a href="#Model.Minimum">
 					func
 					(self *Model)
-					Minimum(field string, flt interface{}) (float64, error)
+					Minimum(field string, flt any) (float64, error)
 				</a>
 				
 			</li>
@@ -478,7 +478,7 @@
 				<a href="#Model.Sum">
 					func
 					(self *Model)
-					Sum(field string, flt interface{}) (float64, error)
+					Sum(field string, flt any) (float64, error)
 				</a>
 				
 			</li>
@@ -490,7 +490,7 @@
 				<a href="#Model.Update">
 					func
 					(self *Model)
-					Update(from interface{}) error
+					Update(from any) error
 				</a>
 				</strong>
 			</li>

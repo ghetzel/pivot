@@ -14,9 +14,9 @@ type MongoDB struct {
 	filter.Generator
 	collection  string
 	fields      []string
-	criteria    []map[string]interface{}
-	options     map[string]interface{}
-	values      []interface{}
+	criteria    []map[string]any
+	options     map[string]any
+	values      []any
 	facetFields []string
 	aggregateBy []filter.Aggregate
 }
@@ -31,9 +31,9 @@ func (self *MongoDB) Initialize(collectionName string) error {
 	self.Reset()
 	self.collection = collectionName
 	self.fields = make([]string, 0)
-	self.criteria = make([]map[string]interface{}, 0)
-	self.options = make(map[string]interface{})
-	self.values = make([]interface{}, 0)
+	self.criteria = make([]map[string]any, 0)
+	self.options = make(map[string]any)
+	self.values = make([]any, 0)
 
 	return nil
 }
@@ -41,18 +41,18 @@ func (self *MongoDB) Initialize(collectionName string) error {
 func (self *MongoDB) Finalize(f *filter.Filter) error {
 	conjunction := `$and`
 
-	var query map[string]interface{}
+	var query map[string]any
 
 	if f.Conjunction == filter.OrConjunction {
 		conjunction = `$or`
 	}
 
 	if f.Spec == `all` {
-		query = map[string]interface{}{}
+		query = map[string]any{}
 	} else if len(self.criteria) == 1 {
 		query = self.criteria[0]
 	} else {
-		query = map[string]interface{}{
+		query = map[string]any{
 			conjunction: self.criteria,
 		}
 	}
@@ -75,7 +75,7 @@ func (self *MongoDB) WithField(field string) error {
 	return nil
 }
 
-func (self *MongoDB) SetOption(key string, value interface{}) error {
+func (self *MongoDB) SetOption(key string, value any) error {
 	self.options[key] = value
 	return nil
 }
@@ -102,12 +102,12 @@ func (self *MongoDB) AggregateByField(agg filter.Aggregation, field string) erro
 	return nil
 }
 
-func (self *MongoDB) GetValues() []interface{} {
+func (self *MongoDB) GetValues() []any {
 	return self.values
 }
 
 func (self *MongoDB) WithCriterion(criterion filter.Criterion) error {
-	var c map[string]interface{}
+	var c map[string]any
 	var err error
 
 	if criterion.Field == `id` {

@@ -27,15 +27,15 @@ var ElasticsearchDefaultHost = `localhost:9200`
 var ElasticsearchDefaultShards = 3
 var ElasticsearchDefaultReplicas = 2
 var ElasticsearchDefaultRefresh = `false`
-var ElasticsearchAnalyzers = map[string]interface{}{
-	`pivot_case_insensitive`: map[string]interface{}{
+var ElasticsearchAnalyzers = map[string]any{
+	`pivot_case_insensitive`: map[string]any{
 		`tokenizer`: `keyword`,
 		`filter`:    []string{`lowercase`},
 	},
 }
 
-var ElasticsearchNormalizers = map[string]interface{}{
-	`pivot_normalize_string`: map[string]interface{}{
+var ElasticsearchNormalizers = map[string]any{
+	`pivot_normalize_string`: map[string]any{
 		`type`:   `custom`,
 		`filter`: []string{`lowercase`},
 	},
@@ -69,8 +69,8 @@ func (self *elasticsearchError) Error() string {
 }
 
 type elasticsearchIndexAnalysis struct {
-	Analyzer   map[string]interface{} `json:"analyzer"`
-	Normalizer map[string]interface{} `json:"normalizer"`
+	Analyzer   map[string]any `json:"analyzer"`
+	Normalizer map[string]any `json:"normalizer"`
 }
 
 type elasticsearchIndexSettings struct {
@@ -80,8 +80,8 @@ type elasticsearchIndexSettings struct {
 }
 
 type elasticsearchIndexMappings struct {
-	Properties map[string]interface{} `json:"properties"`
-	Dyanmic    bool                   `json:"dynamic"`
+	Properties map[string]any `json:"properties"`
+	Dyanmic    bool           `json:"dynamic"`
 }
 
 type elasticsearchCreateIndex struct {
@@ -160,12 +160,12 @@ func (self *ElasticsearchBackend) Initialize() error {
 	); err == nil {
 		self.client = client
 
-		// self.client.SetPreRequestHook(func(req *http.Request) (interface{}, error) {
+		// self.client.SetPreRequestHook(func(req *http.Request) (any, error) {
 		// 	log.Debugf("elastic > %s %v", req.Method, req.URL)
 		// 	return nil, nil
 		// })
 
-		// self.client.SetPostRequestHook(func(res *http.Response, _ interface{}) error {
+		// self.client.SetPostRequestHook(func(res *http.Response, _ any) error {
 		// 	log.Debugf("elastic < HTTP %v", res.Status)
 		// 	return nil
 		// })
@@ -237,7 +237,7 @@ func (self *ElasticsearchBackend) RegisterCollection(definition *dal.Collection)
 	self.tableCache.Store(definition.Name, definition)
 }
 
-func (self *ElasticsearchBackend) Exists(name string, id interface{}) bool {
+func (self *ElasticsearchBackend) Exists(name string, id any) bool {
 	if pk := self.pk(id); pk != `` {
 		if collection, err := self.GetCollection(name); err == nil {
 			if _, err := self.client.Request(
@@ -260,7 +260,7 @@ func (self *ElasticsearchBackend) Exists(name string, id interface{}) bool {
 	return false
 }
 
-func (self *ElasticsearchBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
+func (self *ElasticsearchBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
 		if res, err := self.client.Get(
 			fmt.Sprintf(
@@ -303,7 +303,7 @@ func (self *ElasticsearchBackend) Update(name string, records *dal.RecordSet, ta
 	}
 }
 
-func (self *ElasticsearchBackend) Delete(name string, ids ...interface{}) error {
+func (self *ElasticsearchBackend) Delete(name string, ids ...any) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		// for each id we're deleting...
 		for _, id := range ids {
@@ -338,7 +338,7 @@ func (self *ElasticsearchBackend) CreateCollection(definition *dal.Collection) e
 			},
 		},
 		Mappings: elasticsearchIndexMappings{
-			Properties: make(map[string]interface{}),
+			Properties: make(map[string]any),
 		},
 	}
 
@@ -351,7 +351,7 @@ func (self *ElasticsearchBackend) CreateCollection(definition *dal.Collection) e
 	if _, err := self.client.Put(
 		`/`+definition.Name,
 		&index,
-		map[string]interface{}{
+		map[string]any{
 			`wait_for_active_shards`: 1,
 			`include_type_name`:      false,
 		},
@@ -409,7 +409,7 @@ func (self *ElasticsearchBackend) Flush() error {
 	return nil
 }
 
-func (self *ElasticsearchBackend) pk(id interface{}) string {
+func (self *ElasticsearchBackend) pk(id any) string {
 	if typeutil.IsArray(id) {
 		return strings.Join(sliceutil.Stringify(id), self.pkSeparator)
 	} else {
@@ -474,7 +474,7 @@ func (self *ElasticsearchBackend) upsertRecords(collection *dal.Collection, reco
 					pk,
 				),
 				payload,
-				map[string]interface{}{
+				map[string]any{
 					`refresh`: self.refresh,
 				},
 				nil,
@@ -517,35 +517,35 @@ func esErrorDecoder(res *http.Response) error {
 	return nil
 }
 
-func fieldTypeToEsMapping(ftype dal.Type) map[string]interface{} {
+func fieldTypeToEsMapping(ftype dal.Type) map[string]any {
 	switch ftype {
 	case dal.BooleanType:
-		return map[string]interface{}{
+		return map[string]any{
 			`type`: `boolean`,
 		}
 	case dal.IntType:
-		return map[string]interface{}{
+		return map[string]any{
 			`type`: `long`,
 		}
 	case dal.FloatType:
-		return map[string]interface{}{
+		return map[string]any{
 			`type`: `double`,
 		}
 	case dal.TimeType:
-		return map[string]interface{}{
+		return map[string]any{
 			`type`: `date`,
 		}
 	case dal.ObjectType:
-		return map[string]interface{}{
+		return map[string]any{
 			`type`:    `object`,
 			`dynamic`: true,
 		}
 	case dal.ArrayType:
-		return map[string]interface{}{
+		return map[string]any{
 			`type`: `nested`,
 		}
 	default:
-		return map[string]interface{}{
+		return map[string]any{
 			`type`:       `keyword`,
 			`normalizer`: `pivot_normalize_string`,
 		}

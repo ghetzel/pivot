@@ -26,15 +26,15 @@ func (self *MongoBackend) GetBackend() Backend {
 	return self
 }
 
-func (self *MongoBackend) IndexExists(collection *dal.Collection, id interface{}) bool {
+func (self *MongoBackend) IndexExists(collection *dal.Collection, id any) bool {
 	return self.Exists(collection.GetIndexName(), id)
 }
 
-func (self *MongoBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
+func (self *MongoBackend) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error) {
 	return self.Retrieve(collection.GetIndexName(), id)
 }
 
-func (self *MongoBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+func (self *MongoBackend) IndexRemove(collection *dal.Collection, ids []any) error {
 	return nil
 }
 
@@ -43,7 +43,7 @@ func (self *MongoBackend) Index(collection *dal.Collection, records *dal.RecordS
 }
 
 func (self *MongoBackend) QueryFunc(collection *dal.Collection, flt *filter.Filter, resultFn IndexResultFunc) error {
-	var result map[string]interface{}
+	var result map[string]any
 
 	if query, err := self.filterToNative(collection, flt); err == nil {
 		q := self.db.C(collection.Name).Find(query)
@@ -106,9 +106,9 @@ func (self *MongoBackend) Query(collection *dal.Collection, f *filter.Filter, re
 	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 
-func (self *MongoBackend) ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error) {
+func (self *MongoBackend) ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]any, error) {
 	if query, err := self.filterToNative(collection, flt); err == nil {
-		rv := make(map[string][]interface{})
+		rv := make(map[string][]any)
 
 		for _, field := range fields {
 			qfield := field
@@ -117,7 +117,7 @@ func (self *MongoBackend) ListValues(collection *dal.Collection, fields []string
 				qfield = MongoIdentityField
 			}
 
-			var results []interface{}
+			var results []any
 
 			if err := self.db.C(collection.Name).Find(&query).Distinct(qfield, &results); err == nil {
 				rv[field] = sliceutil.Autotype(results)
@@ -164,7 +164,7 @@ func (self *MongoBackend) filterToNative(collection *dal.Collection, flt *filter
 		// process.  I *wanted* to just serialize to BSON directly from the query generator interface, but
 		// that turned into a messy time-wasting boondoggle #neat.
 		//
-		query = bson.M(maputil.Apply(query, func(key []string, value interface{}) (interface{}, bool) {
+		query = bson.M(maputil.Apply(query, func(key []string, value any) (any, bool) {
 			vS := fmt.Sprintf("%v", value)
 
 			// I'm half-a-tick from just forking the mgo library for how absolutely maddening this

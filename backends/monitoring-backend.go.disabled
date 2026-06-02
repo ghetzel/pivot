@@ -17,7 +17,7 @@ func NewMonitoringBackend(parent Backend) *MonitoringBackend {
 	}
 }
 
-func (self *MonitoringBackend) Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error) {
+func (self *MonitoringBackend) Retrieve(collection string, id any, fields ...string) (*dal.Record, error) {
 	defer stats.NewTiming().Send(`pivot.operations.retrieve.timing`)
 	stats.Increment(`pivot.operations.retrieve.calls`)
 
@@ -30,7 +30,7 @@ func (self *MonitoringBackend) Retrieve(collection string, id interface{}, field
 	return record, err
 }
 
-func (self *MonitoringBackend) Exists(collection string, id interface{}) bool {
+func (self *MonitoringBackend) Exists(collection string, id any) bool {
 }
 
 func (self *MonitoringBackend) Insert(collection string, records *dal.RecordSet) error {
@@ -39,7 +39,7 @@ func (self *MonitoringBackend) Insert(collection string, records *dal.RecordSet)
 func (self *MonitoringBackend) Update(collection string, records *dal.RecordSet, target ...string) error {
 }
 
-func (self *MonitoringBackend) Delete(collection string, ids ...interface{}) error {
+func (self *MonitoringBackend) Delete(collection string, ids ...any) error {
 }
 
 func (self *MonitoringBackend) CreateCollection(definition *dal.Collection) error {

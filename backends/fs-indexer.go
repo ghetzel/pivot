@@ -20,16 +20,16 @@ func (self *FilesystemBackend) GetBackend() Backend {
 	return self
 }
 
-func (self *FilesystemBackend) IndexExists(collection *dal.Collection, id interface{}) bool {
+func (self *FilesystemBackend) IndexExists(collection *dal.Collection, id any) bool {
 	return self.Exists(collection.GetIndexName(), id)
 }
 
-func (self *FilesystemBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
+func (self *FilesystemBackend) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error) {
 	defer stats.NewTiming().Send(`pivot.indexers.filesystem.retrieve_time`)
 	return self.Retrieve(collection.GetIndexName(), id)
 }
 
-func (self *FilesystemBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+func (self *FilesystemBackend) IndexRemove(collection *dal.Collection, ids []any) error {
 	return nil
 }
 
@@ -126,13 +126,13 @@ func (self *FilesystemBackend) Query(collection *dal.Collection, f *filter.Filte
 	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 
-func (self *FilesystemBackend) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
-	values := make(map[string][]interface{})
+func (self *FilesystemBackend) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error) {
+	values := make(map[string][]any)
 
 	if err := self.QueryFunc(collection, f, func(record *dal.Record, err error, page IndexPage) error {
 		if err == nil {
 			for _, field := range fields {
-				var v []interface{}
+				var v []any
 
 				switch field {
 				case collection.IdentityField:
@@ -141,7 +141,7 @@ func (self *FilesystemBackend) ListValues(collection *dal.Collection, fields []s
 					if current, ok := values[field]; ok {
 						v = current
 					} else {
-						v = make([]interface{}, 0)
+						v = make([]any, 0)
 					}
 
 					if record.ID != nil {
@@ -151,7 +151,7 @@ func (self *FilesystemBackend) ListValues(collection *dal.Collection, fields []s
 					if current, ok := values[field]; ok {
 						v = current
 					} else {
-						v = make([]interface{}, 0)
+						v = make([]any, 0)
 					}
 
 					if newV := record.Get(field); newV != nil {
@@ -172,7 +172,7 @@ func (self *FilesystemBackend) ListValues(collection *dal.Collection, fields []s
 }
 
 func (self *FilesystemBackend) DeleteQuery(collection *dal.Collection, f *filter.Filter) error {
-	idsToRemove := make([]interface{}, 0)
+	idsToRemove := make([]any, 0)
 
 	if err := self.QueryFunc(collection, f, func(record *dal.Record, err error, page IndexPage) error {
 		if err == nil {

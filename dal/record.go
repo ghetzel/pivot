@@ -16,16 +16,16 @@ import (
 var FieldNestingSeparator string = `.`
 
 type Record struct {
-	ID             interface{}            `json:"id"`
-	Fields         map[string]interface{} `json:"fields,omitempty"`
-	Data           []byte                 `json:"data,omitempty"`
-	Error          error                  `json:"error,omitempty"`
-	CollectionName string                 `json:"collection,omitempty"`
-	Operation      string                 `json:"operation,omitempty"`
-	Optional       bool                   `json:"optional,omitempty"` // Specifies that the record is "optional", which is namely used in fixtures to indicate that a missing collection should not be considered fatal.
+	ID             any            `json:"id"`
+	Fields         map[string]any `json:"fields,omitempty"`
+	Data           []byte         `json:"data,omitempty"`
+	Error          error          `json:"error,omitempty"`
+	CollectionName string         `json:"collection,omitempty"`
+	Operation      string         `json:"operation,omitempty"`
+	Optional       bool           `json:"optional,omitempty"` // Specifies that the record is "optional", which is namely used in fixtures to indicate that a missing collection should not be considered fatal.
 }
 
-func NewRecord(id interface{}, data ...map[string]interface{}) *Record {
+func NewRecord(id any, data ...map[string]any) *Record {
 	record := &Record{
 		ID: id,
 	}
@@ -33,27 +33,27 @@ func NewRecord(id interface{}, data ...map[string]interface{}) *Record {
 	if len(data) > 0 && len(data[0]) > 0 {
 		record.Fields = data[0]
 	} else {
-		record.Fields = make(map[string]interface{})
+		record.Fields = make(map[string]any)
 	}
 
 	return record
 }
 
-func NewRecordErr(id interface{}, err error) *Record {
+func NewRecordErr(id any, err error) *Record {
 	return &Record{
 		ID:     id,
-		Fields: make(map[string]interface{}),
+		Fields: make(map[string]any),
 		Error:  err,
 	}
 }
 
 func (self *Record) init() {
 	if self.Fields == nil {
-		self.Fields = make(map[string]interface{})
+		self.Fields = make(map[string]any)
 	}
 }
 
-func (self *Record) Keys(collection *Collection) []interface{} {
+func (self *Record) Keys(collection *Collection) []any {
 	values := sliceutil.Sliceify(self.ID)
 
 	if collection != nil {
@@ -75,7 +75,7 @@ func (self *Record) Keys(collection *Collection) []interface{} {
 	return values
 }
 
-func (self *Record) SetKeys(collection *Collection, op FieldOperation, keys ...interface{}) error {
+func (self *Record) SetKeys(collection *Collection, op FieldOperation, keys ...any) error {
 	if collection != nil {
 		if len(keys) > 0 {
 			self.ID = collection.ConvertValue(collection.GetIdentityFieldName(), keys[0])
@@ -162,7 +162,7 @@ func (self *Record) Copy(other *Record, schema ...*Collection) error {
 	return nil
 }
 
-func (self *Record) Get(key string, fallback ...interface{}) interface{} {
+func (self *Record) Get(key string, fallback ...any) any {
 	self.init()
 
 	if key == DefaultIdentityField {
@@ -174,10 +174,10 @@ func (self *Record) Get(key string, fallback ...interface{}) interface{} {
 	}
 }
 
-func (self *Record) GetNested(key string, fallback ...interface{}) interface{} {
+func (self *Record) GetNested(key string, fallback ...any) any {
 	self.init()
 
-	var fb interface{}
+	var fb any
 
 	if len(fallback) > 0 {
 		fb = fallback[0]
@@ -202,14 +202,14 @@ func (self *Record) GetString(key string, fallback ...string) string {
 	}
 }
 
-func (self *Record) Set(key string, value interface{}) *Record {
+func (self *Record) Set(key string, value any) *Record {
 	self.init()
 
 	self.Fields[key] = value
 	return self
 }
 
-func (self *Record) SetNested(key string, value interface{}) *Record {
+func (self *Record) SetNested(key string, value any) *Record {
 	self.init()
 
 	parts := strings.Split(key, FieldNestingSeparator)
@@ -217,7 +217,7 @@ func (self *Record) SetNested(key string, value interface{}) *Record {
 	return self
 }
 
-func (self *Record) SetFields(values map[string]interface{}) *Record {
+func (self *Record) SetFields(values map[string]any) *Record {
 	for k, v := range values {
 		self.Set(k, v)
 	}
@@ -238,16 +238,16 @@ func (self *Record) String() string {
 	}
 }
 
-func (self *Record) Append(key string, value ...interface{}) *Record {
+func (self *Record) Append(key string, value ...any) *Record {
 	return self.Set(key, self.appendValue(key, value...))
 }
 
-func (self *Record) AppendNested(key string, value ...interface{}) *Record {
+func (self *Record) AppendNested(key string, value ...any) *Record {
 	return self.SetNested(key, self.appendValue(key, value...))
 }
 
 // Populates a given struct with with the values in this record.
-func (self *Record) Populate(into interface{}, collection *Collection) error {
+func (self *Record) Populate(into any, collection *Collection) error {
 	// special case for what is essentially copying another record into this one
 	if record, ok := into.(*Record); ok {
 		return self.Copy(record, collection)
@@ -295,8 +295,8 @@ func (self *Record) OnlyFields(fields []string) *Record {
 	return self
 }
 
-func (self *Record) Map(fields ...string) map[string]interface{} {
-	var out = make(map[string]interface{})
+func (self *Record) Map(fields ...string) map[string]any {
+	var out = make(map[string]any)
 
 	if self.ID != nil {
 		out[`id`] = self.ID
@@ -315,8 +315,8 @@ func (self *Record) Map(fields ...string) map[string]interface{} {
 	return out
 }
 
-func (self *Record) toMap(collection *Collection, idFieldName string, into interface{}) (map[string]interface{}, error) {
-	data := make(map[string]interface{})
+func (self *Record) toMap(collection *Collection, idFieldName string, into any) (map[string]any, error) {
+	data := make(map[string]any)
 
 	// populate defaults
 	if collection != nil {
@@ -422,8 +422,8 @@ func (self *Record) toMap(collection *Collection, idFieldName string, into inter
 	return data, nil
 }
 
-func (self *Record) appendValue(key string, value ...interface{}) []interface{} {
-	newValue := make([]interface{}, 0)
+func (self *Record) appendValue(key string, value ...any) []any {
+	newValue := make([]any, 0)
 
 	if v := self.Get(key); v != nil {
 		valueV := reflect.ValueOf(v)
@@ -441,7 +441,7 @@ func (self *Record) appendValue(key string, value ...interface{}) []interface{} 
 	return append(newValue, value...)
 }
 
-func (self *Record) convertRecordValueToStructValue(collection *Collection, key string, value interface{}, into interface{}) (interface{}, error) {
+func (self *Record) convertRecordValueToStructValue(collection *Collection, key string, value any, into any) (any, error) {
 	if collection != nil {
 		// 1. get field from collection
 		// 2. get relationship from field
@@ -461,7 +461,7 @@ func (self *Record) convertRecordValueToStructValue(collection *Collection, key 
 							if instance.CanInterface() {
 								intoNew := instance.Interface()
 
-								return intoNew, maputil.TaggedStructFromMap(map[string]interface{}{
+								return intoNew, maputil.TaggedStructFromMap(map[string]any{
 									related.GetIdentityFieldName(): value,
 								}, intoNew, RecordStructTag)
 							} else {

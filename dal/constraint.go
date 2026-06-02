@@ -7,13 +7,13 @@ import (
 
 type Constraint struct {
 	// Represents the name (or array of names) of the local field the constraint is being applied to.
-	On interface{} `json:"on"`
+	On any `json:"on"`
 
 	// The remote collection the constraint applies to.
 	Collection string `json:"collection"`
 
 	// The remote field (or fields) in the remote collection the constraint applies to.
-	Field interface{} `json:"field"`
+	Field any `json:"field"`
 
 	// Provides backend-specific additional options for the constraint.
 	Options string `json:"options,omitempty"`

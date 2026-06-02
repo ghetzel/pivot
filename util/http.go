@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-type EndpointResponseFunc func(*http.Request, map[string]string) (int, interface{}, error)
+type EndpointResponseFunc func(*http.Request, map[string]string) (int, any, error)
 
 type Endpoint struct {
 	BackendName string

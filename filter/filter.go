@@ -38,12 +38,12 @@ var DefaultNormalizerFunc = func(in string) string {
 }
 
 type Criterion struct {
-	Type        dal.Type      `json:"type,omitempty"`
-	Length      int           `json:"length,omitempty"`
-	Field       string        `json:"field"`
-	Operator    string        `json:"operator,omitempty"`
-	Values      []interface{} `json:"values"`
-	Aggregation Aggregation   `json:"aggregation,omitempty"`
+	Type        dal.Type    `json:"type,omitempty"`
+	Length      int         `json:"length,omitempty"`
+	Field       string      `json:"field"`
+	Operator    string      `json:"operator,omitempty"`
+	Values      []any       `json:"values"`
+	Aggregation Aggregation `json:"aggregation,omitempty"`
 }
 
 func (self *Criterion) IsExactMatch() bool {
@@ -126,7 +126,7 @@ type Filter struct {
 	Criteria      []Criterion
 	Sort          []string
 	Fields        []string
-	Options       map[string]interface{}
+	Options       map[string]any
 	Paginate      bool
 	IdentityField string
 	Normalizer    NormalizerFunc `json:"-" bson:"-" pivot:"-"`
@@ -138,7 +138,7 @@ func New() *Filter {
 		Criteria:      make([]Criterion, 0),
 		Sort:          make([]string, 0),
 		Fields:        make([]string, 0),
-		Options:       make(map[string]interface{}),
+		Options:       make(map[string]any),
 		Paginate:      true,
 		IdentityField: DefaultIdentityField,
 		Normalizer:    DefaultNormalizerFunc,
@@ -153,7 +153,7 @@ func MakeFilter(specs ...string) Filter {
 		Criteria:      make([]Criterion, 0),
 		Sort:          make([]string, 0),
 		Fields:        make([]string, 0),
-		Options:       make(map[string]interface{}),
+		Options:       make(map[string]any),
 		Paginate:      true,
 		IdentityField: DefaultIdentityField,
 		Normalizer:    DefaultNormalizerFunc,
@@ -170,14 +170,14 @@ func Copy(other *Filter) Filter {
 	return *other
 }
 
-func FromMap(in map[string]interface{}) (*Filter, error) {
+func FromMap(in map[string]any) (*Filter, error) {
 	rv := MakeFilter()
 
 	for typeField, opValue := range in {
 		fType, fName := SplitModifierToken(typeField)
 
 		var vOper string
-		var vValues interface{}
+		var vValues any
 
 		if pair, ok := opValue.(string); ok {
 			vOper, vValues = SplitModifierToken(pair)
@@ -213,7 +213,7 @@ func All() *Filter {
 	return &f
 }
 
-func Parse(in interface{}) (*Filter, error) {
+func Parse(in any) (*Filter, error) {
 	if f, ok := in.(Filter); ok {
 		return &f, nil
 	} else if f, ok := in.(*Filter); ok {
@@ -229,7 +229,7 @@ func Parse(in interface{}) (*Filter, error) {
 	}
 }
 
-func MustParse(in interface{}) *Filter {
+func MustParse(in any) *Filter {
 	if flt, err := Parse(in); err == nil {
 		return flt
 	} else {
@@ -324,14 +324,14 @@ func ParseSpec(spec string) (*Filter, error) {
 				}
 			} else {
 				vOper, vValue := SplitModifierToken(token)
-				criterion.Values = make([]interface{}, 0)
+				criterion.Values = make([]any, 0)
 
 				if vOper != `` {
 					criterion.Operator = vOper
 				}
 
 				for _, v := range strings.Split(vValue, ValueSeparator) {
-					var value interface{}
+					var value any
 
 					value = v
 
@@ -427,7 +427,7 @@ func (self *Filter) IdOnly() bool {
 	return false
 }
 
-func (self *Filter) GetValues(field string) ([]interface{}, bool) {
+func (self *Filter) GetValues(field string) ([]any, bool) {
 	for _, criterion := range self.Criteria {
 		if criterion.Field == field {
 			return criterion.Values, true
@@ -437,7 +437,7 @@ func (self *Filter) GetValues(field string) ([]interface{}, bool) {
 	return nil, false
 }
 
-func (self *Filter) GetFirstValue() (interface{}, bool) {
+func (self *Filter) GetFirstValue() (any, bool) {
 	if len(self.Criteria) > 0 {
 		if len(self.Criteria[0].Values) > 0 {
 			return self.Criteria[0].Values[0], true
@@ -447,7 +447,7 @@ func (self *Filter) GetFirstValue() (interface{}, bool) {
 	return nil, false
 }
 
-func (self *Filter) GetIdentityValue() (interface{}, bool) {
+func (self *Filter) GetIdentityValue() (any, bool) {
 	for _, criterion := range self.Criteria {
 		if criterion.Field == self.IdentityField {
 			return sliceutil.At(criterion.Values, 0)
@@ -499,7 +499,7 @@ func (self *Filter) GetSort() []SortBy {
 	return sortBy
 }
 
-func (self *Filter) ApplyOptions(in interface{}) error {
+func (self *Filter) ApplyOptions(in any) error {
 	if len(self.Options) > 0 {
 		s := structs.New(in)
 
@@ -515,7 +515,7 @@ func (self *Filter) ApplyOptions(in interface{}) error {
 	return nil
 }
 
-func (self *Filter) NewFromMap(in map[string]interface{}) (*Filter, error) {
+func (self *Filter) NewFromMap(in map[string]any) (*Filter, error) {
 	criteria := make([]string, 0)
 
 	for _, criterion := range self.Criteria {
@@ -573,7 +573,7 @@ func (self *Filter) MatchesRecord(record *dal.Record) bool {
 			}
 
 			var invertQuery bool
-			var cmpValue interface{}
+			var cmpValue any
 			var cmpValueS string
 
 			if criterion.Field == self.IdentityField || criterion.Field == `id` {

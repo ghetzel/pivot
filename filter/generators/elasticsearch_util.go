@@ -11,11 +11,11 @@ var ElasticsearchExactMatchQueryType = `term`
 var ElasticsearchFuzzyMatchQueryType = `match`
 var ElasticsearchFulltextDefaultConjunctionAnd = true
 
-func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[string]interface{}, error) {
-	var c = make(map[string]interface{})
+func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[string]any, error) {
+	var c = make(map[string]any)
 
 	if len(criterion.Values) == 1 && criterion.Values[0] == `null` {
-		c[`missing`] = map[string]interface{}{
+		c[`missing`] = map[string]any{
 			`field`:      criterion.Field,
 			`existence`:  true,
 			`null_value`: true,
@@ -23,21 +23,21 @@ func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[
 
 		gen.values = append(gen.values, nil)
 	} else {
-		var or_terms = make([]map[string]interface{}, 0)
+		var or_terms = make([]map[string]any, 0)
 
 		for _, value := range criterion.Values {
 			gen.values = append(gen.values, value)
 
-			or_terms = append(or_terms, map[string]interface{}{
-				ElasticsearchExactMatchQueryType: map[string]interface{}{
+			or_terms = append(or_terms, map[string]any{
+				ElasticsearchExactMatchQueryType: map[string]any{
 					criterion.Field: value,
 				},
 			})
 
 			if v, ok := gen.options[`multifield`]; ok {
 				if vS, ok := v.(string); ok {
-					or_terms = append(or_terms, map[string]interface{}{
-						ElasticsearchExactMatchQueryType: map[string]interface{}{
+					or_terms = append(or_terms, map[string]any{
+						ElasticsearchExactMatchQueryType: map[string]any{
 							(criterion.Field + `.` + vS): value,
 						},
 					})
@@ -53,7 +53,7 @@ func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[
 				c[k] = v
 			}
 		default:
-			c[`bool`] = map[string]interface{}{
+			c[`bool`] = map[string]any{
 				`should`: or_terms,
 			}
 		}
@@ -62,8 +62,8 @@ func esCriterionOperatorIs(gen *Elasticsearch, criterion filter.Criterion) (map[
 	return c, nil
 }
 
-func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map[string]interface{}, error) {
-	var c = make(map[string]interface{})
+func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map[string]any, error) {
+	var c = make(map[string]any)
 
 	if len(criterion.Values) == 0 {
 		return c, fmt.Errorf("The not criterion must have at least one value")
@@ -71,9 +71,9 @@ func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map
 	} else if len(criterion.Values) == 1 && criterion.Values[0] == `null` {
 		gen.values = append(gen.values, nil)
 
-		c[`bool`] = map[string]interface{}{
-			`must_not`: map[string]interface{}{
-				`missing`: map[string]interface{}{
+		c[`bool`] = map[string]any{
+			`must_not`: map[string]any{
+				`missing`: map[string]any{
 					`field`:      criterion.Field,
 					`existence`:  true,
 					`null_value`: true,
@@ -81,18 +81,18 @@ func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map
 			},
 		}
 	} else {
-		and_not := make([]map[string]interface{}, 0)
+		and_not := make([]map[string]any, 0)
 
 		for _, value := range criterion.Values {
 			gen.values = append(gen.values, value)
 
 			//  strings get treated as regular expressions
 			if criterion.Type == `str` {
-				and_not = append(and_not, map[string]interface{}{
-					`bool`: map[string]interface{}{
-						`must_not`: map[string]interface{}{
-							`regexp`: map[string]interface{}{
-								criterion.Field: map[string]interface{}{
+				and_not = append(and_not, map[string]any{
+					`bool`: map[string]any{
+						`must_not`: map[string]any{
+							`regexp`: map[string]any{
+								criterion.Field: map[string]any{
 									`value`: value,
 									`flags`: `ALL`,
 								},
@@ -102,10 +102,10 @@ func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map
 				})
 			} else {
 				//  all other types are a simple term match
-				and_not = append(and_not, map[string]interface{}{
-					`bool`: map[string]interface{}{
-						`must_not`: map[string]interface{}{
-							ElasticsearchExactMatchQueryType: map[string]interface{}{
+				and_not = append(and_not, map[string]any{
+					`bool`: map[string]any{
+						`must_not`: map[string]any{
+							ElasticsearchExactMatchQueryType: map[string]any{
 								criterion.Field: value,
 							},
 						},
@@ -114,7 +114,7 @@ func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map
 			}
 		}
 
-		c[`bool`] = map[string]interface{}{
+		c[`bool`] = map[string]any{
 			`must`: and_not,
 		}
 	}
@@ -122,20 +122,20 @@ func esCriterionOperatorNot(gen *Elasticsearch, criterion filter.Criterion) (map
 	return c, nil
 }
 
-func esCriterionOperatorLike(gen *Elasticsearch, criterion filter.Criterion) (map[string]interface{}, error) {
-	var c = make(map[string]interface{})
+func esCriterionOperatorLike(gen *Elasticsearch, criterion filter.Criterion) (map[string]any, error) {
+	var c = make(map[string]any)
 
 	if len(criterion.Values) == 1 && criterion.Values[0] == `null` {
 		return esCriterionOperatorIs(gen, criterion)
 	} else {
-		var or_terms = make([]map[string]interface{}, 0)
+		var or_terms = make([]map[string]any, 0)
 
 		for _, value := range criterion.Values {
 			gen.values = append(gen.values, value)
 
-			or_terms = append(or_terms, map[string]interface{}{
-				ElasticsearchFuzzyMatchQueryType: map[string]interface{}{
-					criterion.Field: map[string]interface{}{
+			or_terms = append(or_terms, map[string]any{
+				ElasticsearchFuzzyMatchQueryType: map[string]any{
+					criterion.Field: map[string]any{
 						`query`: value,
 					},
 				},
@@ -150,7 +150,7 @@ func esCriterionOperatorLike(gen *Elasticsearch, criterion filter.Criterion) (ma
 				c[k] = v
 			}
 		default:
-			c[`bool`] = map[string]interface{}{
+			c[`bool`] = map[string]any{
 				`should`: or_terms,
 			}
 		}
@@ -159,10 +159,10 @@ func esCriterionOperatorLike(gen *Elasticsearch, criterion filter.Criterion) (ma
 	return c, nil
 }
 
-func esCriterionOperatorUnlike(gen *Elasticsearch, criterion filter.Criterion) (map[string]interface{}, error) {
+func esCriterionOperatorUnlike(gen *Elasticsearch, criterion filter.Criterion) (map[string]any, error) {
 	if like, err := esCriterionOperatorLike(gen, criterion); err == nil {
-		return map[string]interface{}{
-			`bool`: map[string]interface{}{
+		return map[string]any{
+			`bool`: map[string]any{
 				`must_not`: like,
 			},
 		}, nil
@@ -171,13 +171,13 @@ func esCriterionOperatorUnlike(gen *Elasticsearch, criterion filter.Criterion) (
 	}
 }
 
-func esCriterionOperatorPattern(gen *Elasticsearch, opname string, criterion filter.Criterion) (map[string]interface{}, error) {
-	var c = make(map[string]interface{})
+func esCriterionOperatorPattern(gen *Elasticsearch, opname string, criterion filter.Criterion) (map[string]any, error) {
+	var c = make(map[string]any)
 
 	if len(criterion.Values) == 0 {
 		return nil, fmt.Errorf("The not criterion must have at least one value")
 	} else {
-		var or_regexp = make([]map[string]interface{}, 0)
+		var or_regexp = make([]map[string]any, 0)
 
 		for _, value := range criterion.Values {
 			gen.values = append(gen.values, value)
@@ -194,9 +194,9 @@ func esCriterionOperatorPattern(gen *Elasticsearch, opname string, criterion fil
 				return nil, fmt.Errorf("Unsupported pattern operator %q", opname)
 			}
 
-			or_regexp = append(or_regexp, map[string]interface{}{
-				`regexp`: map[string]interface{}{
-					criterion.Field: map[string]interface{}{
+			or_regexp = append(or_regexp, map[string]any{
+				`regexp`: map[string]any{
+					criterion.Field: map[string]any{
 						`value`: valueClause,
 						`flags`: `ALL`,
 					},
@@ -205,9 +205,9 @@ func esCriterionOperatorPattern(gen *Elasticsearch, opname string, criterion fil
 
 			if v, ok := gen.options[`multifield`]; ok {
 				if vS, ok := v.(string); ok {
-					or_regexp = append(or_regexp, map[string]interface{}{
-						`regexp`: map[string]interface{}{
-							(criterion.Field + `.` + vS): map[string]interface{}{
+					or_regexp = append(or_regexp, map[string]any{
+						`regexp`: map[string]any{
+							(criterion.Field + `.` + vS): map[string]any{
 								`value`: valueClause,
 								`flags`: `ALL`,
 							},
@@ -225,7 +225,7 @@ func esCriterionOperatorPattern(gen *Elasticsearch, opname string, criterion fil
 				c[k] = v
 			}
 		default:
-			c[`bool`] = map[string]interface{}{
+			c[`bool`] = map[string]any{
 				`should`: or_regexp,
 			}
 		}
@@ -234,14 +234,14 @@ func esCriterionOperatorPattern(gen *Elasticsearch, opname string, criterion fil
 	return c, nil
 }
 
-func esCriterionOperatorRange(gen *Elasticsearch, criterion filter.Criterion, operator string) (map[string]interface{}, error) {
-	var c = make(map[string]interface{})
+func esCriterionOperatorRange(gen *Elasticsearch, criterion filter.Criterion, operator string) (map[string]any, error) {
+	var c = make(map[string]any)
 
 	if l := len(criterion.Values); l == 1 {
 		gen.values = append(gen.values, criterion.Values[0])
 
-		c[`range`] = map[string]interface{}{
-			criterion.Field: map[string]interface{}{
+		c[`range`] = map[string]any{
+			criterion.Field: map[string]any{
 				operator: criterion.Values[0],
 			},
 		}
@@ -252,10 +252,10 @@ func esCriterionOperatorRange(gen *Elasticsearch, criterion filter.Criterion, op
 	return c, nil
 }
 
-func esCriterionOperatorFulltext(gen *Elasticsearch, criterion filter.Criterion) (map[string]interface{}, error) {
-	var c = make(map[string]interface{})
+func esCriterionOperatorFulltext(gen *Elasticsearch, criterion filter.Criterion) (map[string]any, error) {
+	var c = make(map[string]any)
 
-	var or_queries = make([]map[string]interface{}, 0)
+	var or_queries = make([]map[string]any, 0)
 	var defop string
 
 	if ElasticsearchFulltextDefaultConjunctionAnd {
@@ -267,8 +267,8 @@ func esCriterionOperatorFulltext(gen *Elasticsearch, criterion filter.Criterion)
 	for _, value := range criterion.Values {
 		gen.values = append(gen.values, value)
 
-		or_queries = append(or_queries, map[string]interface{}{
-			`query_string`: map[string]interface{}{
+		or_queries = append(or_queries, map[string]any{
+			`query_string`: map[string]any{
 				`query`:            typeutil.String(value),
 				`default_field`:    criterion.Field,
 				`default_operator`: defop,
@@ -285,7 +285,7 @@ func esCriterionOperatorFulltext(gen *Elasticsearch, criterion filter.Criterion)
 			c[k] = v
 		}
 	default:
-		c[`bool`] = map[string]interface{}{
+		c[`bool`] = map[string]any{
 			`should`: or_queries,
 		}
 	}

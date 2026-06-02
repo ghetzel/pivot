@@ -11,8 +11,8 @@ type IGenerator interface {
 	WithField(string) error
 	GroupByField(string) error
 	AggregateByField(Aggregation, string) error
-	SetOption(string, interface{}) error
-	GetValues() []interface{}
+	SetOption(string, any) error
+	GetValues() []any
 	Reset()
 }
 

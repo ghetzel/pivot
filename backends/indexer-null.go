@@ -20,15 +20,15 @@ func (self *NullIndexer) GetBackend() Backend {
 	return nil
 }
 
-func (self *NullIndexer) IndexExists(collection *dal.Collection, id interface{}) bool {
+func (self *NullIndexer) IndexExists(collection *dal.Collection, id any) bool {
 	return false
 }
 
-func (self *NullIndexer) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
+func (self *NullIndexer) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error) {
 	return nil, NotImplementedError
 }
 
-func (self *NullIndexer) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+func (self *NullIndexer) IndexRemove(collection *dal.Collection, ids []any) error {
 	return NotImplementedError
 }
 
@@ -44,7 +44,7 @@ func (self *NullIndexer) Query(collection *dal.Collection, filter filter.Filter,
 	return nil, NotImplementedError
 }
 
-func (self *NullIndexer) ListValues(collection *dal.Collection, fields []string, filter filter.Filter) (map[string][]interface{}, error) {
+func (self *NullIndexer) ListValues(collection *dal.Collection, fields []string, filter filter.Filter) (map[string][]any, error) {
 	return nil, NotImplementedError
 }
 

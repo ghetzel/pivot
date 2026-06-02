@@ -8,23 +8,23 @@ import (
 )
 
 type RecordSet struct {
-	ResultCount    int64                  `json:"result_count"`
-	Page           int                    `json:"page,omitempty"`
-	TotalPages     int                    `json:"total_pages,omitempty"`
-	RecordsPerPage int                    `json:"records_per_page,omitempty"`
-	Records        []*Record              `json:"records"`
-	Options        map[string]interface{} `json:"options"`
-	KnownSize      bool                   `json:"known_size"`
+	ResultCount    int64          `json:"result_count"`
+	Page           int            `json:"page,omitempty"`
+	TotalPages     int            `json:"total_pages,omitempty"`
+	RecordsPerPage int            `json:"records_per_page,omitempty"`
+	Records        []*Record      `json:"records"`
+	Options        map[string]any `json:"options"`
+	KnownSize      bool           `json:"known_size"`
 }
 
 func NewRecordSet(records ...*Record) *RecordSet {
 	return &RecordSet{
 		Records: records,
-		Options: make(map[string]interface{}),
+		Options: make(map[string]any),
 	}
 }
 
-func (self *RecordSet) IDs() (ids []interface{}) {
+func (self *RecordSet) IDs() (ids []any) {
 	for _, record := range self.Records {
 		ids = append(ids, record.ID)
 	}
@@ -54,7 +54,7 @@ func (self *RecordSet) GetRecord(index int) (*Record, bool) {
 	return nil, false
 }
 
-func (self *RecordSet) GetRecordByID(id interface{}) (*Record, bool) {
+func (self *RecordSet) GetRecordByID(id any) (*Record, bool) {
 	for _, record := range self.Records {
 		if typeutil.String(record.ID) == typeutil.String(id) {
 			return record, true
@@ -64,8 +64,8 @@ func (self *RecordSet) GetRecordByID(id interface{}) (*Record, bool) {
 	return nil, false
 }
 
-func (self *RecordSet) Pluck(field string, fallback ...interface{}) []interface{} {
-	rv := make([]interface{}, 0)
+func (self *RecordSet) Pluck(field string, fallback ...any) []any {
+	rv := make([]any, 0)
 
 	for _, record := range self.Records {
 		rv = append(rv, record.Get(field, fallback...))
@@ -85,7 +85,7 @@ func (self *RecordSet) IsEmpty() bool {
 // Takes a slice of structs or maps and fills it with instances populated by the records in this RecordSet
 // in accordance with the types specified in the given collection definition, as well as which
 // fields are available in the given struct.
-func (self *RecordSet) PopulateFromRecords(into interface{}, schema *Collection) error {
+func (self *RecordSet) PopulateFromRecords(into any, schema *Collection) error {
 	vInto := reflect.ValueOf(into)
 
 	// get value pointed to if we were given a pointer

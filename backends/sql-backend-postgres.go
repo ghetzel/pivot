@@ -74,7 +74,7 @@ func initializePostgres(self *SqlBackend) (string, string, error) {
 		// log.Errorf("%s", strings.Repeat(`-`, 69))
 		// log.Errorf("%v: primary=%+v foreign=%+v unique=%+v", collectionName, primaryKeys, foreignKeys, uniqueKeys)
 
-		if f, err := filter.FromMap(map[string]interface{}{
+		if f, err := filter.FromMap(map[string]any{
 			`table_catalog`: datasetName,
 			`table_name`:    collectionName,
 			`table_schema`:  `public`,

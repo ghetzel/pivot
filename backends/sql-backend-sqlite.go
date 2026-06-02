@@ -161,7 +161,7 @@ func initializeSqlite(self *SqlBackend) (string, string, error) {
 
 		dsn = dataset
 
-		opts := make(map[string]interface{})
+		opts := make(map[string]any)
 
 		if v := self.conn.OptString(`cache`, `shared`); v != `` {
 			opts[`cache`] = v

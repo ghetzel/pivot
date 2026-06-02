@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ghetzel/go-stockutil/utils"
+	"github.com/ghetzel/go-stockutil/timeutil"
 	"github.com/stretchr/testify/require"
 )
 
@@ -14,7 +14,7 @@ func TestFieldValidators(t *testing.T) {
 
 	field1 := Field{
 		Name: `field1`,
-		Validator: func(v interface{}) error {
+		Validator: func(v any) error {
 			if fmt.Sprintf("%v", v) == `test` {
 				return nil
 			} else {
@@ -30,7 +30,7 @@ func TestFieldValidators(t *testing.T) {
 func TestFieldConvertValueString(t *testing.T) {
 	assert := require.New(t)
 	var field *Field
-	var value interface{}
+	var value any
 	var err error
 
 	field = &Field{
@@ -87,7 +87,7 @@ func TestFieldConvertValueString(t *testing.T) {
 func TestFieldConvertValueBool(t *testing.T) {
 	assert := require.New(t)
 	var field *Field
-	var value interface{}
+	var value any
 	var err error
 
 	field = &Field{
@@ -96,7 +96,7 @@ func TestFieldConvertValueBool(t *testing.T) {
 
 	// not required, no default
 	// -------------------------------------------------------------------------
-	for _, v := range []interface{}{
+	for _, v := range []any{
 		true,
 		`true`,
 		`True`,
@@ -116,7 +116,7 @@ func TestFieldConvertValueBool(t *testing.T) {
 		assert.Equal(true, value, fmt.Sprintf("output: %T(%v) -> %T(%v)", v, v, value, value))
 	}
 
-	for _, v := range []interface{}{
+	for _, v := range []any{
 		false,
 		`false`,
 		`False`,
@@ -135,7 +135,7 @@ func TestFieldConvertValueBool(t *testing.T) {
 	// -------------------------------------------------------------------------
 	field.Required = true
 
-	for _, v := range []interface{}{
+	for _, v := range []any{
 		true,
 		`true`,
 		`True`,
@@ -155,7 +155,7 @@ func TestFieldConvertValueBool(t *testing.T) {
 		assert.Equal(true, value, fmt.Sprintf("output: %T(%v) -> %T(%v)", v, v, value, value))
 	}
 
-	for _, v := range []interface{}{
+	for _, v := range []any{
 		false,
 		`false`,
 		`False`,
@@ -176,7 +176,7 @@ func TestFieldConvertValueBool(t *testing.T) {
 	// -------------------------------------------------------------------------
 	field.DefaultValue = true
 
-	for _, v := range []interface{}{
+	for _, v := range []any{
 		true,
 		`true`,
 		`True`,
@@ -196,7 +196,7 @@ func TestFieldConvertValueBool(t *testing.T) {
 		assert.Equal(true, value, fmt.Sprintf("output: %T(%v) -> %T(%v)", v, v, value, value))
 	}
 
-	for _, v := range []interface{}{
+	for _, v := range []any{
 		false,
 		`false`,
 		`False`,
@@ -221,7 +221,7 @@ func TestFieldConvertValueBool(t *testing.T) {
 func TestFieldConvertValueInteger(t *testing.T) {
 	assert := require.New(t)
 	var field *Field
-	var value interface{}
+	var value any
 	var err error
 
 	field = &Field{
@@ -278,7 +278,7 @@ func TestFieldConvertValueInteger(t *testing.T) {
 func TestFieldConvertValueFloat(t *testing.T) {
 	assert := require.New(t)
 	var field *Field
-	var value interface{}
+	var value any
 	var err error
 
 	field = &Field{
@@ -335,7 +335,7 @@ func TestFieldConvertValueFloat(t *testing.T) {
 func TestFieldConvertValueTime(t *testing.T) {
 	assert := require.New(t)
 	var field *Field
-	var value interface{}
+	var value any
 	var err error
 
 	field = &Field{
@@ -352,9 +352,9 @@ func TestFieldConvertValueTime(t *testing.T) {
 	assert.NoError(err)
 	assert.True(value.(time.Time).IsZero())
 
-	value, err = field.ConvertValue(`2006-01-02T15:04:05-07:00`)
+	value, err = field.ConvertValue(`2006-01-02T15:04:05.999999999-07:00`)
 	assert.NoError(err)
-	assert.True(utils.ReferenceTime.Equal(value.(time.Time)))
+	assert.True(timeutil.ReferenceTime().Equal(value.(time.Time)), value)
 
 	// required, no default
 	// -------------------------------------------------------------------------
@@ -368,21 +368,21 @@ func TestFieldConvertValueTime(t *testing.T) {
 	assert.NoError(err)
 	assert.True(value.(time.Time).IsZero())
 
-	value, err = field.ConvertValue(1136239445)
+	value, err = field.ConvertValue(1136239446)
 	assert.NoError(err)
-	assert.True(utils.ReferenceTime.Equal(value.(time.Time)))
+	assert.True(timeutil.ReferenceTime().Round(time.Second).Equal(value.(time.Time)), value)
 
 	// required, with default
 	// -------------------------------------------------------------------------
-	field.DefaultValue = time.Unix(1136239445, 0)
+	field.DefaultValue = time.Unix(1136239446, 0)
 
 	value, err = field.ConvertValue(``)
 	assert.NoError(err)
-	assert.True(utils.ReferenceTime.Equal(value.(time.Time)))
+	assert.True(timeutil.ReferenceTime().Round(time.Second).Equal(value.(time.Time)))
 
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
-	assert.True(utils.ReferenceTime.Equal(value.(time.Time)))
+	assert.True(timeutil.ReferenceTime().Round(time.Second).Equal(value.(time.Time)))
 
 	value, err = field.ConvertValue(1500000000)
 	assert.NoError(err)
@@ -392,7 +392,7 @@ func TestFieldConvertValueTime(t *testing.T) {
 func TestFieldConvertValueObject(t *testing.T) {
 	assert := require.New(t)
 	var field *Field
-	var value interface{}
+	var value any
 	var err error
 
 	field = &Field{
@@ -401,19 +401,19 @@ func TestFieldConvertValueObject(t *testing.T) {
 
 	// not required, no default
 	// -------------------------------------------------------------------------
-	value, err = field.ConvertValue(map[string]interface{}{})
+	value, err = field.ConvertValue(map[string]any{})
 	assert.NoError(err)
-	assert.EqualValues(make(map[string]interface{}), value)
+	assert.EqualValues(make(map[string]any), value)
 
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
 	assert.Nil(value)
 
-	value, err = field.ConvertValue(map[string]interface{}{
+	value, err = field.ConvertValue(map[string]any{
 		`value`: 123,
 	})
 	assert.NoError(err)
-	assert.Equal(map[string]interface{}{
+	assert.Equal(map[string]any{
 		`value`: 123,
 	}, value)
 
@@ -428,7 +428,7 @@ func TestFieldConvertValueObject(t *testing.T) {
 	})
 
 	assert.NoError(err)
-	assert.Equal(map[string]interface{}{
+	assert.Equal(map[string]any{
 		`Name`:  `test`,
 		`Value`: float64(123),
 	}, value)
@@ -437,19 +437,19 @@ func TestFieldConvertValueObject(t *testing.T) {
 	// -------------------------------------------------------------------------
 	field.Required = true
 
-	value, err = field.ConvertValue(map[string]interface{}{})
+	value, err = field.ConvertValue(map[string]any{})
 	assert.NoError(err)
-	assert.Equal(make(map[string]interface{}), value)
+	assert.Equal(make(map[string]any), value)
 
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
-	assert.Equal(make(map[string]interface{}), value)
+	assert.Equal(make(map[string]any), value)
 
-	value, err = field.ConvertValue(map[string]interface{}{
+	value, err = field.ConvertValue(map[string]any{
 		`value`: 456,
 	})
 	assert.NoError(err)
-	assert.Equal(map[string]interface{}{
+	assert.Equal(map[string]any{
 		`value`: 456,
 	}, value)
 
@@ -462,23 +462,23 @@ func TestFieldConvertValueObject(t *testing.T) {
 
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
-	assert.Equal(map[string]interface{}{
+	assert.Equal(map[string]any{
 		`value`: `yay`,
 		`other`: `1234.5`,
 	}, value)
 
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
-	assert.Equal(map[string]interface{}{
+	assert.Equal(map[string]any{
 		`value`: `yay`,
 		`other`: `1234.5`,
 	}, value)
 
-	value, err = field.ConvertValue(map[string]interface{}{
+	value, err = field.ConvertValue(map[string]any{
 		`value`: `ohhh`,
 	})
 	assert.NoError(err)
-	assert.Equal(map[string]interface{}{
+	assert.Equal(map[string]any{
 		`value`: `ohhh`,
 	}, value)
 }
@@ -486,7 +486,7 @@ func TestFieldConvertValueObject(t *testing.T) {
 func TestFieldConvertValueArray(t *testing.T) {
 	assert := require.New(t)
 	var field *Field
-	var value interface{}
+	var value any
 	var err error
 
 	field = &Field{
@@ -495,37 +495,37 @@ func TestFieldConvertValueArray(t *testing.T) {
 
 	// not required, no default
 	// -------------------------------------------------------------------------
-	value, err = field.ConvertValue([]interface{}{})
+	value, err = field.ConvertValue([]any{})
 	assert.NoError(err)
-	assert.EqualValues(make([]interface{}, 0), value)
+	assert.EqualValues(make([]any, 0), value)
 
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
 	assert.Nil(value)
 
-	value, err = field.ConvertValue([]interface{}{1, 2, 3})
+	value, err = field.ConvertValue([]any{1, 2, 3})
 	assert.NoError(err)
-	assert.Equal([]interface{}{1, 2, 3}, value)
+	assert.Equal([]any{1, 2, 3}, value)
 
 	value, err = field.ConvertValue([]string{`1`, `2`, `3`})
 	assert.NoError(err)
-	assert.Equal([]interface{}{`1`, `2`, `3`}, value)
+	assert.Equal([]any{`1`, `2`, `3`}, value)
 
 	// required, no default
 	// -------------------------------------------------------------------------
 	field.Required = true
 
-	value, err = field.ConvertValue([]interface{}{})
+	value, err = field.ConvertValue([]any{})
 	assert.NoError(err)
-	assert.Equal(make([]interface{}, 0), value)
+	assert.Equal(make([]any, 0), value)
 
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
-	assert.Equal(make([]interface{}, 0), value)
+	assert.Equal(make([]any, 0), value)
 
 	value, err = field.ConvertValue([]bool{true, true, false})
 	assert.NoError(err)
-	assert.Equal([]interface{}{true, true, false}, value)
+	assert.Equal([]any{true, true, false}, value)
 
 	// required, with default
 	// -------------------------------------------------------------------------
@@ -533,13 +533,13 @@ func TestFieldConvertValueArray(t *testing.T) {
 
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
-	assert.Equal([]interface{}{`a`, `b`, `c`}, value)
+	assert.Equal([]any{`a`, `b`, `c`}, value)
 
 	value, err = field.ConvertValue(nil)
 	assert.NoError(err)
-	assert.Equal([]interface{}{`a`, `b`, `c`}, value)
+	assert.Equal([]any{`a`, `b`, `c`}, value)
 
 	value, err = field.ConvertValue([]int64{9, 8, 7})
 	assert.NoError(err)
-	assert.Equal([]interface{}{int64(9), int64(8), int64(7)}, value)
+	assert.Equal([]any{int64(9), int64(8), int64(7)}, value)
 }

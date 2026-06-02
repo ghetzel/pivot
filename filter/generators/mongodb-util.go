@@ -10,15 +10,15 @@ import (
 
 var rxCharFilter = regexp.MustCompile(`[\W\s]`)
 
-func mongoCriterionOperatorIs(gen *MongoDB, criterion filter.Criterion) (map[string]interface{}, error) {
-	c := make(map[string]interface{})
+func mongoCriterionOperatorIs(gen *MongoDB, criterion filter.Criterion) (map[string]any, error) {
+	c := make(map[string]any)
 
 	if len(criterion.Values) == 1 && criterion.Values[0] == nil {
 		gen.values = append(gen.values, nil)
 
-		c[`$or`] = []map[string]interface{}{
+		c[`$or`] = []map[string]any{
 			{
-				criterion.Field: map[string]interface{}{
+				criterion.Field: map[string]any{
 					`$exists`: false,
 				},
 			}, {
@@ -37,7 +37,7 @@ func mongoCriterionOperatorIs(gen *MongoDB, criterion filter.Criterion) (map[str
 				c[criterion.Field] = criterion.Values[0]
 			}
 		} else {
-			c[criterion.Field] = map[string]interface{}{
+			c[criterion.Field] = map[string]any{
 				`$in`: criterion.Values,
 			}
 		}
@@ -46,8 +46,8 @@ func mongoCriterionOperatorIs(gen *MongoDB, criterion filter.Criterion) (map[str
 	return c, nil
 }
 
-func mongoCriterionOperatorNot(gen *MongoDB, criterion filter.Criterion) (map[string]interface{}, error) {
-	c := make(map[string]interface{})
+func mongoCriterionOperatorNot(gen *MongoDB, criterion filter.Criterion) (map[string]any, error) {
+	c := make(map[string]any)
 
 	if len(criterion.Values) == 0 {
 		return c, fmt.Errorf("The not criterion must have at least one value")
@@ -55,13 +55,13 @@ func mongoCriterionOperatorNot(gen *MongoDB, criterion filter.Criterion) (map[st
 	} else if len(criterion.Values) == 1 && criterion.Values[0] == nil {
 		gen.values = append(gen.values, nil)
 
-		c[`$and`] = []map[string]interface{}{
+		c[`$and`] = []map[string]any{
 			{
-				criterion.Field: map[string]interface{}{
+				criterion.Field: map[string]any{
 					`$exists`: true,
 				},
 			}, {
-				criterion.Field: map[string]interface{}{
+				criterion.Field: map[string]any{
 					`$not`: nil,
 				},
 			},
@@ -72,11 +72,11 @@ func mongoCriterionOperatorNot(gen *MongoDB, criterion filter.Criterion) (map[st
 		}
 
 		if len(criterion.Values) == 1 {
-			c[criterion.Field] = map[string]interface{}{
+			c[criterion.Field] = map[string]any{
 				`$ne`: criterion.Values[0],
 			}
 		} else {
-			c[criterion.Field] = map[string]interface{}{
+			c[criterion.Field] = map[string]any{
 				`$nin`: criterion.Values,
 			}
 		}
@@ -85,13 +85,13 @@ func mongoCriterionOperatorNot(gen *MongoDB, criterion filter.Criterion) (map[st
 	return c, nil
 }
 
-func mongoCriterionOperatorPattern(gen *MongoDB, opname string, criterion filter.Criterion) (map[string]interface{}, error) {
-	c := make(map[string]interface{})
+func mongoCriterionOperatorPattern(gen *MongoDB, opname string, criterion filter.Criterion) (map[string]any, error) {
+	c := make(map[string]any)
 
 	if len(criterion.Values) == 0 {
 		return nil, fmt.Errorf("The not criterion must have at least one value")
 	} else {
-		or_regexp := make([]map[string]interface{}, 0)
+		or_regexp := make([]map[string]any, 0)
 
 		for _, value := range criterion.Values {
 			gen.values = append(gen.values, value)
@@ -111,17 +111,17 @@ func mongoCriterionOperatorPattern(gen *MongoDB, opname string, criterion filter
 			}
 
 			if opname == `unlike` {
-				or_regexp = append(or_regexp, map[string]interface{}{
-					`$not`: map[string]interface{}{
-						criterion.Field: map[string]interface{}{
+				or_regexp = append(or_regexp, map[string]any{
+					`$not`: map[string]any{
+						criterion.Field: map[string]any{
 							`$regex`:   valueClause,
 							`$options`: `si`,
 						},
 					},
 				})
 			} else {
-				or_regexp = append(or_regexp, map[string]interface{}{
-					criterion.Field: map[string]interface{}{
+				or_regexp = append(or_regexp, map[string]any{
+					criterion.Field: map[string]any{
 						`$regex`:   valueClause,
 						`$options`: `si`,
 					},
@@ -139,13 +139,13 @@ func mongoCriterionOperatorPattern(gen *MongoDB, opname string, criterion filter
 	return c, nil
 }
 
-func mongoCriterionOperatorRange(gen *MongoDB, criterion filter.Criterion, operator string) (map[string]interface{}, error) {
-	c := make(map[string]interface{})
+func mongoCriterionOperatorRange(gen *MongoDB, criterion filter.Criterion, operator string) (map[string]any, error) {
+	c := make(map[string]any)
 
 	switch operator {
 	case `range`:
 		if l := len(criterion.Values); l > 0 && (l%2 == 0) {
-			or_clauses := make([]map[string]interface{}, 0)
+			or_clauses := make([]map[string]any, 0)
 
 			for i := 0; i < l; i += 2 {
 				value1 := stringutil.Autotype(criterion.Values[i])
@@ -153,7 +153,7 @@ func mongoCriterionOperatorRange(gen *MongoDB, criterion filter.Criterion, opera
 
 				gen.values = append(gen.values, value1, value2)
 
-				c[criterion.Field] = map[string]interface{}{
+				c[criterion.Field] = map[string]any{
 					`$gte`: value1,
 					`$lt`:  value2,
 				}
@@ -165,7 +165,7 @@ func mongoCriterionOperatorRange(gen *MongoDB, criterion filter.Criterion, opera
 			if len(or_clauses) == 1 {
 				return or_clauses[0], nil
 			} else {
-				return map[string]interface{}{
+				return map[string]any{
 					`$or`: or_clauses,
 				}, nil
 			}
@@ -181,7 +181,7 @@ func mongoCriterionOperatorRange(gen *MongoDB, criterion filter.Criterion, opera
 			value := stringutil.Autotype(criterion.Values[0])
 			gen.values = append(gen.values, value)
 
-			c[criterion.Field] = map[string]interface{}{
+			c[criterion.Field] = map[string]any{
 				`$` + operator: value,
 			}
 		default:

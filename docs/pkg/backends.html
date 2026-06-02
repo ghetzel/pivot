@@ -139,25 +139,7 @@
 	
     <li>
 		
-		<a href="#NewDynamoBackend">func NewDynamoBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
 		<a href="#NewElasticsearchBackend">func NewElasticsearchBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewFileBackend">func NewFileBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewFilesystemBackend">func NewFilesystemBackend(connection dal.ConnectionString) Backend</a>
 		
 	</li>
 	
@@ -170,12 +152,6 @@
     <li>
 		
 		<a href="#NewRedisBackend">func NewRedisBackend(connection dal.ConnectionString) Backend</a>
-		
-	</li>
-	
-    <li>
-		
-		<a href="#NewSqlBackend">func NewSqlBackend(connection dal.ConnectionString) Backend</a>
 		
 	</li>
 	
@@ -211,7 +187,7 @@
 	
     <li>
 		
-		<a href="#ResolveDeferredRecords">func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record) error</a>
+		<a href="#ResolveDeferredRecords">func ResolveDeferredRecords(cache map[string]any, records ...*dal.Record) error</a>
 		
 	</li>
 	
@@ -357,7 +333,7 @@
 				<a href="#BleveIndexer.IndexExists">
 					func
 					(self *BleveIndexer)
-					IndexExists(collection *dal.Collection, id interface{}) bool
+					IndexExists(collection *dal.Collection, id any) bool
 				</a>
 				
 			</li>
@@ -381,7 +357,7 @@
 				<a href="#BleveIndexer.IndexRemove">
 					func
 					(self *BleveIndexer)
-					IndexRemove(collection *dal.Collection, ids []interface{}) error
+					IndexRemove(collection *dal.Collection, ids []any) error
 				</a>
 				
 			</li>
@@ -393,7 +369,7 @@
 				<a href="#BleveIndexer.IndexRetrieve">
 					func
 					(self *BleveIndexer)
-					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+					IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -405,7 +381,7 @@
 				<a href="#BleveIndexer.ListValues">
 					func
 					(self *BleveIndexer)
-					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)
+					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -520,7 +496,7 @@
 				<a href="#CachingBackend.Delete">
 					func
 					(self *CachingBackend)
-					Delete(collection string, ids ...interface{}) error
+					Delete(collection string, ids ...any) error
 				</a>
 				
 			</li>
@@ -544,7 +520,7 @@
 				<a href="#CachingBackend.Exists">
 					func
 					(self *CachingBackend)
-					Exists(collection string, id interface{}) bool
+					Exists(collection string, id any) bool
 				</a>
 				</strong>
 			</li>
@@ -666,7 +642,7 @@
 				<a href="#CachingBackend.Retrieve">
 					func
 					(self *CachingBackend)
-					Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error)
+					Retrieve(collection string, id any, fields ...string) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -782,7 +758,7 @@
 				<a href="#DeferredRecord.GroupKey">
 					func
 					(self *DeferredRecord)
-					GroupKey(id ...interface{}) string
+					GroupKey(id ...any) string
 				</a>
 				
 			</li>
@@ -894,7 +870,7 @@
 				<a href="#DynamoBackend.Delete">
 					func
 					(self *DynamoBackend)
-					Delete(name string, ids ...interface{}) error
+					Delete(name string, ids ...any) error
 				</a>
 				
 			</li>
@@ -930,7 +906,7 @@
 				<a href="#DynamoBackend.Exists">
 					func
 					(self *DynamoBackend)
-					Exists(name string, id interface{}) bool
+					Exists(name string, id any) bool
 				</a>
 				
 			</li>
@@ -1026,7 +1002,7 @@
 				<a href="#DynamoBackend.IndexExists">
 					func
 					(self *DynamoBackend)
-					IndexExists(collection *dal.Collection, id interface{}) bool
+					IndexExists(collection *dal.Collection, id any) bool
 				</a>
 				
 			</li>
@@ -1050,7 +1026,7 @@
 				<a href="#DynamoBackend.IndexRemove">
 					func
 					(self *DynamoBackend)
-					IndexRemove(collection *dal.Collection, ids []interface{}) error
+					IndexRemove(collection *dal.Collection, ids []any) error
 				</a>
 				
 			</li>
@@ -1062,7 +1038,7 @@
 				<a href="#DynamoBackend.IndexRetrieve">
 					func
 					(self *DynamoBackend)
-					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+					IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -1110,7 +1086,7 @@
 				<a href="#DynamoBackend.ListValues">
 					func
 					(self *DynamoBackend)
-					ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)
+					ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -1170,7 +1146,7 @@
 				<a href="#DynamoBackend.Retrieve">
 					func
 					(self *DynamoBackend)
-					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
+					Retrieve(name string, id any, fields ...string) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -1318,7 +1294,7 @@
 				<a href="#ElasticsearchBackend.Delete">
 					func
 					(self *ElasticsearchBackend)
-					Delete(name string, ids ...interface{}) error
+					Delete(name string, ids ...any) error
 				</a>
 				
 			</li>
@@ -1342,7 +1318,7 @@
 				<a href="#ElasticsearchBackend.Exists">
 					func
 					(self *ElasticsearchBackend)
-					Exists(name string, id interface{}) bool
+					Exists(name string, id any) bool
 				</a>
 				
 			</li>
@@ -1450,7 +1426,7 @@
 				<a href="#ElasticsearchBackend.Retrieve">
 					func
 					(self *ElasticsearchBackend)
-					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
+					Retrieve(name string, id any, fields ...string) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -1719,7 +1695,7 @@
 				<a href="#ElasticsearchIndexer.IndexExists">
 					func
 					(self *ElasticsearchIndexer)
-					IndexExists(collection *dal.Collection, id interface{}) bool
+					IndexExists(collection *dal.Collection, id any) bool
 				</a>
 				
 			</li>
@@ -1743,7 +1719,7 @@
 				<a href="#ElasticsearchIndexer.IndexRemove">
 					func
 					(self *ElasticsearchIndexer)
-					IndexRemove(collection *dal.Collection, ids []interface{}) error
+					IndexRemove(collection *dal.Collection, ids []any) error
 				</a>
 				
 			</li>
@@ -1755,7 +1731,7 @@
 				<a href="#ElasticsearchIndexer.IndexRetrieve">
 					func
 					(self *ElasticsearchIndexer)
-					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+					IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -1767,7 +1743,7 @@
 				<a href="#ElasticsearchIndexer.ListValues">
 					func
 					(self *ElasticsearchIndexer)
-					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)
+					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -1944,7 +1920,7 @@
 				<a href="#EmbeddedRecordBackend.Delete">
 					func
 					(self *EmbeddedRecordBackend)
-					Delete(collection string, ids ...interface{}) error
+					Delete(collection string, ids ...any) error
 				</a>
 				
 			</li>
@@ -1992,7 +1968,7 @@
 				<a href="#EmbeddedRecordBackend.Exists">
 					func
 					(self *EmbeddedRecordBackend)
-					Exists(collection string, id interface{}) bool
+					Exists(collection string, id any) bool
 				</a>
 				</strong>
 			</li>
@@ -2088,7 +2064,7 @@
 				<a href="#EmbeddedRecordBackend.IndexExists">
 					func
 					(self *EmbeddedRecordBackend)
-					IndexExists(collection *dal.Collection, id interface{}) bool
+					IndexExists(collection *dal.Collection, id any) bool
 				</a>
 				
 			</li>
@@ -2112,7 +2088,7 @@
 				<a href="#EmbeddedRecordBackend.IndexRemove">
 					func
 					(self *EmbeddedRecordBackend)
-					IndexRemove(collection *dal.Collection, ids []interface{}) error
+					IndexRemove(collection *dal.Collection, ids []any) error
 				</a>
 				
 			</li>
@@ -2124,7 +2100,7 @@
 				<a href="#EmbeddedRecordBackend.IndexRetrieve">
 					func
 					(self *EmbeddedRecordBackend)
-					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+					IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -2172,7 +2148,7 @@
 				<a href="#EmbeddedRecordBackend.ListValues">
 					func
 					(self *EmbeddedRecordBackend)
-					ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
+					ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -2246,7 +2222,7 @@
 				<a href="#EmbeddedRecordBackend.Retrieve">
 					func
 					(self *EmbeddedRecordBackend)
-					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
+					Retrieve(name string, id any, fields ...string) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -2394,7 +2370,7 @@
 				<a href="#FileBackend.Delete">
 					func
 					(self *FileBackend)
-					Delete(collection string, ids ...interface{}) error
+					Delete(collection string, ids ...any) error
 				</a>
 				
 			</li>
@@ -2418,7 +2394,7 @@
 				<a href="#FileBackend.Exists">
 					func
 					(self *FileBackend)
-					Exists(name string, id interface{}) bool
+					Exists(name string, id any) bool
 				</a>
 				
 			</li>
@@ -2526,7 +2502,7 @@
 				<a href="#FileBackend.Retrieve">
 					func
 					(self *FileBackend)
-					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
+					Retrieve(name string, id any, fields ...string) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -2698,7 +2674,7 @@
 				<a href="#FilesystemBackend.Delete">
 					func
 					(self *FilesystemBackend)
-					Delete(name string, ids ...interface{}) error
+					Delete(name string, ids ...any) error
 				</a>
 				
 			</li>
@@ -2734,7 +2710,7 @@
 				<a href="#FilesystemBackend.Exists">
 					func
 					(self *FilesystemBackend)
-					Exists(name string, id interface{}) bool
+					Exists(name string, id any) bool
 				</a>
 				
 			</li>
@@ -2830,7 +2806,7 @@
 				<a href="#FilesystemBackend.IndexExists">
 					func
 					(self *FilesystemBackend)
-					IndexExists(collection *dal.Collection, id interface{}) bool
+					IndexExists(collection *dal.Collection, id any) bool
 				</a>
 				
 			</li>
@@ -2854,7 +2830,7 @@
 				<a href="#FilesystemBackend.IndexRemove">
 					func
 					(self *FilesystemBackend)
-					IndexRemove(collection *dal.Collection, ids []interface{}) error
+					IndexRemove(collection *dal.Collection, ids []any) error
 				</a>
 				
 			</li>
@@ -2866,7 +2842,7 @@
 				<a href="#FilesystemBackend.IndexRetrieve">
 					func
 					(self *FilesystemBackend)
-					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+					IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -2914,7 +2890,7 @@
 				<a href="#FilesystemBackend.ListValues">
 					func
 					(self *FilesystemBackend)
-					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)
+					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -2974,7 +2950,7 @@
 				<a href="#FilesystemBackend.Retrieve">
 					func
 					(self *FilesystemBackend)
-					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
+					Retrieve(name string, id any, fields ...string) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -3237,7 +3213,7 @@
 				<a href="#MetaIndex.IndexExists">
 					func
 					(self *MetaIndex)
-					IndexExists(collection *dal.Collection, id interface{}) bool
+					IndexExists(collection *dal.Collection, id any) bool
 				</a>
 				
 			</li>
@@ -3261,7 +3237,7 @@
 				<a href="#MetaIndex.IndexRemove">
 					func
 					(self *MetaIndex)
-					IndexRemove(collection *dal.Collection, ids []interface{}) error
+					IndexRemove(collection *dal.Collection, ids []any) error
 				</a>
 				
 			</li>
@@ -3273,7 +3249,7 @@
 				<a href="#MetaIndex.IndexRetrieve">
 					func
 					(self *MetaIndex)
-					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+					IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -3285,7 +3261,7 @@
 				<a href="#MetaIndex.ListValues">
 					func
 					(self *MetaIndex)
-					ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
+					ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -3475,7 +3451,7 @@
 				<a href="#MongoBackend.Delete">
 					func
 					(self *MongoBackend)
-					Delete(name string, ids ...interface{}) error
+					Delete(name string, ids ...any) error
 				</a>
 				
 			</li>
@@ -3511,7 +3487,7 @@
 				<a href="#MongoBackend.Exists">
 					func
 					(self *MongoBackend)
-					Exists(name string, id interface{}) bool
+					Exists(name string, id any) bool
 				</a>
 				
 			</li>
@@ -3619,7 +3595,7 @@
 				<a href="#MongoBackend.IndexExists">
 					func
 					(self *MongoBackend)
-					IndexExists(collection *dal.Collection, id interface{}) bool
+					IndexExists(collection *dal.Collection, id any) bool
 				</a>
 				
 			</li>
@@ -3643,7 +3619,7 @@
 				<a href="#MongoBackend.IndexRemove">
 					func
 					(self *MongoBackend)
-					IndexRemove(collection *dal.Collection, ids []interface{}) error
+					IndexRemove(collection *dal.Collection, ids []any) error
 				</a>
 				
 			</li>
@@ -3655,7 +3631,7 @@
 				<a href="#MongoBackend.IndexRetrieve">
 					func
 					(self *MongoBackend)
-					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+					IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -3703,7 +3679,7 @@
 				<a href="#MongoBackend.ListValues">
 					func
 					(self *MongoBackend)
-					ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)
+					ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -3787,7 +3763,7 @@
 				<a href="#MongoBackend.Retrieve">
 					func
 					(self *MongoBackend)
-					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
+					Retrieve(name string, id any, fields ...string) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -4036,7 +4012,7 @@
 				<a href="#MultiIndex.IndexExists">
 					func
 					(self *MultiIndex)
-					IndexExists(collection *dal.Collection, id interface{}) bool
+					IndexExists(collection *dal.Collection, id any) bool
 				</a>
 				
 			</li>
@@ -4060,7 +4036,7 @@
 				<a href="#MultiIndex.IndexRemove">
 					func
 					(self *MultiIndex)
-					IndexRemove(collection *dal.Collection, ids []interface{}) error
+					IndexRemove(collection *dal.Collection, ids []any) error
 				</a>
 				
 			</li>
@@ -4072,7 +4048,7 @@
 				<a href="#MultiIndex.IndexRetrieve">
 					func
 					(self *MultiIndex)
-					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+					IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -4084,7 +4060,7 @@
 				<a href="#MultiIndex.ListValues">
 					func
 					(self *MultiIndex)
-					ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
+					ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -4232,7 +4208,7 @@
 				<a href="#NullIndexer.IndexExists">
 					func
 					(self *NullIndexer)
-					IndexExists(collection *dal.Collection, id interface{}) bool
+					IndexExists(collection *dal.Collection, id any) bool
 				</a>
 				
 			</li>
@@ -4256,7 +4232,7 @@
 				<a href="#NullIndexer.IndexRemove">
 					func
 					(self *NullIndexer)
-					IndexRemove(collection *dal.Collection, ids []interface{}) error
+					IndexRemove(collection *dal.Collection, ids []any) error
 				</a>
 				
 			</li>
@@ -4268,7 +4244,7 @@
 				<a href="#NullIndexer.IndexRetrieve">
 					func
 					(self *NullIndexer)
-					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+					IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -4280,7 +4256,7 @@
 				<a href="#NullIndexer.ListValues">
 					func
 					(self *NullIndexer)
-					ListValues(collection *dal.Collection, fields []string, filter filter.Filter) (map[string][]interface{}, error)
+					ListValues(collection *dal.Collection, fields []string, filter filter.Filter) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -4404,7 +4380,7 @@
 				<a href="#RedisBackend.Delete">
 					func
 					(self *RedisBackend)
-					Delete(name string, ids ...interface{}) error
+					Delete(name string, ids ...any) error
 				</a>
 				
 			</li>
@@ -4440,7 +4416,7 @@
 				<a href="#RedisBackend.Exists">
 					func
 					(self *RedisBackend)
-					Exists(name string, id interface{}) bool
+					Exists(name string, id any) bool
 				</a>
 				
 			</li>
@@ -4536,7 +4512,7 @@
 				<a href="#RedisBackend.IndexExists">
 					func
 					(self *RedisBackend)
-					IndexExists(collection *dal.Collection, id interface{}) bool
+					IndexExists(collection *dal.Collection, id any) bool
 				</a>
 				
 			</li>
@@ -4560,7 +4536,7 @@
 				<a href="#RedisBackend.IndexRemove">
 					func
 					(self *RedisBackend)
-					IndexRemove(collection *dal.Collection, ids []interface{}) error
+					IndexRemove(collection *dal.Collection, ids []any) error
 				</a>
 				
 			</li>
@@ -4572,7 +4548,7 @@
 				<a href="#RedisBackend.IndexRetrieve">
 					func
 					(self *RedisBackend)
-					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+					IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -4620,7 +4596,7 @@
 				<a href="#RedisBackend.ListValues">
 					func
 					(self *RedisBackend)
-					ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)
+					ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -4680,7 +4656,7 @@
 				<a href="#RedisBackend.Retrieve">
 					func
 					(self *RedisBackend)
-					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
+					Retrieve(name string, id any, fields ...string) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -4932,7 +4908,7 @@
 				<a href="#SqlBackend.Delete">
 					func
 					(self *SqlBackend)
-					Delete(name string, ids ...interface{}) error
+					Delete(name string, ids ...any) error
 				</a>
 				
 			</li>
@@ -4968,7 +4944,7 @@
 				<a href="#SqlBackend.Exists">
 					func
 					(self *SqlBackend)
-					Exists(name string, id interface{}) bool
+					Exists(name string, id any) bool
 				</a>
 				
 			</li>
@@ -5076,7 +5052,7 @@
 				<a href="#SqlBackend.IndexExists">
 					func
 					(self *SqlBackend)
-					IndexExists(collection *dal.Collection, id interface{}) bool
+					IndexExists(collection *dal.Collection, id any) bool
 				</a>
 				
 			</li>
@@ -5100,7 +5076,7 @@
 				<a href="#SqlBackend.IndexRemove">
 					func
 					(self *SqlBackend)
-					IndexRemove(collection *dal.Collection, ids []interface{}) error
+					IndexRemove(collection *dal.Collection, ids []any) error
 				</a>
 				</strong>
 			</li>
@@ -5112,7 +5088,7 @@
 				<a href="#SqlBackend.IndexRetrieve">
 					func
 					(self *SqlBackend)
-					IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
+					IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -5160,7 +5136,7 @@
 				<a href="#SqlBackend.ListValues">
 					func
 					(self *SqlBackend)
-					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)
+					ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)
 				</a>
 				
 			</li>
@@ -5256,7 +5232,7 @@
 				<a href="#SqlBackend.Retrieve">
 					func
 					(self *SqlBackend)
-					Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)
+					Retrieve(name string, id any, fields ...string) (*dal.Record, error)
 				</a>
 				
 			</li>
@@ -5423,7 +5399,7 @@
 			
 		</td>
 		<td class="text-right">15KB</td>
-		<td class="text-right">471</td>
+		<td class="text-right">470</td>
 		<td class="text-right">13</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -5451,7 +5427,7 @@
 			
 		</td>
 		<td class="text-right">7KB</td>
-		<td class="text-right">219</td>
+		<td class="text-right">243</td>
 		<td class="text-right">12</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -5464,8 +5440,8 @@
 			<a href="dynamo.go">dynamo.go</a>
 			
 		</td>
-		<td class="text-right">16KB</td>
-		<td class="text-right">510</td>
+		<td class="text-right">17KB</td>
+		<td class="text-right">512</td>
 		<td class="text-right">20</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -5479,7 +5455,7 @@
 			
 		</td>
 		<td class="text-right">1KB</td>
-		<td class="text-right">64</td>
+		<td class="text-right">51</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -5605,7 +5581,7 @@
 			
 		</td>
 		<td class="text-right">10KB</td>
-		<td class="text-right">353</td>
+		<td class="text-right">350</td>
 		<td class="text-right">18</td>
 		<td class="text-right">5</td>
 		<td class="text-right">9</td>
@@ -5618,7 +5594,7 @@
 			<a href="indexer-null.go">indexer-null.go</a>
 			
 		</td>
-		<td class="text-right">2KB</td>
+		<td class="text-right">1KB</td>
 		<td class="text-right">43</td>
 		<td class="text-right">12</td>
 		<td class="text-right">1</td>
@@ -5702,8 +5678,8 @@
 			<a href="mongo.go">mongo.go</a>
 			
 		</td>
-		<td class="text-right">10KB</td>
-		<td class="text-right">324</td>
+		<td class="text-right">9KB</td>
+		<td class="text-right">325</td>
 		<td class="text-right">20</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -5772,7 +5748,7 @@
 			<a href="relationships.go">relationships.go</a>
 			
 		</td>
-		<td class="text-right">11KB</td>
+		<td class="text-right">10KB</td>
 		<td class="text-right">280</td>
 		<td class="text-right">4</td>
 		<td class="text-right">1</td>
@@ -5984,17 +5960,6 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 
 
-<h3 id="NewDynamoBackend" data-kind="f">
-	func <a title="View Source" href="">NewDynamoBackend</a>
-	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
 <h3 id="NewElasticsearchBackend" data-kind="f">
 	func <a title="View Source" href="">NewElasticsearchBackend</a>
 	<a class="permalink" href="#NewElasticsearchBackend">&#182;</a>
@@ -6002,28 +5967,6 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func NewElasticsearchBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewFileBackend" data-kind="f">
-	func <a title="View Source" href="">NewFileBackend</a>
-	<a class="permalink" href="#NewFileBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewFilesystemBackend" data-kind="f">
-	func <a title="View Source" href="">NewFilesystemBackend</a>
-	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -6046,17 +5989,6 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
 	<pre>func NewRedisBackend(connection dal.ConnectionString) Backend</pre>
-</div>
-
-
-
-<h3 id="NewSqlBackend" data-kind="f">
-	func <a title="View Source" href="">NewSqlBackend</a>
-	<a class="permalink" href="#NewSqlBackend">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
 </div>
 
 
@@ -6125,7 +6057,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 </h3>
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record) error</pre>
+	<pre>func ResolveDeferredRecords(cache map[string]any, records ...*dal.Record) error</pre>
 </div>
 
 
@@ -6176,11 +6108,11 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 	SetIndexer(dal.ConnectionString) error
 	RegisterCollection(*dal.Collection)
 	GetConnectionString() *dal.ConnectionString
-	Exists(collection string, id interface{}) bool
-	Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error)
+	Exists(collection string, id any) bool
+	Retrieve(collection string, id any, fields ...string) (*dal.Record, error)
 	Insert(collection string, records *dal.RecordSet) error
 	Update(collection string, records *dal.RecordSet, target ...string) error
-	Delete(collection string, ids ...interface{}) error
+	Delete(collection string, ids ...any) error
 	CreateCollection(definition *dal.Collection) error
 	DeleteCollection(collection string) error
 	ListCollections() ([]string, error)
@@ -6209,6 +6141,66 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <p><p>Instantiate the appropriate Backend for the given connection string.</p>
 </p>
+
+
+
+
+<h4 id="NewDynamoBackend" data-kind="f">
+	func <a title="View Source" href="">NewDynamoBackend</a>
+	<a class="permalink" href="#NewDynamoBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewDynamoBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewFileBackend" data-kind="f">
+	func <a title="View Source" href="">NewFileBackend</a>
+	<a class="permalink" href="#NewFileBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFileBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewSqlBackend" data-kind="f">
+	func <a title="View Source" href="">NewSqlBackend</a>
+	<a class="permalink" href="#NewSqlBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewSqlBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+<h4 id="NewFilesystemBackend" data-kind="f">
+	func <a title="View Source" href="">NewFilesystemBackend</a>
+	<a class="permalink" href="#NewFilesystemBackend">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewFilesystemBackend(connection dal.ConnectionString) Backend</pre>
+</div>
+
+
+
+
+
+
+
+
 
 
 
@@ -6401,7 +6393,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *BleveIndexer) IndexExists(collection *dal.Collection, id interface{}) bool</pre>
+	<pre>func (self *BleveIndexer) IndexExists(collection *dal.Collection, id any) bool</pre>
 </div>
 
 
@@ -6431,7 +6423,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *BleveIndexer) IndexRemove(collection *dal.Collection, ids []interface{}) error</pre>
+	<pre>func (self *BleveIndexer) IndexRemove(collection *dal.Collection, ids []any) error</pre>
 </div>
 
 
@@ -6446,7 +6438,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *BleveIndexer) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)</pre>
+	<pre>func (self *BleveIndexer) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)</pre>
 </div>
 
 
@@ -6461,7 +6453,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *BleveIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)</pre>
+	<pre>func (self *BleveIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)</pre>
 </div>
 
 
@@ -6599,7 +6591,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *CachingBackend) Delete(collection string, ids ...interface{}) error</pre>
+	<pre>func (self *CachingBackend) Delete(collection string, ids ...any) error</pre>
 </div>
 
 
@@ -6629,7 +6621,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *CachingBackend) Exists(collection string, id interface{}) bool</pre>
+	<pre>func (self *CachingBackend) Exists(collection string, id any) bool</pre>
 </div>
 
 <p><p>passthrough the remaining functions to fulfill the Backend interface<br>————————————————————————————————-</p>
@@ -6784,7 +6776,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *CachingBackend) Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error)</pre>
+	<pre>func (self *CachingBackend) Retrieve(collection string, id any, fields ...string) (*dal.Record, error)</pre>
 </div>
 
 
@@ -6915,11 +6907,11 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 	
 	
 	<pre>type DeferredRecord struct {
-	Original          interface{}
+	Original          any
 	Backend           Backend
 	IdentityFieldName string
 	CollectionName    string
-	ID                interface{}
+	ID                any
 	Keys              []string
 }</pre>
 </div>
@@ -6943,7 +6935,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *DeferredRecord) GroupKey(id ...interface{}) string</pre>
+	<pre>func (self *DeferredRecord) GroupKey(id ...any) string</pre>
 </div>
 
 
@@ -7075,7 +7067,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *DynamoBackend) Delete(name string, ids ...interface{}) error</pre>
+	<pre>func (self *DynamoBackend) Delete(name string, ids ...any) error</pre>
 </div>
 
 
@@ -7120,7 +7112,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *DynamoBackend) Exists(name string, id interface{}) bool</pre>
+	<pre>func (self *DynamoBackend) Exists(name string, id any) bool</pre>
 </div>
 
 
@@ -7240,7 +7232,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *DynamoBackend) IndexExists(collection *dal.Collection, id interface{}) bool</pre>
+	<pre>func (self *DynamoBackend) IndexExists(collection *dal.Collection, id any) bool</pre>
 </div>
 
 
@@ -7270,7 +7262,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *DynamoBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error</pre>
+	<pre>func (self *DynamoBackend) IndexRemove(collection *dal.Collection, ids []any) error</pre>
 </div>
 
 
@@ -7285,7 +7277,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *DynamoBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)</pre>
+	<pre>func (self *DynamoBackend) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)</pre>
 </div>
 
 
@@ -7345,7 +7337,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *DynamoBackend) ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)</pre>
+	<pre>func (self *DynamoBackend) ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]any, error)</pre>
 </div>
 
 
@@ -7420,7 +7412,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *DynamoBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)</pre>
+	<pre>func (self *DynamoBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error)</pre>
 </div>
 
 
@@ -7601,7 +7593,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *ElasticsearchBackend) Delete(name string, ids ...interface{}) error</pre>
+	<pre>func (self *ElasticsearchBackend) Delete(name string, ids ...any) error</pre>
 </div>
 
 
@@ -7631,7 +7623,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *ElasticsearchBackend) Exists(name string, id interface{}) bool</pre>
+	<pre>func (self *ElasticsearchBackend) Exists(name string, id any) bool</pre>
 </div>
 
 
@@ -7766,7 +7758,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *ElasticsearchBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)</pre>
+	<pre>func (self *ElasticsearchBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error)</pre>
 </div>
 
 
@@ -8098,7 +8090,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *ElasticsearchIndexer) IndexExists(collection *dal.Collection, id interface{}) bool</pre>
+	<pre>func (self *ElasticsearchIndexer) IndexExists(collection *dal.Collection, id any) bool</pre>
 </div>
 
 
@@ -8128,7 +8120,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *ElasticsearchIndexer) IndexRemove(collection *dal.Collection, ids []interface{}) error</pre>
+	<pre>func (self *ElasticsearchIndexer) IndexRemove(collection *dal.Collection, ids []any) error</pre>
 </div>
 
 
@@ -8143,7 +8135,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *ElasticsearchIndexer) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)</pre>
+	<pre>func (self *ElasticsearchIndexer) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)</pre>
 </div>
 
 
@@ -8158,7 +8150,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *ElasticsearchIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)</pre>
+	<pre>func (self *ElasticsearchIndexer) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)</pre>
 </div>
 
 
@@ -8368,7 +8360,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *EmbeddedRecordBackend) Delete(collection string, ids ...interface{}) error</pre>
+	<pre>func (self *EmbeddedRecordBackend) Delete(collection string, ids ...any) error</pre>
 </div>
 
 
@@ -8428,7 +8420,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *EmbeddedRecordBackend) Exists(collection string, id interface{}) bool</pre>
+	<pre>func (self *EmbeddedRecordBackend) Exists(collection string, id any) bool</pre>
 </div>
 
 <p><p>passthrough the remaining functions to fulfill the Backend interface<br>————————————————————————————————-</p>
@@ -8554,7 +8546,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *EmbeddedRecordBackend) IndexExists(collection *dal.Collection, id interface{}) bool</pre>
+	<pre>func (self *EmbeddedRecordBackend) IndexExists(collection *dal.Collection, id any) bool</pre>
 </div>
 
 
@@ -8584,7 +8576,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *EmbeddedRecordBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error</pre>
+	<pre>func (self *EmbeddedRecordBackend) IndexRemove(collection *dal.Collection, ids []any) error</pre>
 </div>
 
 
@@ -8599,7 +8591,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *EmbeddedRecordBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)</pre>
+	<pre>func (self *EmbeddedRecordBackend) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)</pre>
 </div>
 
 
@@ -8659,7 +8651,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *EmbeddedRecordBackend) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)</pre>
+	<pre>func (self *EmbeddedRecordBackend) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error)</pre>
 </div>
 
 
@@ -8751,7 +8743,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *EmbeddedRecordBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)</pre>
+	<pre>func (self *EmbeddedRecordBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error)</pre>
 </div>
 
 
@@ -8934,7 +8926,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *FileBackend) Delete(collection string, ids ...interface{}) error</pre>
+	<pre>func (self *FileBackend) Delete(collection string, ids ...any) error</pre>
 </div>
 
 
@@ -8964,7 +8956,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *FileBackend) Exists(name string, id interface{}) bool</pre>
+	<pre>func (self *FileBackend) Exists(name string, id any) bool</pre>
 </div>
 
 
@@ -9099,7 +9091,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *FileBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)</pre>
+	<pre>func (self *FileBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error)</pre>
 </div>
 
 
@@ -9306,7 +9298,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *FilesystemBackend) Delete(name string, ids ...interface{}) error</pre>
+	<pre>func (self *FilesystemBackend) Delete(name string, ids ...any) error</pre>
 </div>
 
 
@@ -9351,7 +9343,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *FilesystemBackend) Exists(name string, id interface{}) bool</pre>
+	<pre>func (self *FilesystemBackend) Exists(name string, id any) bool</pre>
 </div>
 
 
@@ -9471,7 +9463,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *FilesystemBackend) IndexExists(collection *dal.Collection, id interface{}) bool</pre>
+	<pre>func (self *FilesystemBackend) IndexExists(collection *dal.Collection, id any) bool</pre>
 </div>
 
 
@@ -9501,7 +9493,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *FilesystemBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error</pre>
+	<pre>func (self *FilesystemBackend) IndexRemove(collection *dal.Collection, ids []any) error</pre>
 </div>
 
 
@@ -9516,7 +9508,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *FilesystemBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)</pre>
+	<pre>func (self *FilesystemBackend) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)</pre>
 </div>
 
 
@@ -9576,7 +9568,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *FilesystemBackend) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)</pre>
+	<pre>func (self *FilesystemBackend) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)</pre>
 </div>
 
 
@@ -9651,7 +9643,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *FilesystemBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)</pre>
+	<pre>func (self *FilesystemBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error)</pre>
 </div>
 
 
@@ -9860,13 +9852,13 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 	<pre>type Indexer interface {
 	IndexConnectionString() *dal.ConnectionString
 	IndexInitialize(Backend) error
-	IndexExists(collection *dal.Collection, id interface{}) bool
-	IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)
-	IndexRemove(collection *dal.Collection, ids []interface{}) error
+	IndexExists(collection *dal.Collection, id any) bool
+	IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)
+	IndexRemove(collection *dal.Collection, ids []any) error
 	Index(collection *dal.Collection, records *dal.RecordSet) error
 	QueryFunc(collection *dal.Collection, filter *filter.Filter, resultFn IndexResultFunc) error
 	Query(collection *dal.Collection, filter *filter.Filter, resultFns ...IndexResultFunc) (*dal.RecordSet, error)
-	ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)
+	ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error)
 	DeleteQuery(collection *dal.Collection, f *filter.Filter) error
 	FlushIndex() error
 	GetBackend() Backend
@@ -9951,25 +9943,25 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 	GetCollection() *dal.Collection
 	Migrate() error
 	Drop() error
-	Exists(id interface{}) bool
-	Create(from interface{}) error
-	Get(id interface{}, into interface{}) error
-	Update(from interface{}) error
-	CreateOrUpdate(id interface{}, from interface{}) error
-	Delete(ids ...interface{}) error
-	DeleteQuery(flt interface{}) error
-	Find(flt interface{}, into interface{}) error
-	FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error
-	All(into interface{}) error
-	Each(destZeroValue interface{}, resultFn ResultFunc) error
-	List(fields []string) (map[string][]interface{}, error)
-	ListWithFilter(fields []string, flt interface{}) (map[string][]interface{}, error)
-	Sum(field string, flt interface{}) (float64, error)
-	Count(flt interface{}) (uint64, error)
-	Minimum(field string, flt interface{}) (float64, error)
-	Maximum(field string, flt interface{}) (float64, error)
-	Average(field string, flt interface{}) (float64, error)
-	GroupBy(fields []string, aggregates []filter.Aggregate, flt interface{}) (*dal.RecordSet, error)
+	Exists(id any) bool
+	Create(from any) error
+	Get(id any, into any) error
+	Update(from any) error
+	CreateOrUpdate(id any, from any) error
+	Delete(ids ...any) error
+	DeleteQuery(flt any) error
+	Find(flt any, into any) error
+	FindFunc(flt any, destZeroValue any, resultFn ResultFunc) error
+	All(into any) error
+	Each(destZeroValue any, resultFn ResultFunc) error
+	List(fields []string) (map[string][]any, error)
+	ListWithFilter(fields []string, flt any) (map[string][]any, error)
+	Sum(field string, flt any) (float64, error)
+	Count(flt any) (uint64, error)
+	Minimum(field string, flt any) (float64, error)
+	Maximum(field string, flt any) (float64, error)
+	Average(field string, flt any) (float64, error)
+	GroupBy(fields []string, aggregates []filter.Aggregate, flt any) (*dal.RecordSet, error)
 }</pre>
 </div>
 
@@ -10123,7 +10115,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MetaIndex) IndexExists(collection *dal.Collection, id interface{}) bool</pre>
+	<pre>func (self *MetaIndex) IndexExists(collection *dal.Collection, id any) bool</pre>
 </div>
 
 
@@ -10153,7 +10145,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MetaIndex) IndexRemove(collection *dal.Collection, ids []interface{}) error</pre>
+	<pre>func (self *MetaIndex) IndexRemove(collection *dal.Collection, ids []any) error</pre>
 </div>
 
 
@@ -10168,7 +10160,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MetaIndex) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)</pre>
+	<pre>func (self *MetaIndex) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)</pre>
 </div>
 
 
@@ -10183,7 +10175,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MetaIndex) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)</pre>
+	<pre>func (self *MetaIndex) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error)</pre>
 </div>
 
 
@@ -10408,7 +10400,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MongoBackend) Delete(name string, ids ...interface{}) error</pre>
+	<pre>func (self *MongoBackend) Delete(name string, ids ...any) error</pre>
 </div>
 
 
@@ -10453,7 +10445,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MongoBackend) Exists(name string, id interface{}) bool</pre>
+	<pre>func (self *MongoBackend) Exists(name string, id any) bool</pre>
 </div>
 
 
@@ -10588,7 +10580,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MongoBackend) IndexExists(collection *dal.Collection, id interface{}) bool</pre>
+	<pre>func (self *MongoBackend) IndexExists(collection *dal.Collection, id any) bool</pre>
 </div>
 
 
@@ -10618,7 +10610,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MongoBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error</pre>
+	<pre>func (self *MongoBackend) IndexRemove(collection *dal.Collection, ids []any) error</pre>
 </div>
 
 
@@ -10633,7 +10625,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MongoBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)</pre>
+	<pre>func (self *MongoBackend) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)</pre>
 </div>
 
 
@@ -10693,7 +10685,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MongoBackend) ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)</pre>
+	<pre>func (self *MongoBackend) ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]any, error)</pre>
 </div>
 
 
@@ -10798,7 +10790,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MongoBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)</pre>
+	<pre>func (self *MongoBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error)</pre>
 </div>
 
 
@@ -11110,7 +11102,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MultiIndex) IndexExists(collection *dal.Collection, id interface{}) bool</pre>
+	<pre>func (self *MultiIndex) IndexExists(collection *dal.Collection, id any) bool</pre>
 </div>
 
 
@@ -11140,7 +11132,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MultiIndex) IndexRemove(collection *dal.Collection, ids []interface{}) error</pre>
+	<pre>func (self *MultiIndex) IndexRemove(collection *dal.Collection, ids []any) error</pre>
 </div>
 
 
@@ -11155,7 +11147,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MultiIndex) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)</pre>
+	<pre>func (self *MultiIndex) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)</pre>
 </div>
 
 
@@ -11170,7 +11162,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *MultiIndex) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error)</pre>
+	<pre>func (self *MultiIndex) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error)</pre>
 </div>
 
 
@@ -11350,7 +11342,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *NullIndexer) IndexExists(collection *dal.Collection, id interface{}) bool</pre>
+	<pre>func (self *NullIndexer) IndexExists(collection *dal.Collection, id any) bool</pre>
 </div>
 
 
@@ -11380,7 +11372,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *NullIndexer) IndexRemove(collection *dal.Collection, ids []interface{}) error</pre>
+	<pre>func (self *NullIndexer) IndexRemove(collection *dal.Collection, ids []any) error</pre>
 </div>
 
 
@@ -11395,7 +11387,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *NullIndexer) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)</pre>
+	<pre>func (self *NullIndexer) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)</pre>
 </div>
 
 
@@ -11410,7 +11402,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *NullIndexer) ListValues(collection *dal.Collection, fields []string, filter filter.Filter) (map[string][]interface{}, error)</pre>
+	<pre>func (self *NullIndexer) ListValues(collection *dal.Collection, fields []string, filter filter.Filter) (map[string][]any, error)</pre>
 </div>
 
 
@@ -11556,7 +11548,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *RedisBackend) Delete(name string, ids ...interface{}) error</pre>
+	<pre>func (self *RedisBackend) Delete(name string, ids ...any) error</pre>
 </div>
 
 
@@ -11601,7 +11593,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *RedisBackend) Exists(name string, id interface{}) bool</pre>
+	<pre>func (self *RedisBackend) Exists(name string, id any) bool</pre>
 </div>
 
 
@@ -11721,7 +11713,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *RedisBackend) IndexExists(collection *dal.Collection, id interface{}) bool</pre>
+	<pre>func (self *RedisBackend) IndexExists(collection *dal.Collection, id any) bool</pre>
 </div>
 
 
@@ -11751,7 +11743,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *RedisBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error</pre>
+	<pre>func (self *RedisBackend) IndexRemove(collection *dal.Collection, ids []any) error</pre>
 </div>
 
 
@@ -11766,7 +11758,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *RedisBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)</pre>
+	<pre>func (self *RedisBackend) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)</pre>
 </div>
 
 
@@ -11826,7 +11818,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *RedisBackend) ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]interface{}, error)</pre>
+	<pre>func (self *RedisBackend) ListValues(collection *dal.Collection, fields []string, flt *filter.Filter) (map[string][]any, error)</pre>
 </div>
 
 
@@ -11901,7 +11893,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *RedisBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)</pre>
+	<pre>func (self *RedisBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error)</pre>
 </div>
 
 
@@ -12007,7 +11999,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 	<a title="View Source" href="">&#182;</a>
 	
 	
-	<pre>type ResultFunc func(ptrToInstance interface{}, err error) // {}
+	<pre>type ResultFunc func(ptrToInstance any, err error) // {}
 </pre>
 </div>
 
@@ -12226,7 +12218,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *SqlBackend) Delete(name string, ids ...interface{}) error</pre>
+	<pre>func (self *SqlBackend) Delete(name string, ids ...any) error</pre>
 </div>
 
 
@@ -12274,7 +12266,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *SqlBackend) Exists(name string, id interface{}) bool</pre>
+	<pre>func (self *SqlBackend) Exists(name string, id any) bool</pre>
 </div>
 
 
@@ -12412,7 +12404,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *SqlBackend) IndexExists(collection *dal.Collection, id interface{}) bool</pre>
+	<pre>func (self *SqlBackend) IndexExists(collection *dal.Collection, id any) bool</pre>
 </div>
 
 
@@ -12442,7 +12434,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *SqlBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error</pre>
+	<pre>func (self *SqlBackend) IndexRemove(collection *dal.Collection, ids []any) error</pre>
 </div>
 
 <p><p>IndexRemove is a no-op, this should be handled by SqlBackend’s Delete() function</p>
@@ -12460,7 +12452,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *SqlBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error)</pre>
+	<pre>func (self *SqlBackend) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error)</pre>
 </div>
 
 
@@ -12520,7 +12512,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *SqlBackend) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error)</pre>
+	<pre>func (self *SqlBackend) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error)</pre>
 </div>
 
 
@@ -12640,7 +12632,7 @@ var <span id="WriteLockFormat">WriteLockFormat                    </span> = `%s.
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *SqlBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error)</pre>
+	<pre>func (self *SqlBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error)</pre>
 </div>
 
 

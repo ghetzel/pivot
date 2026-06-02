@@ -130,7 +130,7 @@ func (self *RedisBackend) Insert(name string, recordset *dal.RecordSet) error {
 	return self.upsert(true, name, recordset)
 }
 
-func (self *RedisBackend) Exists(name string, id interface{}) bool {
+func (self *RedisBackend) Exists(name string, id any) bool {
 	if collection, err := self.GetCollection(name); err == nil {
 		if record, ok := id.(*dal.Record); ok {
 			id = record.ID
@@ -146,7 +146,7 @@ func (self *RedisBackend) Exists(name string, id interface{}) bool {
 	return false
 }
 
-func (self *RedisBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
+func (self *RedisBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
 		// expand id, make sure it matches the number of parts we need for this collection
 		if ids := sliceutil.Sliceify(id); len(ids) == collection.KeyCount() {
@@ -191,7 +191,7 @@ func (self *RedisBackend) Update(name string, recordset *dal.RecordSet, target .
 	return self.upsert(false, name, recordset)
 }
 
-func (self *RedisBackend) Delete(name string, ids ...interface{}) error {
+func (self *RedisBackend) Delete(name string, ids ...any) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		var merr error
 
@@ -292,7 +292,7 @@ func (self *RedisBackend) Flush() error {
 	return nil
 }
 
-func (self *RedisBackend) key(name string, id ...interface{}) string {
+func (self *RedisBackend) key(name string, id ...any) string {
 	k := self.keyPrefix
 
 	if dataset := self.cs.Dataset(); dataset != `` {
@@ -336,7 +336,7 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 			}
 
 			var key string = self.key(collection.Name, ids...)
-			var args []interface{}
+			var args []any
 
 			for key, value := range record.Fields {
 				if encoded, err := self.encode(collection, key, value); err == nil {
@@ -350,7 +350,7 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 					return fmt.Errorf("Record %q already exists", record.ID)
 				}
 
-				args = append([]interface{}{key}, args...)
+				args = append([]any{key}, args...)
 
 				if out, err := redis.String(self.run(`HMSET`, args...)); err == nil && out == `OK` {
 					if ttlSeconds > 0 {
@@ -378,7 +378,7 @@ func (self *RedisBackend) upsert(create bool, collectionName string, recordset *
 	}
 }
 
-func (self *RedisBackend) encode(collection *dal.Collection, key string, value interface{}) ([]byte, error) {
+func (self *RedisBackend) encode(collection *dal.Collection, key string, value any) ([]byte, error) {
 	if _, ok := collection.GetField(key); ok {
 		if data, err := json.Marshal(value); err == nil {
 			return data, nil
@@ -390,11 +390,11 @@ func (self *RedisBackend) encode(collection *dal.Collection, key string, value i
 	}
 }
 
-func (self *RedisBackend) decode(collection *dal.Collection, key string, value []byte) (interface{}, error) {
+func (self *RedisBackend) decode(collection *dal.Collection, key string, value []byte) (any, error) {
 	if field, ok := collection.GetField(key); ok {
 		switch field.Type {
 		case dal.ObjectType:
-			var out map[string]interface{}
+			var out map[string]any
 
 			if err := json.Unmarshal(value, &out); err == nil {
 				return out, nil
@@ -402,7 +402,7 @@ func (self *RedisBackend) decode(collection *dal.Collection, key string, value [
 				return nil, err
 			}
 		case dal.ArrayType:
-			var out []interface{}
+			var out []any
 
 			if err := json.Unmarshal(value, &out); err == nil {
 				return out, nil
@@ -410,7 +410,7 @@ func (self *RedisBackend) decode(collection *dal.Collection, key string, value [
 				return nil, err
 			}
 		default:
-			var out interface{}
+			var out any
 
 			if err := json.Unmarshal(value, &out); err == nil {
 				return field.ConvertValue(out)
@@ -474,7 +474,7 @@ func redisSplitKey(key string) (string, []string) {
 }
 
 // wraps the process of borrowing a connection from the pool and running a command
-func (self *RedisBackend) run(cmd string, args ...interface{}) (interface{}, error) {
+func (self *RedisBackend) run(cmd string, args ...any) (any, error) {
 	if conn := self.pool.Get(); conn != nil {
 		defer conn.Close()
 

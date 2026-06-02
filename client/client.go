@@ -93,11 +93,11 @@ func (self *Pivot) Collection(name string) (*dal.Collection, error) {
 	}
 }
 
-func (self *Pivot) Query(collection string, query interface{}, options *QueryOptions) (*dal.RecordSet, error) {
+func (self *Pivot) Query(collection string, query any, options *QueryOptions) (*dal.RecordSet, error) {
 	var response *http.Response
 	var err error
 
-	opts := make(map[string]interface{})
+	opts := make(map[string]any)
 
 	if options != nil {
 		opts[`limit`] = options.Limit
@@ -145,11 +145,11 @@ func (self *Pivot) Query(collection string, query interface{}, options *QueryOpt
 	}
 }
 
-func (self *Pivot) Aggregate(collection string, query interface{}) (*dal.RecordSet, error) {
+func (self *Pivot) Aggregate(collection string, query any) (*dal.RecordSet, error) {
 	return nil, fmt.Errorf("Not Implemented")
 }
 
-func (self *Pivot) GetRecord(collection string, id interface{}) (*dal.Record, error) {
+func (self *Pivot) GetRecord(collection string, id any) (*dal.Record, error) {
 	if response, err := self.Get(fmt.Sprintf("/api/collections/%s/records/%v", collection, id), nil, nil); err == nil {
 		var record dal.Record
 
@@ -194,7 +194,7 @@ func (self *Pivot) upsertRecord(create bool, collection string, records ...*dal.
 	}
 }
 
-func (self *Pivot) DeleteRecords(collection string, ids ...interface{}) error {
+func (self *Pivot) DeleteRecords(collection string, ids ...any) error {
 	_, err := self.Delete(fmt.Sprintf(
 		"/api/collections/%s/records/%s",
 		collection,

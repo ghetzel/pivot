@@ -29,8 +29,8 @@ type SerializationFormat string
 
 const (
 	FormatYAML SerializationFormat = `yaml`
-	FormatJSON                     = `json`
-	FormatCSV                      = `csv`
+	FormatJSON SerializationFormat = `json`
+	FormatCSV  SerializationFormat = `csv`
 )
 
 type FilesystemBackend struct {
@@ -182,7 +182,7 @@ func (self *FilesystemBackend) Insert(collectionName string, recordset *dal.Reco
 	return self.Update(collectionName, recordset)
 }
 
-func (self *FilesystemBackend) Exists(name string, id interface{}) bool {
+func (self *FilesystemBackend) Exists(name string, id any) bool {
 	if collection, err := self.GetCollection(name); err == nil {
 		if dataRoot, err := self.getDataRoot(collection.Name, true); err == nil {
 			if record, ok := id.(*dal.Record); ok {
@@ -202,7 +202,7 @@ func (self *FilesystemBackend) Exists(name string, id interface{}) bool {
 	return false
 }
 
-func (self *FilesystemBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
+func (self *FilesystemBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
 		var record dal.Record
 
@@ -257,7 +257,7 @@ func (self *FilesystemBackend) Update(name string, recordset *dal.RecordSet, tar
 	}
 }
 
-func (self *FilesystemBackend) Delete(name string, ids ...interface{}) error {
+func (self *FilesystemBackend) Delete(name string, ids ...any) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		// remove documents from index
 		if search := self.WithSearch(collection); search != nil {
@@ -343,7 +343,7 @@ func (self *FilesystemBackend) DeleteCollection(name string) error {
 }
 
 func (self *FilesystemBackend) GetCollection(name string) (*dal.Collection, error) {
-	var v map[string]interface{}
+	var v map[string]any
 	var collection *dal.Collection
 
 	if c, ok := self.registeredCollections[name]; ok {
@@ -434,7 +434,7 @@ func (self *FilesystemBackend) makeFilename(collection *dal.Collection, id strin
 	return filename
 }
 
-func (self *FilesystemBackend) writeObject(collection *dal.Collection, id string, isData bool, value interface{}) error {
+func (self *FilesystemBackend) writeObject(collection *dal.Collection, id string, isData bool, value any) error {
 	if dataRoot, err := self.getDataRoot(collection.Name, isData); err == nil {
 		id = filepath.Base(filepath.Clean(id))
 
@@ -533,7 +533,7 @@ func (self *FilesystemBackend) listObjectIdsInCollection(collection *dal.Collect
 	return ids, nil
 }
 
-func (self *FilesystemBackend) readObject(collection *dal.Collection, id string, isData bool, into interface{}) error {
+func (self *FilesystemBackend) readObject(collection *dal.Collection, id string, isData bool, into any) error {
 	if RecordCacheEnabled && isData && into != nil {
 		if record, ok := into.(*dal.Record); ok {
 			if cacheRecordI, ok := self.recordCache.Get(fmt.Sprintf("%v|%v", collection.Name, id)); ok {
@@ -575,7 +575,7 @@ func (self *FilesystemBackend) readObject(collection *dal.Collection, id string,
 			} else if os.IsNotExist(err) {
 				// if it doesn't exist, make sure it's not indexed
 				if search := self.WithSearch(collection); search != nil {
-					defer search.IndexRemove(collection, []interface{}{id})
+					defer search.IndexRemove(collection, []any{id})
 				}
 
 				if isData {

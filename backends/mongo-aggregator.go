@@ -74,7 +74,7 @@ func (self *MongoBackend) aggregateFloat(collection *dal.Collection, aggregation
 	}
 }
 
-func (self *MongoBackend) aggregate(collection *dal.Collection, groupBy []string, aggregates []filter.Aggregate, flt []*filter.Filter, single bool) (interface{}, error) {
+func (self *MongoBackend) aggregate(collection *dal.Collection, groupBy []string, aggregates []filter.Aggregate, flt []*filter.Filter, single bool) (any, error) {
 	var f *filter.Filter
 
 	if len(flt) > 0 {
@@ -128,7 +128,7 @@ func (self *MongoBackend) aggregate(collection *dal.Collection, groupBy []string
 		q := self.db.C(collection.Name).Pipe(finalQuery)
 		iter := q.Iter()
 
-		var result map[string]interface{}
+		var result map[string]any
 
 		for iter.Next(&result) {
 			if err := iter.Err(); err != nil {

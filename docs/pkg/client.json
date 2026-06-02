@@ -59,7 +59,7 @@
                     "Alias": "util"
                 }
             ],
-            "Size": 4939,
+            "Size": 4899,
             "LineCount": 205,
             "SourceLineCount": 166,
             "FunctionCount": 12,
@@ -92,7 +92,7 @@
                         },
                         {
                             "Name": "query",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -103,7 +103,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Aggregate(collection string, query interface{}) (*dal.RecordSet, error)",
+                    "Signature": "Aggregate(collection string, query any) (*dal.RecordSet, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -214,7 +214,7 @@
                         },
                         {
                             "Name": "ids",
-                            "Type": "...interface{}"
+                            "Type": "...any"
                         }
                     ],
                     "Returns": [
@@ -222,7 +222,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "DeleteRecords(collection string, ids ...interface{}) error",
+                    "Signature": "DeleteRecords(collection string, ids ...any) error",
                     "IsPackageLevel": false
                 },
                 {
@@ -236,7 +236,7 @@
                         },
                         {
                             "Name": "id",
-                            "Type": "interface{}"
+                            "Type": "any"
                         }
                     ],
                     "Returns": [
@@ -247,7 +247,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "GetRecord(collection string, id interface{}) (*dal.Record, error)",
+                    "Signature": "GetRecord(collection string, id any) (*dal.Record, error)",
                     "IsPackageLevel": false
                 },
                 {
@@ -281,7 +281,7 @@
                         },
                         {
                             "Name": "query",
-                            "Type": "interface{}"
+                            "Type": "any"
                         },
                         {
                             "Name": "options",
@@ -296,7 +296,7 @@
                             "Type": "error"
                         }
                     ],
-                    "Signature": "Query(collection string, query interface{}, options *QueryOptions) (*dal.RecordSet, error)",
+                    "Signature": "Query(collection string, query any, options *QueryOptions) (*dal.RecordSet, error)",
                     "IsPackageLevel": false
                 },
                 {

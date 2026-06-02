@@ -24,11 +24,11 @@ func (self *CachingBackend) ResetCache() {
 	self.cache = sync.Map{}
 }
 
-func (self *CachingBackend) Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error) {
-	cacheset := make(map[interface{}]interface{})
+func (self *CachingBackend) Retrieve(collection string, id any, fields ...string) (*dal.Record, error) {
+	cacheset := make(map[any]any)
 
 	if c, ok := self.cache.LoadOrStore(collection, cacheset); ok {
-		cacheset = c.(map[interface{}]interface{})
+		cacheset = c.(map[any]any)
 	}
 
 	if typeutil.IsScalar(id) {
@@ -47,7 +47,7 @@ func (self *CachingBackend) Retrieve(collection string, id interface{}, fields .
 
 // passthrough the remaining functions to fulfill the Backend interface
 // -------------------------------------------------------------------------------------------------
-func (self *CachingBackend) Exists(collection string, id interface{}) bool {
+func (self *CachingBackend) Exists(collection string, id any) bool {
 	return self.backend.Exists(collection, id)
 }
 
@@ -75,7 +75,7 @@ func (self *CachingBackend) Update(collection string, records *dal.RecordSet, ta
 	return self.backend.Update(collection, records, target...)
 }
 
-func (self *CachingBackend) Delete(collection string, ids ...interface{}) error {
+func (self *CachingBackend) Delete(collection string, ids ...any) error {
 	return self.backend.Delete(collection, ids...)
 }
 

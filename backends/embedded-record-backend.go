@@ -44,7 +44,7 @@ func (self *EmbeddedRecordBackend) String() string {
 	return self.backend.String()
 }
 
-func (self *EmbeddedRecordBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
+func (self *EmbeddedRecordBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
 		if record, err := self.backend.Retrieve(name, id, fields...); err == nil {
 			record, err = self.EmbedRelationships(collection, record, fields...)
@@ -68,7 +68,7 @@ func (self *EmbeddedRecordBackend) WithSearch(collection *dal.Collection, filter
 
 // passthrough the remaining functions to fulfill the Backend interface
 // -------------------------------------------------------------------------------------------------
-func (self *EmbeddedRecordBackend) Exists(collection string, id interface{}) bool {
+func (self *EmbeddedRecordBackend) Exists(collection string, id any) bool {
 	return self.backend.Exists(collection, id)
 }
 
@@ -96,7 +96,7 @@ func (self *EmbeddedRecordBackend) Update(collection string, records *dal.Record
 	return self.backend.Update(collection, records, target...)
 }
 
-func (self *EmbeddedRecordBackend) Delete(collection string, ids ...interface{}) error {
+func (self *EmbeddedRecordBackend) Delete(collection string, ids ...any) error {
 	return self.backend.Delete(collection, ids...)
 }
 
@@ -154,15 +154,15 @@ func (self *EmbeddedRecordBackend) IndexInitialize(b Backend) error {
 	return self.indexer.IndexInitialize(b)
 }
 
-func (self *EmbeddedRecordBackend) IndexExists(collection *dal.Collection, id interface{}) bool {
+func (self *EmbeddedRecordBackend) IndexExists(collection *dal.Collection, id any) bool {
 	return self.indexer.IndexExists(collection, id)
 }
 
-func (self *EmbeddedRecordBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
+func (self *EmbeddedRecordBackend) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error) {
 	return self.indexer.IndexRetrieve(collection, id)
 }
 
-func (self *EmbeddedRecordBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+func (self *EmbeddedRecordBackend) IndexRemove(collection *dal.Collection, ids []any) error {
 	return self.indexer.IndexRemove(collection, ids)
 }
 
@@ -171,7 +171,7 @@ func (self *EmbeddedRecordBackend) Index(collection *dal.Collection, records *da
 }
 
 func (self *EmbeddedRecordBackend) QueryFunc(collection *dal.Collection, filter *filter.Filter, resultFn IndexResultFunc) error {
-	deferredCache := make(map[string]interface{})
+	deferredCache := make(map[string]any)
 
 	return self.indexer.QueryFunc(collection, filter, func(record *dal.Record, err error, page IndexPage) error {
 		if err := ResolveDeferredRecords(deferredCache, record); err == nil {
@@ -192,7 +192,7 @@ func (self *EmbeddedRecordBackend) Query(collection *dal.Collection, filter *fil
 			}
 		}
 
-		deferredCache := make(map[string]interface{})
+		deferredCache := make(map[string]any)
 
 		if err := ResolveDeferredRecords(deferredCache, recordset.Records...); err != nil {
 			return nil, err
@@ -204,7 +204,7 @@ func (self *EmbeddedRecordBackend) Query(collection *dal.Collection, filter *fil
 	}
 }
 
-func (self *EmbeddedRecordBackend) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error) {
+func (self *EmbeddedRecordBackend) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error) {
 	return self.indexer.ListValues(collection, fields, filter)
 }
 

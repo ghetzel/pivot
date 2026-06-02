@@ -128,7 +128,7 @@ func (self *MultiIndex) GetBackend() Backend {
 	return self.backend
 }
 
-func (self *MultiIndex) IndexExists(collection *dal.Collection, id interface{}) bool {
+func (self *MultiIndex) IndexExists(collection *dal.Collection, id any) bool {
 	exists := false
 
 	if err := self.EachSelectedIndex(collection, InspectionOperation, func(indexer Indexer, _ int, _ int) error {
@@ -147,7 +147,7 @@ func (self *MultiIndex) IndexExists(collection *dal.Collection, id interface{}) 
 	return exists
 }
 
-func (self *MultiIndex) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
+func (self *MultiIndex) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error) {
 	var record *dal.Record
 
 	if err := self.EachSelectedIndex(collection, RetrieveOperation, func(indexer Indexer, _ int, _ int) error {
@@ -168,7 +168,7 @@ func (self *MultiIndex) IndexRetrieve(collection *dal.Collection, id interface{}
 	return record, nil
 }
 
-func (self *MultiIndex) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+func (self *MultiIndex) IndexRemove(collection *dal.Collection, ids []any) error {
 	var indexErr error
 
 	if err := self.EachSelectedIndex(collection, DeleteOperation, func(indexer Indexer, _ int, _ int) error {
@@ -252,8 +252,8 @@ func (self *MultiIndex) Query(collection *dal.Collection, filter *filter.Filter,
 	return recordset, indexErr
 }
 
-func (self *MultiIndex) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error) {
-	values := make(map[string][]interface{})
+func (self *MultiIndex) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error) {
+	values := make(map[string][]any)
 	var indexErr error
 
 	if err := self.EachSelectedIndex(collection, RetrieveOperation, func(indexer Indexer, _ int, _ int) error {
@@ -329,27 +329,23 @@ func (self *MultiIndex) FlushIndex() error {
 func (self *MultiIndex) EachSelectedIndex(collection *dal.Collection, operation IndexOperation, resultFn IndexerResultFunc) error {
 	lastIndexer := -1
 
-	for {
-		if results, err := self.SelectIndex(collection, operation, lastIndexer); err == nil {
-			for _, result := range results {
-				if result.Indexer.IndexExists(collection, collection.GetIndexName()) {
-					if err := resultFn(result.Indexer, result.Index, lastIndexer); err != nil {
-						if err == IndexerResultsStop {
-							return nil
-						} else {
-							return err
-						}
+	if results, err := self.SelectIndex(collection, operation, lastIndexer); err == nil {
+		for _, result := range results {
+			if result.Indexer.IndexExists(collection, collection.GetIndexName()) {
+				if err := resultFn(result.Indexer, result.Index, lastIndexer); err != nil {
+					if err == IndexerResultsStop {
+						return nil
+					} else {
+						return err
 					}
 				}
-
-				lastIndexer = result.Index
 			}
 
-		} else {
-			return err
+			lastIndexer = result.Index
 		}
 
-		break
+	} else {
+		return err
 	}
 
 	return nil

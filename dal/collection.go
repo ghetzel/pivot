@@ -116,7 +116,7 @@ type Collection struct {
 	ViewKeywords string `json:"view_keywords,omitempty"`
 
 	// A query object that is passed to the underlying database engine.
-	ViewQuery interface{} `json:"view_query,omitempty"`
+	ViewQuery any `json:"view_query,omitempty"`
 
 	// Specifies that creating this collection on the backend should always be attempted.
 	AlwaysCreate bool `json:"create,omitempty"`
@@ -176,7 +176,7 @@ func (self *Collection) TTL(record *Record) time.Duration {
 	if self.TimeToLiveField != `` {
 		if value := record.Get(self.TimeToLiveField); !typeutil.IsZero(value) {
 			if expireAt := typeutil.V(value).Time(); !expireAt.IsZero() {
-				return expireAt.Sub(time.Now())
+				return time.Until(expireAt)
 			}
 		}
 	}
@@ -296,7 +296,7 @@ func (self *Collection) ApplyDefinition(definition *Collection) error {
 }
 
 // Deprecated: this functionality has been removed.
-func (self *Collection) SetRecordType(in interface{}) *Collection {
+func (self *Collection) SetRecordType(in any) *Collection {
 	return self
 }
 
@@ -441,7 +441,7 @@ func (self *Collection) GetFirstNonIdentityKeyField() (Field, bool) {
 }
 
 // Convert a given value according to the data type of a specific named field.
-func (self *Collection) ConvertValue(name string, value interface{}) interface{} {
+func (self *Collection) ConvertValue(name string, value any) any {
 	if field, ok := self.GetField(name); ok {
 		if v, err := field.ConvertValue(value); err == nil {
 			return v
@@ -454,7 +454,7 @@ func (self *Collection) ConvertValue(name string, value interface{}) interface{}
 // Convert a given value into one that that can go into the backend database (for create/update operations), or that
 // should be returned to the user (for retrieval operations) in accordance with the named field's data type and
 // formatters.  Invalid values (determined by Validators and the Required option in the Field) will return an error.
-func (self *Collection) ValueForField(name string, value interface{}, op FieldOperation) (interface{}, error) {
+func (self *Collection) ValueForField(name string, value any, op FieldOperation) (any, error) {
 	var formatter FieldFormatterFunc
 	var validator FieldValidatorFunc
 
@@ -501,7 +501,7 @@ func (self *Collection) ValueForField(name string, value interface{}, op FieldOp
 
 // Takes a value provided for either persistence to the backend, or as retrieved from the backend, and hammers
 // it into the right shape based on this collection's Constraints.
-func (self *Collection) extractValueFromRelationship(field *Field, input interface{}, op FieldOperation) (interface{}, error) {
+func (self *Collection) extractValueFromRelationship(field *Field, input any, op FieldOperation) (any, error) {
 	// if:
 	//	- persisting to backend
 	//	- AND this field has a relationship
@@ -530,7 +530,7 @@ func (self *Collection) extractValueFromRelationship(field *Field, input interfa
 	return input, nil
 }
 
-func (self *Collection) formatAndValidateId(id interface{}, op FieldOperation, record *Record) (interface{}, error) {
+func (self *Collection) formatAndValidateId(id any, op FieldOperation, record *Record) (any, error) {
 	switch self.AutoIdentity {
 	case ``:
 		break
@@ -575,7 +575,7 @@ func (self *Collection) EmptyRecord() *Record {
 }
 
 // Generates a Record suitable for persistence in a backend from the given struct.
-func (self *Collection) StructToRecord(in interface{}) (*Record, error) {
+func (self *Collection) StructToRecord(in any) (*Record, error) {
 	var idDesc *fieldDescription
 
 	if err := validatePtrToStructType(in); err != nil {
@@ -673,8 +673,8 @@ func (self *Collection) StructToRecord(in interface{}) (*Record, error) {
 }
 
 // Convert the given record into a map.
-func (self *Collection) MapFromRecord(record *Record, fields ...string) (map[string]interface{}, error) {
-	rv := make(map[string]interface{})
+func (self *Collection) MapFromRecord(record *Record, fields ...string) (map[string]any, error) {
+	rv := make(map[string]any)
 
 	for _, field := range self.Fields {
 		if len(fields) > 0 && !sliceutil.ContainsString(fields, field.Name) {
@@ -856,6 +856,6 @@ func (self *Collection) GetRelatedCollection(name string) (*Collection, error) {
 }
 
 // Deprecated: use StructToRecord instead
-func (self *Collection) MakeRecord(in interface{}, ops ...FieldOperation) (*Record, error) {
+func (self *Collection) MakeRecord(in any, ops ...FieldOperation) (*Record, error) {
 	return self.StructToRecord(in)
 }

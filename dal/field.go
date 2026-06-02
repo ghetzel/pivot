@@ -56,7 +56,7 @@ type Field struct {
 
 	// The default value of the field is one is not explicitly specified.  Can be any type or a
 	// function that takes zero arguments and returns a single value.
-	DefaultValue interface{} `json:"default,omitempty"`
+	DefaultValue any `json:"default,omitempty"`
 
 	// Represents the native datatype of the underlying Backend object (read only)
 	NativeType string `json:"native_type,omitempty"`
@@ -81,11 +81,11 @@ type Field struct {
 
 	// A declarative form of the Validator configuration that uses pre-defined validators. Primarily
 	// used when storing schema declarations in external JSON files.
-	ValidatorConfig map[string]interface{} `json:"validators,omitempty"`
+	ValidatorConfig map[string]any `json:"validators,omitempty"`
 
 	// A declarative form of the Formatter configuration that uses pre-defined validators. Primarily
 	// used when storing schema declarations in external JSON files.
-	FormatterConfig map[string]interface{} `json:"formatters,omitempty"`
+	FormatterConfig map[string]any `json:"formatters,omitempty"`
 
 	// Used to store the order this field appears in the source database.
 	Index int `json:"index,omitempty"`
@@ -100,13 +100,13 @@ type Field struct {
 	//
 	// If given a Constraint, the constraint will be added to this field's
 	// parent collection with the "On" field set to this field's name.
-	BelongsTo interface{} `json:"belongs_to,omitempty"`
+	BelongsTo any `json:"belongs_to,omitempty"`
 
 	// Specifies that the field may not be updated, only read.  Attempts to update the field will be silently discarded.
 	ReadOnly bool `json:"readonly,omitempty"`
 }
 
-func (self *Field) normalizeType(in interface{}) (interface{}, error) {
+func (self *Field) normalizeType(in any) (any, error) {
 	variant := typeutil.V(in)
 
 	switch self.Type {
@@ -129,11 +129,11 @@ func (self *Field) normalizeType(in interface{}) (interface{}, error) {
 			if arr := sliceutil.Sliceify(in); len(arr) > 0 {
 				return arr, nil
 			} else {
-				return make([]interface{}, 0), nil
+				return make([]any, 0), nil
 			}
 		} else {
 			var raw []byte
-			var arr []interface{}
+			var arr []any
 
 			if typeutil.IsKindOfString(in) {
 				raw = []byte(typeutil.String(in))
@@ -153,13 +153,13 @@ func (self *Field) normalizeType(in interface{}) (interface{}, error) {
 		}
 	case ObjectType:
 		if in != nil {
-			if native, ok := in.(map[string]interface{}); ok {
+			if native, ok := in.(map[string]any); ok {
 				return native, nil
 			} else if typeutil.IsMap(in) {
 				return variant.MapNative(), nil
 			} else {
 				var raw []byte
-				var obj map[string]interface{}
+				var obj map[string]any
 
 				if typeutil.IsStruct(in) {
 					if r, err := json.Marshal(in); err == nil {
@@ -207,7 +207,7 @@ func (self *Field) normalizeType(in interface{}) (interface{}, error) {
 	return in, nil
 }
 
-func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
+func (self *Field) ConvertValue(in any) (any, error) {
 	if norm, err := self.normalizeType(in); err == nil {
 		in = norm
 	} else {
@@ -230,7 +230,7 @@ func (self *Field) ConvertValue(in interface{}) (interface{}, error) {
 	return in, nil
 }
 
-func (self *Field) GetDefaultValue() interface{} {
+func (self *Field) GetDefaultValue() any {
 	if self.DefaultValue == nil {
 		return nil
 	} else if typeutil.IsFunctionArity(self.DefaultValue, 0, 1) {
@@ -248,7 +248,7 @@ func (self *Field) GetDefaultValue() interface{} {
 	}
 }
 
-func (self *Field) GetTypeInstance() interface{} {
+func (self *Field) GetTypeInstance() any {
 	switch self.Type {
 	case StringType:
 		return ``
@@ -261,15 +261,15 @@ func (self *Field) GetTypeInstance() interface{} {
 	case TimeType:
 		return time.Time{}
 	case ObjectType:
-		return make(map[string]interface{})
+		return make(map[string]any)
 	case ArrayType:
-		return make([]interface{}, 0)
+		return make([]any, 0)
 	default:
 		return make([]byte, 0)
 	}
 }
 
-func (self *Field) Validate(value interface{}) error {
+func (self *Field) Validate(value any) error {
 	// automatically validate that required fields aren't being given a nil value
 	if self.Required && value == nil {
 		return fmt.Errorf("field %q is required", self.Name)
@@ -284,7 +284,7 @@ func (self *Field) Validate(value interface{}) error {
 	}
 }
 
-func (self *Field) Format(value interface{}, op FieldOperation) (interface{}, error) {
+func (self *Field) Format(value any, op FieldOperation) (any, error) {
 	if self.Formatter == nil {
 		return value, nil
 	} else {
@@ -421,7 +421,7 @@ func (self *Field) MarshalJSON() ([]byte, error) {
 		return data, nil
 	} else {
 		return json.Marshal(&struct {
-			DefaultValue interface{} `json:"default,omitempty"`
+			DefaultValue any `json:"default,omitempty"`
 			*Alias
 		}{
 			DefaultValue: nil,

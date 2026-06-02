@@ -27,12 +27,12 @@ func TestFilterParse(t *testing.T) {
 			assert.True(dal.AutoType == f.Criteria[0].Type)
 			assert.Equal(`k1`, f.Criteria[0].Field)
 			assert.Equal(`contains`, f.Criteria[0].Operator)
-			assert.Equal([]interface{}{`v1`}, f.Criteria[0].Values)
+			assert.Equal([]any{`v1`}, f.Criteria[0].Values)
 
 			assert.True(dal.IntType == f.Criteria[1].Type)
 			assert.Equal(`k2`, f.Criteria[1].Field)
 			assert.Equal(`lt`, f.Criteria[1].Operator)
-			assert.Equal([]interface{}{`v2a`, `v2b`}, f.Criteria[1].Values)
+			assert.Equal([]any{`v2a`, `v2b`}, f.Criteria[1].Values)
 		},
 	}
 
@@ -53,7 +53,7 @@ func TestFilterIdentity(t *testing.T) {
 	assert.Equal(16, filter.Criteria[0].Length)
 	assert.Equal(`name`, filter.Criteria[0].Field)
 	assert.Equal(`prefix`, filter.Criteria[0].Operator)
-	assert.Equal([]interface{}{`foo`}, filter.Criteria[0].Values)
+	assert.Equal([]any{`foo`}, filter.Criteria[0].Values)
 
 	assert.Equal(spec, filter.String())
 }
@@ -90,12 +90,12 @@ func TestFilterParseAltDelimiters(t *testing.T) {
 			assert.True(dal.AutoType == f.Criteria[0].Type)
 			assert.Equal(`k1`, f.Criteria[0].Field)
 			assert.Equal(`contains`, f.Criteria[0].Operator)
-			assert.Equal([]interface{}{`v1`}, f.Criteria[0].Values)
+			assert.Equal([]any{`v1`}, f.Criteria[0].Values)
 
 			assert.True(dal.IntType == f.Criteria[1].Type)
 			assert.Equal(`k2`, f.Criteria[1].Field)
 			assert.Equal(`lt`, f.Criteria[1].Operator)
-			assert.Equal([]interface{}{`v2a`, `v2b`}, f.Criteria[1].Values)
+			assert.Equal([]any{`v2a`, `v2b`}, f.Criteria[1].Values)
 		},
 	}
 
@@ -111,7 +111,7 @@ func TestFilterParseAltDelimiters(t *testing.T) {
 func TestFilterFromMap(t *testing.T) {
 	assert := require.New(t)
 
-	f, err := FromMap(map[string]interface{}{
+	f, err := FromMap(map[string]any{
 		`f1`:       `v1`,
 		`int:f2`:   2,
 		`float:f3`: `gte:3`,
@@ -125,22 +125,22 @@ func TestFilterFromMap(t *testing.T) {
 	for _, criterion := range f.Criteria {
 		switch criterion.Field {
 		case `f1`:
-			assert.Equal([]interface{}{`v1`}, criterion.Values)
+			assert.Equal([]any{`v1`}, criterion.Values)
 
 		case `f2`:
 			assert.True(dal.IntType == criterion.Type)
-			assert.Equal([]interface{}{2}, criterion.Values)
+			assert.Equal([]any{2}, criterion.Values)
 
 		case `f3`:
 			assert.True(dal.FloatType == criterion.Type)
 			assert.Equal(`gte`, criterion.Operator)
-			assert.Equal([]interface{}{`3`}, criterion.Values)
+			assert.Equal([]any{`3`}, criterion.Values)
 
 		case `id`:
-			assert.EqualValues([]interface{}{`1`, `3`, `5`}, criterion.Values)
+			assert.EqualValues([]any{`1`, `3`, `5`}, criterion.Values)
 
 		case `other`:
-			assert.EqualValues([]interface{}{`2`, `4`, `6`}, criterion.Values)
+			assert.EqualValues([]any{`2`, `4`, `6`}, criterion.Values)
 		default:
 			t.Errorf("Unknown field %q", criterion.Field)
 		}
@@ -176,21 +176,21 @@ func TestFilterCopy(t *testing.T) {
 		{
 			Type:   dal.AutoType,
 			Field:  `id`,
-			Values: []interface{}{`42`},
+			Values: []any{`42`},
 		},
 	}, f1.Criteria)
 
 	f2.AddCriteria(Criterion{
 		Type:   dal.StringType,
 		Field:  `name`,
-		Values: []interface{}{`test`},
+		Values: []any{`test`},
 	})
 
 	assert.Equal([]Criterion{
 		{
 			Type:   dal.AutoType,
 			Field:  `id`,
-			Values: []interface{}{`42`},
+			Values: []any{`42`},
 		},
 	}, f1.Criteria)
 
@@ -198,11 +198,11 @@ func TestFilterCopy(t *testing.T) {
 		{
 			Type:   dal.AutoType,
 			Field:  `id`,
-			Values: []interface{}{`42`},
+			Values: []any{`42`},
 		}, {
 			Type:   dal.StringType,
 			Field:  `name`,
-			Values: []interface{}{`test`},
+			Values: []any{`test`},
 		},
 	}, f2.Criteria)
 }
@@ -227,15 +227,15 @@ func TestFilterParseStruct(t *testing.T) {
 
 	values, ok := f.GetValues(`name`)
 	assert.True(ok)
-	assert.Equal([]interface{}{`test1`}, values)
+	assert.Equal([]any{`test1`}, values)
 
 	values, ok = f.GetValues(`Enabled`)
 	assert.True(ok)
-	assert.Equal([]interface{}{true}, values)
+	assert.Equal([]any{true}, values)
 
 	values, ok = f.GetValues(`Age`)
 	assert.True(ok)
-	assert.Equal([]interface{}{42}, values)
+	assert.Equal([]any{42}, values)
 }
 
 func TestFilterParsePtrToStruct(t *testing.T) {
@@ -256,11 +256,11 @@ func TestFilterParsePtrToStruct(t *testing.T) {
 
 	values, ok := f.GetValues(`name`)
 	assert.True(ok)
-	assert.Equal([]interface{}{`test1`}, values)
+	assert.Equal([]any{`test1`}, values)
 
 	values, ok = f.GetValues(`Enabled`)
 	assert.True(ok)
-	assert.Equal([]interface{}{false}, values)
+	assert.Equal([]any{false}, values)
 
 	values, ok = f.GetValues(`Age`)
 	assert.False(ok)

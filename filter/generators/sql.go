@@ -21,26 +21,26 @@ import (
 var SqlMaxPlaceholders = 16384
 
 type sqlRangeValue struct {
-	lower interface{}
-	upper interface{}
+	lower any
+	upper any
 }
 
 func (self sqlRangeValue) String() string {
 	return fmt.Sprintf("%v:%v", self.lower, self.upper)
 }
 
-type SqlObjectTypeEncodeFunc func(in interface{}) ([]byte, error)
-type SqlObjectTypeDecodeFunc func(in []byte, out interface{}) error
-type SqlArrayTypeEncodeFunc func(in interface{}) ([]byte, error)
-type SqlArrayTypeDecodeFunc func(in []byte, out interface{}) error
+type SqlObjectTypeEncodeFunc func(in any) ([]byte, error)
+type SqlObjectTypeDecodeFunc func(in []byte, out any) error
+type SqlArrayTypeEncodeFunc func(in any) ([]byte, error)
+type SqlArrayTypeDecodeFunc func(in []byte, out any) error
 
-var SqlJsonTypeEncoder = func(in interface{}) ([]byte, error) {
+var SqlJsonTypeEncoder = func(in any) ([]byte, error) {
 	var buf bytes.Buffer
 	err := json.NewEncoder(&buf).Encode(in)
 	return buf.Bytes(), err
 }
 
-var SqlJsonTypeDecoder = func(in []byte, out interface{}) error {
+var SqlJsonTypeDecoder = func(in []byte, out any) error {
 	return json.NewDecoder(bytes.NewReader(in)).Decode(out)
 }
 
@@ -232,20 +232,20 @@ func GetSqlTypeMapping(name string) (SqlTypeMapping, error) {
 
 type Sql struct {
 	filter.Generator
-	FieldWrappers    map[string]string      // map of field name-format strings to wrap specific fields in after FieldNameFormat is applied
-	NormalizeFields  []string               // a list of field names that should have the NormalizerFormat applied to them and their corresponding values
-	NormalizerFormat string                 // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
-	UseInStatement   bool                   // whether multiple values in a criterion should be tested using an IN() statement
-	Distinct         bool                   // whether a DISTINCT clause should be used in SELECT statements
-	Count            bool                   // whether this query is being used to count rows, which means that SELECT fields are discarded in favor of COUNT(1)
-	TypeMapping      SqlTypeMapping         // provides mapping information between DAL types and native SQL types
-	Type             SqlStatementType       // what type of SQL statement is being generated
-	InputData        map[string]interface{} // key-value data for statement types that require input data (e.g.: inserts, updates)
+	FieldWrappers    map[string]string // map of field name-format strings to wrap specific fields in after FieldNameFormat is applied
+	NormalizeFields  []string          // a list of field names that should have the NormalizerFormat applied to them and their corresponding values
+	NormalizerFormat string            // format string used to wrap fields and value clauses for the purpose of doing fuzzy searches
+	UseInStatement   bool              // whether multiple values in a criterion should be tested using an IN() statement
+	Distinct         bool              // whether a DISTINCT clause should be used in SELECT statements
+	Count            bool              // whether this query is being used to count rows, which means that SELECT fields are discarded in favor of COUNT(1)
+	TypeMapping      SqlTypeMapping    // provides mapping information between DAL types and native SQL types
+	Type             SqlStatementType  // what type of SQL statement is being generated
+	InputData        map[string]any    // key-value data for statement types that require input data (e.g.: inserts, updates)
 	collection       string
 	fields           []string
 	criteria         []string
-	inputValues      []interface{}
-	values           []interface{}
+	inputValues      []any
+	values           []any
 	groupBy          []string
 	aggregateBy      []filter.Aggregate
 	conjunction      filter.ConjunctionType
@@ -261,7 +261,7 @@ func NewSqlGenerator() *Sql {
 		UseInStatement:   true,
 		TypeMapping:      DefaultSqlTypeMapping,
 		Type:             SqlSelectStatement,
-		InputData:        make(map[string]interface{}),
+		InputData:        make(map[string]any),
 	}
 }
 
@@ -271,8 +271,8 @@ func (self *Sql) Initialize(collectionName string) error {
 	self.collection = self.ToTableName(collectionName)
 	self.fields = make([]string, 0)
 	self.criteria = make([]string, 0)
-	self.inputValues = make([]interface{}, 0)
-	self.values = make([]interface{}, 0)
+	self.inputValues = make([]any, 0)
+	self.values = make([]any, 0)
 	self.conjunction = filter.AndConjunction
 
 	return nil
@@ -431,7 +431,7 @@ func (self *Sql) WithField(field string) error {
 	return nil
 }
 
-func (self *Sql) SetOption(_ string, _ interface{}) error {
+func (self *Sql) SetOption(_ string, _ any) error {
 	return nil
 }
 
@@ -449,7 +449,7 @@ func (self *Sql) AggregateByField(agg filter.Aggregation, field string) error {
 	return nil
 }
 
-func (self *Sql) GetValues() []interface{} {
+func (self *Sql) GetValues() []any {
 	return append(self.inputValues, self.values...)
 }
 
@@ -528,7 +528,7 @@ func (self *Sql) WithCriterion(criterion filter.Criterion) error {
 
 		if lowerValue, err := self.valueToNativeRepresentation(criterion.Type, criterion.Values[0]); err == nil {
 			if upperValue, err := self.valueToNativeRepresentation(criterion.Type, criterion.Values[1]); err == nil {
-				criterion.Values = []interface{}{
+				criterion.Values = []any{
 					sqlRangeValue{
 						lower: lowerValue,
 						upper: upperValue,
@@ -732,7 +732,7 @@ func (self *Sql) ToAggregatedFieldName(agg filter.Aggregation, field string) str
 	}
 }
 
-func (self *Sql) ToNativeValue(t dal.Type, subtypes []dal.Type, in interface{}) string {
+func (self *Sql) ToNativeValue(t dal.Type, subtypes []dal.Type, in any) string {
 	if in == nil {
 		return `NULL`
 	}
@@ -903,7 +903,7 @@ func (self *Sql) ApplyNormalizer(fieldName string, in string) string {
 	}
 }
 
-func (self *Sql) PrepareInputValue(f string, value interface{}) (interface{}, error) {
+func (self *Sql) PrepareInputValue(f string, value any) (any, error) {
 	// times get returned as-is
 	if _, ok := value.(time.Time); ok {
 		return value, nil
@@ -917,7 +917,7 @@ func (self *Sql) PrepareInputValue(f string, value interface{}) (interface{}, er
 	}
 }
 
-func (self *Sql) ObjectTypeEncode(in interface{}) ([]byte, error) {
+func (self *Sql) ObjectTypeEncode(in any) ([]byte, error) {
 	if !typeutil.IsMap(typeutil.ResolveValue(in)) {
 		return nil, fmt.Errorf("Can only encode pointer to a map type")
 	}
@@ -929,7 +929,7 @@ func (self *Sql) ObjectTypeEncode(in interface{}) ([]byte, error) {
 	}
 }
 
-func (self *Sql) ObjectTypeDecode(in []byte, out interface{}) error {
+func (self *Sql) ObjectTypeDecode(in []byte, out any) error {
 	if !typeutil.IsMap(typeutil.ResolveValue(out)) {
 		return fmt.Errorf("Can only decode to pointer to a map type")
 	}
@@ -941,7 +941,7 @@ func (self *Sql) ObjectTypeDecode(in []byte, out interface{}) error {
 	}
 }
 
-func (self *Sql) ArrayTypeEncode(in interface{}) ([]byte, error) {
+func (self *Sql) ArrayTypeEncode(in any) ([]byte, error) {
 	if !typeutil.IsArray(typeutil.ResolveValue(in)) {
 		return nil, fmt.Errorf("Can only encode arrays")
 	}
@@ -953,7 +953,7 @@ func (self *Sql) ArrayTypeEncode(in interface{}) ([]byte, error) {
 	}
 }
 
-func (self *Sql) ArrayTypeDecode(in []byte, out interface{}) error {
+func (self *Sql) ArrayTypeDecode(in []byte, out any) error {
 	if !typeutil.IsArray(typeutil.ResolveValue(out)) {
 		return fmt.Errorf("Can only decode into an array")
 	}
@@ -1023,8 +1023,8 @@ func (self *Sql) populateLimitOffset(f *filter.Filter) {
 	}
 }
 
-func (self *Sql) valueToNativeRepresentation(coerce dal.Type, value interface{}) (interface{}, error) {
-	var typedValue interface{}
+func (self *Sql) valueToNativeRepresentation(coerce dal.Type, value any) (any, error) {
+	var typedValue any
 
 	str := fmt.Sprintf("%v", value)
 

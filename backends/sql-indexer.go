@@ -164,14 +164,14 @@ func (self *SqlBackend) Query(collection *dal.Collection, f *filter.Filter, resu
 	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 
-func (self *SqlBackend) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]interface{}, error) {
+func (self *SqlBackend) ListValues(collection *dal.Collection, fields []string, f *filter.Filter) (map[string][]any, error) {
 	for i, f := range fields {
 		if f == `id` {
 			fields[i] = collection.IdentityField
 		}
 	}
 
-	output := make(map[string][]interface{})
+	output := make(map[string][]any)
 
 	for _, field := range fields {
 		f.Fields = []string{field}
@@ -181,12 +181,12 @@ func (self *SqlBackend) ListValues(collection *dal.Collection, fields []string, 
 		if results, err := self.Query(collection, f); err == nil {
 			// querylog.Debugf("sql-ListValues(): %+v", results)
 
-			var values []interface{}
+			var values []any
 
 			if v, ok := output[field]; ok {
 				values = v
 			} else {
-				values = make([]interface{}, 0)
+				values = make([]any, 0)
 			}
 
 			if field == collection.IdentityField {
@@ -218,11 +218,11 @@ func (self *SqlBackend) GetBackend() Backend {
 	return self
 }
 
-func (self *SqlBackend) IndexExists(collection *dal.Collection, id interface{}) bool {
+func (self *SqlBackend) IndexExists(collection *dal.Collection, id any) bool {
 	return self.Exists(collection.GetIndexName(), id)
 }
 
-func (self *SqlBackend) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
+func (self *SqlBackend) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error) {
 	return self.Retrieve(collection.GetIndexName(), id)
 }
 
@@ -232,7 +232,7 @@ func (self *SqlBackend) Index(collection *dal.Collection, records *dal.RecordSet
 }
 
 // IndexRemove is a no-op, this should be handled by SqlBackend's Delete() function
-func (self *SqlBackend) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+func (self *SqlBackend) IndexRemove(collection *dal.Collection, ids []any) error {
 	return nil
 }
 

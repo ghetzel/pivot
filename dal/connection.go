@@ -22,7 +22,7 @@ func AddConnectionSchemeAlias(from string, to string) {
 
 type ConnectionString struct {
 	URI     *url.URL
-	Options map[string]interface{}
+	Options map[string]any
 }
 
 func (self *ConnectionString) String() string {
@@ -230,7 +230,7 @@ func MustParseConnectionString(conn string) ConnectionString {
 	}
 }
 
-func MakeConnectionString(scheme string, host string, dataset string, options map[string]interface{}) (ConnectionString, error) {
+func MakeConnectionString(scheme string, host string, dataset string, options map[string]any) (ConnectionString, error) {
 	qs := url.Values{}
 
 	for k, v := range options {
@@ -277,15 +277,15 @@ func prepareURI(uri *url.URL) error {
 	return nil
 }
 
-func optionsFromURI(uri *url.URL) map[string]interface{} {
-	rv := make(map[string]interface{})
+func optionsFromURI(uri *url.URL) map[string]any {
+	rv := make(map[string]any)
 
 	for key, values := range uri.Query() {
 		if len(values) > 0 {
 			if len(values) == 1 {
 				rv[key] = stringutil.Autotype(values[0])
 			} else {
-				vI := make([]interface{}, len(values))
+				vI := make([]any, len(values))
 
 				for i, vv := range values {
 					vI[i] = stringutil.Autotype(vv)

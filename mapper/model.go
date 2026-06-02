@@ -111,7 +111,7 @@ func (self *Model) Drop() error {
 }
 
 // Creates and saves a new instance of the model from the given struct or dal.Record.
-func (self *Model) Create(from interface{}) error {
+func (self *Model) Create(from any) error {
 	if record, err := self.collection.StructToRecord(from); err == nil {
 		return self.db.Insert(self.collection.Name, dal.NewRecordSet(record))
 	} else {
@@ -121,7 +121,7 @@ func (self *Model) Create(from interface{}) error {
 
 // Retrieves an instance of the model identified by the given ID and populates the value pointed to
 // by the into parameter.  Structs and dal.Record instances can be populated.
-func (self *Model) Get(id interface{}, into interface{}) error {
+func (self *Model) Get(id any, into any) error {
 	if record, err := self.db.Retrieve(self.collection.Name, id); err == nil {
 		return record.Populate(into, self.collection)
 	} else {
@@ -130,12 +130,12 @@ func (self *Model) Get(id interface{}, into interface{}) error {
 }
 
 // Tests whether a record exists for the given ID.
-func (self *Model) Exists(id interface{}) bool {
+func (self *Model) Exists(id any) bool {
 	return self.db.Exists(self.collection.Name, id)
 }
 
 // Updates and saves an existing instance of the model from the given struct or dal.Record.
-func (self *Model) Update(from interface{}) error {
+func (self *Model) Update(from any) error {
 	if record, err := self.collection.StructToRecord(from); err == nil {
 		return self.db.Update(self.collection.Name, dal.NewRecordSet(record))
 	} else {
@@ -144,7 +144,7 @@ func (self *Model) Update(from interface{}) error {
 }
 
 // Creates or updates an instance of the model depending on whether it exists or not.
-func (self *Model) CreateOrUpdate(id interface{}, from interface{}) error {
+func (self *Model) CreateOrUpdate(id any, from any) error {
 	if id == nil || !self.Exists(id) {
 		return self.Create(from)
 	} else {
@@ -153,12 +153,12 @@ func (self *Model) CreateOrUpdate(id interface{}, from interface{}) error {
 }
 
 // Delete instances of the model identified by the given IDs
-func (self *Model) Delete(ids ...interface{}) error {
+func (self *Model) Delete(ids ...any) error {
 	return self.db.Delete(self.collection.Name, ids...)
 }
 
 // Delete all records matching the given query.
-func (self *Model) DeleteQuery(flt interface{}) error {
+func (self *Model) DeleteQuery(flt any) error {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
@@ -176,7 +176,7 @@ func (self *Model) DeleteQuery(flt interface{}) error {
 // Results will be returned in the slice or array pointed to by the into parameter, or
 // if into points to a dal.RecordSet, the RecordSet resulting from the query will be returned
 // as-is.
-func (self *Model) Find(flt interface{}, into interface{}) error {
+func (self *Model) Find(flt any, into any) error {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
@@ -197,7 +197,7 @@ func (self *Model) Find(flt interface{}, into interface{}) error {
 
 // Perform a query for instances of the model that match the given filter.Filter.
 // The given callback function will be called once per result.
-func (self *Model) FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error {
+func (self *Model) FindFunc(flt any, destZeroValue any, resultFn ResultFunc) error {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
@@ -234,19 +234,19 @@ func (self *Model) FindFunc(flt interface{}, destZeroValue interface{}, resultFn
 	}
 }
 
-func (self *Model) All(into interface{}) error {
+func (self *Model) All(into any) error {
 	return self.Find(filter.All(), into)
 }
 
-func (self *Model) Each(destZeroValue interface{}, resultFn ResultFunc) error {
+func (self *Model) Each(destZeroValue any, resultFn ResultFunc) error {
 	return self.FindFunc(filter.All(), destZeroValue, resultFn)
 }
 
-func (self *Model) List(fields []string) (map[string][]interface{}, error) {
+func (self *Model) List(fields []string) (map[string][]any, error) {
 	return self.ListWithFilter(fields, filter.All())
 }
 
-func (self *Model) ListWithFilter(fields []string, flt interface{}) (map[string][]interface{}, error) {
+func (self *Model) ListWithFilter(fields []string, flt any) (map[string][]any, error) {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
@@ -272,7 +272,7 @@ func (self *Model) ListWithFilter(fields []string, flt interface{}) (map[string]
 	}
 }
 
-func (self *Model) Sum(field string, flt interface{}) (float64, error) {
+func (self *Model) Sum(field string, flt any) (float64, error) {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
@@ -286,7 +286,7 @@ func (self *Model) Sum(field string, flt interface{}) (float64, error) {
 	}
 }
 
-func (self *Model) Count(flt interface{}) (uint64, error) {
+func (self *Model) Count(flt any) (uint64, error) {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 		f.Paginate = false
@@ -301,7 +301,7 @@ func (self *Model) Count(flt interface{}) (uint64, error) {
 	}
 }
 
-func (self *Model) Minimum(field string, flt interface{}) (float64, error) {
+func (self *Model) Minimum(field string, flt any) (float64, error) {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
@@ -315,7 +315,7 @@ func (self *Model) Minimum(field string, flt interface{}) (float64, error) {
 	}
 }
 
-func (self *Model) Maximum(field string, flt interface{}) (float64, error) {
+func (self *Model) Maximum(field string, flt any) (float64, error) {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
@@ -329,7 +329,7 @@ func (self *Model) Maximum(field string, flt interface{}) (float64, error) {
 	}
 }
 
-func (self *Model) Average(field string, flt interface{}) (float64, error) {
+func (self *Model) Average(field string, flt any) (float64, error) {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
@@ -343,7 +343,7 @@ func (self *Model) Average(field string, flt interface{}) (float64, error) {
 	}
 }
 
-func (self *Model) GroupBy(fields []string, aggregates []filter.Aggregate, flt interface{}) (*dal.RecordSet, error) {
+func (self *Model) GroupBy(fields []string, aggregates []filter.Aggregate, flt any) (*dal.RecordSet, error) {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
 
@@ -363,7 +363,7 @@ func (self *Model) GroupBy(fields []string, aggregates []filter.Aggregate, flt i
 	}
 }
 
-func (self *Model) populateOutputParameter(f *filter.Filter, recordset *dal.RecordSet, into interface{}) error {
+func (self *Model) populateOutputParameter(f *filter.Filter, recordset *dal.RecordSet, into any) error {
 	// for each resulting record...
 	for _, record := range recordset.Records {
 		if len(f.Fields) > 0 {

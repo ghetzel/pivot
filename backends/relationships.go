@@ -14,15 +14,15 @@ import (
 )
 
 type DeferredRecord struct {
-	Original          interface{}
+	Original          any
 	Backend           Backend
 	IdentityFieldName string
 	CollectionName    string
-	ID                interface{}
+	ID                any
 	Keys              []string
 }
 
-func (self *DeferredRecord) GroupKey(id ...interface{}) string {
+func (self *DeferredRecord) GroupKey(id ...any) string {
 	base := fmt.Sprintf("%v:%v", self.Backend.String(), self.CollectionName)
 
 	if len(id) > 0 {
@@ -43,11 +43,11 @@ func (self *DeferredRecord) String() string {
 type recordFieldValue struct {
 	Record   *dal.Record
 	Key      []string
-	Value    interface{}
+	Value    any
 	Deferred *DeferredRecord
 }
 
-func PopulateRelationships(backend Backend, parent *dal.Collection, record *dal.Record, prepId func(interface{}) interface{}, requestedFields ...string) error { // for each relationship
+func PopulateRelationships(backend Backend, parent *dal.Collection, record *dal.Record, prepId func(any) any, requestedFields ...string) error { // for each relationship
 	skipKeys := make([]string, 0)
 
 	if embed, ok := backend.(*EmbeddedRecordBackend); ok {
@@ -151,7 +151,7 @@ ConstraintsLoop:
 
 			if nestedId := record.Get(key); nestedId != nil {
 				if typeutil.IsArray(nestedId) {
-					results := make([]interface{}, 0)
+					results := make([]any, 0)
 
 					for _, id := range sliceutil.Sliceify(nestedId) {
 						if prepId != nil {
@@ -182,7 +182,7 @@ ConstraintsLoop:
 					}
 
 					// clear out the array we're modifying
-					// record.SetNested(keyBefore, []interface{}{})
+					// record.SetNested(keyBefore, []any{})
 
 					for i, result := range results {
 						nestKey := strings.Replace(key, `*`, fmt.Sprintf("%d", i), 1)
@@ -220,18 +220,18 @@ ConstraintsLoop:
 	return nil
 }
 
-func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record) error {
+func ResolveDeferredRecords(cache map[string]any, records ...*dal.Record) error {
 	deferredRecords := make(map[string]*DeferredRecord)
 	resolvedValues := make([]*recordFieldValue, 0)
 
 	if cache == nil {
-		cache = make(map[string]interface{})
+		cache = make(map[string]any)
 	}
 
 	// first pass: get all DeferredRecord values from all records
 	//             and map them to each record
 	for _, record := range records {
-		if err := maputil.WalkStruct(record.Fields, func(value interface{}, key []string, isLeaf bool) error {
+		if err := maputil.WalkStruct(record.Fields, func(value any, key []string, isLeaf bool) error {
 			if deferred, ok := value.(DeferredRecord); ok {
 				dptr := &deferred
 				deferredRecords[deferred.String()] = dptr
@@ -263,7 +263,7 @@ func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record
 			var keyFn = collectionDefers[0].GroupKey
 			var backend = collectionDefers[0].Backend
 			var fields = collectionDefers[0].Keys
-			var ids []interface{}
+			var ids []any
 
 			// gather all the ids for this deferred collection
 			for _, deferred := range collectionDefers {
@@ -271,7 +271,7 @@ func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record
 			}
 
 			// ids = sliceutil.Unique(ids)
-			foundIds := make([]interface{}, 0)
+			foundIds := make([]any, 0)
 
 			if len(ids) > 0 {
 				if related, err := backend.GetCollection(relatedCollectionName); err == nil {
@@ -336,7 +336,7 @@ func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record
 						if _, ok := cache[key]; ok {
 							continue
 						} else {
-							cache[key] = map[string]interface{}{
+							cache[key] = map[string]any{
 								deferred.IdentityFieldName: deferred.ID,
 								`_missing`:                 true,
 								`_collection`:              deferred.CollectionName,
@@ -349,7 +349,7 @@ func ResolveDeferredRecords(cache map[string]interface{}, records ...*dal.Record
 				for _, field := range resolvedValues {
 					key := keyFn(field.Value)
 
-					if data, ok := cache[key].(map[string]interface{}); ok {
+					if data, ok := cache[key].(map[string]any); ok {
 						maputil.DeepSet(field.Record.Fields, field.Key, data)
 					}
 				}

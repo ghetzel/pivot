@@ -142,7 +142,7 @@ func (self *MongoBackend) Ping(timeout time.Duration) error {
 	}
 }
 
-func (self *MongoBackend) Exists(name string, id interface{}) bool {
+func (self *MongoBackend) Exists(name string, id any) bool {
 	if collection, err := self.GetCollection(name); err == nil {
 		if record, ok := id.(*dal.Record); ok {
 			id = record.ID
@@ -156,9 +156,9 @@ func (self *MongoBackend) Exists(name string, id interface{}) bool {
 	return false
 }
 
-func (self *MongoBackend) Retrieve(name string, id interface{}, fields ...string) (*dal.Record, error) {
+func (self *MongoBackend) Retrieve(name string, id any, fields ...string) (*dal.Record, error) {
 	if collection, err := self.GetCollection(name); err == nil {
-		var data map[string]interface{}
+		var data map[string]any
 
 		q := self.db.C(collection.Name).FindId(self.getId(id))
 		q = self.prepMongoQuery(q, fields)
@@ -226,7 +226,7 @@ func (self *MongoBackend) Update(name string, records *dal.RecordSet, target ...
 	return nil
 }
 
-func (self *MongoBackend) Delete(name string, ids ...interface{}) error {
+func (self *MongoBackend) Delete(name string, ids ...any) error {
 	if collection, err := self.GetCollection(name); err == nil {
 		for _, id := range ids {
 			if err := self.db.C(collection.Name).RemoveId(self.getId(id)); err != nil {
@@ -302,8 +302,8 @@ func (self *MongoBackend) Flush() error {
 	return nil
 }
 
-func (self *MongoBackend) prepareValuesForWrite(data map[string]interface{}) map[string]interface{} {
-	output := make(map[string]interface{})
+func (self *MongoBackend) prepareValuesForWrite(data map[string]any) map[string]any {
+	output := make(map[string]any)
 
 	// ObjectId-ify any data that _looks_ like an ObjectId
 	for k, v := range data {
@@ -319,7 +319,7 @@ func (self *MongoBackend) prepareValuesForWrite(data map[string]interface{}) map
 	return output
 }
 
-func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[string]interface{}, fields ...string) (*dal.Record, error) {
+func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[string]any, fields ...string) (*dal.Record, error) {
 	if dataId, ok := data[MongoIdentityField]; ok {
 		fields = sliceutil.CompactString(fields)
 
@@ -330,7 +330,7 @@ func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[
 		)
 
 		// really gotta hunt these ObjectIds down
-		maputil.Walk(data, func(value interface{}, key []string, isLeaf bool) error {
+		maputil.Walk(data, func(value any, key []string, isLeaf bool) error {
 			if oid, ok := value.(bson.ObjectId); ok {
 				maputil.DeepSet(data, key, oid.Hex())
 			}
@@ -359,24 +359,24 @@ func (self *MongoBackend) recordFromResult(collection *dal.Collection, data map[
 	}
 }
 
-func (self *MongoBackend) getId(in interface{}) interface{} {
+func (self *MongoBackend) getId(in any) any {
 	in = self.fromId(in)
 
-	switch in.(type) {
+	switch in := in.(type) {
 	case string:
-		if bson.IsObjectIdHex(in.(string)) {
-			return bson.ObjectIdHex(in.(string))
+		if bson.IsObjectIdHex(in) {
+			return bson.ObjectIdHex(in)
 		}
 	}
 
 	return in
 }
 
-func (self *MongoBackend) fromId(in interface{}) interface{} {
+func (self *MongoBackend) fromId(in any) any {
 
-	switch in.(type) {
+	switch in := in.(type) {
 	case bson.ObjectId:
-		return in.(bson.ObjectId).Hex()
+		return in.Hex()
 	}
 
 	return in

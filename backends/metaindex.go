@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/deckarep/golang-set"
+	mapset "github.com/deckarep/golang-set"
 	"github.com/ghetzel/go-stockutil/log"
 	"github.com/ghetzel/go-stockutil/stringutil"
 	"github.com/ghetzel/pivot/v3/dal"
@@ -39,15 +39,15 @@ func (self *MetaIndex) IndexInitialize(_ Backend) error {
 	return nil
 }
 
-func (self *MetaIndex) IndexExists(collection *dal.Collection, id interface{}) bool {
+func (self *MetaIndex) IndexExists(collection *dal.Collection, id any) bool {
 	return false
 }
 
-func (self *MetaIndex) IndexRetrieve(collection *dal.Collection, id interface{}) (*dal.Record, error) {
+func (self *MetaIndex) IndexRetrieve(collection *dal.Collection, id any) (*dal.Record, error) {
 	return nil, fmt.Errorf("MetaIndex only supports querying")
 }
 
-func (self *MetaIndex) IndexRemove(collection *dal.Collection, ids []interface{}) error {
+func (self *MetaIndex) IndexRemove(collection *dal.Collection, ids []any) error {
 	return fmt.Errorf("MetaIndex only supports querying")
 }
 
@@ -79,7 +79,7 @@ func (self *MetaIndex) QueryFunc(collection *dal.Collection, f *filter.Filter, r
 		return fmt.Errorf("left-hand index error: %v", err)
 	}
 
-	if rightFilter, err := filter.FromMap(map[string]interface{}{
+	if rightFilter, err := filter.FromMap(map[string]any{
 		self.rightField: uniqueLeftHandValues.ToSlice(),
 	}); err == nil {
 		var leftRecordIndex sync.Map
@@ -108,13 +108,13 @@ func (self *MetaIndex) QueryFunc(collection *dal.Collection, f *filter.Filter, r
 				// for each left-record...
 				for _, lrid := range leftRecordIds {
 					if leftRecord, ok := leftResults.GetRecord(lrid); ok {
-						syntheticRecord := dal.NewRecord([]interface{}{
+						syntheticRecord := dal.NewRecord([]any{
 							leftRecord.ID,
 							rightRecord.ID,
 						})
 
-						var leftFields = make(map[string]interface{})
-						var rightFields = make(map[string]interface{})
+						var leftFields = make(map[string]any)
+						var rightFields = make(map[string]any)
 
 						if len(finalFields) > 0 {
 							for _, pair := range finalFields {
@@ -179,7 +179,7 @@ func (self *MetaIndex) Query(collection *dal.Collection, f *filter.Filter, resul
 	return DefaultQueryImplementation(self, collection, f, resultFns...)
 }
 
-func (self *MetaIndex) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]interface{}, error) {
+func (self *MetaIndex) ListValues(collection *dal.Collection, fields []string, filter *filter.Filter) (map[string][]any, error) {
 	// return self.leftIndexer.ListValues()
 	return nil, fmt.Errorf(`Not Implemented`)
 }

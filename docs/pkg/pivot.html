@@ -102,7 +102,7 @@
 	</span>
 </div>
 
-<span class="pull-right">Doc Coverage: 33%</span>
+<span class="pull-right">Doc Coverage: 34%</span>
 <h2 id="pkg-overview">package pivot</h2>
 
 <p>
@@ -202,18 +202,6 @@
     <li>
 		<strong>
 		<a href="#MustGetCollection">func MustGetCollection(db Backend, name string) *dal.Collection</a>
-		</strong>
-	</li>
-	
-    <li>
-		<strong>
-		<a href="#NewDatabase">func NewDatabase(connection string) (DB, error)</a>
-		</strong>
-	</li>
-	
-    <li>
-		<strong>
-		<a href="#NewDatabaseWithOptions">func NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)</a>
 		</strong>
 	</li>
 	
@@ -441,20 +429,6 @@
 	<tr>
 		<td class="text-left">
 			
-			<a href="db_test.go">db_test.go</a>
-			
-		</td>
-		<td class="text-right">41KB</td>
-		<td class="text-right">1221</td>
-		<td class="text-right"></td>
-		<td class="text-right"></td>
-		<td class="text-right">3</td>
-		<td class="text-right">1</td>
-	</tr>
-	
-	<tr>
-		<td class="text-left">
-			
 			<a href="pivot.go">pivot.go</a>
 			
 		</td>
@@ -472,8 +446,8 @@
 			<a href="server.go">server.go</a>
 			
 		</td>
-		<td class="text-right">22KB</td>
-		<td class="text-right">641</td>
+		<td class="text-right">24KB</td>
+		<td class="text-right">683</td>
 		<td class="text-right">4</td>
 		<td class="text-right">1</td>
 		<td class="text-right"></td>
@@ -487,7 +461,7 @@
 			
 		</td>
 		<td class="text-right">1MB</td>
-		<td class="text-right">18228</td>
+		<td class="text-right">18235</td>
 		<td class="text-right">6</td>
 		<td class="text-right"></td>
 		<td class="text-right"></td>
@@ -525,9 +499,6 @@
 const <span id="ApplicationName">ApplicationName   </span> = `pivot`
 const <span id="ApplicationSummary">ApplicationSummary</span> = `an extensible database abstraction service`
 const <span id="ApplicationVersion">ApplicationVersion</span> = util.Version
-const <span id="TestFirst">TestFirst         </span> = iota
-const <span id="TestSecond">TestSecond        </span> = 
-const <span id="TestThird">TestThird         </span> = 
 </pre>
 </div>
 
@@ -548,7 +519,6 @@ var <span id="DefaultResultLimit">DefaultResultLimit  </span> = 25
 var <span id="DefaultUiDirectory">DefaultUiDirectory  </span> = `embedded`
 var <span id="MonitorCheckInterval">MonitorCheckInterval</span> = time.Duration(10) * time.Second
 var <span id="NetrcFile">NetrcFile           </span> = ``
-var <span id="TestData">TestData            </span> = []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}
 </pre>
 </div>
 
@@ -724,34 +694,6 @@ var <span id="TestData">TestData            </span> = []byte{0x00, 0x01, 0x02, 0
 </p>
 
 
-<h3 id="NewDatabase" data-kind="f">
-	func <a title="View Source" href="">NewDatabase</a>
-	<a class="permalink" href="#NewDatabase">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDatabase(connection string) (DB, error)</pre>
-</div>
-
-
-<p><p>Create a new database connection with the default options.</p>
-</p>
-
-
-<h3 id="NewDatabaseWithOptions" data-kind="f">
-	func <a title="View Source" href="">NewDatabaseWithOptions</a>
-	<a class="permalink" href="#NewDatabaseWithOptions">&#182;</a>
-</h3>
-<div class="funcdecl decl">
-	<a title="View Source" href="">&#10070;</a>
-	<pre>func NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)</pre>
-</div>
-
-
-<p><p>Create a new database connection with the given options.</p>
-</p>
-
-
 
 
 
@@ -892,6 +834,42 @@ var <span id="TestData">TestData            </span> = []byte{0x00, 0x01, 0x02, 0
 	SetBackend(Backend)
 }</pre>
 </div>
+
+
+
+
+<h4 id="NewDatabaseWithOptions" data-kind="f">
+	func <a title="View Source" href="">NewDatabaseWithOptions</a>
+	<a class="permalink" href="#NewDatabaseWithOptions">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewDatabaseWithOptions(connection string, options ConnectOptions) (DB, error)</pre>
+</div>
+
+<p><p>Create a new database connection with the given options.</p>
+</p>
+
+
+
+
+<h4 id="NewDatabase" data-kind="f">
+	func <a title="View Source" href="">NewDatabase</a>
+	<a class="permalink" href="#NewDatabase">&#182;</a>
+</h4>
+
+<div class="funcdecl decl">
+	<a title="View Source" href="">&#10070;</a>
+	<pre>func NewDatabase(connection string) (DB, error)</pre>
+</div>
+
+<p><p>Create a new database connection with the default options.</p>
+</p>
+
+
+
+
 
 
 

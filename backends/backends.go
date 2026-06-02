@@ -31,11 +31,11 @@ type Backend interface {
 	SetIndexer(dal.ConnectionString) error
 	RegisterCollection(*dal.Collection)
 	GetConnectionString() *dal.ConnectionString
-	Exists(collection string, id interface{}) bool
-	Retrieve(collection string, id interface{}, fields ...string) (*dal.Record, error)
+	Exists(collection string, id any) bool
+	Retrieve(collection string, id any, fields ...string) (*dal.Record, error)
 	Insert(collection string, records *dal.RecordSet) error
 	Update(collection string, records *dal.RecordSet, target ...string) error
-	Delete(collection string, ids ...interface{}) error
+	Delete(collection string, ids ...any) error
 	CreateCollection(definition *dal.Collection) error
 	DeleteCollection(collection string) error
 	ListCollections() ([]string, error)

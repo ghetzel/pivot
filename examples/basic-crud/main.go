@@ -40,7 +40,7 @@ var UsersTable = &dal.Collection{
 			Required: true,
 
 			// enforces RFC 5322 formatting on email addresses
-			Formatter: func(email interface{}, inOrOut dal.FieldOperation) (interface{}, error) {
+			Formatter: func(email any, inOrOut dal.FieldOperation) (any, error) {
 				if addr, err := mail.ParseAddress(fmt.Sprintf("%v", email)); err == nil {
 					return addr.String(), nil
 				} else {

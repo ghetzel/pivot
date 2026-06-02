@@ -272,7 +272,7 @@
 			<li>
 				
 				<a href="#Filter.FromMap">
-					func FromMap(in map[string]interface{}) (*Filter, error)
+					func FromMap(in map[string]any) (*Filter, error)
 				</a>
 				
 			</li>
@@ -308,7 +308,7 @@
 			<li>
 				
 				<a href="#Filter.MustParse">
-					func MustParse(in interface{}) *Filter
+					func MustParse(in any) *Filter
 				</a>
 				
 			</li>
@@ -345,7 +345,7 @@
 			<li>
 				
 				<a href="#Filter.Parse">
-					func Parse(in interface{}) (*Filter, error)
+					func Parse(in any) (*Filter, error)
 				</a>
 				
 			</li>
@@ -391,7 +391,7 @@
 				<a href="#Filter.ApplyOptions">
 					func
 					(self *Filter)
-					ApplyOptions(in interface{}) error
+					ApplyOptions(in any) error
 				</a>
 				
 			</li>
@@ -431,7 +431,7 @@
 				<a href="#Filter.GetFirstValue">
 					func
 					(self *Filter)
-					GetFirstValue() (interface{}, bool)
+					GetFirstValue() (any, bool)
 				</a>
 				
 			</li>
@@ -443,7 +443,7 @@
 				<a href="#Filter.GetIdentityValue">
 					func
 					(self *Filter)
-					GetIdentityValue() (interface{}, bool)
+					GetIdentityValue() (any, bool)
 				</a>
 				
 			</li>
@@ -467,7 +467,7 @@
 				<a href="#Filter.GetValues">
 					func
 					(self *Filter)
-					GetValues(field string) ([]interface{}, bool)
+					GetValues(field string) ([]any, bool)
 				</a>
 				
 			</li>
@@ -521,7 +521,7 @@
 				<a href="#Filter.NewFromMap">
 					func
 					(self *Filter)
-					NewFromMap(in map[string]interface{}) (*Filter, error)
+					NewFromMap(in map[string]any) (*Filter, error)
 				</a>
 				
 			</li>
@@ -950,12 +950,12 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
 	
 	
 	<pre>type Criterion struct {
-	Type        dal.Type      `json:&#34;type,omitempty&#34;`
-	Length      int           `json:&#34;length,omitempty&#34;`
-	Field       string        `json:&#34;field&#34;`
-	Operator    string        `json:&#34;operator,omitempty&#34;`
-	Values      []interface{} `json:&#34;values&#34;`
-	Aggregation Aggregation   `json:&#34;aggregation,omitempty&#34;`
+	Type        dal.Type    `json:&#34;type,omitempty&#34;`
+	Length      int         `json:&#34;length,omitempty&#34;`
+	Field       string      `json:&#34;field&#34;`
+	Operator    string      `json:&#34;operator,omitempty&#34;`
+	Values      []any       `json:&#34;values&#34;`
+	Aggregation Aggregation `json:&#34;aggregation,omitempty&#34;`
 }</pre>
 </div>
 
@@ -1017,7 +1017,7 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
 	Criteria      []Criterion
 	Sort          []string
 	Fields        []string
-	Options       map[string]interface{}
+	Options       map[string]any
 	Paginate      bool
 	IdentityField string
 	Normalizer    NormalizerFunc `json:&#34;-&#34; bson:&#34;-&#34; pivot:&#34;-&#34;`
@@ -1069,7 +1069,7 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func FromMap(in map[string]interface{}) (*Filter, error)</pre>
+	<pre>func FromMap(in map[string]any) (*Filter, error)</pre>
 </div>
 
 
@@ -1109,7 +1109,7 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func MustParse(in interface{}) *Filter</pre>
+	<pre>func MustParse(in any) *Filter</pre>
 </div>
 
 
@@ -1152,7 +1152,7 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func Parse(in interface{}) (*Filter, error)</pre>
+	<pre>func Parse(in any) (*Filter, error)</pre>
 </div>
 
 
@@ -1209,7 +1209,7 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Filter) ApplyOptions(in interface{}) error</pre>
+	<pre>func (self *Filter) ApplyOptions(in any) error</pre>
 </div>
 
 
@@ -1258,7 +1258,7 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Filter) GetFirstValue() (interface{}, bool)</pre>
+	<pre>func (self *Filter) GetFirstValue() (any, bool)</pre>
 </div>
 
 
@@ -1273,7 +1273,7 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Filter) GetIdentityValue() (interface{}, bool)</pre>
+	<pre>func (self *Filter) GetIdentityValue() (any, bool)</pre>
 </div>
 
 
@@ -1303,7 +1303,7 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Filter) GetValues(field string) ([]interface{}, bool)</pre>
+	<pre>func (self *Filter) GetValues(field string) ([]any, bool)</pre>
 </div>
 
 
@@ -1369,7 +1369,7 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
 
 <div class="funcdecl decl">
 	<a title="View Source" href="">&#10070;</a>
-	<pre>func (self *Filter) NewFromMap(in map[string]interface{}) (*Filter, error)</pre>
+	<pre>func (self *Filter) NewFromMap(in map[string]any) (*Filter, error)</pre>
 </div>
 
 
@@ -1571,8 +1571,8 @@ var <span id="ValueSeparator">ValueSeparator       </span> = `|`
 	WithField(string) error
 	GroupByField(string) error
 	AggregateByField(Aggregation, string) error
-	SetOption(string, interface{}) error
-	GetValues() []interface{}
+	SetOption(string, any) error
+	GetValues() []any
 	Reset()
 }</pre>
 </div>

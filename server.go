@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"embed"
+
 	"github.com/ghetzel/diecast"
 	"github.com/ghetzel/go-stockutil/fileutil"
 	"github.com/ghetzel/go-stockutil/httputil"
@@ -208,7 +209,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 	// Querying
 	// ---------------------------------------------------------------------------------------------
 	queryHandler := func(w http.ResponseWriter, req *http.Request) {
-		var query interface{}
+		var query any
 		var name string
 		var leftField string
 		var rightName string
@@ -234,7 +235,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 			}
 
 		case `POST`:
-			fMap := make(map[string]interface{})
+			fMap := make(map[string]any)
 
 			if err := httputil.ParseRequest(req, &fMap); err == nil {
 				query = fMap
@@ -323,13 +324,13 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 							return
 						} else {
-							var results = make(map[string]interface{})
+							var results = make(map[string]any)
 
 							for _, field := range fields {
-								var fieldResults = make(map[string]interface{})
+								var fieldResults = make(map[string]any)
 
 								for _, aggregation := range aggregations {
-									var value interface{}
+									var value any
 									var err error
 
 									switch aggregation {
@@ -481,7 +482,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 	router.Get(`/api/collections/:collection/records/:id`,
 		func(w http.ResponseWriter, req *http.Request) {
-			var id interface{}
+			var id any
 			var fields []string
 
 			name := vestigo.Param(req, `collection`)
@@ -535,7 +536,7 @@ func (self *Server) setupRoutes(router *vestigo.Router) error {
 
 	router.Delete(`/api/collections/:collection/records/*id`,
 		func(w http.ResponseWriter, req *http.Request) {
-			var id interface{}
+			var id any
 
 			name := vestigo.Param(req, `collection`)
 			backend := backendForRequest(self, req, self.backend)
@@ -713,7 +714,7 @@ func injectRequestParamsIntoCollection(req *http.Request, collection *dal.Collec
 	return collection
 }
 
-func filterFromRequest(req *http.Request, filterIn interface{}, defaultLimit int64) (*filter.Filter, error) {
+func filterFromRequest(req *http.Request, filterIn any, defaultLimit int64) (*filter.Filter, error) {
 	limit := int(httputil.QInt(req, `limit`, defaultLimit))
 	offset := int(httputil.QInt(req, `offset`))
 	var f *filter.Filter

@@ -22,10 +22,10 @@ type fieldDescription struct {
 	OmitEmpty    bool
 	FieldValue   reflect.Value
 	FieldType    reflect.Type
-	DataValue    interface{}
+	DataValue    any
 }
 
-func (self *fieldDescription) Set(value interface{}) error {
+func (self *fieldDescription) Set(value any) error {
 	if self.FieldValue.IsValid() {
 		if self.FieldValue.CanSet() {
 			return typeutil.SetValue(self.FieldValue, value)
@@ -37,7 +37,7 @@ func (self *fieldDescription) Set(value interface{}) error {
 	}
 }
 
-type Model interface{}
+type Model any
 
 func structFieldToDesc(field *reflect.StructField) *fieldDescription {
 	desc := new(fieldDescription)
@@ -66,7 +66,7 @@ func structFieldToDesc(field *reflect.StructField) *fieldDescription {
 	return desc
 }
 
-func getIdentityFieldName(in interface{}, collection *Collection) string {
+func getIdentityFieldName(in any, collection *Collection) string {
 	candidates := make([]string, 0)
 
 	if err := structutil.FieldsFunc(in, func(field *reflect.StructField, value reflect.Value) error {
@@ -94,7 +94,7 @@ func getIdentityFieldName(in interface{}, collection *Collection) string {
 }
 
 // Retrieves the struct field name and key name that represents the identity field for a given struct.
-func getIdentityFieldNameFromStruct(instance interface{}, fallbackIdentityFieldName string) (string, string, error) {
+func getIdentityFieldNameFromStruct(instance any, fallbackIdentityFieldName string) (string, string, error) {
 	if err := validatePtrToStructType(instance); err != nil {
 		return ``, ``, err
 	}
@@ -149,7 +149,7 @@ func getIdentityFieldNameFromStruct(instance interface{}, fallbackIdentityFieldN
 	return ``, ``, fmt.Errorf("No identity field could be found for type %T", instance)
 }
 
-func validatePtrToStructType(instance interface{}) error {
+func validatePtrToStructType(instance any) error {
 	vInstance := reflect.ValueOf(instance)
 
 	if vInstance.IsValid() {
@@ -172,7 +172,7 @@ func validatePtrToStructType(instance interface{}) error {
 // Retrieve details about a specific field in the given struct. This function parses the `pivot`
 // tag details into discrete values, extracts the concrete value of the field, and returns the
 // reflected Type and Value of the field.
-func getFieldForStruct(instance interface{}, key string) (*fieldDescription, error) {
+func getFieldForStruct(instance any, key string) (*fieldDescription, error) {
 	var desc *fieldDescription
 
 	// iterate over all exported struct fields

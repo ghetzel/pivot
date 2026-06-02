@@ -3,8 +3,7 @@ package backends
 import (
 	"testing"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	dynamodb_types "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/stretchr/testify/require"
 )
@@ -33,16 +32,10 @@ func TestDynamoRecordToItem(t *testing.T) {
 	)
 
 	assert.NoError(err)
-	assert.Equal(map[string]*dynamodb.AttributeValue{
-		`id`: {
-			N: aws.String(`123`),
-		},
-		`name`: {
-			S: aws.String(`tester`),
-		},
-		`age`: {
-			N: aws.String(`42`),
-		},
+	assert.Equal(map[string]dynamodb_types.AttributeValue{
+		`id`:   &dynamodb_types.AttributeValueMemberN{Value: `123`},
+		`name`: &dynamodb_types.AttributeValueMemberS{Value: `tester`},
+		`age`:  &dynamodb_types.AttributeValueMemberN{Value: `42`},
 	}, attr)
 }
 
@@ -51,16 +44,10 @@ func TestDynamoRecordFromItem(t *testing.T) {
 	record, err := dynamoRecordFromItem(
 		dynamoTestCollection,
 		123,
-		map[string]*dynamodb.AttributeValue{
-			`id`: {
-				N: aws.String(`123`),
-			},
-			`name`: {
-				S: aws.String(`tester`),
-			},
-			`age`: {
-				N: aws.String(`42`),
-			},
+		map[string]dynamodb_types.AttributeValue{
+			`id`:   &dynamodb_types.AttributeValueMemberN{Value: `123`},
+			`name`: &dynamodb_types.AttributeValueMemberS{Value: `tester`},
+			`age`:  &dynamodb_types.AttributeValueMemberN{Value: `42`},
 		},
 	)
 
