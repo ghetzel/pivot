@@ -111,7 +111,6 @@ func (self *Model) Drop() error {
 }
 
 // Creates and saves a new instance of the model from the given struct or dal.Record.
-//
 func (self *Model) Create(from interface{}) error {
 	if record, err := self.collection.StructToRecord(from); err == nil {
 		return self.db.Insert(self.collection.Name, dal.NewRecordSet(record))
@@ -122,7 +121,6 @@ func (self *Model) Create(from interface{}) error {
 
 // Retrieves an instance of the model identified by the given ID and populates the value pointed to
 // by the into parameter.  Structs and dal.Record instances can be populated.
-//
 func (self *Model) Get(id interface{}, into interface{}) error {
 	if record, err := self.db.Retrieve(self.collection.Name, id); err == nil {
 		return record.Populate(into, self.collection)
@@ -132,13 +130,11 @@ func (self *Model) Get(id interface{}, into interface{}) error {
 }
 
 // Tests whether a record exists for the given ID.
-//
 func (self *Model) Exists(id interface{}) bool {
 	return self.db.Exists(self.collection.Name, id)
 }
 
 // Updates and saves an existing instance of the model from the given struct or dal.Record.
-//
 func (self *Model) Update(from interface{}) error {
 	if record, err := self.collection.StructToRecord(from); err == nil {
 		return self.db.Update(self.collection.Name, dal.NewRecordSet(record))
@@ -148,7 +144,6 @@ func (self *Model) Update(from interface{}) error {
 }
 
 // Creates or updates an instance of the model depending on whether it exists or not.
-//
 func (self *Model) CreateOrUpdate(id interface{}, from interface{}) error {
 	if id == nil || !self.Exists(id) {
 		return self.Create(from)
@@ -158,7 +153,6 @@ func (self *Model) CreateOrUpdate(id interface{}, from interface{}) error {
 }
 
 // Delete instances of the model identified by the given IDs
-//
 func (self *Model) Delete(ids ...interface{}) error {
 	return self.db.Delete(self.collection.Name, ids...)
 }
@@ -182,7 +176,6 @@ func (self *Model) DeleteQuery(flt interface{}) error {
 // Results will be returned in the slice or array pointed to by the into parameter, or
 // if into points to a dal.RecordSet, the RecordSet resulting from the query will be returned
 // as-is.
-//
 func (self *Model) Find(flt interface{}, into interface{}) error {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField
@@ -204,7 +197,6 @@ func (self *Model) Find(flt interface{}, into interface{}) error {
 
 // Perform a query for instances of the model that match the given filter.Filter.
 // The given callback function will be called once per result.
-//
 func (self *Model) FindFunc(flt interface{}, destZeroValue interface{}, resultFn ResultFunc) error {
 	if f, err := filter.Parse(flt); err == nil {
 		f.IdentityField = self.collection.IdentityField

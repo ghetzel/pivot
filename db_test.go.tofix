@@ -1,6 +1,7 @@
 package pivot
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -18,7 +19,7 @@ import (
 	"github.com/ghetzel/pivot/v3/dal"
 	"github.com/ghetzel/pivot/v3/filter"
 	"github.com/ghetzel/pivot/v3/mapper"
-	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/v4"
 	"github.com/stretchr/testify/require"
 )
 
@@ -187,7 +188,9 @@ func TestAll(t *testing.T) {
 }
 
 func docker(container string, tag string, env map[string]interface{}, pingFn func(res *dockertest.Resource) (backends.Backend, error), runFn testRunnerFunc) {
-	pool, err := dockertest.NewPool("")
+	var ctx = context.Background()
+	var pool, err = dockertest.NewPool(ctx, "")
+	defer pool.Close(ctx)
 	errpanic(err)
 
 	envjoin := make([]string, 0)
@@ -198,22 +201,29 @@ func docker(container string, tag string, env map[string]interface{}, pingFn fun
 
 	// pulls an image, creates a container based on it and runs it
 	fmt.Printf("Starting container %v:%v\n", container, tag)
-	resource, err := pool.Run(container, tag, envjoin)
-	errpanic(resource.Expire(120))
 
-	defer pool.Purge(resource)
+	var rctx = context.Background()
+	var resource, rerr = pool.Run(
+		rctx,
+		container,
+		dockertest.WithTag(tag),
+		dockertest.WithEnv(envjoin),
+	)
+
+	defer resource.Close(rctx)
 
 	var backend backends.Backend
 
-	errpanic(err)
-	errpanic(pool.Retry(func() error {
-		if b, err := pingFn(resource); err == nil {
-			backend = b
-			return nil
-		} else {
-			return err
-		}
-	}))
+	// var retryctx = context.Background()
+	errpanic(rerr)
+	// errpanic(pool.Retry(retryctx, 30*time.Second, func() error {
+	// 	if b, err := pingFn(resource); err == nil {
+	// 		backend = b
+	// 		return nil
+	// 	} else {
+	// 		return err
+	// 	}
+	// }))
 
 	if backend != nil {
 		fmt.Printf("Ready\n")

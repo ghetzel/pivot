@@ -465,7 +465,6 @@ func (self *Sql) GetValues() []interface{} {
 // sequences with the syntax-appropriate placeholders for that field.  This ensures that the
 // placeholder order matches the value order (for syntaxes that use numeric placeholders;
 // e.g. PostgreSQL).
-//
 func (self *Sql) applyPlaceholders() {
 	payload := string(self.Payload())
 

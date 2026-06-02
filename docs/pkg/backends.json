@@ -219,11 +219,11 @@
                     "Alias": "strings"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go/aws",
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/aws",
                     "Alias": "aws"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go/service/dynamodb",
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/service/dynamodb",
                     "Alias": "dynamodb"
                 },
                 {
@@ -271,27 +271,27 @@
                     "Alias": "time"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go/aws",
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/aws",
                     "Alias": "aws"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go/aws/awserr",
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/aws/awserr",
                     "Alias": "awserr"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go/aws/credentials",
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/aws/credentials",
                     "Alias": "credentials"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go/aws/session",
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/aws/session",
                     "Alias": "session"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go/service/dynamodb",
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/service/dynamodb",
                     "Alias": "dynamodb"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute",
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/service/dynamodb/dynamodbattribute",
                     "Alias": "dynamodbattribute"
                 },
                 {
@@ -343,11 +343,11 @@
                     "Alias": "testing"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go/aws",
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/aws",
                     "Alias": "aws"
                 },
                 {
-                    "PackageName": "github.com/aws/aws-sdk-go/service/dynamodb",
+                    "PackageName": "github.com/aws/aws-sdk-go-v2/service/dynamodb",
                     "Alias": "dynamodb"
                 },
                 {

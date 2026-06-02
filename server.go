@@ -1,7 +1,5 @@
 package pivot
 
-//go:generate esc -o static.go -pkg pivot -modtime 1500000000 -prefix ui ui
-
 import (
 	"encoding/json"
 	"fmt"
@@ -12,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"embed"
 	"github.com/ghetzel/diecast"
 	"github.com/ghetzel/go-stockutil/fileutil"
 	"github.com/ghetzel/go-stockutil/httputil"
@@ -27,6 +26,10 @@ import (
 	"github.com/husobee/vestigo"
 	"github.com/urfave/negroni"
 )
+
+//go:embed all:ui/*
+//go:embed all:ui/**
+var embedded embed.FS
 
 var DefaultAddress = `127.0.0.1`
 var DefaultPort = 29029
